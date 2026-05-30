@@ -37,6 +37,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { getUserPortalPath } from '@/lib/user-portal';
 import { ApiRequestError } from '@/services/api/errors';
 import {
 	isUserGoogleLoginEnabled,
@@ -90,6 +91,16 @@ type RegisterFormProps = {
 	title: string;
 	description: string;
 };
+
+const wizardSteps = [
+	{ id: 1, label: 'Role', description: 'Account type' },
+	{ id: 2, label: 'Details', description: 'Contact profile' },
+	{ id: 3, label: 'Security', description: 'Password setup' },
+] as const satisfies readonly {
+	id: WizardStep;
+	label: string;
+	description: string;
+}[];
 
 export function RegisterForm({
 	initialRole = 'CUSTOMER',
@@ -162,9 +173,7 @@ export function RegisterForm({
 						? 'Your partner account is ready for onboarding.'
 						: 'Your customer account is ready.',
 			});
-			router.replace(
-				response.user.role === 'PARTNER' ? '/partner-onboarding' : '/account',
-			);
+			router.replace(getUserPortalPath(response.user));
 		},
 		onError: (error) => {
 			const apiError =
@@ -203,6 +212,7 @@ export function RegisterForm({
 			valid: Boolean(confirmPassword) && password === confirmPassword,
 		},
 	];
+	const canUseGoogleSignup = isGoogleLoginEnabled && selectedRole === 'CUSTOMER';
 
 	// Event handlers: step validation keeps users focused and avoids partial submissions.
 	async function goToNextStep() {
@@ -249,13 +259,23 @@ export function RegisterForm({
 					<p>{description}</p>
 				</div>
 
-				<div className={styles.stepper} aria-label="Registration progress">
-					{[1, 2, 3].map((item) => (
-						<span key={item} data-active={item === step} data-complete={item < step}>
-							{item}
-						</span>
+				<ol className={styles.stepper} aria-label="Registration progress">
+					{wizardSteps.map((item) => (
+						<li
+							key={item.id}
+							data-active={item.id === step}
+							data-complete={item.id < step}
+						>
+							<span className={styles.stepNumber}>
+								{item.id < step ? <CheckCircle2 aria-hidden="true" /> : item.id}
+							</span>
+							<span className={styles.stepCopy}>
+								<strong>{item.label}</strong>
+								<small>{item.description}</small>
+							</span>
+						</li>
 					))}
-				</div>
+				</ol>
 
 				{step === 1 ? (
 					<section className={styles.stepPanel} aria-label="Choose account role">
@@ -561,7 +581,7 @@ export function RegisterForm({
 					)}
 				</div>
 
-				{isGoogleLoginEnabled ? (
+				{canUseGoogleSignup ? (
 					<>
 						<div className={styles.divider} />
 						<Button
