@@ -7,14 +7,18 @@ import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import {
+	ArrowLeft,
+	ArrowRight,
 	Building2,
 	BriefcaseBusiness,
+	CheckCircle2,
 	Eye,
 	EyeOff,
 	LoaderCircle,
 	LockKeyhole,
 	Mail,
 	Phone,
+	ShieldCheck,
 	UserRound,
 	UserPlus,
 } from 'lucide-react';
@@ -38,38 +42,48 @@ import {
 	isUserGoogleLoginEnabled,
 	redirectToUserGoogleLogin,
 	registerUser,
-	type PartnerType,
 	type UserRole,
 } from '@/services/api/auth';
 import styles from './auth-form.module.css';
 
-const registerSchema = z.object({
-	role: z.enum(['CUSTOMER', 'PARTNER']),
-	partnerType: z.enum(['INDIVIDUAL', 'COMPANY']).optional(),
-	fullName: z.string().min(2, 'Enter your full name.').max(120),
-	email: z.string().email('Enter a valid email address.').max(254),
-	phone: z
-		.string()
-		.regex(/^\+?[1-9]\d{7,14}$/, 'Use an international phone format.'),
-	password: z
-		.string()
-		.min(12, 'Password must be at least 12 characters.')
-		.max(128)
-		.regex(
-			/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/,
-			'Use uppercase, lowercase, a number, and a special character.',
-		),
-}).superRefine((values, context) => {
-	if (values.role === 'PARTNER' && !values.partnerType) {
-		context.addIssue({
-			code: 'custom',
-			path: ['partnerType'],
-			message: 'Choose the partner type.',
-		});
-	}
-});
+const passwordRule = /^(?=.*[A-Za-z])(?=.*[^A-Za-z0-9]).+$/;
+
+const registerSchema = z
+	.object({
+		role: z.enum(['CUSTOMER', 'PARTNER']),
+		partnerType: z.enum(['INDIVIDUAL', 'COMPANY']).optional(),
+		fullName: z.string().min(2, 'Enter your full name.').max(120),
+		email: z.string().email('Enter a valid email address.').max(254),
+		phone: z
+			.string()
+			.regex(/^\+?[1-9]\d{7,14}$/, 'Use an international phone format.'),
+		password: z
+			.string()
+			.min(8, 'Password must be at least 8 characters.')
+			.max(128)
+			.regex(passwordRule, 'Use at least one letter and one special sign.'),
+		confirmPassword: z.string().min(1, 'Confirm your password.'),
+	})
+	.superRefine((values, context) => {
+		if (values.role === 'PARTNER' && !values.partnerType) {
+			context.addIssue({
+				code: 'custom',
+				path: ['partnerType'],
+				message: 'Choose the partner type.',
+			});
+		}
+
+		if (values.password !== values.confirmPassword) {
+			context.addIssue({
+				code: 'custom',
+				path: ['confirmPassword'],
+				message: 'Passwords must match.',
+			});
+		}
+	});
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
+type WizardStep = 1 | 2 | 3;
 
 type RegisterFormProps = {
 	initialRole?: UserRole;
@@ -83,11 +97,13 @@ export function RegisterForm({
 	description,
 }: RegisterFormProps) {
 	const router = useRouter();
+	const [step, setStep] = useState<WizardStep>(1);
 	const [showPassword, setShowPassword] = useState(false);
+	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 	const [modalError, setModalError] = useState<string | null>(null);
 	const isGoogleLoginEnabled = isUserGoogleLoginEnabled();
 
-	// State setup: every registration field is required before creating the account.
+	// State setup: the wizard validates only the current step before moving forward.
 	const form = useForm<RegisterFormValues>({
 		resolver: zodResolver(registerSchema),
 		defaultValues: {
@@ -97,9 +113,11 @@ export function RegisterForm({
 			email: '',
 			phone: '',
 			password: '',
+			confirmPassword: '',
 		},
-		mode: 'onBlur',
+		mode: 'onChange',
 	});
+
 	const selectedRole = useWatch({
 		control: form.control,
 		name: 'role',
@@ -108,6 +126,14 @@ export function RegisterForm({
 		control: form.control,
 		name: 'partnerType',
 	});
+	const password = useWatch({
+		control: form.control,
+		name: 'password',
+	}) ?? '';
+	const confirmPassword = useWatch({
+		control: form.control,
+		name: 'confirmPassword',
+	}) ?? '';
 
 	const deviceName = useMemo(() => {
 		if (typeof navigator === 'undefined') {
@@ -158,24 +184,64 @@ export function RegisterForm({
 		},
 	});
 
-	// Event handlers: include the requested role server-side and prevent duplicate posts.
+	const selectedPartnerType = watchedPartnerType ?? 'INDIVIDUAL';
+	const passwordChecks = [
+		{
+			label: 'At least 8 characters',
+			valid: password.length >= 8,
+		},
+		{
+			label: 'At least one letter',
+			valid: /[A-Za-z]/.test(password),
+		},
+		{
+			label: 'At least one special sign',
+			valid: /[^A-Za-z0-9]/.test(password),
+		},
+		{
+			label: 'Passwords match',
+			valid: Boolean(confirmPassword) && password === confirmPassword,
+		},
+	];
+
+	// Event handlers: step validation keeps users focused and avoids partial submissions.
+	async function goToNextStep() {
+		const fieldsByStep: Record<WizardStep, (keyof RegisterFormValues)[]> = {
+			1: selectedRole === 'PARTNER' ? ['role', 'partnerType'] : ['role'],
+			2: ['fullName', 'email', 'phone'],
+			3: ['password', 'confirmPassword'],
+		};
+
+		const isValid = await form.trigger(fieldsByStep[step], {
+			shouldFocus: true,
+		});
+
+		if (isValid && step < 3) {
+			setStep((currentStep) => (currentStep + 1) as WizardStep);
+		}
+	}
+
+	function goToPreviousStep() {
+		setStep((currentStep) => Math.max(1, currentStep - 1) as WizardStep);
+	}
+
 	function onSubmit(values: RegisterFormValues) {
 		registerMutation.mutate(values);
 	}
-
-	const selectedPartnerType = watchedPartnerType ?? 'INDIVIDUAL';
-	const submitLabel =
-		selectedRole === 'PARTNER' ? 'Create partner account' : 'Create account';
-	const googleLabel =
-		selectedRole === 'PARTNER'
-			? 'Sign up as partner with Google'
-			: 'Sign up with Google';
 
 	return (
 		<>
 			<form
 				className={`${styles.formWrap} ${styles.wideForm}`}
-				onSubmit={form.handleSubmit(onSubmit)}
+				onSubmit={(event) => {
+					if (step < 3) {
+						event.preventDefault();
+						void goToNextStep();
+						return;
+					}
+
+					void form.handleSubmit(onSubmit)(event);
+				}}
 				noValidate
 			>
 				<div className={styles.headingBlock}>
@@ -183,203 +249,317 @@ export function RegisterForm({
 					<p>{description}</p>
 				</div>
 
-				<div className={styles.fieldGroup}>
-					<Label>Account role</Label>
-					<div className={styles.segmentGrid} data-invalid={Boolean(form.formState.errors.role)}>
-						<button
-							type="button"
-							className={styles.segmentButton}
-							data-active={selectedRole === 'CUSTOMER'}
-							onClick={() => {
-								form.setValue('role', 'CUSTOMER', { shouldValidate: true });
-								form.setValue('partnerType', undefined, { shouldValidate: true });
-							}}
-						>
-							<UserRound aria-hidden="true" />
-							<span>
-								<strong>Customer</strong>
-								<small>Book and manage trips</small>
-							</span>
-						</button>
-						<button
-							type="button"
-							className={styles.segmentButton}
-							data-active={selectedRole === 'PARTNER'}
-							onClick={() => {
-								form.setValue('role', 'PARTNER', { shouldValidate: true });
-								form.setValue('partnerType', selectedPartnerType, {
-									shouldValidate: true,
-								});
-							}}
-						>
-							<Building2 aria-hidden="true" />
-							<span>
-								<strong>Partner</strong>
-								<small>List properties or rentals</small>
-							</span>
-						</button>
-					</div>
+				<div className={styles.stepper} aria-label="Registration progress">
+					{[1, 2, 3].map((item) => (
+						<span key={item} data-active={item === step} data-complete={item < step}>
+							{item}
+						</span>
+					))}
 				</div>
 
-				{selectedRole === 'PARTNER' ? (
-					<div className={styles.fieldGroup}>
-						<Label>Partner type</Label>
-						<div
-							className={styles.segmentGrid}
-							data-invalid={Boolean(form.formState.errors.partnerType)}
-						>
-							<button
-								type="button"
-								className={styles.segmentButton}
-								data-active={selectedPartnerType === 'INDIVIDUAL'}
-								onClick={() =>
-									form.setValue('partnerType', 'INDIVIDUAL', {
-										shouldValidate: true,
-									})
-								}
+				{step === 1 ? (
+					<section className={styles.stepPanel} aria-label="Choose account role">
+						<div className={styles.fieldGroup}>
+							<Label>Account role</Label>
+							<div
+								className={styles.segmentGrid}
+								data-invalid={Boolean(form.formState.errors.role)}
 							>
-								<UserRound aria-hidden="true" />
-								<span>
-									<strong>Individual</strong>
-									<small>Personal host or owner</small>
-								</span>
-							</button>
-							<button
-								type="button"
-								className={styles.segmentButton}
-								data-active={selectedPartnerType === 'COMPANY'}
-								onClick={() =>
-									form.setValue('partnerType', 'COMPANY', {
-										shouldValidate: true,
-									})
-								}
-							>
-								<BriefcaseBusiness aria-hidden="true" />
-								<span>
-									<strong>Company</strong>
-									<small>Registered business</small>
-								</span>
-							</button>
+								<button
+									type="button"
+									className={styles.segmentButton}
+									data-active={selectedRole === 'CUSTOMER'}
+									onClick={() => {
+										form.setValue('role', 'CUSTOMER', {
+											shouldValidate: true,
+										});
+										form.setValue('partnerType', undefined, {
+											shouldValidate: true,
+										});
+									}}
+								>
+									<UserRound aria-hidden="true" />
+									<span>
+										<strong>Customer</strong>
+										<small>Book and manage trips</small>
+									</span>
+								</button>
+								<button
+									type="button"
+									className={styles.segmentButton}
+									data-active={selectedRole === 'PARTNER'}
+									onClick={() => {
+										form.setValue('role', 'PARTNER', {
+											shouldValidate: true,
+										});
+										form.setValue('partnerType', selectedPartnerType, {
+											shouldValidate: true,
+										});
+									}}
+								>
+									<Building2 aria-hidden="true" />
+									<span>
+										<strong>Partner</strong>
+										<small>List properties or rentals</small>
+									</span>
+								</button>
+							</div>
 						</div>
-						{form.formState.errors.partnerType ? (
-							<p className={styles.inlineError}>
-								{form.formState.errors.partnerType.message}
-							</p>
+
+						{selectedRole === 'PARTNER' ? (
+							<div className={styles.fieldGroup}>
+								<Label>Partner type</Label>
+								<div
+									className={styles.segmentGrid}
+									data-invalid={Boolean(form.formState.errors.partnerType)}
+								>
+									<button
+										type="button"
+										className={styles.segmentButton}
+										data-active={selectedPartnerType === 'INDIVIDUAL'}
+										onClick={() =>
+											form.setValue('partnerType', 'INDIVIDUAL', {
+												shouldValidate: true,
+											})
+										}
+									>
+										<UserRound aria-hidden="true" />
+										<span>
+											<strong>Individual</strong>
+											<small>Personal host or owner</small>
+										</span>
+									</button>
+									<button
+										type="button"
+										className={styles.segmentButton}
+										data-active={selectedPartnerType === 'COMPANY'}
+										onClick={() =>
+											form.setValue('partnerType', 'COMPANY', {
+												shouldValidate: true,
+											})
+										}
+									>
+										<BriefcaseBusiness aria-hidden="true" />
+										<span>
+											<strong>Company</strong>
+											<small>Registered business</small>
+										</span>
+									</button>
+								</div>
+								{form.formState.errors.partnerType ? (
+									<p className={styles.inlineError}>
+										{form.formState.errors.partnerType.message}
+									</p>
+								) : null}
+							</div>
 						) : null}
-					</div>
+					</section>
 				) : null}
 
-				<div className={styles.fieldGroup}>
-					<Label htmlFor="fullName">Full name</Label>
-					<div
-						className={styles.inputShell}
-						data-invalid={Boolean(form.formState.errors.fullName)}
-					>
-						<UserRound aria-hidden="true" />
-						<Input
-							id="fullName"
-							type="text"
-							autoComplete="name"
-							placeholder="Aline Uwase"
-							aria-invalid={Boolean(form.formState.errors.fullName)}
-							{...form.register('fullName')}
-						/>
-					</div>
-					{form.formState.errors.fullName ? (
-						<p className={styles.inlineError}>{form.formState.errors.fullName.message}</p>
-					) : null}
-				</div>
+				{step === 2 ? (
+					<section className={styles.stepPanel} aria-label="Enter contact details">
+						<div className={styles.fieldGroup}>
+							<Label htmlFor="fullName">Full name</Label>
+							<div
+								className={styles.inputShell}
+								data-invalid={Boolean(form.formState.errors.fullName)}
+							>
+								<UserRound aria-hidden="true" />
+								<Input
+									id="fullName"
+									type="text"
+									autoComplete="name"
+									placeholder="Aline Uwase"
+									aria-invalid={Boolean(form.formState.errors.fullName)}
+									{...form.register('fullName')}
+								/>
+							</div>
+							{form.formState.errors.fullName ? (
+								<p className={styles.inlineError}>
+									{form.formState.errors.fullName.message}
+								</p>
+							) : null}
+						</div>
 
-				<div className={styles.fieldGroup}>
-					<Label htmlFor="email">Email</Label>
-					<div className={styles.inputShell} data-invalid={Boolean(form.formState.errors.email)}>
-						<Mail aria-hidden="true" />
-						<Input
-							id="email"
-							type="email"
-							autoComplete="email"
-							placeholder="you@example.com"
-							aria-invalid={Boolean(form.formState.errors.email)}
-							{...form.register('email')}
-						/>
-					</div>
-					{form.formState.errors.email ? (
-						<p className={styles.inlineError}>{form.formState.errors.email.message}</p>
-					) : null}
-				</div>
+						<div className={styles.fieldGroup}>
+							<Label htmlFor="email">Email</Label>
+							<div
+								className={styles.inputShell}
+								data-invalid={Boolean(form.formState.errors.email)}
+							>
+								<Mail aria-hidden="true" />
+								<Input
+									id="email"
+									type="email"
+									autoComplete="email"
+									placeholder="you@example.com"
+									aria-invalid={Boolean(form.formState.errors.email)}
+									{...form.register('email')}
+								/>
+							</div>
+							{form.formState.errors.email ? (
+								<p className={styles.inlineError}>
+									{form.formState.errors.email.message}
+								</p>
+							) : null}
+						</div>
 
-				<div className={styles.fieldGroup}>
-					<Label htmlFor="phone">Phone number</Label>
-					<div className={styles.inputShell} data-invalid={Boolean(form.formState.errors.phone)}>
-						<Phone aria-hidden="true" />
-						<Input
-							id="phone"
-							type="tel"
-							autoComplete="tel"
-							placeholder="+250788123456"
-							aria-invalid={Boolean(form.formState.errors.phone)}
-							{...form.register('phone')}
-						/>
-					</div>
-					{form.formState.errors.phone ? (
-						<p className={styles.inlineError}>{form.formState.errors.phone.message}</p>
-					) : null}
-				</div>
+						<div className={styles.fieldGroup}>
+							<Label htmlFor="phone">Phone number</Label>
+							<div
+								className={styles.inputShell}
+								data-invalid={Boolean(form.formState.errors.phone)}
+							>
+								<Phone aria-hidden="true" />
+								<Input
+									id="phone"
+									type="tel"
+									autoComplete="tel"
+									placeholder="+250788123456"
+									aria-invalid={Boolean(form.formState.errors.phone)}
+									{...form.register('phone')}
+								/>
+							</div>
+							{form.formState.errors.phone ? (
+								<p className={styles.inlineError}>
+									{form.formState.errors.phone.message}
+								</p>
+							) : null}
+						</div>
+					</section>
+				) : null}
 
-				<div className={styles.fieldGroup}>
-					<Label htmlFor="password">Password</Label>
-					<div
-						className={styles.inputShell}
-						data-invalid={Boolean(form.formState.errors.password)}
-					>
-						<LockKeyhole aria-hidden="true" />
-						<Input
-							id="password"
-							type={showPassword ? 'text' : 'password'}
-							autoComplete="new-password"
-							placeholder="Create a secure password"
-							aria-invalid={Boolean(form.formState.errors.password)}
-							{...form.register('password')}
-						/>
-						<Button
-							type="button"
-							variant="ghost"
-							size="icon"
-							className={styles.passwordToggle}
-							aria-label={showPassword ? 'Hide password' : 'Show password'}
-							onClick={() => setShowPassword((value) => !value)}
-						>
-							{showPassword ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}
-						</Button>
-					</div>
-					{form.formState.errors.password ? (
-						<p className={styles.inlineError}>{form.formState.errors.password.message}</p>
-					) : null}
-				</div>
+				{step === 3 ? (
+					<section className={styles.stepPanel} aria-label="Create password">
+						<div className={styles.fieldGroup}>
+							<Label htmlFor="password">Password</Label>
+							<div
+								className={styles.inputShell}
+								data-invalid={Boolean(form.formState.errors.password)}
+							>
+								<LockKeyhole aria-hidden="true" />
+								<Input
+									id="password"
+									type={showPassword ? 'text' : 'password'}
+									autoComplete="new-password"
+									placeholder="Create a secure password"
+									aria-invalid={Boolean(form.formState.errors.password)}
+									{...form.register('password')}
+								/>
+								<Button
+									type="button"
+									variant="ghost"
+									size="icon"
+									className={styles.passwordToggle}
+									aria-label={showPassword ? 'Hide password' : 'Show password'}
+									onClick={() => setShowPassword((value) => !value)}
+								>
+									{showPassword ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}
+								</Button>
+							</div>
+							{form.formState.errors.password ? (
+								<p className={styles.inlineError}>
+									{form.formState.errors.password.message}
+								</p>
+							) : null}
+						</div>
+
+						<div className={styles.fieldGroup}>
+							<Label htmlFor="confirmPassword">Confirm password</Label>
+							<div
+								className={styles.inputShell}
+								data-invalid={Boolean(form.formState.errors.confirmPassword)}
+							>
+								<ShieldCheck aria-hidden="true" />
+								<Input
+									id="confirmPassword"
+									type={showConfirmPassword ? 'text' : 'password'}
+									autoComplete="new-password"
+									placeholder="Confirm your password"
+									aria-invalid={Boolean(form.formState.errors.confirmPassword)}
+									{...form.register('confirmPassword')}
+								/>
+								<Button
+									type="button"
+									variant="ghost"
+									size="icon"
+									className={styles.passwordToggle}
+									aria-label={
+										showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'
+									}
+									onClick={() => setShowConfirmPassword((value) => !value)}
+								>
+									{showConfirmPassword ? (
+										<EyeOff aria-hidden="true" />
+									) : (
+										<Eye aria-hidden="true" />
+									)}
+								</Button>
+							</div>
+							{form.formState.errors.confirmPassword ? (
+								<p className={styles.inlineError}>
+									{form.formState.errors.confirmPassword.message}
+								</p>
+							) : null}
+						</div>
+
+						<ul className={styles.passwordRules} aria-label="Password requirements">
+							{passwordChecks.map((check) => (
+								<li key={check.label} data-valid={check.valid}>
+									<CheckCircle2 aria-hidden="true" />
+									{check.label}
+								</li>
+							))}
+						</ul>
+					</section>
+				) : null}
 
 				{form.formState.errors.root ? (
 					<p className={styles.formError}>{form.formState.errors.root.message}</p>
 				) : null}
 
-				<Button
-					type="submit"
-					className={styles.submitButton}
-					disabled={registerMutation.isPending}
-					aria-label={registerMutation.isPending ? 'Creating account' : submitLabel}
-				>
-					{registerMutation.isPending ? (
-						<LoaderCircle className={styles.spinner} aria-hidden="true" />
+				<div className={styles.wizardActions}>
+					{step > 1 ? (
+						<Button
+							type="button"
+							variant="outline"
+							className={styles.backButton}
+							onClick={goToPreviousStep}
+						>
+							<ArrowLeft aria-hidden="true" />
+							Back
+						</Button>
+					) : null}
+
+					{step < 3 ? (
+						<Button
+							type="button"
+							className={styles.submitButton}
+							onClick={goToNextStep}
+						>
+							<ArrowRight aria-hidden="true" />
+							Continue
+						</Button>
 					) : (
-						<>
-							{selectedRole === 'PARTNER' ? (
-								<Building2 aria-hidden="true" />
+						<Button
+							type="submit"
+							className={styles.submitButton}
+							disabled={registerMutation.isPending}
+							aria-label={
+								registerMutation.isPending ? 'Creating account' : 'Create account'
+							}
+						>
+							{registerMutation.isPending ? (
+								<LoaderCircle className={styles.spinner} aria-hidden="true" />
 							) : (
-								<UserPlus aria-hidden="true" />
+								<>
+									<UserPlus aria-hidden="true" />
+									Create account
+								</>
 							)}
-							{submitLabel}
-						</>
+						</Button>
 					)}
-				</Button>
+				</div>
 
 				{isGoogleLoginEnabled ? (
 					<>
@@ -388,14 +568,7 @@ export function RegisterForm({
 							type="button"
 							variant="outline"
 							className={styles.googleButton}
-							onClick={() =>
-								redirectToUserGoogleLogin(
-									selectedRole,
-									selectedRole === 'PARTNER'
-										? (selectedPartnerType as PartnerType)
-										: undefined,
-								)
-							}
+							onClick={() => redirectToUserGoogleLogin('CUSTOMER')}
 						>
 							<Image
 								src="/google.webp"
@@ -404,7 +577,7 @@ export function RegisterForm({
 								height={256}
 								className={styles.googleIcon}
 							/>
-							{googleLabel}
+							Sign up with Google
 						</Button>
 					</>
 				) : null}
