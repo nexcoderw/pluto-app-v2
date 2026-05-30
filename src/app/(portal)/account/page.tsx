@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { AccountCustomerPortal } from './account-customer-portal';
-import styles from './portal-placeholder.module.css';
 
 export const metadata: Metadata = {
 	title: 'Account',
@@ -12,9 +11,5 @@ export const metadata: Metadata = {
 };
 
 export default function AccountPage() {
-	return (
-		<main className={styles.page}>
-			<AccountCustomerPortal />
-		</main>
-	);
+	return <AccountCustomerPortal />;
 }
