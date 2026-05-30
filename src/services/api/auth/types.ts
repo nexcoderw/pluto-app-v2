@@ -1,4 +1,5 @@
 export type UserRole = 'CUSTOMER' | 'PARTNER';
+export type PartnerType = 'INDIVIDUAL' | 'COMPANY';
 
 export type UserAuthProfile = {
 	id: string;
