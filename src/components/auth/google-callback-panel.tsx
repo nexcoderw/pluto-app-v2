@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowRight, CircleAlert, LoaderCircle, Phone, ShieldCheck } from 'lucide-react';
+import { getUserPortalPath } from '@/lib/user-portal';
 import {
 	completeUserGoogleLogin,
 	readUserGoogleCallbackStatus,
@@ -45,7 +46,7 @@ function GoogleCallbackContent() {
 				}
 
 				setState('success');
-				router.replace('/account');
+				router.replace(getUserPortalPath(response.user));
 			})
 			.catch(() => setState('error'));
 	}, [callbackStatus, router]);
