@@ -1,16 +1,35 @@
 import axios from 'axios';
+import { clearUserAccessToken, getUserAccessToken } from './token-store';
+
+export const API_BASE_URL =
+	process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000/api/v1';
 
 export const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
-  withCredentials: true,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+	baseURL: API_BASE_URL,
+	withCredentials: true,
+	timeout: 15_000,
+	headers: {
+		'Content-Type': 'application/json',
+	},
+});
+
+apiClient.interceptors.request.use((config) => {
+	const accessToken = getUserAccessToken();
+
+	if (accessToken) {
+		config.headers.Authorization = `Bearer ${accessToken}`;
+	}
+
+	return config;
 });
 
 apiClient.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    return Promise.reject(error);
-  },
+	(response) => response,
+	(error) => {
+		if (axios.isAxiosError(error) && error.response?.status === 401) {
+			clearUserAccessToken();
+		}
+
+		return Promise.reject(error);
+	},
 );
