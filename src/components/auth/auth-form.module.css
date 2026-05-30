@@ -62,6 +62,75 @@
 	text-underline-offset: 0.18rem;
 }
 
+.segmentGrid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.6rem;
+}
+
+.segmentGrid[data-invalid="true"] .segmentButton {
+	border-color: rgba(205, 35, 53, 0.5);
+}
+
+.segmentButton {
+	min-height: 4.35rem;
+	display: grid;
+	grid-template-columns: auto 1fr;
+	align-items: center;
+	gap: 0.7rem;
+	padding: 0.7rem 0.85rem;
+	border: 1px solid rgba(2, 0, 108, 0.16);
+	border-radius: 1.25rem;
+	background: rgba(255, 255, 255, 0.62);
+	color: #17171f;
+	text-align: left;
+	cursor: pointer;
+	transition:
+		border-color 180ms ease,
+		background 180ms ease,
+		box-shadow 180ms ease,
+		transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.segmentButton:hover,
+.segmentButton[data-active="true"] {
+	border-color: rgba(2, 0, 108, 0.42);
+	background: rgba(255, 255, 255, 0.86);
+	box-shadow: 0 0.7rem 1.6rem rgba(16, 22, 33, 0.08);
+	transform: translateY(-1px);
+}
+
+.segmentButton[data-active="true"] {
+	box-shadow:
+		0 0 0 0.2rem rgba(2, 0, 108, 0.1),
+		0 0.7rem 1.6rem rgba(16, 22, 33, 0.08);
+}
+
+.segmentButton svg {
+	width: 1.2rem;
+	height: 1.2rem;
+	color: #02006c;
+}
+
+.segmentButton span {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: 0.1rem;
+}
+
+.segmentButton strong {
+	color: #17171f;
+	font-size: 0.84rem;
+	line-height: 1.15;
+}
+
+.segmentButton small {
+	color: rgba(23, 23, 31, 0.58);
+	font-size: 0.7rem;
+	line-height: 1.25;
+}
+
 .inputShell {
 	position: relative;
 	display: flex;
@@ -359,6 +428,10 @@
 	.footerText {
 		flex-wrap: wrap;
 		justify-content: flex-start;
+	}
+
+	.segmentGrid {
+		grid-template-columns: 1fr;
 	}
 }
 
