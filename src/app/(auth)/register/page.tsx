@@ -15,11 +15,9 @@ export default function RegisterPage() {
 	return (
 		<AuthShell tone="customer">
 			<RegisterForm
-				role="CUSTOMER"
+				initialRole="CUSTOMER"
 				title="Create an account"
 				description="Join Pluto Booking to save favorites, manage bookings, and access trusted listings."
-				submitLabel="Create account"
-				googleLabel="Sign up with Google"
 			/>
 		</AuthShell>
 	);
