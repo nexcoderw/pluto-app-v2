@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { AccountReadyPanel } from './account-ready-panel';
+import { AccountCustomerPortal } from './account-customer-portal';
 import styles from './portal-placeholder.module.css';
 
 export const metadata: Metadata = {
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 export default function AccountPage() {
 	return (
 		<main className={styles.page}>
-			<AccountReadyPanel />
+			<AccountCustomerPortal />
 		</main>
 	);
 }
