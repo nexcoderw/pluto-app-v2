@@ -22,6 +22,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { getUserPortalPath } from '@/lib/user-portal';
 import { ApiRequestError } from '@/services/api/errors';
 import {
 	isUserGoogleLoginEnabled,
@@ -72,7 +73,7 @@ export function LoginForm() {
 			toast.success(response.message, {
 				description: 'Your Pluto Booking session is ready.',
 			});
-			router.replace('/account');
+			router.replace(getUserPortalPath(response.user));
 		},
 		onError: (error) => {
 			const apiError =
@@ -101,7 +102,11 @@ export function LoginForm() {
 					return;
 				}
 
-				router.replace(response.user.requiresPhoneNumber ? '/complete-phone' : '/account');
+				router.replace(
+					response.user.requiresPhoneNumber
+						? '/complete-phone'
+						: getUserPortalPath(response.user),
+				);
 			})
 			.catch(() => undefined);
 
