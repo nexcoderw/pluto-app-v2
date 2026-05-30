@@ -8,39 +8,152 @@
 }
 
 .panel {
-	width: min(100%, 34rem);
+	width: min(100%, 40rem);
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 1rem;
+	gap: 1.05rem;
 	padding: clamp(1.5rem, 5vw, 3rem);
 	border: 1px solid rgba(255, 255, 255, 0.76);
-	border-radius: 2rem;
+	border-radius: clamp(1.6rem, 4vw, 2.4rem);
 	background: rgba(255, 255, 255, 0.78);
 	box-shadow: 0 2rem 5rem rgba(16, 22, 33, 0.16);
 	backdrop-filter: blur(24px);
 	text-align: center;
+	animation: panelIn 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-.panel > svg {
-	width: 2.6rem;
-	height: 2.6rem;
+.iconOrbit {
+	position: relative;
+	width: 5.1rem;
+	height: 5.1rem;
+	display: grid;
+	place-items: center;
+	border-radius: 999px;
+	background: rgba(2, 0, 108, 0.06);
+}
+
+.iconOrbit span {
+	width: 3.75rem;
+	height: 3.75rem;
+	display: grid;
+	place-items: center;
+	border-radius: 999px;
+	background: #02006c;
+	color: white;
+	box-shadow: 0 1rem 2.2rem rgba(2, 0, 108, 0.2);
+}
+
+.iconOrbit svg {
+	width: 1.6rem;
+	height: 1.6rem;
+}
+
+.iconOrbit i {
+	position: absolute;
+	inset: 0;
+	border: 1px solid rgba(2, 0, 108, 0.18);
+	border-radius: inherit;
+	animation: orbitPulse 1400ms ease-in-out infinite;
+}
+
+.copyBlock {
+	display: grid;
+	gap: 0.55rem;
+	justify-items: center;
+}
+
+.eyebrow {
+	margin: 0;
 	color: #02006c;
+	font-size: 0.76rem;
+	font-weight: 840;
+	letter-spacing: 0;
+	text-transform: uppercase;
 }
 
 .panel h1 {
 	margin: 0;
 	color: #17171f;
-	font-size: clamp(2rem, 5vw, 3rem);
+	font-size: clamp(2rem, 5vw, 3.2rem);
 	line-height: 1;
 	letter-spacing: 0;
 }
 
 .panel p {
 	margin: 0;
+	max-width: 30rem;
 	color: rgba(23, 23, 31, 0.64);
 	font-size: 0.98rem;
 	line-height: 1.6;
+}
+
+.featureGrid {
+	width: 100%;
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 0.65rem;
+	margin-top: 0.4rem;
+}
+
+.featureGrid span {
+	min-height: 5.2rem;
+	display: grid;
+	align-content: center;
+	justify-items: center;
+	gap: 0.45rem;
+	padding: 0.8rem;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	border-radius: 1.2rem;
+	background: rgba(255, 255, 255, 0.58);
+	color: rgba(23, 23, 31, 0.72);
+	font-size: 0.76rem;
+	font-weight: 760;
+}
+
+.featureGrid svg {
+	width: 1.15rem;
+	height: 1.15rem;
+	color: #02006c;
+}
+
+.redirectCard {
+	width: min(100%, 27rem);
+	display: grid;
+	grid-template-columns: auto 1fr;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 0.8rem 1rem;
+	border: 1px solid rgba(2, 0, 108, 0.12);
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.66);
+	text-align: left;
+}
+
+.redirectCard > svg {
+	width: 1.15rem;
+	height: 1.15rem;
+	color: #02006c;
+}
+
+.redirectCard span {
+	min-width: 0;
+	display: grid;
+	gap: 0.08rem;
+}
+
+.redirectCard strong {
+	color: #17171f;
+	font-size: 0.82rem;
+	font-weight: 820;
+	line-height: 1.1;
+}
+
+.redirectCard small {
+	color: rgba(23, 23, 31, 0.58);
+	font-size: 0.72rem;
+	font-weight: 640;
+	line-height: 1.25;
 }
 
 .action {
@@ -58,9 +171,85 @@
 	font-weight: 740;
 	text-decoration: none;
 	cursor: pointer;
+	transition:
+		transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+		box-shadow 180ms ease,
+		background 180ms ease;
+	box-shadow: 0 1rem 2.4rem rgba(2, 0, 108, 0.22);
+}
+
+.action:hover {
+	background: #09068f;
+	transform: translateY(-2px);
+	box-shadow: 0 1.2rem 2.8rem rgba(2, 0, 108, 0.26);
 }
 
 .action svg {
 	width: 1rem;
 	height: 1rem;
+}
+
+@keyframes panelIn {
+	from {
+		opacity: 0;
+		transform: translateY(22px) scale(0.985);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+@keyframes orbitPulse {
+	0%,
+	100% {
+		opacity: 0.4;
+		transform: scale(1);
+	}
+	50% {
+		opacity: 0.9;
+		transform: scale(1.12);
+	}
+}
+
+@media (max-width: 620px) {
+	.panel {
+		align-items: stretch;
+		text-align: left;
+	}
+
+	.iconOrbit,
+	.copyBlock {
+		justify-self: center;
+	}
+
+	.copyBlock {
+		justify-items: center;
+		text-align: center;
+	}
+
+	.featureGrid {
+		grid-template-columns: 1fr;
+	}
+
+	.featureGrid span {
+		min-height: 3.75rem;
+		grid-template-columns: auto 1fr;
+		justify-items: start;
+		text-align: left;
+	}
+
+	.redirectCard,
+	.action {
+		border-radius: 1.35rem;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.panel,
+	.iconOrbit i,
+	.action {
+		animation: none;
+		transition: none;
+	}
 }
