@@ -57,7 +57,8 @@
 
 .searchButton,
 .loginButton,
-.registerButton {
+.registerButton,
+.profileButton {
 	height: 2.85rem;
 	min-height: 2.85rem;
 	display: inline-flex;
@@ -87,7 +88,8 @@
 
 .searchButton:hover,
 .loginButton:hover,
-.registerButton:hover {
+.registerButton:hover,
+.profileButton:hover {
 	transform: translateY(-1px);
 }
 
@@ -109,6 +111,70 @@
 
 .registerButton:hover {
 	background: #09068f;
+}
+
+.profileButton {
+	max-width: 16rem;
+	padding: 0.25rem 0.9rem 0.25rem 0.28rem;
+	border: 1px solid rgba(2, 0, 108, 0.12);
+	background: rgba(255, 255, 255, 0.76);
+	color: #17171f;
+	box-shadow: 0 0.75rem 1.8rem rgba(16, 22, 33, 0.08);
+}
+
+.profileButton:hover {
+	border-color: rgba(2, 0, 108, 0.24);
+	background: rgba(255, 255, 255, 0.94);
+}
+
+.avatar {
+	width: 2.28rem;
+	height: 2.28rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+	border-radius: 999px;
+	background: #02006c;
+	color: white;
+	font-size: 0.76rem;
+	font-weight: 820;
+	overflow: hidden;
+}
+
+.avatar[data-has-image="true"] {
+	background-image: var(--profile-avatar-image);
+	background-size: cover;
+	background-position: center;
+}
+
+.profileCopy {
+	min-width: 0;
+	display: grid;
+	gap: 0.05rem;
+	text-align: left;
+}
+
+.profileCopy strong,
+.profileCopy small {
+	max-width: 10.5rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.profileCopy strong {
+	color: #17171f;
+	font-size: 0.78rem;
+	font-weight: 800;
+	line-height: 1.05;
+}
+
+.profileCopy small {
+	color: rgba(23, 23, 31, 0.56);
+	font-size: 0.66rem;
+	font-weight: 700;
+	line-height: 1;
 }
 
 .menuButton {
