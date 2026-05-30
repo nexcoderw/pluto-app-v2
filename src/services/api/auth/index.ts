@@ -40,6 +40,7 @@ export type {
 export { USER_AUTH_ROUTES } from './routes';
 export type {
 	ApiMessageResponse,
+	PartnerType,
 	UserAuthProfile,
 	UserAuthResponse,
 	UserCurrentProfileResponse,
