@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import {
 	Building2,
 	CalendarCheck2,
@@ -43,7 +44,7 @@ export function AuthShell({
 
 	return (
 		<section className={styles.shell} aria-label="Pluto Booking authentication">
-			<div className={styles.brandPill}>
+			<Link href="/" className={styles.brandPill} aria-label="Go to Pluto Booking home">
 				<Image
 					src="/logo-b.png"
 					alt="Pluto Booking"
@@ -52,7 +53,7 @@ export function AuthShell({
 					priority
 					className={styles.brandLogo}
 				/>
-			</div>
+			</Link>
 
 			<div className={styles.formColumn}>
 				<div className={styles.formStack}>
