@@ -20,6 +20,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { getUserPortalPath } from '@/lib/user-portal';
 import { completeGooglePhone, refreshUserSession } from '@/services/api/auth';
 import { ApiRequestError } from '@/services/api/errors';
 import styles from './auth-form.module.css';
@@ -47,7 +48,7 @@ export function CompletePhoneForm() {
 		refreshUserSession()
 			.then((response) => {
 				if (!response.user.requiresPhoneNumber) {
-					router.replace('/account');
+					router.replace(getUserPortalPath(response.user));
 				}
 			})
 			.catch(() => router.replace('/login'));
@@ -59,7 +60,7 @@ export function CompletePhoneForm() {
 			toast.success(response.message, {
 				description: 'Your account profile is now complete.',
 			});
-			router.replace('/account');
+			router.replace(getUserPortalPath(response.user));
 		},
 		onError: (error) => {
 			const apiError =
