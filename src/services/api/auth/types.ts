@@ -6,6 +6,7 @@ export type UserAuthProfile = {
 	fullName: string;
 	email: string;
 	phone: string | null;
+	imageUrl?: string | null;
 	role: UserRole;
 	emailVerified: boolean;
 	phoneVerified: boolean;
