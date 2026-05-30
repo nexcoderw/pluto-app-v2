@@ -1,0 +1,374 @@
+.formWrap {
+	width: min(100%, 23.4rem);
+	display: flex;
+	flex-direction: column;
+	gap: 0.9rem;
+	animation: formIn 620ms 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.wideForm {
+	width: min(100%, 26rem);
+}
+
+.headingBlock {
+	text-align: center;
+	margin-bottom: 0.35rem;
+}
+
+.headingBlock h1 {
+	margin: 0.9rem 0 0.3rem;
+	color: #17171f;
+	font-size: clamp(1.82rem, 3.2vw, 2.48rem);
+	font-weight: 680;
+	line-height: 1;
+	letter-spacing: 0;
+}
+
+.headingBlock p {
+	margin: 0 auto;
+	max-width: 20.5rem;
+	color: rgba(23, 23, 31, 0.62);
+	font-size: 0.88rem;
+	line-height: 1.45;
+}
+
+.fieldGroup {
+	display: flex;
+	flex-direction: column;
+	gap: 0.38rem;
+}
+
+.fieldGroup label,
+.fieldHeader label {
+	padding-left: 1.5rem;
+	color: rgba(23, 23, 31, 0.62);
+	font-size: 0.78rem;
+	font-weight: 650;
+}
+
+.fieldHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+}
+
+.fieldHeader a,
+.footerText a {
+	font-size: 0.76rem;
+	color: #02006c;
+	font-weight: 760;
+	text-decoration: underline;
+	text-underline-offset: 0.18rem;
+}
+
+.inputShell {
+	position: relative;
+	display: flex;
+	align-items: center;
+	min-height: 3.15rem;
+	padding: 0 0.6rem 0 0.95rem;
+	border: 1px solid rgba(2, 0, 108, 0.34);
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.74);
+	box-shadow: 0 0.8rem 2rem rgba(16, 22, 33, 0.06);
+	transition:
+		border-color 180ms ease,
+		box-shadow 180ms ease,
+		transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.inputShell:focus-within {
+	border-color: #02006c;
+	box-shadow: 0 0 0 0.22rem rgba(2, 0, 108, 0.12), 0 1rem 2rem rgba(16, 22, 33, 0.08);
+	transform: translateY(-1px);
+}
+
+.inputShell[data-invalid="true"] {
+	border-color: rgba(205, 35, 53, 0.72);
+	box-shadow: 0 0 0 0.2rem rgba(205, 35, 53, 0.1);
+}
+
+.inputShell > svg {
+	width: 1.08rem;
+	height: 1.08rem;
+	color: rgba(2, 0, 108, 0.66);
+	flex: 0 0 auto;
+}
+
+.inputShell input {
+	height: 2.95rem;
+	border: 0;
+	background: transparent;
+	box-shadow: none;
+	padding: 0 0.8rem;
+	color: #17171f;
+	font-size: 0.9rem;
+}
+
+.inputShell input:focus-visible {
+	box-shadow: none;
+	border: 0;
+	outline: 0;
+}
+
+.passwordToggle {
+	width: 2.5rem;
+	height: 2.5rem;
+	min-height: 2.5rem;
+	border-radius: 999px;
+	color: rgba(23, 23, 31, 0.62);
+}
+
+.inlineError,
+.formError {
+	margin: 0;
+	color: #be123c;
+	font-size: 0.76rem;
+	line-height: 1.35;
+}
+
+.inlineError {
+	padding-left: 1.5rem;
+}
+
+.formError {
+	padding: 0.8rem 1rem;
+	border: 1px solid rgba(190, 18, 60, 0.18);
+	border-radius: 1rem;
+	background: rgba(255, 241, 242, 0.74);
+}
+
+.submitButton,
+.googleButton,
+.secondaryAction {
+	width: 100%;
+	height: var(--pluto-button-height);
+	min-height: var(--pluto-button-height);
+	border-radius: 999px;
+	text-transform: none;
+	letter-spacing: 0;
+	font-size: 0.84rem;
+	font-weight: 680;
+	transition:
+		transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+		box-shadow 180ms ease,
+		background 180ms ease;
+}
+
+.submitButton {
+	margin-top: 0.2rem;
+	background: #02006c;
+	color: #fff;
+	box-shadow: 0 1rem 2.4rem rgba(2, 0, 108, 0.24);
+}
+
+.submitButton:hover {
+	background: #09068f;
+	transform: translateY(-2px);
+	box-shadow: 0 1.2rem 2.8rem rgba(2, 0, 108, 0.28);
+}
+
+.submitButton:disabled {
+	transform: none;
+}
+
+.spinner {
+	width: 1.1rem;
+	height: 1.1rem;
+	animation: spin 760ms linear infinite;
+}
+
+.divider {
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 1.35rem;
+}
+
+.divider::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	right: 0;
+	height: 1px;
+	background: rgba(2, 0, 108, 0.12);
+}
+
+.googleButton {
+	border-color: rgba(2, 0, 108, 0.18);
+	background: rgba(255, 255, 255, 0.52);
+	color: #17171f;
+}
+
+.googleButton:hover {
+	border-color: rgba(2, 0, 108, 0.32);
+	background: rgba(255, 255, 255, 0.78);
+	transform: translateY(-2px);
+}
+
+.googleIcon {
+	width: 1.22rem;
+	height: 1.22rem;
+	border-radius: 999px;
+}
+
+.footerText {
+	display: flex;
+	justify-content: center;
+	gap: 0.35rem;
+	margin: 0.75rem 0 0;
+	color: rgba(23, 23, 31, 0.58);
+	font-size: 0.78rem;
+	line-height: 1.45;
+}
+
+.secondaryAction {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	color: #02006c;
+	text-decoration: none;
+	background: transparent;
+}
+
+.secondaryAction:hover {
+	text-decoration: underline;
+	text-underline-offset: 0.2rem;
+}
+
+.successPanel,
+.statePanel {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.9rem;
+	padding: 1.2rem 0;
+	text-align: center;
+}
+
+.successPanel > svg,
+.statePanel > svg {
+	width: 2.4rem;
+	height: 2.4rem;
+	color: #148a54;
+}
+
+.statePanel[data-state="error"] > svg {
+	color: #be123c;
+}
+
+.statePanel[data-state="loading"] > svg {
+	color: #02006c;
+	animation: spin 760ms linear infinite;
+}
+
+.successPanel h1,
+.statePanel h1 {
+	margin: 0;
+	color: #17171f;
+	font-size: clamp(1.8rem, 3vw, 2.4rem);
+	font-weight: 700;
+	line-height: 1.05;
+}
+
+.successPanel p,
+.statePanel p {
+	margin: 0;
+	max-width: 20rem;
+	color: rgba(23, 23, 31, 0.62);
+	font-size: 0.9rem;
+	line-height: 1.45;
+}
+
+.modalContent button {
+	cursor: pointer;
+	border-radius: 999px;
+}
+
+.modalContent button svg {
+	width: 1rem;
+	height: 1rem;
+}
+
+.skeletonTitle {
+	width: 68%;
+	height: 2.8rem;
+	margin: 0 auto;
+}
+
+.skeletonText {
+	width: 82%;
+	height: 1.2rem;
+	margin: 0 auto 1.2rem;
+}
+
+.skeletonInput {
+	width: 100%;
+	height: 3.15rem;
+	border-radius: 999px;
+}
+
+.skeletonButton,
+.skeletonSocial {
+	width: 100%;
+	height: var(--pluto-button-height);
+	border-radius: 999px;
+}
+
+@keyframes formIn {
+	from {
+		opacity: 0;
+		transform: translateY(18px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@media (max-width: 520px) {
+	.formWrap,
+	.wideForm {
+		width: 100%;
+		gap: 1rem;
+	}
+
+	.headingBlock {
+		text-align: left;
+	}
+
+	.headingBlock p {
+		margin-left: 0;
+	}
+
+	.fieldGroup label,
+	.fieldHeader label,
+	.inlineError {
+		padding-left: 1rem;
+	}
+
+	.footerText {
+		flex-wrap: wrap;
+		justify-content: flex-start;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.formWrap,
+	.submitButton,
+	.googleButton,
+	.spinner,
+	.statePanel[data-state="loading"] > svg {
+		animation: none;
+		transition: none;
+	}
+}
