@@ -62,6 +62,41 @@
 	text-underline-offset: 0.18rem;
 }
 
+.stepper {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 0.55rem;
+	margin: 0.2rem 0 0.25rem;
+}
+
+.stepper span {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	height: 2rem;
+	border: 1px solid rgba(2, 0, 108, 0.12);
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.56);
+	color: rgba(23, 23, 31, 0.58);
+	font-size: 0.78rem;
+	font-weight: 800;
+}
+
+.stepper span[data-active="true"],
+.stepper span[data-complete="true"] {
+	border-color: rgba(2, 0, 108, 0.32);
+	background: #02006c;
+	color: white;
+}
+
+.stepPanel {
+	display: flex;
+	flex-direction: column;
+	gap: 0.9rem;
+	animation: formIn 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 .segmentGrid {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -129,6 +164,37 @@
 	color: rgba(23, 23, 31, 0.58);
 	font-size: 0.7rem;
 	line-height: 1.25;
+}
+
+.passwordRules {
+	display: grid;
+	gap: 0.45rem;
+	margin: 0;
+	padding: 0.2rem 0.2rem 0;
+	list-style: none;
+}
+
+.passwordRules li {
+	display: flex;
+	align-items: center;
+	gap: 0.45rem;
+	color: rgba(23, 23, 31, 0.58);
+	font-size: 0.76rem;
+	font-weight: 650;
+}
+
+.passwordRules svg {
+	width: 0.95rem;
+	height: 0.95rem;
+	color: rgba(23, 23, 31, 0.26);
+}
+
+.passwordRules li[data-valid="true"] {
+	color: #148a54;
+}
+
+.passwordRules li[data-valid="true"] svg {
+	color: #148a54;
 }
 
 .inputShell {
@@ -210,7 +276,8 @@
 
 .submitButton,
 .googleButton,
-.secondaryAction {
+.secondaryAction,
+.backButton {
 	width: 100%;
 	height: 3.65rem;
 	min-height: 3.65rem;
@@ -240,6 +307,28 @@
 
 .submitButton:disabled {
 	transform: none;
+}
+
+.wizardActions {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.7rem;
+}
+
+.wizardActions .submitButton:only-child {
+	grid-column: 1 / -1;
+}
+
+.backButton {
+	border-color: rgba(2, 0, 108, 0.18);
+	background: rgba(255, 255, 255, 0.5);
+	color: #02006c;
+}
+
+.backButton:hover {
+	border-color: rgba(2, 0, 108, 0.32);
+	background: rgba(255, 255, 255, 0.82);
+	transform: translateY(-2px);
 }
 
 .spinner {
