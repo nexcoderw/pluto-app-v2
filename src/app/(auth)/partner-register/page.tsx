@@ -15,11 +15,9 @@ export default function PartnerRegisterPage() {
 	return (
 		<AuthShell tone="partner">
 			<RegisterForm
-				role="PARTNER"
+				initialRole="PARTNER"
 				title="List with Pluto"
 				description="Create a partner account for property, vehicle, and room listing review."
-				submitLabel="Create partner account"
-				googleLabel="Sign up as partner with Google"
 			/>
 		</AuthShell>
 	);
