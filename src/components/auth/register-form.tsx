@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
+import type { CountryCode } from 'libphonenumber-js';
 import {
 	ArrowLeft,
 	ArrowRight,
@@ -37,6 +38,24 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select';
+import {
+	PHONE_COUNTRIES,
+	RWANDA_PHONE_COUNTRY,
+	getPhoneCountryOption,
+	isSupportedPhoneCountry,
+} from '@/constants/phone-countries';
+import {
+	getPhonePlaceholder,
+	isValidInternationalPhoneNumber,
+	normalizePhoneNumber,
+} from '@/lib/phone-number';
 import { getUserPortalPath } from '@/lib/user-portal';
 import { ApiRequestError } from '@/services/api/errors';
 import {
@@ -55,9 +74,11 @@ const registerSchema = z
 		partnerType: z.enum(['INDIVIDUAL', 'COMPANY']).optional(),
 		fullName: z.string().min(2, 'Enter your full name.').max(120),
 		email: z.string().email('Enter a valid email address.').max(254),
-		phone: z
-			.string()
-			.regex(/^\+?[1-9]\d{7,14}$/, 'Use an international phone format.'),
+		phoneCountry: z.custom<CountryCode>(
+			(value) => isSupportedPhoneCountry(value),
+			'Choose a country code.',
+		),
+		phone: z.string().min(4, 'Enter your phone number.').max(32),
 		password: z
 			.string()
 			.min(8, 'Password must be at least 8 characters.')
@@ -71,6 +92,14 @@ const registerSchema = z
 				code: 'custom',
 				path: ['partnerType'],
 				message: 'Choose the partner type.',
+			});
+		}
+
+		if (!isValidInternationalPhoneNumber(values.phoneCountry, values.phone)) {
+			context.addIssue({
+				code: 'custom',
+				path: ['phone'],
+				message: 'Use a valid phone number for the selected country code.',
 			});
 		}
 
@@ -122,6 +151,7 @@ export function RegisterForm({
 			partnerType: initialRole === 'PARTNER' ? 'INDIVIDUAL' : undefined,
 			fullName: '',
 			email: '',
+			phoneCountry: RWANDA_PHONE_COUNTRY,
 			phone: '',
 			password: '',
 			confirmPassword: '',
@@ -137,6 +167,10 @@ export function RegisterForm({
 		control: form.control,
 		name: 'partnerType',
 	});
+	const selectedPhoneCountry = useWatch({
+		control: form.control,
+		name: 'phoneCountry',
+	}) ?? RWANDA_PHONE_COUNTRY;
 	const password = useWatch({
 		control: form.control,
 		name: 'password',
@@ -159,7 +193,7 @@ export function RegisterForm({
 			registerUser({
 				fullName: values.fullName,
 				email: values.email,
-				phone: values.phone,
+				phone: normalizePhoneNumber(values.phoneCountry, values.phone),
 				password: values.password,
 				role: values.role,
 				partnerType:
@@ -173,7 +207,11 @@ export function RegisterForm({
 						? 'Your partner account is ready for onboarding.'
 						: 'Your customer account is ready.',
 			});
-			router.replace(getUserPortalPath(response.user));
+			router.replace(
+				response.user.role === 'CUSTOMER'
+					? '/account?registered=success'
+					: getUserPortalPath(response.user),
+			);
 		},
 		onError: (error) => {
 			const apiError =
@@ -218,7 +256,7 @@ export function RegisterForm({
 	async function goToNextStep() {
 		const fieldsByStep: Record<WizardStep, (keyof RegisterFormValues)[]> = {
 			1: selectedRole === 'PARTNER' ? ['role', 'partnerType'] : ['role'],
-			2: ['fullName', 'email', 'phone'],
+			2: ['fullName', 'email', 'phoneCountry', 'phone'],
 			3: ['password', 'confirmPassword'],
 		};
 
@@ -427,15 +465,57 @@ export function RegisterForm({
 						<div className={styles.fieldGroup}>
 							<Label htmlFor="phone">Phone number</Label>
 							<div
-								className={styles.inputShell}
+								className={`${styles.inputShell} ${styles.phoneInputShell}`}
 								data-invalid={Boolean(form.formState.errors.phone)}
 							>
+								<Select
+									value={selectedPhoneCountry}
+									onValueChange={(value) =>
+										form.setValue('phoneCountry', value as CountryCode, {
+											shouldDirty: true,
+											shouldValidate: true,
+										})
+									}
+								>
+									<SelectTrigger
+										className={styles.countryCodeTrigger}
+										aria-label="Country code"
+									>
+										<SelectValue>
+											<span>
+												{getPhoneCountryOption(selectedPhoneCountry).code}
+											</span>
+											<strong>
+												{
+													getPhoneCountryOption(selectedPhoneCountry)
+														.callingCode
+												}
+											</strong>
+										</SelectValue>
+									</SelectTrigger>
+									<SelectContent
+										className={styles.countryCodeMenu}
+										align="start"
+										alignItemWithTrigger={false}
+									>
+										{PHONE_COUNTRIES.map((country) => (
+											<SelectItem key={country.code} value={country.code}>
+												<span className={styles.countryOption}>
+													<strong>{country.callingCode}</strong>
+													<span>{country.name}</span>
+													<small>{country.code}</small>
+												</span>
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
+								<span className={styles.phoneDivider} aria-hidden="true" />
 								<Phone aria-hidden="true" />
 								<Input
 									id="phone"
 									type="tel"
 									autoComplete="tel"
-									placeholder="+250788123456"
+									placeholder={getPhonePlaceholder(selectedPhoneCountry)}
 									aria-invalid={Boolean(form.formState.errors.phone)}
 									{...form.register('phone')}
 								/>
