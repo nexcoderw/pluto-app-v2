@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function RegisterPage() {
 	return (
-		<AuthShell tone="customer">
+		<AuthShell tone="customer" showGoogleCustomerNote>
 			<RegisterForm
 				initialRole="CUSTOMER"
 				title="Create an account"
