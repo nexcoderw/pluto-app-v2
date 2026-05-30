@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import {
 	Building2,
+	BriefcaseBusiness,
 	Eye,
 	EyeOff,
 	LoaderCircle,
@@ -17,7 +18,7 @@ import {
 	UserRound,
 	UserPlus,
 } from 'lucide-react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import {
@@ -37,11 +38,14 @@ import {
 	isUserGoogleLoginEnabled,
 	redirectToUserGoogleLogin,
 	registerUser,
+	type PartnerType,
 	type UserRole,
 } from '@/services/api/auth';
 import styles from './auth-form.module.css';
 
 const registerSchema = z.object({
+	role: z.enum(['CUSTOMER', 'PARTNER']),
+	partnerType: z.enum(['INDIVIDUAL', 'COMPANY']).optional(),
 	fullName: z.string().min(2, 'Enter your full name.').max(120),
 	email: z.string().email('Enter a valid email address.').max(254),
 	phone: z
@@ -55,24 +59,28 @@ const registerSchema = z.object({
 			/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/,
 			'Use uppercase, lowercase, a number, and a special character.',
 		),
+}).superRefine((values, context) => {
+	if (values.role === 'PARTNER' && !values.partnerType) {
+		context.addIssue({
+			code: 'custom',
+			path: ['partnerType'],
+			message: 'Choose the partner type.',
+		});
+	}
 });
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
 type RegisterFormProps = {
-	role: UserRole;
+	initialRole?: UserRole;
 	title: string;
 	description: string;
-	submitLabel: string;
-	googleLabel: string;
 };
 
 export function RegisterForm({
-	role,
+	initialRole = 'CUSTOMER',
 	title,
 	description,
-	submitLabel,
-	googleLabel,
 }: RegisterFormProps) {
 	const router = useRouter();
 	const [showPassword, setShowPassword] = useState(false);
@@ -83,12 +91,22 @@ export function RegisterForm({
 	const form = useForm<RegisterFormValues>({
 		resolver: zodResolver(registerSchema),
 		defaultValues: {
+			role: initialRole,
+			partnerType: initialRole === 'PARTNER' ? 'INDIVIDUAL' : undefined,
 			fullName: '',
 			email: '',
 			phone: '',
 			password: '',
 		},
 		mode: 'onBlur',
+	});
+	const selectedRole = useWatch({
+		control: form.control,
+		name: 'role',
+	});
+	const watchedPartnerType = useWatch({
+		control: form.control,
+		name: 'partnerType',
 	});
 
 	const deviceName = useMemo(() => {
@@ -102,18 +120,25 @@ export function RegisterForm({
 	const registerMutation = useMutation({
 		mutationFn: (values: RegisterFormValues) =>
 			registerUser({
-				...values,
-				role,
+				fullName: values.fullName,
+				email: values.email,
+				phone: values.phone,
+				password: values.password,
+				role: values.role,
+				partnerType:
+					values.role === 'PARTNER' ? values.partnerType : undefined,
 				deviceName,
 			}),
 		onSuccess: (response) => {
 			toast.success(response.message, {
 				description:
-					role === 'PARTNER'
+					response.user.role === 'PARTNER'
 						? 'Your partner account is ready for onboarding.'
 						: 'Your customer account is ready.',
 			});
-			router.replace(role === 'PARTNER' ? '/partner-onboarding' : '/account');
+			router.replace(
+				response.user.role === 'PARTNER' ? '/partner-onboarding' : '/account',
+			);
 		},
 		onError: (error) => {
 			const apiError =
@@ -138,6 +163,14 @@ export function RegisterForm({
 		registerMutation.mutate(values);
 	}
 
+	const selectedPartnerType = watchedPartnerType ?? 'INDIVIDUAL';
+	const submitLabel =
+		selectedRole === 'PARTNER' ? 'Create partner account' : 'Create account';
+	const googleLabel =
+		selectedRole === 'PARTNER'
+			? 'Sign up as partner with Google'
+			: 'Sign up with Google';
+
 	return (
 		<>
 			<form
@@ -149,6 +182,92 @@ export function RegisterForm({
 					<h1>{title}</h1>
 					<p>{description}</p>
 				</div>
+
+				<div className={styles.fieldGroup}>
+					<Label>Account role</Label>
+					<div className={styles.segmentGrid} data-invalid={Boolean(form.formState.errors.role)}>
+						<button
+							type="button"
+							className={styles.segmentButton}
+							data-active={selectedRole === 'CUSTOMER'}
+							onClick={() => {
+								form.setValue('role', 'CUSTOMER', { shouldValidate: true });
+								form.setValue('partnerType', undefined, { shouldValidate: true });
+							}}
+						>
+							<UserRound aria-hidden="true" />
+							<span>
+								<strong>Customer</strong>
+								<small>Book and manage trips</small>
+							</span>
+						</button>
+						<button
+							type="button"
+							className={styles.segmentButton}
+							data-active={selectedRole === 'PARTNER'}
+							onClick={() => {
+								form.setValue('role', 'PARTNER', { shouldValidate: true });
+								form.setValue('partnerType', selectedPartnerType, {
+									shouldValidate: true,
+								});
+							}}
+						>
+							<Building2 aria-hidden="true" />
+							<span>
+								<strong>Partner</strong>
+								<small>List properties or rentals</small>
+							</span>
+						</button>
+					</div>
+				</div>
+
+				{selectedRole === 'PARTNER' ? (
+					<div className={styles.fieldGroup}>
+						<Label>Partner type</Label>
+						<div
+							className={styles.segmentGrid}
+							data-invalid={Boolean(form.formState.errors.partnerType)}
+						>
+							<button
+								type="button"
+								className={styles.segmentButton}
+								data-active={selectedPartnerType === 'INDIVIDUAL'}
+								onClick={() =>
+									form.setValue('partnerType', 'INDIVIDUAL', {
+										shouldValidate: true,
+									})
+								}
+							>
+								<UserRound aria-hidden="true" />
+								<span>
+									<strong>Individual</strong>
+									<small>Personal host or owner</small>
+								</span>
+							</button>
+							<button
+								type="button"
+								className={styles.segmentButton}
+								data-active={selectedPartnerType === 'COMPANY'}
+								onClick={() =>
+									form.setValue('partnerType', 'COMPANY', {
+										shouldValidate: true,
+									})
+								}
+							>
+								<BriefcaseBusiness aria-hidden="true" />
+								<span>
+									<strong>Company</strong>
+									<small>Registered business</small>
+								</span>
+							</button>
+						</div>
+						{form.formState.errors.partnerType ? (
+							<p className={styles.inlineError}>
+								{form.formState.errors.partnerType.message}
+							</p>
+						) : null}
+					</div>
+				) : null}
 
 				<div className={styles.fieldGroup}>
 					<Label htmlFor="fullName">Full name</Label>
@@ -252,7 +371,7 @@ export function RegisterForm({
 						<LoaderCircle className={styles.spinner} aria-hidden="true" />
 					) : (
 						<>
-							{role === 'PARTNER' ? (
+							{selectedRole === 'PARTNER' ? (
 								<Building2 aria-hidden="true" />
 							) : (
 								<UserPlus aria-hidden="true" />
@@ -269,7 +388,14 @@ export function RegisterForm({
 							type="button"
 							variant="outline"
 							className={styles.googleButton}
-							onClick={() => redirectToUserGoogleLogin(role)}
+							onClick={() =>
+								redirectToUserGoogleLogin(
+									selectedRole,
+									selectedRole === 'PARTNER'
+										? (selectedPartnerType as PartnerType)
+										: undefined,
+								)
+							}
 						>
 							<Image
 								src="/google.webp"
