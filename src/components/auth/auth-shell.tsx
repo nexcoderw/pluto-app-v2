@@ -1,11 +1,19 @@
 import type { ReactNode } from 'react';
 import Image from 'next/image';
-import { Building2, CalendarCheck2, CarFront, ShieldCheck, Sparkles } from 'lucide-react';
+import {
+	Building2,
+	CalendarCheck2,
+	CarFront,
+	Info,
+	ShieldCheck,
+	Sparkles,
+} from 'lucide-react';
 import styles from './auth-shell.module.css';
 
 type AuthShellProps = {
 	children: ReactNode;
 	tone?: 'customer' | 'partner' | 'recovery';
+	showGoogleCustomerNote?: boolean;
 };
 
 const toneCopy = {
@@ -26,7 +34,11 @@ const toneCopy = {
 	},
 } as const;
 
-export function AuthShell({ children, tone = 'customer' }: AuthShellProps) {
+export function AuthShell({
+	children,
+	tone = 'customer',
+	showGoogleCustomerNote = false,
+}: AuthShellProps) {
 	const copy = toneCopy[tone];
 
 	return (
@@ -42,7 +54,21 @@ export function AuthShell({ children, tone = 'customer' }: AuthShellProps) {
 				/>
 			</div>
 
-			<div className={styles.formColumn}>{children}</div>
+			<div className={styles.formColumn}>
+				<div className={styles.formStack}>
+					{showGoogleCustomerNote ? (
+						<aside className={styles.googleCustomerNote}>
+							<Info aria-hidden="true" />
+							<p>
+								Google sign up creates a customer account only. Partners should
+								create their account manually first, then they can sign in with
+								Google after registration.
+							</p>
+						</aside>
+					) : null}
+					{children}
+				</div>
+			</div>
 
 			<aside className={styles.visualColumn} data-tone={tone}>
 				<div className={styles.visualLogo}>
