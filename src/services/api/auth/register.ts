@@ -2,7 +2,7 @@ import { apiClient } from '../client';
 import { normalizeApiError } from '../errors';
 import { setUserAccessToken } from '../token-store';
 import { USER_AUTH_ROUTES } from './routes';
-import type { UserAuthResponse, UserRole } from './types';
+import type { PartnerType, UserAuthResponse, UserRole } from './types';
 
 // Request payload: the backend requires every registration field.
 export type RegisterUserRequest = {
@@ -11,6 +11,7 @@ export type RegisterUserRequest = {
 	phone: string;
 	password: string;
 	role: UserRole;
+	partnerType?: PartnerType;
 	deviceName?: string;
 };
 
