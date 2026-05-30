@@ -1,5 +1,5 @@
 .page {
-	min-height: 100vh;
+	min-height: calc(100vh - 10rem);
 	display: grid;
 	place-items: center;
 	padding: clamp(1rem, 2.4vw, 3rem);
@@ -265,7 +265,7 @@
 
 	.shell {
 		width: 100%;
-		min-height: 100vh;
+		min-height: calc(100vh - 5.4rem);
 		grid-template-columns: 1fr;
 		border: 0;
 		border-radius: 0;
