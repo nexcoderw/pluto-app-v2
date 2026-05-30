@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function PartnerRegisterPage() {
 	return (
-		<AuthShell tone="partner">
+		<AuthShell tone="partner" showGoogleCustomerNote>
 			<RegisterForm
 				initialRole="PARTNER"
 				title="List with Pluto"
