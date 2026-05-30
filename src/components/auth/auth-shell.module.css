@@ -37,7 +37,14 @@
 	padding: 0.45rem 0.9rem;
 	background: rgba(255, 255, 255, 0.9);
 	backdrop-filter: blur(18px);
+	text-decoration: none;
+	cursor: pointer;
 	animation: floatIn 650ms 110ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.brandPill:focus-visible {
+	outline: 0;
+	box-shadow: 0 0 0 0.22rem rgba(2, 0, 108, 0.16);
 }
 
 .brandLogo {
