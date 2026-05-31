@@ -195,6 +195,14 @@ Rules:
 * Only variables prefixed with `NEXT_PUBLIC_` are exposed to the browser.
 * Do not place JWT secrets, SMTP credentials, database URLs, or cloud storage private keys in this app.
 
+Form UI rules:
+
+* Every input must use `src/components/ui/input.tsx`.
+* Every input must include a visible leading icon.
+* Inputs, select triggers, and buttons must share the same height as the login input.
+* Select triggers must use `src/components/ui/select.tsx`.
+* Every button must include an icon.
+
 ---
 
 # 7. Recommended Folder Structure
