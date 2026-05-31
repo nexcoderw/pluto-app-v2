@@ -25,9 +25,18 @@ Do not stack glass cards inside glass cards.
 ## Buttons
 
 - Every button must include an icon.
+- Every button must use the same height as the shared input component.
 - Every button must use `cursor: pointer`.
 - Submit buttons must show only a loading icon while submitting.
 - Disabled buttons must visually communicate disabled state.
+
+## Form Controls
+
+- Every input must use `src/components/ui/input.tsx`.
+- Every input must include a visible leading icon.
+- Inputs must match the login input height and rounded-full visual treatment.
+- Every select trigger must use `src/components/ui/select.tsx`.
+- Select triggers must use the same height as the shared input component.
 
 ## Responsiveness
 
