@@ -27,6 +27,9 @@ Before changing frontend code, read:
 - Put page or feature-specific components in feature folders like `src/components/auth`.
 - Use `.module.css` files for component/page-specific design.
 - Keep `globals.css` limited to tokens, base styles, and reusable project primitives.
+- Every input must use `src/components/ui/input.tsx`, match the login input height and rounded-full shape, and include a visible leading icon.
+- Every select trigger must use `src/components/ui/select.tsx` and match the shared input height.
+- Every button must match the shared input height and include an icon.
 - Every button must have an icon, `cursor: pointer`, and a clear accessible label.
 - Submit buttons must show only a loading icon while submitting and must be disabled.
 - Every page must define professional SEO metadata and a dynamic title.
