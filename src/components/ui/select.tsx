@@ -41,7 +41,7 @@ function SelectTrigger({
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        "flex w-fit items-center justify-between gap-1.5 rounded-none border border-transparent border-b-input bg-transparent px-0 py-2 text-sm whitespace-nowrap transition-[color,border-color] outline-none focus-visible:border-b-ring disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-b-destructive data-placeholder:text-muted-foreground data-[size=default]:h-10 data-[size=sm]:h-9 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 dark:aria-invalid:border-b-destructive/50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
+        "flex w-fit items-center justify-between gap-1.5 rounded-full border border-[rgba(2,0,108,0.34)] bg-[rgba(255,255,255,0.74)] px-4 py-2 text-sm whitespace-nowrap shadow-[0_0.8rem_2rem_rgba(16,22,33,0.06)] transition-[border-color,box-shadow,transform] duration-200 outline-none focus-visible:-translate-y-px focus-visible:border-[#02006c] focus-visible:ring-[0.22rem] focus-visible:ring-[rgba(2,0,108,0.12)] disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-[rgba(205,35,53,0.72)] aria-invalid:ring-[0.2rem] aria-invalid:ring-[rgba(205,35,53,0.1)] data-placeholder:text-muted-foreground data-[size=default]:h-[3.15rem] data-[size=sm]:h-[3.15rem] *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
         className
       )}
       {...props}
