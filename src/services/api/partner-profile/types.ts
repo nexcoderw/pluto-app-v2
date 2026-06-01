@@ -1,6 +1,10 @@
 export type PartnerType = 'INDIVIDUAL' | 'COMPANY';
 
-export type PartnerProfileStatus = 'DRAFT' | 'PENDING' | 'APPROVED' | 'REJECTED';
+export type PartnerProfileStatus =
+	| 'DRAFT'
+	| 'PENDING'
+	| 'APPROVED'
+	| 'REJECTED';
 
 export type PartnerProfileSubmission = {
 	id: string;
@@ -10,6 +14,26 @@ export type PartnerProfileSubmission = {
 	submittedAt: string;
 	reviewedAt: string | null;
 	reviewedById: string | null;
+};
+
+export type PartnerDocument = {
+	id: string;
+	title: string;
+	description: string | null;
+	status: 'PENDING' | 'APPROVED' | 'REJECTED';
+	rejectionReason: string | null;
+	reviewedAt: string | null;
+	createdAt: string;
+	file: {
+		id: string;
+		originalName: string;
+		mimeType: string;
+		sizeBytes: number;
+		publicUrl: string | null;
+		key: string;
+		storageProvider: 'GCS' | 'LOCAL';
+		syncStatus: 'SYNCED' | 'PENDING' | 'FAILED';
+	};
 };
 
 export type PartnerProfile = {
@@ -41,6 +65,7 @@ export type PartnerProfile = {
 	archivedAt: string | null;
 	createdAt: string;
 	updatedAt: string;
+	documents: PartnerDocument[];
 	submissions: PartnerProfileSubmission[];
 };
 
@@ -74,4 +99,15 @@ export type SaveCompanyPartnerProfileRequest = {
 	city?: string;
 	country?: string;
 	websiteUrl?: string;
+};
+
+export type UploadPartnerDocumentRequest = {
+	title: string;
+	description?: string;
+	file: File;
+};
+
+export type UploadPartnerDocumentResponse = {
+	message: string;
+	document: PartnerDocument;
 };
