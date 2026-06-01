@@ -3,8 +3,13 @@
 import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ArrowRight, CircleAlert, LoaderCircle, Phone, ShieldCheck } from 'lucide-react';
-import { getUserPortalPath } from '@/lib/user-portal';
+import {
+	ArrowRight,
+	CircleAlert,
+	LoaderCircle,
+	Phone,
+	ShieldCheck,
+} from 'lucide-react';
 import {
 	completeUserGoogleLogin,
 	readUserGoogleCallbackStatus,
@@ -39,14 +44,17 @@ function GoogleCallbackContent() {
 
 		completeUserGoogleLogin()
 			.then((response) => {
-				if (callbackStatus === 'phone_required' || response.user.requiresPhoneNumber) {
+				if (
+					callbackStatus === 'phone_required' ||
+					response.user.requiresPhoneNumber
+				) {
 					setState('phone');
 					router.replace('/complete-phone');
 					return;
 				}
 
 				setState('success');
-				router.replace(getUserPortalPath(response.user));
+				router.replace('/');
 			})
 			.catch(() => setState('error'));
 	}, [callbackStatus, router]);
@@ -57,7 +65,9 @@ function GoogleCallbackContent() {
 				<div className={styles.statePanel} data-state="loading">
 					<LoaderCircle aria-hidden="true" />
 					<h1>Securing your session</h1>
-					<p>We are confirming your Google sign-in and preparing your account.</p>
+					<p>
+						We are confirming your Google sign-in and preparing your account.
+					</p>
 				</div>
 			) : null}
 
