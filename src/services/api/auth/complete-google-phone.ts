@@ -1,5 +1,6 @@
 import { apiClient } from '../client';
 import { normalizeApiError } from '../errors';
+import { storeUserSession } from '../token-store';
 import { USER_AUTH_ROUTES } from './routes';
 import type { UserAuthProfile } from './types';
 
@@ -24,6 +25,7 @@ export async function completeGooglePhone(
 			payload,
 		);
 
+		storeUserSession(response.data.user);
 		return response.data;
 	} catch (error) {
 		throw normalizeApiError(error);
