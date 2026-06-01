@@ -1,6 +1,6 @@
 import { apiClient } from '../client';
 import { normalizeApiError } from '../errors';
-import { clearUserAccessToken } from '../token-store';
+import { clearUserSession } from '../token-store';
 import { USER_AUTH_ROUTES } from './routes';
 import type { ApiMessageResponse } from './types';
 
@@ -17,10 +17,10 @@ export async function logoutUser(): Promise<LogoutUserResponse> {
 			USER_AUTH_ROUTES.logout,
 		);
 
-		clearUserAccessToken();
+		clearUserSession();
 		return response.data;
 	} catch (error) {
-		clearUserAccessToken();
+		clearUserSession();
 		throw normalizeApiError(error);
 	}
 }
