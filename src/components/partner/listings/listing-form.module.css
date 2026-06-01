@@ -161,14 +161,14 @@
 	gap: 0.75rem;
 	color: #17171f;
 	font-size: 0.8rem;
-	font-weight: 820;
+	font-weight: 600;
 }
 
 .fieldGroup label em {
 	color: rgba(23, 23, 31, 0.5);
 	font-size: 0.68rem;
 	font-style: normal;
-	font-weight: 800;
+	font-weight: 500;
 	text-transform: uppercase;
 }
 
@@ -196,6 +196,37 @@
 
 .selectTrigger svg {
 	color: #02006c;
+}
+
+.countryMenu {
+	max-height: min(24rem, var(--available-height));
+	border-radius: 1.1rem;
+	background: rgba(255, 255, 255, 0.96);
+	box-shadow: 0 1.4rem 3rem rgba(16, 22, 33, 0.16);
+	backdrop-filter: blur(18px);
+}
+
+.countryOption {
+	display: flex;
+	min-width: 0;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+}
+
+.countryOption strong {
+	overflow: hidden;
+	color: #17171f;
+	font-size: 0.84rem;
+	font-weight: 760;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.countryOption small {
+	color: rgba(23, 23, 31, 0.5);
+	font-size: 0.7rem;
+	font-weight: 800;
 }
 
 .inlineError {
