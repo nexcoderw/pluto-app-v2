@@ -1,18 +1,22 @@
-'use client';
+"use client";
 
-import { useEffect, useMemo, useState } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
 	ArrowLeft,
 	ArrowRight,
 	BadgeCheck,
+	Building2,
+	CarFront,
 	ChevronsUpDown,
 	CircleDollarSign,
 	Clock3,
 	Eye,
 	Filter,
+	Hotel,
+	House,
 	ImageIcon,
 	ListFilter,
 	Plus,
@@ -21,83 +25,83 @@ import {
 	ShieldCheck,
 	SlidersHorizontal,
 	Store,
-} from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+} from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from '@/components/ui/select';
-import { Skeleton } from '@/components/ui/skeleton';
+} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
 	PortalShell,
 	type PortalAction,
 	type PortalMetric,
-} from '@/components/portal/portal-shell';
-import { partnerPortalNavigation } from '@/constants/partner-portal-navigation';
+} from "@/components/portal/portal-shell";
+import { partnerPortalNavigation } from "@/constants/partner-portal-navigation";
 import type {
 	Product,
 	ProductCategory,
 	ProductStatus,
-} from '@/services/api/products';
-import type { UserAuthProfile } from '@/services/api/auth';
+} from "@/services/api/products";
+import type { UserAuthProfile } from "@/services/api/auth";
 import {
 	getPartnerProfile,
 	type PartnerProfile,
-} from '@/services/api/partner-profile';
-import { listPartnerProducts } from '@/services/api/partner-products';
+} from "@/services/api/partner-profile";
+import { listPartnerProducts } from "@/services/api/partner-products";
 import {
 	PartnerAccessBoundary,
 	PartnerWorkspaceLoading,
-} from '../partner-access-boundary';
-import { PartnerStatusGate } from '../partner-dashboard';
-import styles from './partner-listings-page.module.css';
+} from "../partner-access-boundary";
+import { PartnerStatusGate } from "../partner-dashboard";
+import styles from "./partner-listings-page.module.css";
 
-type ProductOrderBy = 'createdAt' | 'basePrice' | 'title';
-type SortOrder = 'asc' | 'desc';
+type ProductOrderBy = "createdAt" | "basePrice" | "title";
+type SortOrder = "asc" | "desc";
 
-const statusOptions: Array<{ label: string; value: ProductStatus | 'ALL' }> = [
-	{ label: 'All statuses', value: 'ALL' },
-	{ label: 'Pending review', value: 'PENDING_REVIEW' },
-	{ label: 'Approved', value: 'APPROVED' },
-	{ label: 'Rejected', value: 'REJECTED' },
-	{ label: 'Draft', value: 'DRAFT' },
-	{ label: 'Suspended', value: 'SUSPENDED' },
-	{ label: 'Archived', value: 'ARCHIVED' },
+const statusOptions: Array<{ label: string; value: ProductStatus | "ALL" }> = [
+	{ label: "All statuses", value: "ALL" },
+	{ label: "Pending review", value: "PENDING_REVIEW" },
+	{ label: "Approved", value: "APPROVED" },
+	{ label: "Rejected", value: "REJECTED" },
+	{ label: "Draft", value: "DRAFT" },
+	{ label: "Suspended", value: "SUSPENDED" },
+	{ label: "Archived", value: "ARCHIVED" },
 ];
 
 const categoryOptions: Array<{
 	label: string;
-	value: ProductCategory | 'ALL';
+	value: ProductCategory | "ALL";
 }> = [
-	{ label: 'All categories', value: 'ALL' },
-	{ label: 'Cars', value: 'CAR' },
-	{ label: 'Apartments', value: 'APARTMENT' },
-	{ label: 'Hotel rooms', value: 'HOTEL_ROOM' },
-	{ label: 'Airbnb homes', value: 'AIRBNB_HOUSE' },
+	{ label: "All categories", value: "ALL" },
+	{ label: "Cars", value: "CAR" },
+	{ label: "Apartments", value: "APARTMENT" },
+	{ label: "Hotel rooms", value: "HOTEL_ROOM" },
+	{ label: "Airbnb homes", value: "AIRBNB_HOUSE" },
 ];
 
 const orderOptions: Array<{ label: string; value: ProductOrderBy }> = [
-	{ label: 'Newest activity', value: 'createdAt' },
-	{ label: 'Price', value: 'basePrice' },
-	{ label: 'Title', value: 'title' },
+	{ label: "Newest activity", value: "createdAt" },
+	{ label: "Price", value: "basePrice" },
+	{ label: "Title", value: "title" },
 ];
 
 const partnerListingActions: PortalAction[] = [
 	{
-		href: '/partner/listings/create',
-		label: 'Create listing',
-		description: 'Add a customer-ready listing and submit it for review.',
+		href: "/partner/listings/create",
+		label: "Create listing",
+		description: "Add a customer-ready listing and submit it for review.",
 		icon: Plus,
 	},
 	{
-		href: '/partner/dashboard',
-		label: 'Partner dashboard',
-		description: 'Return to the operations overview.',
+		href: "/partner/dashboard",
+		label: "Partner dashboard",
+		description: "Return to the operations overview.",
 		icon: ArrowRight,
 	},
 ];
@@ -113,14 +117,14 @@ export function PartnerListingsPage() {
 function PartnerListingsContent({ user }: { user: UserAuthProfile }) {
 	const router = useRouter();
 	const profileQuery = useQuery({
-		queryKey: ['partner-profile'],
+		queryKey: ["partner-profile"],
 		queryFn: getPartnerProfile,
 	});
 	const profile = profileQuery.data?.profile;
 
 	useEffect(() => {
-		if (profile && profile.status !== 'APPROVED') {
-			router.replace('/partner-onboarding');
+		if (profile && profile.status !== "APPROVED") {
+			router.replace("/partner-onboarding");
 		}
 	}, [profile, router]);
 
@@ -133,7 +137,7 @@ function PartnerListingsContent({ user }: { user: UserAuthProfile }) {
 		);
 	}
 
-	if (profile && profile.status !== 'APPROVED') {
+	if (profile && profile.status !== "APPROVED") {
 		return (
 			<PartnerWorkspaceLoading
 				title="Redirecting to onboarding"
@@ -167,26 +171,26 @@ function PartnerListingsWorkspace({
 	profile: PartnerProfile;
 	user: UserAuthProfile;
 }) {
-	const [search, setSearch] = useState('');
+	const [search, setSearch] = useState("");
 	const [page, setPage] = useState(1);
-	const [status, setStatus] = useState<ProductStatus | 'ALL'>('ALL');
-	const [category, setCategory] = useState<ProductCategory | 'ALL'>('ALL');
-	const [orderBy, setOrderBy] = useState<ProductOrderBy>('createdAt');
-	const [order, setOrder] = useState<SortOrder>('desc');
+	const [status, setStatus] = useState<ProductStatus | "ALL">("ALL");
+	const [category, setCategory] = useState<ProductCategory | "ALL">("ALL");
+	const [orderBy, setOrderBy] = useState<ProductOrderBy>("createdAt");
+	const [order, setOrder] = useState<SortOrder>("desc");
 	const query = useMemo(
 		() => ({
 			page,
 			limit: 8,
 			search: search.trim() || undefined,
-			status: status === 'ALL' ? undefined : status,
-			category: category === 'ALL' ? undefined : category,
+			status: status === "ALL" ? undefined : status,
+			category: category === "ALL" ? undefined : category,
 			orderBy,
 			order,
 		}),
 		[category, order, orderBy, page, search, status],
 	);
 	const listingsQuery = useQuery({
-		queryKey: ['partner-products', query],
+		queryKey: ["partner-products", query],
 		queryFn: () => listPartnerProducts(query),
 	});
 	const items = listingsQuery.data?.items ?? [];
@@ -197,11 +201,11 @@ function PartnerListingsWorkspace({
 	);
 
 	function resetFilters() {
-		setSearch('');
-		setStatus('ALL');
-		setCategory('ALL');
-		setOrderBy('createdAt');
-		setOrder('desc');
+		setSearch("");
+		setStatus("ALL");
+		setCategory("ALL");
+		setOrderBy("createdAt");
+		setOrder("desc");
 		setPage(1);
 	}
 
@@ -252,7 +256,7 @@ function PartnerListingsWorkspace({
 					<Select
 						value={status}
 						onValueChange={(value) => {
-							setStatus(value as ProductStatus | 'ALL');
+							setStatus(value as ProductStatus | "ALL");
 							setPage(1);
 						}}
 					>
@@ -277,7 +281,7 @@ function PartnerListingsWorkspace({
 					<Select
 						value={category}
 						onValueChange={(value) => {
-							setCategory(value as ProductCategory | 'ALL');
+							setCategory(value as ProductCategory | "ALL");
 							setPage(1);
 						}}
 					>
@@ -332,12 +336,12 @@ function PartnerListingsWorkspace({
 						variant="outline"
 						className={styles.sortButton}
 						onClick={() => {
-							setOrder((current) => (current === 'asc' ? 'desc' : 'asc'));
+							setOrder((current) => (current === "asc" ? "desc" : "asc"));
 							setPage(1);
 						}}
 					>
 						<ChevronsUpDown aria-hidden="true" />
-						{order === 'asc' ? 'Ascending' : 'Descending'}
+						{order === "asc" ? "Ascending" : "Descending"}
 					</Button>
 				</div>
 
@@ -374,6 +378,7 @@ function ListingCard({ product }: { product: Product }) {
 	const coverImage =
 		product.images.find((image) => image.isCover) ?? product.images[0];
 	const coverUrl = coverImage?.file.publicUrl;
+	const CategoryIcon = getCategoryIcon(product.category);
 
 	return (
 		<article className={styles.listingCard}>
@@ -390,7 +395,7 @@ function ListingCard({ product }: { product: Product }) {
 						<ImageIcon aria-hidden="true" />
 					</span>
 				)}
-				<StatusPill status={product.status ?? 'DRAFT'} />
+				<StatusPill status={product.status ?? "DRAFT"} />
 			</div>
 			<div className={styles.cardBody}>
 				<div>
@@ -399,10 +404,14 @@ function ListingCard({ product }: { product: Product }) {
 						{product.city}, {product.country}
 					</small>
 				</div>
+				<span className={styles.categoryPill}>
+					<CategoryIcon aria-hidden="true" />
+					{formatLabel(product.category)}
+				</span>
 				<p>
 					{product.shortDescription ??
 						product.description ??
-						'No public summary yet.'}
+						"No public summary yet."}
 				</p>
 				<div className={styles.cardMeta}>
 					<span>
@@ -434,6 +443,20 @@ function ListingCard({ product }: { product: Product }) {
 			</div>
 		</article>
 	);
+}
+
+function getCategoryIcon(category: ProductCategory) {
+	switch (category) {
+		case "APARTMENT":
+			return Building2;
+		case "HOTEL_ROOM":
+			return Hotel;
+		case "AIRBNB_HOUSE":
+			return House;
+		case "CAR":
+		default:
+			return CarFront;
+	}
 }
 
 function ListingsSkeleton() {
@@ -481,7 +504,12 @@ function ListingsEmpty({ onReset }: { onReset: () => void }) {
 					<Plus aria-hidden="true" />
 					Create listing
 				</Link>
-				<Button type="button" variant="outline" onClick={onReset} className={styles.resetButton}>
+				<Button
+					type="button"
+					variant="outline"
+					onClick={onReset}
+					className={styles.resetButton}
+				>
 					<RefreshCcw aria-hidden="true" />
 					Clear filters
 				</Button>
@@ -533,41 +561,41 @@ function Pagination({
 function StatusPill({ status }: { status: ProductStatus }) {
 	return (
 		<span className={styles.statusPill} data-status={status}>
-			{status.toLowerCase().replace('_', ' ')}
+			{status.toLowerCase().replace("_", " ")}
 		</span>
 	);
 }
 
 function buildListingMetrics(items: Product[], total: number): PortalMetric[] {
-	const approved = items.filter((item) => item.status === 'APPROVED').length;
+	const approved = items.filter((item) => item.status === "APPROVED").length;
 	const inReview = items.filter(
-		(item) => item.status === 'PENDING_REVIEW',
+		(item) => item.status === "PENDING_REVIEW",
 	).length;
 
 	return [
 		{
-			label: 'Total listings',
+			label: "Total listings",
 			value: String(total),
-			description: 'Inventory connected to your approved partner account.',
+			description: "Inventory connected to your approved partner account.",
 			icon: Store,
 		},
 		{
-			label: 'Approved',
+			label: "Approved",
 			value: String(approved),
-			description: 'Listings currently eligible for customers.',
+			description: "Listings currently eligible for customers.",
 			icon: BadgeCheck,
 		},
 		{
-			label: 'In review',
+			label: "In review",
 			value: String(inReview),
-			description: 'Listings waiting for admin decision.',
+			description: "Listings waiting for admin decision.",
 			icon: ShieldCheck,
 		},
 	];
 }
 
 function getListingsTitle(profile: PartnerProfile) {
-	const name = profile.businessName ?? profile.legalName ?? 'Partner';
+	const name = profile.businessName ?? profile.legalName ?? "Partner";
 
 	return `${name} listings`;
 }
@@ -579,8 +607,8 @@ function formatMoney(value: string, currency: string) {
 		return `${currency} ${value}`;
 	}
 
-	return new Intl.NumberFormat('en-RW', {
-		style: 'currency',
+	return new Intl.NumberFormat("en-RW", {
+		style: "currency",
 		currency,
 		maximumFractionDigits: 0,
 	}).format(numericValue);
@@ -588,12 +616,20 @@ function formatMoney(value: string, currency: string) {
 
 function formatDate(value?: string) {
 	if (!value) {
-		return 'Not updated yet';
+		return "Not updated yet";
 	}
 
-	return new Intl.DateTimeFormat('en', {
-		month: 'short',
-		day: 'numeric',
-		year: 'numeric',
+	return new Intl.DateTimeFormat("en", {
+		month: "short",
+		day: "numeric",
+		year: "numeric",
 	}).format(new Date(value));
+}
+
+function formatLabel(value: string) {
+	return value
+		.toLowerCase()
+		.split("_")
+		.map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+		.join(" ");
 }
