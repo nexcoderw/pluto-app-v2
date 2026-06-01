@@ -25,7 +25,6 @@ import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import {
 	PortalShell,
-	type PortalAction,
 	type PortalMetric,
 } from '@/components/portal/portal-shell';
 import { partnerPortalNavigation } from '@/constants/partner-portal-navigation';
@@ -120,7 +119,6 @@ function ListingDetailWorkspace({
 				homeLabel="Back to listings"
 				navigation={partnerPortalNavigation}
 				metrics={buildMetrics(product)}
-				actions={buildActions(product)}
 				heroActions={
 					<>
 						<Link
@@ -512,23 +510,6 @@ function buildStatusTimeline(product: Product) {
 			icon: Eye,
 		},
 	] as const;
-}
-
-function buildActions(product: Product): PortalAction[] {
-	return [
-		{
-			href: '/partner/listings',
-			label: 'All listings',
-			description: 'Return to listing search and filters.',
-			icon: Store,
-		},
-		{
-			href: `/partner/listings/${product.id}/edit`,
-			label: 'Edit listing',
-			description: 'Update details and send changes for review.',
-			icon: Pencil,
-		},
-	];
 }
 
 function formatMoney(value: string, currency: string) {
