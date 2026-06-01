@@ -10,6 +10,7 @@ import {
 	BadgeCheck,
 	Building2,
 	CalendarClock,
+	CarFront,
 	CheckCircle2,
 	ClipboardCheck,
 	FileText,
@@ -17,11 +18,13 @@ import {
 	LayoutDashboard,
 	ListChecks,
 	Phone,
+	PlusCircle,
 	RefreshCcw,
 	Send,
 	Settings,
 	ShieldAlert,
 	ShieldCheck,
+	Tag,
 	UploadCloud,
 	UserRoundCheck,
 	X,
@@ -66,6 +69,12 @@ import {
 	type PartnerProfile,
 	type PartnerProfileStatus,
 } from '@/services/api/partner-profile';
+import {
+	createCarProduct,
+	listPartnerProducts,
+	type CreateCarProductRequest,
+} from '@/services/api/partner-products';
+import type { Product, ProductStatus } from '@/services/api/products';
 import type { UserAuthProfile } from '@/services/api/auth';
 import {
 	PHONE_COUNTRIES,
@@ -133,6 +142,25 @@ type PartnerTextField = Exclude<
 	keyof PartnerFormState,
 	'businessPhoneCountry' | 'country'
 >;
+
+type ListingFormState = {
+	title: string;
+	description: string;
+	shortDescription: string;
+	city: string;
+	basePrice: string;
+	brand: string;
+	model: string;
+	year: string;
+	transmission: string;
+	fuelType: string;
+	seats: string;
+	doors: string;
+	driverIncluded: boolean;
+	insuranceIncluded: boolean;
+};
+
+type ListingFormErrors = Partial<Record<keyof ListingFormState, string>>;
 
 export function PartnerPortal() {
 	return (
@@ -696,36 +724,338 @@ function DocumentUploadPanel({
 
 function ApprovedPartnerWorkspace({ profile }: { profile: PartnerProfile }) {
 	const isCompany = profile.partnerType === 'COMPANY';
+	const queryClient = useQueryClient();
+	const [form, setForm] = useState<ListingFormState>(defaultListingForm);
+	const [errors, setErrors] = useState<ListingFormErrors>({});
+	const productsQuery = useQuery({
+		queryKey: ['partner-products'],
+		queryFn: () => listPartnerProducts({ page: 1 }),
+	});
+	const createListingMutation = useMutation({
+		mutationFn: (payload: CreateCarProductRequest) => createCarProduct(payload),
+		onSuccess: () => {
+			setForm(defaultListingForm);
+			setErrors({});
+			void queryClient.invalidateQueries({ queryKey: ['partner-products'] });
+			toast.success('Car listing submitted.', {
+				description: 'Admins can now review it before it goes public.',
+			});
+		},
+		onError: (error) => toast.error(getErrorMessage(error)),
+	});
+
+	function updateListingField(
+		field: keyof ListingFormState,
+		value: string | boolean,
+	) {
+		setForm((current) => ({ ...current, [field]: value }));
+		setErrors((current) => ({ ...current, [field]: undefined }));
+	}
+
+	function handleCreateListing(event: FormEvent<HTMLFormElement>) {
+		event.preventDefault();
+		const validationErrors = validateListingForm(form);
+
+		if (Object.keys(validationErrors).length) {
+			setErrors(validationErrors);
+			toast.error('Complete the highlighted listing fields.');
+			return;
+		}
+
+		createListingMutation.mutate(toCreateCarProductPayload(form));
+	}
 
 	return (
-		<section className={shellStyles.featureBand}>
-			<div>
-				<h2>
-					{isCompany
-						? 'Business partner workspace'
-						: 'Individual partner workspace'}
-				</h2>
+		<section className={styles.approvedWorkspace}>
+			<div className={shellStyles.featureBand}>
+				<div>
+					<h2>
+						{isCompany
+							? 'Business partner workspace'
+							: 'Individual partner workspace'}
+					</h2>
+					<p>
+						Your profile is approved. Create accurate listings for admin review
+						before they become public in the marketplace.
+					</p>
+				</div>
+				<ul className={shellStyles.featureList}>
+					<li>
+						<ListChecks aria-hidden="true" />
+						Listing review workflow
+					</li>
+					<li>
+						<UploadCloud aria-hidden="true" />
+						Media-ready product records
+					</li>
+					<li>
+						<Home aria-hidden="true" />
+						Approved partner operations
+					</li>
+				</ul>
+			</div>
+
+			<div className={styles.listingGrid}>
+				<form className={styles.listingForm} onSubmit={handleCreateListing}>
+					<div className={styles.listingHeader}>
+						<span>
+							<CarFront aria-hidden="true" />
+							New car listing
+						</span>
+						<h3>Submit a vehicle for review</h3>
+						<p>
+							Start with the core listing details. Images, availability, and
+							advanced pricing can be connected after the review workflow.
+						</p>
+					</div>
+
+					<ListingField
+						label="Listing title"
+						value={form.title}
+						error={errors.title}
+						placeholder="Toyota RAV4 for Kigali trips"
+						onChange={(value) => updateListingField('title', value)}
+					/>
+					<ListingField
+						label="Short summary"
+						value={form.shortDescription}
+						error={errors.shortDescription}
+						placeholder="Comfortable SUV with flexible daily pricing"
+						onChange={(value) => updateListingField('shortDescription', value)}
+						optional
+					/>
+					<label className={styles.formField} data-wide="true">
+						<span>Description</span>
+						<Textarea
+							className={styles.descriptionTextarea}
+							value={form.description}
+							onChange={(event) =>
+								updateListingField('description', event.target.value)
+							}
+							placeholder="Describe the car, pickup rules, included services, and ideal customer use cases."
+							aria-invalid={Boolean(errors.description)}
+						/>
+						{errors.description ? <small>{errors.description}</small> : null}
+					</label>
+					<ListingField
+						label="City"
+						value={form.city}
+						error={errors.city}
+						placeholder="Kigali"
+						onChange={(value) => updateListingField('city', value)}
+					/>
+					<ListingField
+						label="Daily base price"
+						value={form.basePrice}
+						error={errors.basePrice}
+						placeholder="45000"
+						type="number"
+						onChange={(value) => updateListingField('basePrice', value)}
+					/>
+					<ListingField
+						label="Brand"
+						value={form.brand}
+						error={errors.brand}
+						placeholder="Toyota"
+						onChange={(value) => updateListingField('brand', value)}
+					/>
+					<ListingField
+						label="Model"
+						value={form.model}
+						error={errors.model}
+						placeholder="RAV4"
+						onChange={(value) => updateListingField('model', value)}
+					/>
+					<ListingField
+						label="Year"
+						value={form.year}
+						error={errors.year}
+						placeholder="2022"
+						type="number"
+						onChange={(value) => updateListingField('year', value)}
+					/>
+					<ListingField
+						label="Transmission"
+						value={form.transmission}
+						error={errors.transmission}
+						placeholder="Automatic"
+						onChange={(value) => updateListingField('transmission', value)}
+					/>
+					<ListingField
+						label="Fuel type"
+						value={form.fuelType}
+						error={errors.fuelType}
+						placeholder="Petrol"
+						onChange={(value) => updateListingField('fuelType', value)}
+					/>
+					<ListingField
+						label="Seats"
+						value={form.seats}
+						error={errors.seats}
+						placeholder="5"
+						type="number"
+						onChange={(value) => updateListingField('seats', value)}
+					/>
+					<ListingField
+						label="Doors"
+						value={form.doors}
+						error={errors.doors}
+						placeholder="4"
+						type="number"
+						onChange={(value) => updateListingField('doors', value)}
+					/>
+
+					<div className={styles.listingToggles} data-wide="true">
+						<label>
+							<input
+								type="checkbox"
+								checked={form.driverIncluded}
+								onChange={(event) =>
+									updateListingField('driverIncluded', event.target.checked)
+								}
+							/>
+							<span>Driver included</span>
+						</label>
+						<label>
+							<input
+								type="checkbox"
+								checked={form.insuranceIncluded}
+								onChange={(event) =>
+									updateListingField('insuranceIncluded', event.target.checked)
+								}
+							/>
+							<span>Insurance included</span>
+						</label>
+					</div>
+
+					<div className={styles.formActions} data-wide="true">
+						<Button type="submit" disabled={createListingMutation.isPending}>
+							<PlusCircle aria-hidden="true" />
+							{createListingMutation.isPending
+								? 'Submitting...'
+								: 'Submit listing'}
+						</Button>
+					</div>
+				</form>
+
+				<PartnerProductsPanel
+					products={productsQuery.data?.items ?? []}
+					isLoading={productsQuery.isPending}
+					isError={productsQuery.isError}
+					onRetry={() => productsQuery.refetch()}
+				/>
+			</div>
+		</section>
+	);
+}
+
+function ListingField({
+	label,
+	value,
+	error,
+	type = 'text',
+	optional = false,
+	placeholder,
+	onChange,
+}: {
+	label: string;
+	value: string;
+	error?: string;
+	type?: string;
+	optional?: boolean;
+	placeholder?: string;
+	onChange: (value: string) => void;
+}) {
+	return (
+		<label className={styles.formField}>
+			<span>
+				{label}
+				{optional ? <em>Optional</em> : null}
+			</span>
+			<Input
+				type={type}
+				value={value}
+				onChange={(event) => onChange(event.target.value)}
+				placeholder={placeholder}
+				aria-invalid={Boolean(error)}
+			/>
+			{error ? <small>{error}</small> : null}
+		</label>
+	);
+}
+
+function PartnerProductsPanel({
+	products,
+	isLoading,
+	isError,
+	onRetry,
+}: {
+	products: Product[];
+	isLoading: boolean;
+	isError: boolean;
+	onRetry: () => void;
+}) {
+	return (
+		<aside className={styles.productsPanel}>
+			<div className={styles.productsHeader}>
+				<span>
+					<Tag aria-hidden="true" />
+					Your listings
+				</span>
+				<h3>Review status</h3>
 				<p>
-					Your profile is approved. You can now prepare listings, upload
-					supporting media, manage availability, and build your marketplace
-					presence.
+					Track submitted listings and admin decisions before customers can see
+					them.
 				</p>
 			</div>
-			<ul className={shellStyles.featureList}>
-				<li>
-					<ListChecks aria-hidden="true" />
-					Listing readiness tools
-				</li>
-				<li>
-					<UploadCloud aria-hidden="true" />
-					Secure document and media uploads
-				</li>
-				<li>
-					<Home aria-hidden="true" />
-					Approved partner operations
-				</li>
-			</ul>
-		</section>
+
+			{isLoading ? (
+				<div className={styles.productsSkeleton} aria-label="Loading listings">
+					{Array.from({ length: 4 }).map((_, index) => (
+						<div key={index} />
+					))}
+				</div>
+			) : isError ? (
+				<div className={styles.productsEmpty}>
+					<ShieldAlert aria-hidden="true" />
+					<strong>Listings unavailable</strong>
+					<p>Refresh this panel before creating or reviewing listing status.</p>
+					<Button type="button" variant="outline" onClick={onRetry}>
+						<RefreshCcw aria-hidden="true" />
+						Retry
+					</Button>
+				</div>
+			) : products.length ? (
+				<div className={styles.productList}>
+					{products.map((product) => (
+						<div key={product.id} className={styles.productCard}>
+							<span>
+								<strong>{product.title}</strong>
+								<small>
+									{formatMoney(product.basePrice, product.currency)} /{' '}
+									{product.pricingUnit.toLowerCase()}
+								</small>
+							</span>
+							<ProductStatusPill status={product.status ?? 'PENDING_REVIEW'} />
+						</div>
+					))}
+				</div>
+			) : (
+				<div className={styles.productsEmpty}>
+					<CarFront aria-hidden="true" />
+					<strong>No listings yet</strong>
+					<p>Submit your first car listing for secure admin review.</p>
+				</div>
+			)}
+		</aside>
+	);
+}
+
+function ProductStatusPill({ status }: { status: ProductStatus }) {
+	return (
+		<span className={styles.productStatusPill} data-status={status}>
+			{status.toLowerCase().replace('_', ' ')}
+		</span>
 	);
 }
 
@@ -1087,6 +1417,98 @@ function validateForm(form: PartnerFormState, isCompany: boolean) {
 	return errors;
 }
 
+const defaultListingForm: ListingFormState = {
+	title: '',
+	description: '',
+	shortDescription: '',
+	city: 'Kigali',
+	basePrice: '',
+	brand: '',
+	model: '',
+	year: '',
+	transmission: 'Automatic',
+	fuelType: 'Petrol',
+	seats: '5',
+	doors: '4',
+	driverIncluded: false,
+	insuranceIncluded: true,
+};
+
+function validateListingForm(form: ListingFormState) {
+	const errors: ListingFormErrors = {};
+	const requiredFields: (keyof ListingFormState)[] = [
+		'title',
+		'description',
+		'city',
+		'basePrice',
+		'brand',
+		'model',
+		'year',
+		'transmission',
+		'fuelType',
+		'seats',
+		'doors',
+	];
+
+	requiredFields.forEach((field) => {
+		if (typeof form[field] === 'string' && !form[field].trim()) {
+			errors[field] = 'This field is required.';
+		}
+	});
+
+	if (form.title.trim() && form.title.trim().length < 4) {
+		errors.title = 'Use at least 4 characters.';
+	}
+
+	if (form.description.trim() && form.description.trim().length < 30) {
+		errors.description = 'Use at least 30 characters.';
+	}
+
+	if (Number(form.basePrice) <= 0) {
+		errors.basePrice = 'Enter a valid price.';
+	}
+
+	const year = Number(form.year);
+	if (!Number.isInteger(year) || year < 1990 || year > 2035) {
+		errors.year = 'Enter a valid vehicle year.';
+	}
+
+	if (Number(form.seats) < 1) {
+		errors.seats = 'Enter at least 1 seat.';
+	}
+
+	if (Number(form.doors) < 1) {
+		errors.doors = 'Enter at least 1 door.';
+	}
+
+	return errors;
+}
+
+function toCreateCarProductPayload(
+	form: ListingFormState,
+): CreateCarProductRequest {
+	return {
+		title: form.title.trim(),
+		description: form.description.trim(),
+		shortDescription: normalizeOptional(form.shortDescription),
+		city: form.city.trim() || 'Kigali',
+		country: 'Rwanda',
+		basePrice: form.basePrice.trim(),
+		currency: 'RWF',
+		pricingUnit: 'DAY',
+		brand: form.brand.trim(),
+		model: form.model.trim(),
+		year: Number(form.year),
+		transmission: form.transmission.trim(),
+		fuelType: form.fuelType.trim(),
+		seats: Number(form.seats),
+		doors: Number(form.doors),
+		driverIncluded: form.driverIncluded,
+		insuranceIncluded: form.insuranceIncluded,
+		airConditioning: true,
+	};
+}
+
 function toPhoneFormState(phone?: string | null) {
 	const parsedPhone = phone ? parsePhoneNumberFromString(phone) : undefined;
 
@@ -1150,4 +1572,18 @@ function formatFileSize(sizeBytes: number) {
 	}
 
 	return `${(sizeBytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function formatMoney(value: string, currency: string) {
+	const amount = Number(value);
+
+	if (Number.isNaN(amount)) {
+		return `${currency} ${value}`;
+	}
+
+	return new Intl.NumberFormat('en', {
+		style: 'currency',
+		currency,
+		maximumFractionDigits: 0,
+	}).format(amount);
 }
