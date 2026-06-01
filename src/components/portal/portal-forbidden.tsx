@@ -3,7 +3,14 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, Home, ShieldAlert } from 'lucide-react';
+import {
+	ArrowRight,
+	Home,
+	RefreshCcw,
+	ShieldAlert,
+	WifiOff,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import type { UserAuthProfile, UserRole } from '@/services/api/auth';
 import styles from './portal-shell.module.css';
 
@@ -61,3 +68,36 @@ export function PortalForbidden({ expectedRole, user }: PortalForbiddenProps) {
 	);
 }
 
+export function PortalSessionUnavailable({ message }: { message: string }) {
+	return (
+		<main className={styles.forbiddenPage}>
+			<section
+				className={styles.forbiddenPanel}
+				data-tone="unavailable"
+				aria-live="polite"
+			>
+				<div className={styles.forbiddenCode}>503</div>
+				<div className={styles.forbiddenIcon}>
+					<WifiOff aria-hidden="true" />
+				</div>
+				<h1>Session check unavailable</h1>
+				<p>{message}</p>
+				<div className={styles.redirectNotice}>
+					<WifiOff aria-hidden="true" />
+					<span>Keep your backend API running at the configured API URL.</span>
+				</div>
+				<div className={styles.sessionActions}>
+					<Button type="button" onClick={() => window.location.reload()}>
+						<RefreshCcw aria-hidden="true" />
+						Try again
+					</Button>
+					<Link href="/" className={styles.primaryAction}>
+						<Home aria-hidden="true" />
+						Go home
+						<ArrowRight aria-hidden="true" />
+					</Link>
+				</div>
+			</section>
+		</main>
+	);
+}
