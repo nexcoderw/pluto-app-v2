@@ -1,0 +1,138 @@
+.dialog {
+	width: min(100%, 34rem);
+	padding: clamp(1.2rem, 4vw, 1.7rem);
+	border: 1px solid rgba(255, 255, 255, 0.78);
+	border-radius: 1.8rem;
+	background: rgba(255, 255, 255, 0.94);
+	box-shadow: 0 2rem 5rem rgba(16, 22, 33, 0.22);
+	backdrop-filter: blur(26px);
+}
+
+.header {
+	display: grid;
+	gap: 0.55rem;
+}
+
+.header span {
+	color: #be123c;
+	font-size: 0.72rem;
+	font-weight: 880;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.header h2 {
+	margin: 0;
+	color: #17171f;
+	font-size: clamp(1.55rem, 4vw, 2.1rem);
+	font-weight: 840;
+	line-height: 1.05;
+	letter-spacing: 0;
+	text-transform: none;
+}
+
+.header p {
+	margin: 0;
+	color: rgba(23, 23, 31, 0.64);
+	font-size: 0.92rem;
+	line-height: 1.55;
+}
+
+.icon {
+	width: 3.8rem;
+	height: 3.8rem;
+	display: grid;
+	place-items: center;
+	border-radius: 999px;
+	background: rgba(190, 18, 60, 0.09);
+	color: #be123c;
+}
+
+.icon svg {
+	width: 1.55rem;
+	height: 1.55rem;
+}
+
+.warningPanel {
+	display: grid;
+	gap: 0.35rem;
+	padding: 0.95rem;
+	border: 1px solid rgba(190, 18, 60, 0.12);
+	border-radius: 1.15rem;
+	background: rgba(190, 18, 60, 0.06);
+}
+
+.warningPanel strong {
+	color: #17171f;
+	font-size: 0.92rem;
+	font-weight: 850;
+}
+
+.warningPanel p {
+	margin: 0;
+	color: rgba(23, 23, 31, 0.62);
+	font-size: 0.84rem;
+	line-height: 1.48;
+}
+
+.field {
+	display: grid;
+	gap: 0.45rem;
+}
+
+.field > span {
+	color: #17171f;
+	font-size: 0.8rem;
+	font-weight: 820;
+}
+
+.field small {
+	color: #be123c;
+	font-size: 0.74rem;
+	font-weight: 720;
+}
+
+.footer {
+	gap: 0.65rem;
+}
+
+.footer button {
+	height: var(--pluto-button-height);
+	min-height: var(--pluto-button-height);
+	border-radius: 999px;
+	font-weight: 850;
+	cursor: pointer;
+}
+
+.deleteButton {
+	background: #be123c;
+	color: white;
+}
+
+.deleteButton:hover {
+	background: #9f1239;
+	color: white;
+}
+
+.spinner {
+	animation: spin 850ms linear infinite;
+}
+
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@media (max-width: 560px) {
+	.footer {
+		display: grid;
+		grid-template-columns: 1fr;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.spinner {
+		animation: none;
+	}
+}
