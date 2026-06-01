@@ -39,7 +39,6 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import {
 	PortalShell,
-	type PortalAction,
 	type PortalMetric,
 } from "@/components/portal/portal-shell";
 import { partnerPortalNavigation } from "@/constants/partner-portal-navigation";
@@ -89,21 +88,6 @@ const orderOptions: Array<{ label: string; value: ProductOrderBy }> = [
 	{ label: "Newest activity", value: "createdAt" },
 	{ label: "Price", value: "basePrice" },
 	{ label: "Title", value: "title" },
-];
-
-const partnerListingActions: PortalAction[] = [
-	{
-		href: "/partner/listings/create",
-		label: "Create listing",
-		description: "Add a customer-ready listing and submit it for review.",
-		icon: Plus,
-	},
-	{
-		href: "/partner/dashboard",
-		label: "Partner dashboard",
-		description: "Return to the operations overview.",
-		icon: ArrowRight,
-	},
 ];
 
 export function PartnerListingsPage() {
@@ -220,7 +204,6 @@ function PartnerListingsWorkspace({
 			homeLabel="View marketplace"
 			navigation={partnerPortalNavigation}
 			metrics={metrics}
-			actions={partnerListingActions}
 		>
 			<section className={styles.listingsPanel}>
 				<div className={styles.panelHeader}>
