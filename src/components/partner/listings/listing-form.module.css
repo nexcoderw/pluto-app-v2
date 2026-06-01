@@ -65,7 +65,8 @@
 
 .stepList button,
 .toggleField,
-.fileList button {
+.fileList button,
+.currentImages button {
 	cursor: pointer;
 }
 
@@ -349,6 +350,124 @@
 	border-color: rgba(190, 18, 60, 0.5);
 }
 
+.currentImages {
+	grid-column: 1 / -1;
+	display: grid;
+	gap: 0.7rem;
+	padding: 0.85rem;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	border-radius: 1.2rem;
+	background: rgba(255, 255, 255, 0.52);
+}
+
+.mediaSectionHeader {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 1rem;
+}
+
+.mediaSectionHeader span {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.45rem;
+	color: #02006c;
+	font-size: 0.78rem;
+	font-weight: 850;
+}
+
+.mediaSectionHeader small {
+	max-width: 28rem;
+	color: rgba(23, 23, 31, 0.56);
+	font-size: 0.72rem;
+	font-weight: 680;
+	line-height: 1.45;
+	text-align: right;
+}
+
+.currentImages ul {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 0.65rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.currentImages li {
+	position: relative;
+	min-width: 0;
+	display: grid;
+	grid-template-columns: 4.6rem minmax(0, 1fr) auto;
+	gap: 0.65rem;
+	align-items: center;
+	padding: 0.58rem;
+	border: 1px solid rgba(2, 0, 108, 0.08);
+	border-radius: 1rem;
+	background: rgba(255, 255, 255, 0.7);
+}
+
+.currentImages img,
+.imagePlaceholder {
+	width: 4.6rem;
+	aspect-ratio: 1.1;
+	border-radius: 0.82rem;
+	object-fit: cover;
+	background: rgba(2, 0, 108, 0.08);
+}
+
+.imagePlaceholder {
+	display: grid;
+	place-items: center;
+	color: #02006c;
+}
+
+.currentImages strong,
+.currentImages small {
+	display: block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.currentImages strong {
+	color: #17171f;
+	font-size: 0.78rem;
+	font-weight: 850;
+}
+
+.currentImages small {
+	color: rgba(23, 23, 31, 0.54);
+	font-size: 0.7rem;
+	font-weight: 680;
+}
+
+.currentImages button {
+	width: 2.35rem;
+	height: 2.35rem;
+	display: grid;
+	place-items: center;
+	border: 1px solid rgba(190, 18, 60, 0.14);
+	border-radius: 999px;
+	background: rgba(190, 18, 60, 0.08);
+	color: #be123c;
+	transition:
+		background 180ms ease,
+		color 180ms ease,
+		transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.currentImages button:hover:not(:disabled) {
+	background: #be123c;
+	color: white;
+	transform: translateY(-1px);
+}
+
+.currentImages button:disabled {
+	cursor: not-allowed;
+	opacity: 0.6;
+}
+
 .fileList {
 	grid-column: 1 / -1;
 	display: grid;
@@ -442,8 +561,18 @@
 @media (max-width: 760px) {
 	.fieldGrid,
 	.toggleGrid,
-	.stepList {
+	.stepList,
+	.currentImages ul {
 		grid-template-columns: 1fr;
+	}
+
+	.mediaSectionHeader {
+		display: grid;
+	}
+
+	.mediaSectionHeader small {
+		max-width: none;
+		text-align: left;
 	}
 
 	.formActions {
