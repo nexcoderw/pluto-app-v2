@@ -2,12 +2,17 @@
 
 import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
-import { refreshUserSession, type UserAuthProfile, type UserRole } from '@/services/api/auth';
+import {
+	refreshUserSession,
+	type UserAuthProfile,
+	type UserRole,
+} from '@/services/api/auth';
 import { PortalForbidden } from './portal-forbidden';
 import { PortalSkeleton } from './portal-skeleton';
 
 type PortalAccessBoundaryProps = {
 	allowedRole: UserRole;
+	loadingFallback?: ReactNode;
 	children: (user: UserAuthProfile) => ReactNode;
 };
 
@@ -18,6 +23,7 @@ type AccessState =
 
 export function PortalAccessBoundary({
 	allowedRole,
+	loadingFallback,
 	children,
 }: PortalAccessBoundaryProps) {
 	const [accessState, setAccessState] = useState<AccessState>({
@@ -53,13 +59,14 @@ export function PortalAccessBoundary({
 	}, [allowedRole]);
 
 	if (accessState.status === 'loading') {
-		return <PortalSkeleton />;
+		return loadingFallback ?? <PortalSkeleton />;
 	}
 
 	if (accessState.status === 'forbidden') {
-		return <PortalForbidden expectedRole={allowedRole} user={accessState.user} />;
+		return (
+			<PortalForbidden expectedRole={allowedRole} user={accessState.user} />
+		);
 	}
 
 	return children(accessState.user);
 }
-
