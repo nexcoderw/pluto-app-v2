@@ -8,14 +8,10 @@ import {
 	Building2,
 	CalendarClock,
 	CarFront,
-	ClipboardCheck,
-	FileText,
 	Home,
-	LayoutDashboard,
 	ListChecks,
 	PackageCheck,
 	RefreshCcw,
-	Settings,
 	ShieldCheck,
 	Sparkles,
 	UploadCloud,
@@ -29,28 +25,14 @@ import {
 	PortalShell,
 	type PortalAction,
 	type PortalMetric,
-	type PortalNavItem,
 } from '@/components/portal/portal-shell';
+import { partnerPortalNavigation } from '@/constants/partner-portal-navigation';
 import {
 	getPartnerProfile,
 	type PartnerProfile,
 } from '@/services/api/partner-profile';
 import type { UserAuthProfile } from '@/services/api/auth';
 import styles from './partner-dashboard.module.css';
-
-const partnerDashboardNavigation: PortalNavItem[] = [
-	{
-		href: '/partner/dashboard',
-		label: 'Dashboard',
-		icon: LayoutDashboard,
-		active: true,
-	},
-	{ href: '/partner/dashboard', label: 'Listings', icon: Building2 },
-	{ href: '/partner/dashboard', label: 'Documents', icon: FileText },
-	{ href: '/partner/dashboard', label: 'Review queue', icon: ClipboardCheck },
-	{ href: '/partner/dashboard', label: 'Availability', icon: CalendarClock },
-	{ href: '/partner/dashboard', label: 'Settings', icon: Settings },
-];
 
 const partnerDashboardActions: PortalAction[] = [
 	{
@@ -131,7 +113,7 @@ function PartnerDashboardContent({ user }: { user: UserAuthProfile }) {
 			description="Your partner profile is approved. Manage listings, availability, documents, and review activity from this secure workspace."
 			homeHref="/"
 			homeLabel="View marketplace"
-			navigation={partnerDashboardNavigation}
+			navigation={partnerPortalNavigation}
 			metrics={metrics}
 			actions={partnerDashboardActions}
 		>
