@@ -51,7 +51,7 @@ type PortalShellProps = {
 	homeLabel: string;
 	navigation: PortalNavItem[];
 	metrics: PortalMetric[];
-	actions: PortalAction[];
+	actions?: PortalAction[];
 	heroActions?: ReactNode;
 	children?: ReactNode;
 };
@@ -244,22 +244,24 @@ export function PortalShell({
 
 						{children}
 
-						<div className={styles.quickActions}>
-							{actions.map((action) => {
-								const Icon = action.icon;
+						{actions?.length ? (
+							<div className={styles.quickActions}>
+								{actions.map((action) => {
+									const Icon = action.icon;
 
-								return (
-									<Link key={action.label} href={action.href}>
-										<Icon aria-hidden="true" />
-										<span>
-											<strong>{action.label}</strong>
-											<small>{action.description}</small>
-										</span>
-										<ArrowRight aria-hidden="true" />
-									</Link>
-								);
-							})}
-						</div>
+									return (
+										<Link key={action.label} href={action.href}>
+											<Icon aria-hidden="true" />
+											<span>
+												<strong>{action.label}</strong>
+												<small>{action.description}</small>
+											</span>
+											<ArrowRight aria-hidden="true" />
+										</Link>
+									);
+								})}
+							</div>
+						) : null}
 					</div>
 				</section>
 			</main>
