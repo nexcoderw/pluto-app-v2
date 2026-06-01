@@ -7,10 +7,12 @@ import Link from 'next/link';
 import { LogIn, Menu, Search, UserPlus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { getUserPortalPath } from '@/lib/user-portal';
+import type { UserAuthProfile } from '@/services/api/auth';
 import {
-	refreshUserSession,
-	type UserAuthProfile,
-} from '@/services/api/auth';
+	getCachedUserProfile,
+	hasKnownUserSession,
+	subscribeToUserSession,
+} from '@/services/api/token-store';
 import styles from './public-navbar.module.css';
 
 const navigationLinks = [
@@ -20,8 +22,12 @@ const navigationLinks = [
 
 export function PublicNavbar() {
 	const [isOpen, setIsOpen] = useState(false);
-	const [currentUser, setCurrentUser] = useState<UserAuthProfile | null>(null);
-	const userPortalPath = currentUser ? getUserPortalPath(currentUser) : '/login';
+	const [currentUser, setCurrentUser] = useState<UserAuthProfile | null>(() =>
+		hasKnownUserSession() ? getCachedUserProfile() : null,
+	);
+	const userPortalPath = currentUser
+		? getUserPortalPath(currentUser)
+		: '/login';
 	const avatarStyle = currentUser?.imageUrl
 		? ({
 				'--profile-avatar-image': `url("${currentUser.imageUrl}")`,
@@ -32,25 +38,13 @@ export function PublicNavbar() {
 		[currentUser],
 	);
 
-	// Session check: refresh uses the secure cookie without exposing tokens to the browser UI.
+	// Session display: public pages use the safe cached profile and avoid refresh calls that create 401 noise for guests.
 	useEffect(() => {
-		let isActive = true;
+		setCurrentUser(hasKnownUserSession() ? getCachedUserProfile() : null);
 
-		refreshUserSession()
-			.then((response) => {
-				if (isActive) {
-					setCurrentUser(response.user);
-				}
-			})
-			.catch(() => {
-				if (isActive) {
-					setCurrentUser(null);
-				}
-			})
-
-		return () => {
-			isActive = false;
-		};
+		return subscribeToUserSession((user) => {
+			setCurrentUser(user);
+		});
 	}, []);
 
 	// Event handlers: keep the mobile menu local so public navigation stays reusable.
@@ -143,10 +137,7 @@ export function PublicNavbar() {
 }
 
 function getUserInitials(value: string) {
-	const [first = 'P', second = 'B'] = value
-		.trim()
-		.split(/\s+/)
-		.filter(Boolean);
+	const [first = 'P', second = 'B'] = value.trim().split(/\s+/).filter(Boolean);
 
 	return `${first.charAt(0)}${second.charAt(0)}`.toUpperCase();
 }
