@@ -4,6 +4,7 @@ import {
 	type ChangeEvent,
 	type FormEvent,
 	type ReactNode,
+	useEffect,
 	useMemo,
 	useState,
 } from 'react';
@@ -39,9 +40,14 @@ import {
 	SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import type { PricingUnit, Product } from '@/services/api/products';
+import type {
+	PricingUnit,
+	Product,
+	ProductImage,
+} from '@/services/api/products';
 import {
 	createListing,
+	deleteProductImage,
 	updateListing,
 	uploadProductImage,
 	type CreateListingRequest,
@@ -158,6 +164,9 @@ export function ListingForm({
 		createInitialValues(product),
 	);
 	const [errors, setErrors] = useState<ListingFormErrors>({});
+	const [existingImages, setExistingImages] = useState<ProductImage[]>(() =>
+		sortImages(product?.images ?? []),
+	);
 	const [imageFiles, setImageFiles] = useState<File[]>([]);
 	const isEdit = mode === 'edit' && Boolean(product);
 	const mutation = useMutation({
@@ -175,8 +184,8 @@ export function ListingForm({
 				await uploadProductImage({
 					productId: response.product.id,
 					file,
-					isCover: index === 0 && response.product.images.length === 0,
-					sortOrder: response.product.images.length + index,
+					isCover: index === 0 && existingImages.length === 0,
+					sortOrder: existingImages.length + index,
 					altText: `${values.title} image ${index + 1}`,
 				});
 			}
@@ -201,15 +210,42 @@ export function ListingForm({
 			});
 		},
 	});
+	const deleteImageMutation = useMutation({
+		mutationFn: deleteProductImage,
+		onSuccess: async (response) => {
+			setExistingImages(sortImages(response.product.images));
+			await queryClient.invalidateQueries({ queryKey: ['partner-products'] });
+			await queryClient.invalidateQueries({
+				queryKey: ['partner-product', response.product.id],
+			});
+			toast.success('Image deleted.', {
+				description: 'The listing gallery was updated for review.',
+			});
+		},
+		onError: (error) => {
+			const message =
+				error instanceof ApiRequestError
+					? error.message
+					: 'The image could not be deleted. Please try again.';
+
+			toast.error('Image was not deleted', {
+				description: message,
+			});
+		},
+	});
 	const selectedStep = steps[currentStep];
 	const StepIcon = selectedStep.icon;
 	const imageSummary = useMemo(
 		() =>
-			imageFiles.length
-				? `${imageFiles.length} new image${imageFiles.length === 1 ? '' : 's'} selected`
-				: 'Images are optional, but strong photos speed up review.',
-		[imageFiles.length],
+			[`${existingImages.length} current`, `${imageFiles.length} new`].join(
+				' / ',
+			),
+		[existingImages.length, imageFiles.length],
 	);
+
+	useEffect(() => {
+		setExistingImages(sortImages(product?.images ?? []));
+	}, [product?.images]);
 
 	function updateField<K extends keyof ListingFormValues>(
 		field: K,
@@ -253,6 +289,17 @@ export function ListingForm({
 		setImageFiles((current) =>
 			current.filter((_, fileIndex) => fileIndex !== index),
 		);
+	}
+
+	function deleteExistingImage(image: ProductImage) {
+		if (!product || deleteImageMutation.isPending) {
+			return;
+		}
+
+		deleteImageMutation.mutate({
+			productId: product.id,
+			imageId: image.id,
+		});
 	}
 
 	function validateStep(step: number) {
@@ -344,10 +391,14 @@ export function ListingForm({
 					<PricingMediaStep
 						values={values}
 						errors={errors}
+						existingImages={existingImages}
 						imageFiles={imageFiles}
 						imageSummary={imageSummary}
+						deletingImageId={deleteImageMutation.variables?.imageId}
+						isDeletingImage={deleteImageMutation.isPending}
 						onChange={updateField}
 						onFiles={handleFiles}
+						onDeleteExistingImage={deleteExistingImage}
 						onRemoveImage={removeImage}
 					/>
 				) : null}
@@ -530,15 +581,23 @@ function VehicleStep({ values, errors, onChange }: StepProps) {
 function PricingMediaStep({
 	values,
 	errors,
+	existingImages,
 	imageFiles,
 	imageSummary,
+	deletingImageId,
+	isDeletingImage,
 	onChange,
 	onFiles,
+	onDeleteExistingImage,
 	onRemoveImage,
 }: StepProps & {
+	existingImages: ProductImage[];
 	imageFiles: File[];
 	imageSummary: string;
+	deletingImageId?: string;
+	isDeletingImage: boolean;
 	onFiles: (event: ChangeEvent<HTMLInputElement>) => void;
+	onDeleteExistingImage: (image: ProductImage) => void;
 	onRemoveImage: (index: number) => void;
 }) {
 	return (
@@ -669,6 +728,66 @@ function PricingMediaStep({
 						aria-invalid={Boolean(errors.depositAmount)}
 					/>
 				</FormField>
+			) : null}
+
+			{existingImages.length ? (
+				<div className={styles.currentImages}>
+					<div className={styles.mediaSectionHeader}>
+						<span>
+							<FileImage aria-hidden="true" />
+							Current gallery
+						</span>
+						<small>
+							Delete images you no longer want customers or admins to review.
+						</small>
+					</div>
+					<ul aria-label="Current listing images">
+						{existingImages.map((image) => {
+							const isDeleting =
+								isDeletingImage && deletingImageId === image.id;
+
+							return (
+								<li key={image.id}>
+									{image.file.publicUrl ? (
+										<img
+											src={image.file.publicUrl}
+											alt={image.altText ?? image.file.originalName}
+										/>
+									) : (
+										<span className={styles.imagePlaceholder}>
+											<FileImage aria-hidden="true" />
+										</span>
+									)}
+									<div>
+										<strong>
+											{image.isCover ? 'Cover image' : image.file.originalName}
+										</strong>
+										<small>
+											{image.file.storageProvider === 'CLOUDINARY'
+												? 'Cloudinary image'
+												: 'Legacy local image'}
+										</small>
+									</div>
+									<button
+										type="button"
+										disabled={isDeletingImage}
+										onClick={() => onDeleteExistingImage(image)}
+										aria-label={`Delete ${image.file.originalName}`}
+									>
+										{isDeleting ? (
+											<LoaderCircle
+												className={styles.spinner}
+												aria-hidden="true"
+											/>
+										) : (
+											<X aria-hidden="true" />
+										)}
+									</button>
+								</li>
+							);
+						})}
+					</ul>
+				</div>
 			) : null}
 
 			<div className={styles.dropzone} data-invalid={Boolean(errors.images)}>
@@ -1005,4 +1124,14 @@ function isImageFile(file: File) {
 	const fileName = file.name.toLowerCase();
 
 	return imageFileExtensions.some((extension) => fileName.endsWith(extension));
+}
+
+function sortImages(images: ProductImage[]) {
+	return [...images].sort((first, second) => {
+		if (first.isCover !== second.isCover) {
+			return first.isCover ? -1 : 1;
+		}
+
+		return first.sortOrder - second.sortOrder;
+	});
 }
