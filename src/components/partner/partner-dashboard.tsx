@@ -20,13 +20,16 @@ import {
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { PortalAccessBoundary } from '@/components/portal/portal-access-boundary';
 import {
 	PortalShell,
 	type PortalAction,
 	type PortalMetric,
 } from '@/components/portal/portal-shell';
 import { partnerPortalNavigation } from '@/constants/partner-portal-navigation';
+import {
+	PartnerAccessBoundary,
+	PartnerWorkspaceLoading,
+} from './partner-access-boundary';
 import {
 	getPartnerProfile,
 	type PartnerProfile,
@@ -51,17 +54,9 @@ const partnerDashboardActions: PortalAction[] = [
 
 export function PartnerDashboard() {
 	return (
-		<PortalAccessBoundary
-			allowedRole="PARTNER"
-			loadingFallback={
-				<PartnerStatusGate
-					title="Opening partner workspace"
-					description="Checking your secure partner session before loading business tools."
-				/>
-			}
-		>
+		<PartnerAccessBoundary>
 			{(user) => <PartnerDashboardContent user={user} />}
-		</PortalAccessBoundary>
+		</PartnerAccessBoundary>
 	);
 }
 
@@ -82,7 +77,7 @@ function PartnerDashboardContent({ user }: { user: UserAuthProfile }) {
 
 	if (profileQuery.isPending || (profile && profile.status !== 'APPROVED')) {
 		return (
-			<PartnerStatusGate
+			<PartnerWorkspaceLoading
 				title="Checking partner approval"
 				description="Only approved partners can open the operational dashboard."
 			/>
