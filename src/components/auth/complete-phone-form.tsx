@@ -20,9 +20,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { getUserPortalPath } from '@/lib/user-portal';
 import { completeGooglePhone, refreshUserSession } from '@/services/api/auth';
 import { ApiRequestError } from '@/services/api/errors';
+import { hasKnownUserSession } from '@/services/api/token-store';
 import styles from './auth-form.module.css';
 
 const completePhoneSchema = z.object({
@@ -45,10 +45,15 @@ export function CompletePhoneForm() {
 	});
 
 	useEffect(() => {
+		if (!hasKnownUserSession()) {
+			router.replace('/login');
+			return;
+		}
+
 		refreshUserSession()
 			.then((response) => {
 				if (!response.user.requiresPhoneNumber) {
-					router.replace(getUserPortalPath(response.user));
+					router.replace('/');
 				}
 			})
 			.catch(() => router.replace('/login'));
@@ -60,7 +65,7 @@ export function CompletePhoneForm() {
 			toast.success(response.message, {
 				description: 'Your account profile is now complete.',
 			});
-			router.replace(getUserPortalPath(response.user));
+			router.replace('/');
 		},
 		onError: (error) => {
 			const apiError =
@@ -81,15 +86,25 @@ export function CompletePhoneForm() {
 
 	return (
 		<>
-			<form className={styles.formWrap} onSubmit={form.handleSubmit(onSubmit)} noValidate>
+			<form
+				className={styles.formWrap}
+				onSubmit={form.handleSubmit(onSubmit)}
+				noValidate
+			>
 				<div className={styles.headingBlock}>
 					<h1>Finish your account</h1>
-					<p>Add a required phone number so Pluto Booking can complete your profile.</p>
+					<p>
+						Add a required phone number so Pluto Booking can complete your
+						profile.
+					</p>
 				</div>
 
 				<div className={styles.fieldGroup}>
 					<Label htmlFor="phone">Phone number</Label>
-					<div className={styles.inputShell} data-invalid={Boolean(form.formState.errors.phone)}>
+					<div
+						className={styles.inputShell}
+						data-invalid={Boolean(form.formState.errors.phone)}
+					>
 						<Phone aria-hidden="true" />
 						<Input
 							id="phone"
@@ -101,19 +116,27 @@ export function CompletePhoneForm() {
 						/>
 					</div>
 					{form.formState.errors.phone ? (
-						<p className={styles.inlineError}>{form.formState.errors.phone.message}</p>
+						<p className={styles.inlineError}>
+							{form.formState.errors.phone.message}
+						</p>
 					) : null}
 				</div>
 
 				{form.formState.errors.root ? (
-					<p className={styles.formError}>{form.formState.errors.root.message}</p>
+					<p className={styles.formError}>
+						{form.formState.errors.root.message}
+					</p>
 				) : null}
 
 				<Button
 					type="submit"
 					className={styles.submitButton}
 					disabled={completePhoneMutation.isPending}
-					aria-label={completePhoneMutation.isPending ? 'Saving phone number' : 'Save phone number'}
+					aria-label={
+						completePhoneMutation.isPending
+							? 'Saving phone number'
+							: 'Save phone number'
+					}
 				>
 					{completePhoneMutation.isPending ? (
 						<LoaderCircle className={styles.spinner} aria-hidden="true" />
@@ -136,8 +159,7 @@ export function CompletePhoneForm() {
 					</AlertDialogHeader>
 					<AlertDialogFooter>
 						<AlertDialogAction onClick={() => form.clearErrors('root')}>
-							<CheckCircle2 aria-hidden="true" />
-							I understand
+							<CheckCircle2 aria-hidden="true" />I understand
 						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>
