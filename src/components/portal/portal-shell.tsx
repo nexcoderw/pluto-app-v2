@@ -52,6 +52,7 @@ type PortalShellProps = {
 	navigation: PortalNavItem[];
 	metrics: PortalMetric[];
 	actions: PortalAction[];
+	heroActions?: ReactNode;
 	children?: ReactNode;
 };
 
@@ -66,6 +67,7 @@ export function PortalShell({
 	navigation,
 	metrics,
 	actions,
+	heroActions,
 	children,
 }: PortalShellProps) {
 	const router = useRouter();
@@ -212,11 +214,14 @@ export function PortalShell({
 								<h1>{title}</h1>
 								<p>{description}</p>
 							</div>
-							<Link href={homeHref} className={styles.primaryAction}>
-								<Search aria-hidden="true" />
-								{homeLabel}
-								<ArrowRight aria-hidden="true" />
-							</Link>
+							<div className={styles.heroActions}>
+								<Link href={homeHref} className={styles.primaryAction}>
+									<Search aria-hidden="true" />
+									{homeLabel}
+									<ArrowRight aria-hidden="true" />
+								</Link>
+								{heroActions}
+							</div>
 						</div>
 
 						<div
