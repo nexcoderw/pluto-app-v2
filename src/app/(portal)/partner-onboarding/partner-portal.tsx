@@ -168,13 +168,19 @@ function PartnerPortalContent({ user }: { user: UserAuthProfile }) {
 			) : profileQuery.isError || !profile ? (
 				<PartnerProfileError onRetry={() => profileQuery.refetch()} />
 			) : (
-				<PartnerProfileWorkflow profile={profile} />
+				<PartnerProfileWorkflow profile={profile} user={user} />
 			)}
 		</PortalShell>
 	);
 }
 
-function PartnerProfileWorkflow({ profile }: { profile: PartnerProfile }) {
+function PartnerProfileWorkflow({
+	profile,
+	user,
+}: {
+	profile: PartnerProfile;
+	user: UserAuthProfile;
+}) {
 	if (profile.status === 'APPROVED') {
 		return <ApprovedPartnerWorkspace profile={profile} />;
 	}
@@ -183,13 +189,19 @@ function PartnerProfileWorkflow({ profile }: { profile: PartnerProfile }) {
 		return <PendingReviewPanel profile={profile} />;
 	}
 
-	return <PartnerProfileForm profile={profile} />;
+	return <PartnerProfileForm profile={profile} user={user} />;
 }
 
-function PartnerProfileForm({ profile }: { profile: PartnerProfile }) {
+function PartnerProfileForm({
+	profile,
+	user,
+}: {
+	profile: PartnerProfile;
+	user: UserAuthProfile;
+}) {
 	const queryClient = useQueryClient();
 	const [form, setForm] = useState<PartnerFormState>(() =>
-		toFormState(profile),
+		toFormState(profile, user),
 	);
 	const [errors, setErrors] = useState<PartnerFormErrors>({});
 	const [documentTitle, setDocumentTitle] = useState('');
@@ -229,7 +241,7 @@ function PartnerProfileForm({ profile }: { profile: PartnerProfile }) {
 					})
 				: saveIndividualPartnerProfile({
 						legalName: form.legalName.trim(),
-						nationalIdNumber: form.nationalIdNumber.trim(),
+						nationalIdNumber: normalizeOptional(form.nationalIdNumber),
 						businessEmail: form.businessEmail.trim(),
 						businessPhone,
 						description: form.description.trim(),
@@ -266,7 +278,7 @@ function PartnerProfileForm({ profile }: { profile: PartnerProfile }) {
 		mutationFn: startFreshPartnerProfile,
 		onSuccess: (response) => {
 			queryClient.setQueryData(['partner-profile'], response);
-			setForm(toFormState(response.profile));
+			setForm(toFormState(response.profile, user));
 			setIsStartFreshDialogOpen(false);
 			toast.success('Fresh application started.', {
 				description: 'The previous version was archived for audit history.',
@@ -357,30 +369,35 @@ function PartnerProfileForm({ profile }: { profile: PartnerProfile }) {
 							label="Business name"
 							value={form.businessName}
 							error={errors.businessName}
+							placeholder="Enter your registered business name"
 							onChange={(event) => updateField('businessName', event)}
 						/>
 						<FormField
 							label="Registration number"
 							value={form.registrationNumber}
 							error={errors.registrationNumber}
+							placeholder="Enter your company registration number"
 							onChange={(event) => updateField('registrationNumber', event)}
 						/>
 						<FormField
 							label="Tax identification"
 							value={form.taxIdentification}
 							error={errors.taxIdentification}
+							placeholder="Enter your tax identification number"
 							onChange={(event) => updateField('taxIdentification', event)}
 						/>
 						<FormField
 							label="Representative name"
 							value={form.representativeName}
 							error={errors.representativeName}
+							placeholder="Enter the authorized representative name"
 							onChange={(event) => updateField('representativeName', event)}
 						/>
 						<FormField
 							label="Representative ID number"
 							value={form.representativeIdNumber}
 							error={errors.representativeIdNumber}
+							placeholder="Enter the representative ID number"
 							onChange={(event) => updateField('representativeIdNumber', event)}
 						/>
 					</>
@@ -390,12 +407,15 @@ function PartnerProfileForm({ profile }: { profile: PartnerProfile }) {
 							label="Legal full name"
 							value={form.legalName}
 							error={errors.legalName}
+							placeholder="Use the full name on your Pluto Booking account"
 							onChange={(event) => updateField('legalName', event)}
 						/>
 						<FormField
 							label="National ID number"
 							value={form.nationalIdNumber}
 							error={errors.nationalIdNumber}
+							placeholder="Add your national ID number if available"
+							optional
 							onChange={(event) => updateField('nationalIdNumber', event)}
 						/>
 					</>
@@ -406,6 +426,7 @@ function PartnerProfileForm({ profile }: { profile: PartnerProfile }) {
 					type="email"
 					value={form.businessEmail}
 					error={errors.businessEmail}
+					placeholder="Use your account email or business email"
 					onChange={(event) => updateField('businessEmail', event)}
 				/>
 				<BusinessPhoneField
@@ -425,6 +446,7 @@ function PartnerProfileForm({ profile }: { profile: PartnerProfile }) {
 					label="City"
 					value={form.city}
 					error={errors.city}
+					placeholder="Kigali"
 					onChange={(event) => updateField('city', event)}
 				/>
 				<CountrySelectField
@@ -439,6 +461,7 @@ function PartnerProfileForm({ profile }: { profile: PartnerProfile }) {
 					label="Website URL"
 					value={form.websiteUrl}
 					error={errors.websiteUrl}
+					placeholder="https://yourwebsite.com"
 					onChange={(event) => updateField('websiteUrl', event)}
 					optional
 				/>
@@ -446,6 +469,7 @@ function PartnerProfileForm({ profile }: { profile: PartnerProfile }) {
 					label="Address"
 					value={form.addressLine}
 					error={errors.addressLine}
+					placeholder="Street, building, or business address"
 					onChange={(event) => updateField('addressLine', event)}
 					optional={!isCompany}
 				/>
@@ -597,11 +621,11 @@ function DocumentUploadPanel({
 			<div className={styles.documentPanelHeader}>
 				<div>
 					<span>Verification documents</span>
-					<h3>Upload private review files</h3>
+					<h3>Optional private review files</h3>
 					<p>
-						Add identity, registration, or tax files that support this
-						application. Files stay private and are only visible to authorized
-						admins.
+						You can add identity, registration, or tax files when they help the
+						review. Files stay private and are only visible to authorized
+						admins, but they are not required to submit the profile.
 					</p>
 				</div>
 				<UploadCloud aria-hidden="true" />
@@ -611,10 +635,14 @@ function DocumentUploadPanel({
 				<FormField
 					label="Document title"
 					value={title}
+					placeholder="Example: National ID, tax certificate, or license"
 					onChange={onTitleChange}
 				/>
 				<label className={styles.formField}>
-					<span>Document file</span>
+					<span>
+						Document file
+						<em>Optional</em>
+					</span>
 					<Input
 						type="file"
 						accept=".pdf,image/png,image/jpeg,image/webp"
@@ -628,6 +656,7 @@ function DocumentUploadPanel({
 						<em>Optional</em>
 					</span>
 					<Textarea
+						className={styles.descriptionTextarea}
 						value={description}
 						onChange={onDescriptionChange}
 						placeholder="Add context for the admin reviewer."
@@ -768,6 +797,7 @@ function FormField({
 	error,
 	type = 'text',
 	optional = false,
+	placeholder,
 	onChange,
 }: {
 	label: string;
@@ -775,6 +805,7 @@ function FormField({
 	error?: string;
 	type?: string;
 	optional?: boolean;
+	placeholder?: string;
 	onChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }) {
 	return (
@@ -787,6 +818,7 @@ function FormField({
 				type={type}
 				value={value}
 				onChange={onChange}
+				placeholder={placeholder}
 				aria-invalid={Boolean(error)}
 			/>
 			{error ? <small>{error}</small> : null}
@@ -981,15 +1013,27 @@ function buildDescription(profile?: PartnerProfile) {
 	return 'Complete the verification form before submitting your partner profile for admin review.';
 }
 
-function toFormState(profile: PartnerProfile): PartnerFormState {
+function toFormState(
+	profile: PartnerProfile,
+	user?: UserAuthProfile,
+): PartnerFormState {
+	const shouldUseAccountDefaults = profile.partnerType === 'INDIVIDUAL';
+	const fallbackLegalName = shouldUseAccountDefaults
+		? (user?.fullName ?? '')
+		: '';
+	const fallbackEmail = shouldUseAccountDefaults ? (user?.email ?? '') : '';
+	const phoneSource =
+		profile.businessPhone ??
+		(shouldUseAccountDefaults ? (user?.phone ?? null) : null);
+
 	return {
-		legalName: profile.legalName ?? '',
+		legalName: profile.legalName ?? fallbackLegalName,
 		nationalIdNumber: profile.nationalIdNumber ?? '',
 		businessName: profile.businessName ?? '',
 		registrationNumber: profile.registrationNumber ?? '',
 		taxIdentification: profile.taxIdentification ?? '',
-		businessEmail: profile.businessEmail ?? '',
-		...toPhoneFormState(profile.businessPhone),
+		businessEmail: profile.businessEmail ?? fallbackEmail,
+		...toPhoneFormState(phoneSource),
 		representativeName: profile.representativeName ?? '',
 		representativeIdNumber: profile.representativeIdNumber ?? '',
 		description: profile.description ?? '',
@@ -1014,13 +1058,7 @@ function validateForm(form: PartnerFormState, isCompany: boolean) {
 				'description',
 				'addressLine',
 			]
-		: [
-				'legalName',
-				'nationalIdNumber',
-				'businessEmail',
-				'businessPhone',
-				'description',
-			];
+		: ['legalName', 'businessEmail', 'businessPhone', 'description'];
 
 	requiredFields.forEach((field) => {
 		if (!form[field].trim()) {
