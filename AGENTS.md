@@ -34,3 +34,6 @@ Before changing frontend code, read:
 - Submit buttons must show only a loading icon while submitting and must be disabled.
 - Every page must define professional SEO metadata and a dynamic title.
 - Every user-facing flow must define loading, success, error, and empty states with actions except loading, which uses skeletons.
+- Do not run `npm run build` or `npm run lint` automatically. Tell the user to
+  run those commands instead and wait for their result when verification is
+  needed.
