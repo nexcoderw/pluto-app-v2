@@ -1,5 +1,6 @@
 import { apiClient } from '../client';
 import { normalizeApiError } from '../errors';
+import { cachePartnerProfileStatus } from './cache-partner-profile';
 import { PARTNER_PROFILE_ROUTES } from './routes';
 import type {
 	PartnerProfileResponse,
@@ -16,7 +17,7 @@ export async function saveCompanyPartnerProfile(
 			payload,
 		);
 
-		return response.data;
+		return cachePartnerProfileStatus(response.data);
 	} catch (error) {
 		throw normalizeApiError(error);
 	}
