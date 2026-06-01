@@ -1,6 +1,6 @@
 import { apiClient } from '../client';
 import { normalizeApiError } from '../errors';
-import { setUserAccessToken } from '../token-store';
+import { setUserAccessToken, storeUserSession } from '../token-store';
 import { USER_AUTH_ROUTES } from './routes';
 import type { PartnerType, UserAuthResponse, UserRole } from './types';
 
@@ -29,6 +29,7 @@ export async function registerUser(
 		);
 
 		setUserAccessToken(response.data.accessToken);
+		storeUserSession(response.data.user);
 		return response.data;
 	} catch (error) {
 		throw normalizeApiError(error);
