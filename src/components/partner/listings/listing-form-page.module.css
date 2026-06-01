@@ -1,0 +1,53 @@
+.formPageHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.85rem;
+	padding: 0.9rem 1rem;
+	border: 1px solid rgba(255, 255, 255, 0.72);
+	border-radius: 1.2rem;
+	background: rgba(255, 255, 255, 0.62);
+	box-shadow: 0 1rem 2.4rem rgba(16, 22, 33, 0.06);
+	backdrop-filter: blur(18px);
+}
+
+.formPageHeader a {
+	height: var(--pluto-button-height);
+	min-height: var(--pluto-button-height);
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0 1.15rem;
+	border: 1px solid rgba(2, 0, 108, 0.14);
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.72);
+	color: #02006c;
+	font-size: 0.78rem;
+	font-weight: 840;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.formPageHeader a svg {
+	width: 1rem;
+	height: 1rem;
+}
+
+.formPageHeader p {
+	margin: 0;
+	color: rgba(23, 23, 31, 0.62);
+	font-size: 0.84rem;
+	font-weight: 680;
+	line-height: 1.45;
+}
+
+@media (max-width: 720px) {
+	.formPageHeader {
+		display: grid;
+	}
+
+	.formPageHeader a {
+		width: 100%;
+		justify-content: center;
+	}
+}
