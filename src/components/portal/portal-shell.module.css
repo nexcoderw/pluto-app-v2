@@ -194,9 +194,9 @@
 }
 
 .portalTopbar {
-	display: grid;
-	grid-template-columns: auto minmax(0, 1fr);
+	display: flex;
 	align-items: center;
+	justify-content: space-between;
 	gap: 0.85rem;
 	padding: 0.7rem;
 	border: 1px solid rgba(255, 255, 255, 0.7);
@@ -216,7 +216,7 @@
 	min-width: 0;
 	display: flex;
 	align-items: center;
-	justify-self: end;
+	margin-left: auto;
 	gap: 0.7rem;
 }
 
@@ -626,6 +626,11 @@
 	color: #be123c;
 }
 
+.forbiddenPanel[data-tone='unavailable'] .forbiddenIcon {
+	background: rgba(2, 0, 108, 0.08);
+	color: #02006c;
+}
+
 .forbiddenIcon svg {
 	width: 1.9rem;
 	height: 1.9rem;
@@ -661,6 +666,28 @@
 .redirectNotice svg {
 	width: 1rem;
 	height: 1rem;
+}
+
+.sessionActions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0.75rem;
+}
+
+.sessionActions button {
+	height: var(--pluto-button-height);
+	min-height: var(--pluto-button-height);
+	border-radius: 999px;
+	background: #02006c;
+	color: white;
+	font-weight: 840;
+	cursor: pointer;
+}
+
+.sessionActions button:hover {
+	background: #09068f;
+	color: white;
 }
 
 .skeletonBrand,
@@ -819,7 +846,6 @@
 	}
 
 	.portalTopbar {
-		grid-template-columns: auto minmax(0, 1fr);
 		border-radius: 1.35rem;
 	}
 
