@@ -8,7 +8,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {
 	PortalShell,
-	type PortalAction,
 	type PortalMetric,
 } from "@/components/portal/portal-shell";
 import { partnerPortalNavigation } from "@/constants/partner-portal-navigation";
@@ -114,7 +113,6 @@ function ListingFormWorkspace({
 	}
 
 	const product = productQuery.data?.product;
-	const actions = buildActions(mode, product?.id);
 
 	return (
 		<PortalShell
@@ -127,7 +125,6 @@ function ListingFormWorkspace({
 			homeLabel="Back to listings"
 			navigation={partnerPortalNavigation}
 			metrics={buildMetrics(profile)}
-			actions={actions}
 		>
 			<div className={styles.formPageHeader}>
 				<Link href="/partner/listings">
@@ -164,32 +161,6 @@ function buildMetrics(profile: PartnerProfile): PortalMetric[] {
 			value: "4",
 			description: "Cars, apartments, hotel rooms, and Airbnb homes.",
 			icon: Plus,
-		},
-	];
-}
-
-function buildActions(
-	mode: "create" | "edit",
-	productId?: string,
-): PortalAction[] {
-	return [
-		{
-			href: "/partner/listings",
-			label: "All listings",
-			description: "Return to search, filters, and listing status.",
-			icon: Store,
-		},
-		{
-			href:
-				mode === "edit" && productId
-					? `/partner/listings/${productId}`
-					: "/partner/listings/create",
-			label: mode === "edit" ? "View listing" : "Create listing",
-			description:
-				mode === "edit"
-					? "Review the current listing detail page."
-					: "Continue preparing a new listing.",
-			icon: mode === "edit" ? Eye : Plus,
 		},
 	];
 }
