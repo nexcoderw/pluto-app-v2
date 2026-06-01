@@ -9,8 +9,8 @@ import { Button } from '@/components/ui/button';
 import { getUserPortalPath } from '@/lib/user-portal';
 import type { UserAuthProfile } from '@/services/api/auth';
 import {
-	getCachedUserProfile,
 	getCachedPartnerProfileStatus,
+	getCachedUserProfile,
 	hasKnownUserSession,
 	subscribeToUserSession,
 } from '@/services/api/token-store';
@@ -23,9 +23,7 @@ const navigationLinks = [
 
 export function PublicNavbar() {
 	const [isOpen, setIsOpen] = useState(false);
-	const [currentUser, setCurrentUser] = useState<UserAuthProfile | null>(() =>
-		hasKnownUserSession() ? getCachedUserProfile() : null,
-	);
+	const [currentUser, setCurrentUser] = useState<UserAuthProfile | null>(null);
 	const userPortalPath = currentUser
 		? getUserPortalPath(currentUser, getCachedPartnerProfileStatus())
 		: '/login';
