@@ -1,11 +1,8 @@
 import { apiClient } from '../client';
 import { normalizeApiError } from '../errors';
-import {
-	clearUserSession,
-	setUserAccessToken,
-	storeUserSession,
-} from '../token-store';
+import { clearUserSession, setUserAccessToken } from '../token-store';
 import { USER_AUTH_ROUTES } from './routes';
+import { storeAuthenticatedUserSession } from './session-bootstrap';
 import type { UserAuthResponse } from './types';
 
 // Request payload: backend reads the refresh token from its secure cookie.
@@ -22,7 +19,7 @@ export async function refreshUserSession(): Promise<RefreshUserSessionResponse> 
 		);
 
 		setUserAccessToken(response.data.accessToken);
-		storeUserSession(response.data.user);
+		await storeAuthenticatedUserSession(response.data.user);
 		return response.data;
 	} catch (error) {
 		const apiError = normalizeApiError(error);
