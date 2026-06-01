@@ -7,7 +7,8 @@ import {
 	type UserAuthProfile,
 	type UserRole,
 } from '@/services/api/auth';
-import { PortalForbidden } from './portal-forbidden';
+import { ApiRequestError } from '@/services/api/errors';
+import { PortalForbidden, PortalSessionUnavailable } from './portal-forbidden';
 import { PortalSkeleton } from './portal-skeleton';
 
 type PortalAccessBoundaryProps = {
@@ -19,7 +20,8 @@ type PortalAccessBoundaryProps = {
 type AccessState =
 	| { status: 'loading'; user: null }
 	| { status: 'allowed'; user: UserAuthProfile }
-	| { status: 'forbidden'; user: UserAuthProfile | null };
+	| { status: 'forbidden'; user: UserAuthProfile | null }
+	| { status: 'unavailable'; user: null; message: string };
 
 export function PortalAccessBoundary({
 	allowedRole,
@@ -47,10 +49,25 @@ export function PortalAccessBoundary({
 						: { status: 'forbidden', user: response.user },
 				);
 			})
-			.catch(() => {
-				if (isActive) {
-					setAccessState({ status: 'forbidden', user: null });
+			.catch((error) => {
+				if (!isActive) {
+					return;
 				}
+
+				if (
+					error instanceof ApiRequestError &&
+					(error.isNetworkError || error.statusCode === 0)
+				) {
+					setAccessState({
+						status: 'unavailable',
+						user: null,
+						message:
+							'The API server is not reachable, so your secure session cannot be verified right now.',
+					});
+					return;
+				}
+
+				setAccessState({ status: 'forbidden', user: null });
 			});
 
 		return () => {
@@ -66,6 +83,10 @@ export function PortalAccessBoundary({
 		return (
 			<PortalForbidden expectedRole={allowedRole} user={accessState.user} />
 		);
+	}
+
+	if (accessState.status === 'unavailable') {
+		return <PortalSessionUnavailable message={accessState.message} />;
 	}
 
 	return children(accessState.user);
