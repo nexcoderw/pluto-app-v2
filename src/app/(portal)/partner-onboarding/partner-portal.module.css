@@ -1,3 +1,161 @@
+.onboardingPage {
+	min-height: 100vh;
+	padding: clamp(0.9rem, 3vw, 1.6rem);
+	background:
+		radial-gradient(circle at 16% 14%, rgba(2, 0, 108, 0.1), transparent 28rem),
+		radial-gradient(
+			circle at 88% 72%,
+			rgba(20, 138, 84, 0.13),
+			transparent 24rem
+		),
+		linear-gradient(180deg, #f7f8fb 0%, #eef0f4 100%);
+	color: #17171f;
+}
+
+.onboardingFrame {
+	width: min(100%, 72rem);
+	display: grid;
+	gap: 1rem;
+	margin: 0 auto;
+}
+
+.onboardingHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 0.75rem;
+	border: 1px solid rgba(255, 255, 255, 0.72);
+	border-radius: 1.4rem;
+	background: rgba(255, 255, 255, 0.62);
+	box-shadow: 0 1.2rem 3rem rgba(16, 22, 33, 0.08);
+	backdrop-filter: blur(22px);
+}
+
+.onboardingBrand,
+.onboardingUser {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.65rem;
+	min-width: 0;
+	text-decoration: none;
+}
+
+.onboardingBrand span,
+.onboardingUser span {
+	width: 2.65rem;
+	height: 2.65rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+	border-radius: 999px;
+	background: #02006c;
+	color: white;
+	font-size: 0.74rem;
+	font-weight: 900;
+	box-shadow: 0 0.8rem 1.8rem rgba(2, 0, 108, 0.2);
+}
+
+.onboardingUser span {
+	background: rgba(2, 0, 108, 0.09);
+	color: #02006c;
+	box-shadow: none;
+}
+
+.onboardingBrand strong,
+.onboardingUser strong {
+	overflow: hidden;
+	color: #17171f;
+	font-size: 0.92rem;
+	font-weight: 840;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.onboardingHero {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: center;
+	gap: 1rem;
+	padding: clamp(1.25rem, 4vw, 2rem);
+	border: 1px solid rgba(255, 255, 255, 0.72);
+	border-radius: clamp(1.45rem, 3vw, 2rem);
+	background: rgba(255, 255, 255, 0.66);
+	box-shadow: 0 1.2rem 3rem rgba(16, 22, 33, 0.08);
+	backdrop-filter: blur(22px);
+	animation: panelRise 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.onboardingHero p {
+	margin: 0 0 0.45rem;
+	color: #02006c;
+	font-size: 0.76rem;
+	font-weight: 860;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.onboardingHero h1 {
+	margin: 0;
+	color: #17171f;
+	font-size: clamp(2rem, 5vw, 3.1rem);
+	font-weight: 780;
+	letter-spacing: 0;
+	line-height: 1;
+}
+
+.onboardingHero div > span {
+	display: block;
+	max-width: 42rem;
+	margin-top: 0.75rem;
+	color: rgba(23, 23, 31, 0.64);
+	font-size: 0.98rem;
+	line-height: 1.6;
+}
+
+.onboardingMetrics {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 0.85rem;
+}
+
+.onboardingMetrics article {
+	min-height: 9rem;
+	display: grid;
+	align-content: end;
+	gap: 0.32rem;
+	padding: 1rem;
+	border: 1px solid rgba(255, 255, 255, 0.72);
+	border-radius: 1.25rem;
+	background: rgba(255, 255, 255, 0.62);
+	box-shadow: 0 1.1rem 2.6rem rgba(16, 22, 33, 0.07);
+	backdrop-filter: blur(18px);
+}
+
+.onboardingMetrics svg {
+	color: #02006c;
+}
+
+.onboardingMetrics strong {
+	color: #17171f;
+	font-size: 1.15rem;
+	font-weight: 860;
+	line-height: 1;
+}
+
+.onboardingMetrics span {
+	color: rgba(23, 23, 31, 0.7);
+	font-size: 0.82rem;
+	font-weight: 780;
+}
+
+.onboardingMetrics small {
+	color: rgba(23, 23, 31, 0.55);
+	font-size: 0.72rem;
+	line-height: 1.36;
+}
+
 .profilePanel {
 	display: grid;
 	gap: 1rem;
@@ -822,6 +980,20 @@
 }
 
 @media (max-width: 760px) {
+	.onboardingHeader,
+	.onboardingHero {
+		align-items: stretch;
+		grid-template-columns: 1fr;
+	}
+
+	.onboardingHeader {
+		display: grid;
+	}
+
+	.onboardingMetrics {
+		grid-template-columns: 1fr;
+	}
+
 	.profileHeader,
 	.pendingPanel {
 		display: grid;
