@@ -1,24 +1,24 @@
-'use client';
+"use client";
 
-import type { CSSProperties } from 'react';
-import { useEffect, useMemo, useState } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { LogIn, Menu, Search, UserPlus, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { getUserPortalPath } from '@/lib/user-portal';
-import type { UserAuthProfile } from '@/services/api/auth';
+import type { CSSProperties } from "react";
+import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { LogIn, Menu, Search, UserPlus, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { getUserPortalPath } from "@/lib/user-portal";
+import type { UserAuthProfile } from "@/services/api/auth";
 import {
 	getCachedPartnerProfileStatus,
 	getCachedUserProfile,
 	hasKnownUserSession,
 	subscribeToUserSession,
-} from '@/services/api/token-store';
-import styles from './public-navbar.module.css';
+} from "@/services/api/token-store";
+import styles from "./public-navbar.module.css";
 
 const navigationLinks = [
-	{ href: '/', label: 'Explore' },
-	{ href: '/partner-register', label: 'List with Pluto' },
+	{ href: "/marketplace", label: "Marketplace" },
+	{ href: "/partner-register", label: "List with Pluto" },
 ] as const;
 
 export function PublicNavbar() {
@@ -26,14 +26,14 @@ export function PublicNavbar() {
 	const [currentUser, setCurrentUser] = useState<UserAuthProfile | null>(null);
 	const userPortalPath = currentUser
 		? getUserPortalPath(currentUser, getCachedPartnerProfileStatus())
-		: '/login';
+		: "/login";
 	const avatarStyle = currentUser?.imageUrl
 		? ({
-				'--profile-avatar-image': `url("${currentUser.imageUrl}")`,
+				"--profile-avatar-image": `url("${currentUser.imageUrl}")`,
 			} as CSSProperties)
 		: undefined;
 	const userInitials = useMemo(
-		() => getUserInitials(currentUser?.fullName ?? currentUser?.email ?? ''),
+		() => getUserInitials(currentUser?.fullName ?? currentUser?.email ?? ""),
 		[currentUser],
 	);
 
@@ -82,7 +82,7 @@ export function PublicNavbar() {
 				</div>
 
 				<div className={styles.actions}>
-					<Link href="/" className={styles.searchButton}>
+					<Link href="/marketplace" className={styles.searchButton}>
 						<Search aria-hidden="true" />
 						Search
 					</Link>
@@ -99,9 +99,9 @@ export function PublicNavbar() {
 							<span className={styles.profileCopy}>
 								<strong>{currentUser.fullName}</strong>
 								<small>
-									{currentUser.role === 'PARTNER'
-										? 'Partner portal'
-										: 'Customer portal'}
+									{currentUser.role === "PARTNER"
+										? "Partner portal"
+										: "Customer portal"}
 								</small>
 							</span>
 						</Link>
@@ -124,7 +124,7 @@ export function PublicNavbar() {
 					variant="ghost"
 					size="icon"
 					className={styles.menuButton}
-					aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
+					aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
 					aria-expanded={isOpen}
 					onClick={() => setIsOpen((value) => !value)}
 				>
@@ -136,7 +136,7 @@ export function PublicNavbar() {
 }
 
 function getUserInitials(value: string) {
-	const [first = 'P', second = 'B'] = value.trim().split(/\s+/).filter(Boolean);
+	const [first = "P", second = "B"] = value.trim().split(/\s+/).filter(Boolean);
 
 	return `${first.charAt(0)}${second.charAt(0)}`.toUpperCase();
 }
