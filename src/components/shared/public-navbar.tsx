@@ -10,6 +10,7 @@ import { getUserPortalPath } from '@/lib/user-portal';
 import type { UserAuthProfile } from '@/services/api/auth';
 import {
 	getCachedUserProfile,
+	getCachedPartnerProfileStatus,
 	hasKnownUserSession,
 	subscribeToUserSession,
 } from '@/services/api/token-store';
@@ -26,7 +27,7 @@ export function PublicNavbar() {
 		hasKnownUserSession() ? getCachedUserProfile() : null,
 	);
 	const userPortalPath = currentUser
-		? getUserPortalPath(currentUser)
+		? getUserPortalPath(currentUser, getCachedPartnerProfileStatus())
 		: '/login';
 	const avatarStyle = currentUser?.imageUrl
 		? ({
