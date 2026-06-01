@@ -105,14 +105,14 @@
 }
 
 .resetButton {
-	border: 1px solid #05006C;
+	border: 1px solid #05006c;
 	background: transparent;
 	color: var(--primary-color);
 	border-radius: 999px;
 }
 
 .resetButton:hover {
-	border-color: var(--primary-color);;
+	border-color: var(--primary-color);
 	transform: translateY(-1px);
 }
 
@@ -201,16 +201,16 @@
 	backdrop-filter: blur(12px);
 }
 
-.statusPill[data-status='APPROVED'] {
+.statusPill[data-status="APPROVED"] {
 	color: #0f7a4a;
 }
 
-.statusPill[data-status='REJECTED'],
-.statusPill[data-status='SUSPENDED'] {
+.statusPill[data-status="REJECTED"],
+.statusPill[data-status="SUSPENDED"] {
 	color: #be123c;
 }
 
-.statusPill[data-status='PENDING_REVIEW'] {
+.statusPill[data-status="PENDING_REVIEW"] {
 	color: #946200;
 }
 
@@ -254,6 +254,25 @@
 	line-height: 1.45;
 	-webkit-box-orient: vertical;
 	-webkit-line-clamp: 2;
+}
+
+.categoryPill {
+	width: fit-content;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	padding: 0.38rem 0.62rem;
+	border-radius: 999px;
+	background: rgba(2, 0, 108, 0.08);
+	color: #02006c;
+	font-size: 0.7rem;
+	font-weight: 850;
+	text-transform: uppercase;
+}
+
+.categoryPill svg {
+	width: 0.92rem;
+	height: 0.92rem;
 }
 
 .cardMeta {
@@ -301,7 +320,7 @@
 	color: #02006c;
 }
 
-.statePanel[data-tone='error'] > svg {
+.statePanel[data-tone="error"] > svg {
 	background: rgba(190, 18, 60, 0.08);
 	color: #be123c;
 }
