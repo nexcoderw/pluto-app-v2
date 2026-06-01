@@ -174,30 +174,33 @@ export function PortalShell({
 							>
 								<Menu aria-hidden="true" />
 							</Button>
-							<div className={styles.topbarIdentity}>
-								<span
-									className={styles.topbarAvatar}
-									data-has-image={Boolean(user.imageUrl)}
-									style={avatarStyle}
-									aria-hidden="true"
+							<div className={styles.topbarActions}>
+								<div className={styles.topbarIdentity}>
+									<span
+										className={styles.topbarAvatar}
+										data-has-image={Boolean(user.imageUrl)}
+										style={avatarStyle}
+										aria-hidden="true"
+									>
+										{user.imageUrl ? null : userInitials}
+									</span>
+									<span className={styles.topbarCopy}>
+										<small>{portalLabel}</small>
+										<strong>{user.fullName}</strong>
+										<em>{user.email}</em>
+									</span>
+								</div>
+								<Button
+									type="button"
+									variant="destructive"
+									className={styles.topbarLogoutButton}
+									aria-label="Sign out"
+									onClick={() => setIsLogoutDialogOpen(true)}
 								>
-									{user.imageUrl ? null : userInitials}
-								</span>
-								<span className={styles.topbarCopy}>
-									<small>{portalLabel}</small>
-									<strong>{user.fullName}</strong>
-									<em>{user.email}</em>
-								</span>
+									<LogOut aria-hidden="true" />
+									<span className={styles.logoutLabel}>Exit</span>
+								</Button>
 							</div>
-							<Button
-								type="button"
-								variant="destructive"
-								className={styles.topbarLogoutButton}
-								onClick={() => setIsLogoutDialogOpen(true)}
-							>
-								<LogOut aria-hidden="true" />
-								<span className={styles.logoutLabel}>Sign out</span>
-							</Button>
 						</header>
 
 						<div className={styles.portalHero}>
