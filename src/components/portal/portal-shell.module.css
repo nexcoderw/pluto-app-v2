@@ -195,7 +195,7 @@
 
 .portalTopbar {
 	display: grid;
-	grid-template-columns: auto minmax(0, 1fr) auto;
+	grid-template-columns: auto minmax(0, 1fr);
 	align-items: center;
 	gap: 0.85rem;
 	padding: 0.7rem;
@@ -210,6 +210,14 @@
 		rgba(255, 255, 255, 0.56);
 	box-shadow: 0 1.2rem 3rem rgba(16, 22, 33, 0.08);
 	backdrop-filter: blur(22px);
+}
+
+.topbarActions {
+	min-width: 0;
+	display: flex;
+	align-items: center;
+	justify-self: end;
+	gap: 0.7rem;
 }
 
 .topbarIdentity {
@@ -283,6 +291,8 @@
 
 .topbarLogoutButton {
 	gap: 0.5rem;
+	width: auto;
+	padding-inline: 1rem;
 	border-color: rgba(190, 18, 60, 0.2);
 	background: #be123c;
 	color: white;
@@ -767,6 +777,14 @@
 		width: 100%;
 	}
 
+	.topbarActions {
+		max-width: 100%;
+	}
+
+	.topbarCopy {
+		display: none;
+	}
+
 	.topbarLogoutButton {
 		width: var(--pluto-button-height);
 		padding: 0;
@@ -801,7 +819,7 @@
 	}
 
 	.portalTopbar {
-		grid-template-columns: auto minmax(0, 1fr) auto;
+		grid-template-columns: auto minmax(0, 1fr);
 		border-radius: 1.35rem;
 	}
 
