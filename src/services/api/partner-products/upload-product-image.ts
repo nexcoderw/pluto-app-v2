@@ -34,11 +34,6 @@ export async function uploadProductImage({
 		const response = await apiClient.post<PartnerProductResponse>(
 			PARTNER_PRODUCT_ROUTES.images(productId),
 			formData,
-			{
-				headers: {
-					'Content-Type': 'multipart/form-data',
-				},
-			},
 		);
 
 		return response.data;
