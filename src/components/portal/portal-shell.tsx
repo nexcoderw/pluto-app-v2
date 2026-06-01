@@ -1,32 +1,23 @@
 'use client';
 
-import type { ComponentType, ReactNode } from 'react';
+import type { ComponentType, CSSProperties, ReactNode } from 'react';
 import { useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
 	ArrowRight,
 	LogOut,
 	Menu,
 	Search,
-	ShieldCheck,
 	UserRound,
 	X,
 	type LucideProps,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { logoutUser, type UserAuthProfile } from '@/services/api/auth';
+import { PortalSignoutDialog } from './portal-signout-dialog';
 import styles from './portal-shell.module.css';
 
 export type PortalNavItem = {
@@ -78,11 +69,18 @@ export function PortalShell({
 	children,
 }: PortalShellProps) {
 	const router = useRouter();
+	const pathname = usePathname();
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
 	const [isLoggingOut, setIsLoggingOut] = useState(false);
 	const userInitials = getUserInitials(user.fullName || user.email);
-	const portalLabel = variant === 'partner' ? 'Partner portal' : 'Customer portal';
+	const portalLabel =
+		variant === 'partner' ? 'Partner portal' : 'Customer portal';
+	const avatarStyle = user.imageUrl
+		? ({
+				'--portal-avatar-image': `url("${user.imageUrl}")`,
+			} as CSSProperties)
+		: undefined;
 
 	// Event handlers: logout clears the secure refresh cookie and local access token.
 	async function handleLogout() {
@@ -118,7 +116,15 @@ export function PortalShell({
 					<aside className={styles.sidebar} data-open={isSidebarOpen}>
 						<div className={styles.sidebarBrand}>
 							<Link href="/" aria-label="Go to Pluto Booking home">
-								<span>PB</span>
+								<span>
+									<Image
+										src="/logo-b.png"
+										alt=""
+										width={28}
+										height={28}
+										priority
+									/>
+								</span>
 								<strong>Pluto Booking</strong>
 							</Link>
 							<Button
@@ -133,23 +139,19 @@ export function PortalShell({
 							</Button>
 						</div>
 
-						<div className={styles.sidebarProfile}>
-							<span className={styles.sidebarAvatar}>{userInitials}</span>
-							<span>
-								<strong>{user.fullName}</strong>
-								<small>{user.email}</small>
-							</span>
-						</div>
-
-						<nav className={styles.sidebarNav} aria-label={`${portalLabel} navigation`}>
+						<nav
+							className={styles.sidebarNav}
+							aria-label={`${portalLabel} navigation`}
+						>
 							{navigation.map((item) => {
 								const Icon = item.icon;
+								const isActive = item.active ?? pathname === item.href;
 
 								return (
 									<Link
 										key={item.label}
 										href={item.href}
-										data-active={Boolean(item.active)}
+										data-active={isActive}
 										onClick={() => setIsSidebarOpen(false)}
 									>
 										<Icon aria-hidden="true" />
@@ -158,25 +160,6 @@ export function PortalShell({
 								);
 							})}
 						</nav>
-
-						<div className={styles.sidebarFooter}>
-							<div>
-								<ShieldCheck aria-hidden="true" />
-								<span>
-									<strong>Protected session</strong>
-									<small>Only the correct account role can open this portal.</small>
-								</span>
-							</div>
-							<Button
-								type="button"
-								variant="outline"
-								className={styles.logoutButton}
-								onClick={() => setIsLogoutDialogOpen(true)}
-							>
-								<LogOut aria-hidden="true" />
-								Sign out
-							</Button>
-						</div>
 					</aside>
 
 					<div className={styles.portalShell}>
@@ -191,18 +174,29 @@ export function PortalShell({
 							>
 								<Menu aria-hidden="true" />
 							</Button>
-							<div>
-								<span>{portalLabel}</span>
-								<strong>{user.fullName}</strong>
+							<div className={styles.topbarIdentity}>
+								<span
+									className={styles.topbarAvatar}
+									data-has-image={Boolean(user.imageUrl)}
+									style={avatarStyle}
+									aria-hidden="true"
+								>
+									{user.imageUrl ? null : userInitials}
+								</span>
+								<span className={styles.topbarCopy}>
+									<small>{portalLabel}</small>
+									<strong>{user.fullName}</strong>
+									<em>{user.email}</em>
+								</span>
 							</div>
 							<Button
 								type="button"
-								variant="outline"
+								variant="destructive"
 								className={styles.topbarLogoutButton}
 								onClick={() => setIsLogoutDialogOpen(true)}
 							>
 								<LogOut aria-hidden="true" />
-								Sign out
+								<span className={styles.logoutLabel}>Sign out</span>
 							</Button>
 						</header>
 
@@ -222,7 +216,10 @@ export function PortalShell({
 							</Link>
 						</div>
 
-						<div className={styles.statusGrid} aria-label={`${portalLabel} overview`}>
+						<div
+							className={styles.statusGrid}
+							aria-label={`${portalLabel} overview`}
+						>
 							{metrics.map((metric) => {
 								const Icon = metric.icon;
 
@@ -259,43 +256,18 @@ export function PortalShell({
 				</section>
 			</main>
 
-			<AlertDialog open={isLogoutDialogOpen} onOpenChange={setIsLogoutDialogOpen}>
-				<AlertDialogContent className={styles.logoutDialog}>
-					<AlertDialogHeader>
-						<AlertDialogTitle>Sign out of Pluto Booking?</AlertDialogTitle>
-						<AlertDialogDescription>
-							Your secure session will end on this device. You will be returned
-							to the homepage and must sign in again before viewing protected
-							portal pages.
-						</AlertDialogDescription>
-					</AlertDialogHeader>
-					<AlertDialogFooter>
-						<AlertDialogCancel disabled={isLoggingOut}>
-							<X aria-hidden="true" />
-							Stay signed in
-						</AlertDialogCancel>
-						<AlertDialogAction
-							disabled={isLoggingOut}
-							onClick={(event) => {
-								event.preventDefault();
-								void handleLogout();
-							}}
-						>
-							<LogOut aria-hidden="true" />
-							{isLoggingOut ? 'Signing out...' : 'Sign out'}
-						</AlertDialogAction>
-					</AlertDialogFooter>
-				</AlertDialogContent>
-			</AlertDialog>
+			<PortalSignoutDialog
+				open={isLogoutDialogOpen}
+				isSigningOut={isLoggingOut}
+				onOpenChange={setIsLogoutDialogOpen}
+				onConfirm={() => void handleLogout()}
+			/>
 		</>
 	);
 }
 
 function getUserInitials(value: string) {
-	const [first = 'P', second = 'B'] = value
-		.trim()
-		.split(/\s+/)
-		.filter(Boolean);
+	const [first = 'P', second = 'B'] = value.trim().split(/\s+/).filter(Boolean);
 
 	return `${first.charAt(0)}${second.charAt(0)}`.toUpperCase();
 }
