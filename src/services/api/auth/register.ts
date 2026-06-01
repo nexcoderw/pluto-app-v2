@@ -1,7 +1,8 @@
 import { apiClient } from '../client';
 import { normalizeApiError } from '../errors';
-import { setUserAccessToken, storeUserSession } from '../token-store';
+import { setUserAccessToken } from '../token-store';
 import { USER_AUTH_ROUTES } from './routes';
+import { storeAuthenticatedUserSession } from './session-bootstrap';
 import type { PartnerType, UserAuthResponse, UserRole } from './types';
 
 // Request payload: the backend requires every registration field.
@@ -29,7 +30,7 @@ export async function registerUser(
 		);
 
 		setUserAccessToken(response.data.accessToken);
-		storeUserSession(response.data.user);
+		await storeAuthenticatedUserSession(response.data.user);
 		return response.data;
 	} catch (error) {
 		throw normalizeApiError(error);
