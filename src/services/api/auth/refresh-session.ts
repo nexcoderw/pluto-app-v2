@@ -1,6 +1,10 @@
 import { apiClient } from '../client';
 import { normalizeApiError } from '../errors';
-import { setUserAccessToken } from '../token-store';
+import {
+	clearUserSession,
+	setUserAccessToken,
+	storeUserSession,
+} from '../token-store';
 import { USER_AUTH_ROUTES } from './routes';
 import type { UserAuthResponse } from './types';
 
@@ -18,8 +22,15 @@ export async function refreshUserSession(): Promise<RefreshUserSessionResponse> 
 		);
 
 		setUserAccessToken(response.data.accessToken);
+		storeUserSession(response.data.user);
 		return response.data;
 	} catch (error) {
-		throw normalizeApiError(error);
+		const apiError = normalizeApiError(error);
+
+		if (apiError.statusCode === 401) {
+			clearUserSession();
+		}
+
+		throw apiError;
 	}
 }
