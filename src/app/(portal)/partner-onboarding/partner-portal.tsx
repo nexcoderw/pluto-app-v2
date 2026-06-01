@@ -2,6 +2,7 @@
 
 import { type ChangeEvent, type FormEvent, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { parsePhoneNumberFromString, type CountryCode } from 'libphonenumber-js';
 import {
 	BadgeCheck,
 	Building2,
@@ -12,6 +13,7 @@ import {
 	Home,
 	LayoutDashboard,
 	ListChecks,
+	Phone,
 	RefreshCcw,
 	Send,
 	Settings,
@@ -34,6 +36,13 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { PortalAccessBoundary } from '@/components/portal/portal-access-boundary';
 import {
@@ -53,6 +62,16 @@ import {
 	type PartnerProfileStatus,
 } from '@/services/api/partner-profile';
 import type { UserAuthProfile } from '@/services/api/auth';
+import {
+	PHONE_COUNTRIES,
+	RWANDA_PHONE_COUNTRY,
+	getPhoneCountryOption,
+} from '@/constants/phone-countries';
+import {
+	getPhonePlaceholder,
+	isValidInternationalPhoneNumber,
+	normalizePhoneNumber,
+} from '@/lib/phone-number';
 import { ApiRequestError } from '@/services/api/errors';
 import styles from './partner-portal.module.css';
 
@@ -87,6 +106,7 @@ type PartnerFormState = {
 	registrationNumber: string;
 	taxIdentification: string;
 	businessEmail: string;
+	businessPhoneCountry: CountryCode;
 	businessPhone: string;
 	representativeName: string;
 	representativeIdNumber: string;
@@ -98,6 +118,7 @@ type PartnerFormState = {
 };
 
 type PartnerFormErrors = Partial<Record<keyof PartnerFormState, string>>;
+type PartnerTextField = Exclude<keyof PartnerFormState, 'businessPhoneCountry'>;
 
 export function PartnerPortal() {
 	return (
@@ -166,6 +187,10 @@ function PartnerProfileForm({ profile }: { profile: PartnerProfile }) {
 	const saveMutation = useMutation({
 		mutationFn: async () => {
 			const validationErrors = validateForm(form, isCompany);
+			const businessPhone = normalizePhoneNumber(
+				form.businessPhoneCountry,
+				form.businessPhone,
+			);
 
 			if (Object.keys(validationErrors).length) {
 				setErrors(validationErrors);
@@ -178,7 +203,7 @@ function PartnerProfileForm({ profile }: { profile: PartnerProfile }) {
 						registrationNumber: form.registrationNumber.trim(),
 						taxIdentification: form.taxIdentification.trim(),
 						businessEmail: form.businessEmail.trim(),
-						businessPhone: form.businessPhone.trim(),
+						businessPhone,
 						representativeName: form.representativeName.trim(),
 						representativeIdNumber: form.representativeIdNumber.trim(),
 						description: form.description.trim(),
@@ -191,7 +216,7 @@ function PartnerProfileForm({ profile }: { profile: PartnerProfile }) {
 						legalName: form.legalName.trim(),
 						nationalIdNumber: form.nationalIdNumber.trim(),
 						businessEmail: form.businessEmail.trim(),
-						businessPhone: form.businessPhone.trim(),
+						businessPhone,
 						description: form.description.trim(),
 						addressLine: normalizeOptional(form.addressLine),
 						city: form.city.trim() || 'Kigali',
@@ -236,7 +261,7 @@ function PartnerProfileForm({ profile }: { profile: PartnerProfile }) {
 	});
 
 	function updateField(
-		field: keyof PartnerFormState,
+		field: PartnerTextField,
 		event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
 	) {
 		setForm((current) => ({ ...current, [field]: event.target.value }));
@@ -331,11 +356,18 @@ function PartnerProfileForm({ profile }: { profile: PartnerProfile }) {
 					error={errors.businessEmail}
 					onChange={(event) => updateField('businessEmail', event)}
 				/>
-				<FormField
-					label="Business phone"
-					value={form.businessPhone}
+				<BusinessPhoneField
+					country={form.businessPhoneCountry}
+					phone={form.businessPhone}
 					error={errors.businessPhone}
-					onChange={(event) => updateField('businessPhone', event)}
+					onCountryChange={(country) => {
+						setForm((current) => ({
+							...current,
+							businessPhoneCountry: country,
+						}));
+						setErrors((current) => ({ ...current, businessPhone: undefined }));
+					}}
+					onPhoneChange={(event) => updateField('businessPhone', event)}
 				/>
 				<FormField
 					label="City"
@@ -367,6 +399,7 @@ function PartnerProfileForm({ profile }: { profile: PartnerProfile }) {
 				<label className={styles.formField} data-wide="true">
 					<span>Profile description</span>
 					<Textarea
+						className={styles.descriptionTextarea}
 						value={form.description}
 						onChange={(event) => updateField('description', event)}
 						aria-invalid={Boolean(errors.description)}
@@ -580,6 +613,72 @@ function FormField({
 	);
 }
 
+function BusinessPhoneField({
+	country,
+	phone,
+	error,
+	onCountryChange,
+	onPhoneChange,
+}: {
+	country: CountryCode;
+	phone: string;
+	error?: string;
+	onCountryChange: (country: CountryCode) => void;
+	onPhoneChange: (event: ChangeEvent<HTMLInputElement>) => void;
+}) {
+	const countryOption = getPhoneCountryOption(country);
+
+	return (
+		<label className={styles.formField}>
+			<span>Business phone</span>
+			<div className={styles.phoneInputShell} data-invalid={Boolean(error)}>
+				<Select
+					value={country}
+					onValueChange={(value) => onCountryChange(value as CountryCode)}
+				>
+					<SelectTrigger
+						className={styles.countryCodeTrigger}
+						aria-label="Business phone country code"
+					>
+						<SelectValue>
+							<span>
+								<span>{countryOption.code}</span>
+								<strong>{countryOption.callingCode}</strong>
+							</span>
+						</SelectValue>
+					</SelectTrigger>
+					<SelectContent
+						className={styles.countryCodeMenu}
+						align="start"
+						alignItemWithTrigger={false}
+					>
+						{PHONE_COUNTRIES.map((option) => (
+							<SelectItem key={option.code} value={option.code}>
+								<span className={styles.countryOption}>
+									<strong>{option.callingCode}</strong>
+									<span>{option.name}</span>
+									<small>{option.code}</small>
+								</span>
+							</SelectItem>
+						))}
+					</SelectContent>
+				</Select>
+				<span className={styles.phoneDivider} aria-hidden="true" />
+				<Phone aria-hidden="true" />
+				<Input
+					type="tel"
+					value={phone}
+					onChange={onPhoneChange}
+					placeholder={getPhonePlaceholder(country)}
+					aria-invalid={Boolean(error)}
+					autoComplete="tel"
+				/>
+			</div>
+			{error ? <small>{error}</small> : null}
+		</label>
+	);
+}
+
 function StatusPill({ status }: { status: PartnerProfileStatus }) {
 	return (
 		<span className={styles.statusPill} data-status={status}>
@@ -658,7 +757,7 @@ function toFormState(profile: PartnerProfile): PartnerFormState {
 		registrationNumber: profile.registrationNumber ?? '',
 		taxIdentification: profile.taxIdentification ?? '',
 		businessEmail: profile.businessEmail ?? '',
-		businessPhone: profile.businessPhone ?? '',
+		...toPhoneFormState(profile.businessPhone),
 		representativeName: profile.representativeName ?? '',
 		representativeIdNumber: profile.representativeIdNumber ?? '',
 		description: profile.description ?? '',
@@ -671,7 +770,7 @@ function toFormState(profile: PartnerProfile): PartnerFormState {
 
 function validateForm(form: PartnerFormState, isCompany: boolean) {
 	const errors: PartnerFormErrors = {};
-	const requiredFields: (keyof PartnerFormState)[] = isCompany
+	const requiredFields: PartnerTextField[] = isCompany
 		? [
 				'businessName',
 				'registrationNumber',
@@ -695,7 +794,33 @@ function validateForm(form: PartnerFormState, isCompany: boolean) {
 		errors.businessEmail = 'Enter a valid business email.';
 	}
 
+	if (
+		form.businessPhone &&
+		!isValidInternationalPhoneNumber(
+			form.businessPhoneCountry,
+			form.businessPhone,
+		)
+	) {
+		errors.businessPhone = 'Use a valid phone number for the selected country code.';
+	}
+
 	return errors;
+}
+
+function toPhoneFormState(phone?: string | null) {
+	const parsedPhone = phone ? parsePhoneNumberFromString(phone) : undefined;
+
+	if (parsedPhone?.country) {
+		return {
+			businessPhoneCountry: parsedPhone.country,
+			businessPhone: parsedPhone.nationalNumber,
+		};
+	}
+
+	return {
+		businessPhoneCountry: RWANDA_PHONE_COUNTRY,
+		businessPhone: phone ?? '',
+	};
 }
 
 function normalizeOptional(value: string) {
