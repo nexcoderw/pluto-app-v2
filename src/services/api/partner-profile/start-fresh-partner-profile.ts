@@ -1,5 +1,6 @@
 import { apiClient } from '../client';
 import { normalizeApiError } from '../errors';
+import { cachePartnerProfileStatus } from './cache-partner-profile';
 import { PARTNER_PROFILE_ROUTES } from './routes';
 import type { PartnerProfileResponse } from './types';
 
@@ -10,7 +11,7 @@ export async function startFreshPartnerProfile(): Promise<PartnerProfileResponse
 			PARTNER_PROFILE_ROUTES.startFresh,
 		);
 
-		return response.data;
+		return cachePartnerProfileStatus(response.data);
 	} catch (error) {
 		throw normalizeApiError(error);
 	}
