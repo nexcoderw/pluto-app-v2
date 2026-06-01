@@ -1,0 +1,390 @@
+.listingsPanel {
+	display: grid;
+	gap: 1rem;
+	padding: clamp(1rem, 2.4vw, 1.35rem);
+	border: 1px solid rgba(255, 255, 255, 0.72);
+	border-radius: 1.45rem;
+	background: rgba(255, 255, 255, 0.66);
+	box-shadow: 0 1.2rem 3rem rgba(16, 22, 33, 0.08);
+	backdrop-filter: blur(22px);
+}
+
+.panelHeader {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	gap: 0.85rem;
+	align-items: end;
+}
+
+.panelHeader > span {
+	grid-column: 1 / -1;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.42rem;
+	color: #02006c;
+	font-size: 0.73rem;
+	font-weight: 860;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.panelHeader h2,
+.statePanel h3 {
+	margin: 0;
+	color: #17171f;
+	font-size: clamp(1.25rem, 3vw, 1.75rem);
+	font-weight: 840;
+	letter-spacing: 0;
+	line-height: 1.08;
+}
+
+.panelHeader p,
+.statePanel p {
+	margin: 0.35rem 0 0;
+	color: rgba(23, 23, 31, 0.62);
+	font-size: 0.9rem;
+	line-height: 1.55;
+}
+
+.createButton,
+.editButton,
+.secondaryLink {
+	height: var(--pluto-button-height);
+	min-height: var(--pluto-button-height);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	padding: 0 1.2rem;
+	border-radius: 999px;
+	font-size: 0.78rem;
+	font-weight: 830;
+	text-decoration: none;
+	cursor: pointer;
+	transition:
+		transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+		background 180ms ease,
+		border-color 180ms ease,
+		box-shadow 180ms ease;
+}
+
+.createButton,
+.editButton {
+	border: 1px solid transparent;
+	background: #02006c;
+	color: white;
+	box-shadow: 0 0.9rem 2rem rgba(2, 0, 108, 0.2);
+}
+
+.createButton:hover,
+.editButton:hover {
+	background: #09068f;
+	transform: translateY(-1px);
+}
+
+.secondaryLink {
+	border: 1px solid rgba(2, 0, 108, 0.16);
+	background: rgba(255, 255, 255, 0.72);
+	color: #02006c;
+}
+
+.secondaryLink:hover {
+	border-color: rgba(2, 0, 108, 0.28);
+	background: rgba(255, 255, 255, 0.9);
+	transform: translateY(-1px);
+}
+
+.createButton svg,
+.editButton svg,
+.secondaryLink svg,
+.sortButton svg,
+.statePanel svg,
+.pagination svg {
+	width: 1rem;
+	height: 1rem;
+}
+
+.filters {
+	display: grid;
+	grid-template-columns: minmax(16rem, 1fr) repeat(4, minmax(10rem, auto));
+	gap: 0.65rem;
+	align-items: center;
+}
+
+.selectTrigger {
+	width: 100%;
+	min-width: 10rem;
+	color: #17171f;
+}
+
+.selectTrigger svg {
+	color: #02006c;
+}
+
+.sortButton {
+	border-radius: 999px;
+	font-weight: 820;
+}
+
+.listingGrid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 0.85rem;
+}
+
+.listingCard,
+.skeletonCard {
+	min-width: 0;
+	display: grid;
+	overflow: hidden;
+	border: 1px solid rgba(2, 0, 108, 0.08);
+	border-radius: 1.25rem;
+	background: rgba(255, 255, 255, 0.58);
+	box-shadow: 0 1rem 2.4rem rgba(16, 22, 33, 0.06);
+}
+
+.listingCard {
+	animation: cardIn 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.cover {
+	position: relative;
+	aspect-ratio: 16 / 10;
+	overflow: hidden;
+	background: rgba(2, 0, 108, 0.07);
+}
+
+.cover img {
+	object-fit: cover;
+}
+
+.cover > span:not(.statusPill) {
+	width: 100%;
+	height: 100%;
+	display: grid;
+	place-items: center;
+	color: #02006c;
+}
+
+.cover > span:not(.statusPill) svg {
+	width: 2rem;
+	height: 2rem;
+}
+
+.statusPill {
+	position: absolute;
+	left: 0.75rem;
+	top: 0.75rem;
+	display: inline-flex;
+	align-items: center;
+	min-height: 2rem;
+	padding: 0 0.78rem;
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.86);
+	color: #02006c;
+	font-size: 0.68rem;
+	font-weight: 870;
+	text-transform: capitalize;
+	box-shadow: 0 0.6rem 1.5rem rgba(16, 22, 33, 0.1);
+	backdrop-filter: blur(12px);
+}
+
+.statusPill[data-status='APPROVED'] {
+	color: #0f7a4a;
+}
+
+.statusPill[data-status='REJECTED'],
+.statusPill[data-status='SUSPENDED'] {
+	color: #be123c;
+}
+
+.statusPill[data-status='PENDING_REVIEW'] {
+	color: #946200;
+}
+
+.cardBody {
+	min-width: 0;
+	display: grid;
+	gap: 0.75rem;
+	padding: 0.95rem;
+}
+
+.cardBody strong {
+	display: block;
+	overflow: hidden;
+	color: #17171f;
+	font-size: 0.98rem;
+	font-weight: 850;
+	line-height: 1.25;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.cardBody small,
+.cardBody p,
+.cardMeta span {
+	color: rgba(23, 23, 31, 0.58);
+}
+
+.cardBody small {
+	display: block;
+	margin-top: 0.18rem;
+	font-size: 0.75rem;
+	font-weight: 700;
+}
+
+.cardBody p {
+	display: -webkit-box;
+	min-height: 2.75rem;
+	margin: 0;
+	overflow: hidden;
+	font-size: 0.82rem;
+	line-height: 1.45;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+}
+
+.cardMeta {
+	display: grid;
+	gap: 0.42rem;
+}
+
+.cardMeta span {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.42rem;
+	font-size: 0.76rem;
+	font-weight: 740;
+}
+
+.cardMeta svg {
+	width: 0.95rem;
+	height: 0.95rem;
+	color: #02006c;
+}
+
+.cardActions {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.55rem;
+}
+
+.statePanel {
+	display: grid;
+	justify-items: center;
+	gap: 0.75rem;
+	padding: clamp(1.5rem, 5vw, 3rem);
+	border: 1px solid rgba(2, 0, 108, 0.08);
+	border-radius: 1.25rem;
+	background: rgba(255, 255, 255, 0.58);
+	text-align: center;
+}
+
+.statePanel > svg {
+	width: 3.2rem;
+	height: 3.2rem;
+	padding: 0.85rem;
+	border-radius: 999px;
+	background: rgba(2, 0, 108, 0.08);
+	color: #02006c;
+}
+
+.statePanel[data-tone='error'] > svg {
+	background: rgba(190, 18, 60, 0.08);
+	color: #be123c;
+}
+
+.stateActions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0.65rem;
+}
+
+.skeletonCard {
+	gap: 0.75rem;
+	padding: 0.85rem;
+}
+
+.skeletonCover {
+	aspect-ratio: 16 / 10;
+	border-radius: 1rem;
+}
+
+.skeletonLine {
+	height: 1.2rem;
+	border-radius: 999px;
+}
+
+.skeletonText {
+	height: 0.9rem;
+	border-radius: 999px;
+}
+
+.pagination {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+	padding-top: 0.25rem;
+}
+
+.pagination button {
+	border-radius: 999px;
+}
+
+.pagination span {
+	color: rgba(23, 23, 31, 0.62);
+	font-size: 0.8rem;
+	font-weight: 780;
+}
+
+@keyframes cardIn {
+	from {
+		opacity: 0;
+		transform: translateY(12px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@media (max-width: 1180px) {
+	.filters,
+	.listingGrid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.filters > :first-child {
+		grid-column: 1 / -1;
+	}
+}
+
+@media (max-width: 720px) {
+	.panelHeader,
+	.filters,
+	.listingGrid,
+	.cardActions {
+		grid-template-columns: 1fr;
+	}
+
+	.createButton,
+	.editButton,
+	.secondaryLink,
+	.sortButton {
+		width: 100%;
+	}
+
+	.pagination {
+		display: grid;
+		grid-template-columns: 1fr;
+		text-align: center;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.listingCard {
+		animation: none;
+	}
+}
