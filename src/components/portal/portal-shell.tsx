@@ -185,7 +185,7 @@ export function PortalShell({
 										{user.imageUrl ? null : userInitials}
 									</span>
 									<span className={styles.topbarCopy}>
-										<small>{portalLabel}</small>
+										{/* <em>{portalLabel}</em> */}
 										<strong>{user.fullName}</strong>
 										<em>{user.email}</em>
 									</span>

@@ -460,7 +460,7 @@ function ListingsError({ onRetry }: { onRetry: () => void }) {
 				Refresh the list before changing filters or creating another listing.
 			</p>
 			<Button type="button" onClick={onRetry}>
-				<RefreshCcw aria-hidden="true" />
+				<RefreshCcw aria-hidden="true" className={styles.createButton} />
 				Retry
 			</Button>
 		</div>
@@ -481,7 +481,7 @@ function ListingsEmpty({ onReset }: { onReset: () => void }) {
 					<Plus aria-hidden="true" />
 					Create listing
 				</Link>
-				<Button type="button" variant="outline" onClick={onReset}>
+				<Button type="button" variant="outline" onClick={onReset} className={styles.resetButton}>
 					<RefreshCcw aria-hidden="true" />
 					Clear filters
 				</Button>

@@ -104,6 +104,18 @@
 	height: 1rem;
 }
 
+.resetButton {
+	border: 1px solid #05006C;
+	background: transparent;
+	color: var(--primary-color);
+	border-radius: 999px;
+}
+
+.resetButton:hover {
+	border-color: var(--primary-color);;
+	transform: translateY(-1px);
+}
+
 .filters {
 	display: grid;
 	grid-template-columns: minmax(16rem, 1fr) repeat(4, minmax(10rem, auto));

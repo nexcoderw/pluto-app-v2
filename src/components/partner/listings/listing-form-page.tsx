@@ -105,7 +105,7 @@ function ListingFormWorkspace({
 							mode === 'edit' ? productQuery.refetch() : profileQuery.refetch()
 						}
 					>
-						<RefreshCcw aria-hidden="true" />
+						<RefreshCcw aria-hidden="true" className="rounded-full" />
 						Retry
 					</Button>
 				}
