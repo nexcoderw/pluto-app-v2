@@ -90,7 +90,7 @@ function PartnerDashboardContent({ user }: { user: UserAuthProfile }) {
 				title="Partner status unavailable"
 				description="We could not confirm your approval status. Refresh before opening dashboard tools."
 				action={
-					<Button type="button" onClick={() => profileQuery.refetch()}>
+					<Button type="button" onClick={() => profileQuery.refetch()} className="rounded-full">
 						<RefreshCcw aria-hidden="true" />
 						Retry
 					</Button>

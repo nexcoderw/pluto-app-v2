@@ -306,9 +306,10 @@
 	padding: 0 1.15rem;
 	border-radius: 999px;
 	font-size: 0.78rem;
-	font-weight: 840;
+	font-weight: 800;
 	text-decoration: none;
 	cursor: pointer;
+	text-transform: capitalize;
 }
 
 .backLink,
