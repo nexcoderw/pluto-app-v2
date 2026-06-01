@@ -2,7 +2,10 @@
 
 import { type ChangeEvent, type FormEvent, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { parsePhoneNumberFromString, type CountryCode } from 'libphonenumber-js';
+import {
+	parsePhoneNumberFromString,
+	type CountryCode,
+} from 'libphonenumber-js';
 import {
 	BadgeCheck,
 	Building2,
@@ -58,6 +61,8 @@ import {
 	saveIndividualPartnerProfile,
 	startFreshPartnerProfile,
 	submitPartnerProfile,
+	uploadPartnerDocument,
+	type PartnerDocument,
 	type PartnerProfile,
 	type PartnerProfileStatus,
 } from '@/services/api/partner-profile';
@@ -76,7 +81,12 @@ import { ApiRequestError } from '@/services/api/errors';
 import styles from './partner-portal.module.css';
 
 const partnerNavigation: PortalNavItem[] = [
-	{ href: '/partner-onboarding', label: 'Overview', icon: LayoutDashboard, active: true },
+	{
+		href: '/partner-onboarding',
+		label: 'Overview',
+		icon: LayoutDashboard,
+		active: true,
+	},
 	{ href: '/partner-onboarding', label: 'Listings', icon: Building2 },
 	{ href: '/partner-onboarding', label: 'Documents', icon: FileText },
 	{ href: '/partner-onboarding', label: 'Review queue', icon: ClipboardCheck },
@@ -88,7 +98,8 @@ const partnerActions: PortalAction[] = [
 	{
 		href: '/partner-onboarding',
 		label: 'Create first listing',
-		description: 'Approved partners can prepare listing content and pricing here.',
+		description:
+			'Approved partners can prepare listing content and pricing here.',
 		icon: Building2,
 	},
 	{
@@ -131,11 +142,7 @@ export function PartnerPortal() {
 	);
 }
 
-function PartnerPortalContent({
-	user,
-}: {
-	user: UserAuthProfile;
-}) {
+function PartnerPortalContent({ user }: { user: UserAuthProfile }) {
 	const profileQuery = useQuery({
 		queryKey: ['partner-profile'],
 		queryFn: getPartnerProfile,
@@ -181,8 +188,13 @@ function PartnerProfileWorkflow({ profile }: { profile: PartnerProfile }) {
 
 function PartnerProfileForm({ profile }: { profile: PartnerProfile }) {
 	const queryClient = useQueryClient();
-	const [form, setForm] = useState<PartnerFormState>(() => toFormState(profile));
+	const [form, setForm] = useState<PartnerFormState>(() =>
+		toFormState(profile),
+	);
 	const [errors, setErrors] = useState<PartnerFormErrors>({});
+	const [documentTitle, setDocumentTitle] = useState('');
+	const [documentDescription, setDocumentDescription] = useState('');
+	const [documentFile, setDocumentFile] = useState<File | null>(null);
 	const [isSubmitDialogOpen, setIsSubmitDialogOpen] = useState(false);
 	const [isStartFreshDialogOpen, setIsStartFreshDialogOpen] = useState(false);
 	const isCompany = profile.partnerType === 'COMPANY';
@@ -263,6 +275,34 @@ function PartnerProfileForm({ profile }: { profile: PartnerProfile }) {
 		onError: (error) => toast.error(getErrorMessage(error)),
 	});
 
+	const uploadDocumentMutation = useMutation({
+		mutationFn: () => {
+			if (!documentTitle.trim()) {
+				throw new Error('Add a clear document title before uploading.');
+			}
+
+			if (!documentFile) {
+				throw new Error('Choose a verification document to upload.');
+			}
+
+			return uploadPartnerDocument({
+				title: documentTitle.trim(),
+				description: normalizeOptional(documentDescription),
+				file: documentFile,
+			});
+		},
+		onSuccess: () => {
+			setDocumentTitle('');
+			setDocumentDescription('');
+			setDocumentFile(null);
+			void queryClient.invalidateQueries({ queryKey: ['partner-profile'] });
+			toast.success('Document uploaded.', {
+				description: 'Admins can review it with your partner application.',
+			});
+		},
+		onError: (error) => toast.error(getErrorMessage(error)),
+	});
+
 	function updateField(
 		field: PartnerTextField,
 		event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -280,8 +320,14 @@ function PartnerProfileForm({ profile }: { profile: PartnerProfile }) {
 		<section className={styles.profilePanel}>
 			<div className={styles.profileHeader}>
 				<div>
-					<span>{isCompany ? 'Company verification' : 'Identity verification'}</span>
-					<h2>{profile.status === 'REJECTED' ? 'Update your application' : 'Complete partner profile'}</h2>
+					<span>
+						{isCompany ? 'Company verification' : 'Identity verification'}
+					</span>
+					<h2>
+						{profile.status === 'REJECTED'
+							? 'Update your application'
+							: 'Complete partner profile'}
+					</h2>
 					<p>
 						{isCompany
 							? 'Submit business, tax, and representative information so admins can verify the company.'
@@ -296,7 +342,10 @@ function PartnerProfileForm({ profile }: { profile: PartnerProfile }) {
 					<ShieldAlert aria-hidden="true" />
 					<span>
 						<strong>Application rejected</strong>
-						<small>{profile.rejectionReason ?? 'Please review your information and submit again.'}</small>
+						<small>
+							{profile.rejectionReason ??
+								'Please review your information and submit again.'}
+						</small>
 					</span>
 				</div>
 			) : null}
@@ -413,6 +462,22 @@ function PartnerProfileForm({ profile }: { profile: PartnerProfile }) {
 					{errors.description ? <small>{errors.description}</small> : null}
 				</label>
 
+				<DocumentUploadPanel
+					documents={profile.documents}
+					title={documentTitle}
+					description={documentDescription}
+					file={documentFile}
+					isUploading={uploadDocumentMutation.isPending}
+					onTitleChange={(event) => setDocumentTitle(event.target.value)}
+					onDescriptionChange={(event) =>
+						setDocumentDescription(event.target.value)
+					}
+					onFileChange={(event) => {
+						setDocumentFile(event.target.files?.[0] ?? null);
+					}}
+					onUpload={() => uploadDocumentMutation.mutate()}
+				/>
+
 				<div className={styles.formActions}>
 					{profile.status === 'REJECTED' ? (
 						<Button
@@ -441,13 +506,16 @@ function PartnerProfileForm({ profile }: { profile: PartnerProfile }) {
 				</div>
 			</form>
 
-			<AlertDialog open={isSubmitDialogOpen} onOpenChange={setIsSubmitDialogOpen}>
+			<AlertDialog
+				open={isSubmitDialogOpen}
+				onOpenChange={setIsSubmitDialogOpen}
+			>
 				<AlertDialogContent className={styles.dialog}>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Submit partner profile?</AlertDialogTitle>
 						<AlertDialogDescription>
-							Your profile will be locked while admins review it. If it is rejected,
-							you can update the application and resubmit it again.
+							Your profile will be locked while admins review it. If it is
+							rejected, you can update the application and resubmit it again.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
@@ -469,13 +537,16 @@ function PartnerProfileForm({ profile }: { profile: PartnerProfile }) {
 				</AlertDialogContent>
 			</AlertDialog>
 
-			<AlertDialog open={isStartFreshDialogOpen} onOpenChange={setIsStartFreshDialogOpen}>
+			<AlertDialog
+				open={isStartFreshDialogOpen}
+				onOpenChange={setIsStartFreshDialogOpen}
+			>
 				<AlertDialogContent className={styles.dialog}>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Start a fresh application?</AlertDialogTitle>
 						<AlertDialogDescription>
-							The current application data will be archived for audit history and
-							your editable form will be reset.
+							The current application data will be archived for audit history
+							and your editable form will be reset.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
@@ -500,13 +571,111 @@ function PartnerProfileForm({ profile }: { profile: PartnerProfile }) {
 	);
 }
 
+function DocumentUploadPanel({
+	documents,
+	title,
+	description,
+	file,
+	isUploading,
+	onTitleChange,
+	onDescriptionChange,
+	onFileChange,
+	onUpload,
+}: {
+	documents: PartnerDocument[];
+	title: string;
+	description: string;
+	file: File | null;
+	isUploading: boolean;
+	onTitleChange: (event: ChangeEvent<HTMLInputElement>) => void;
+	onDescriptionChange: (event: ChangeEvent<HTMLTextAreaElement>) => void;
+	onFileChange: (event: ChangeEvent<HTMLInputElement>) => void;
+	onUpload: () => void;
+}) {
+	return (
+		<section className={styles.documentPanel} data-wide="true">
+			<div className={styles.documentPanelHeader}>
+				<div>
+					<span>Verification documents</span>
+					<h3>Upload private review files</h3>
+					<p>
+						Add identity, registration, or tax files that support this
+						application. Files stay private and are only visible to authorized
+						admins.
+					</p>
+				</div>
+				<UploadCloud aria-hidden="true" />
+			</div>
+
+			<div className={styles.documentUploadGrid}>
+				<FormField
+					label="Document title"
+					value={title}
+					onChange={onTitleChange}
+				/>
+				<label className={styles.formField}>
+					<span>Document file</span>
+					<Input
+						type="file"
+						accept=".pdf,image/png,image/jpeg,image/webp"
+						onChange={onFileChange}
+					/>
+					{file ? <small className={styles.fileHint}>{file.name}</small> : null}
+				</label>
+				<label className={styles.formField} data-wide="true">
+					<span>
+						Document note
+						<em>Optional</em>
+					</span>
+					<Textarea
+						value={description}
+						onChange={onDescriptionChange}
+						placeholder="Add context for the admin reviewer."
+					/>
+				</label>
+			</div>
+
+			<div className={styles.documentActions}>
+				<Button type="button" onClick={onUpload} disabled={isUploading}>
+					<UploadCloud aria-hidden="true" />
+					{isUploading ? 'Uploading...' : 'Upload document'}
+				</Button>
+			</div>
+
+			<div className={styles.documentList}>
+				{documents.length ? (
+					documents.map((document) => (
+						<div key={document.id} className={styles.documentItem}>
+							<FileText aria-hidden="true" />
+							<span>
+								<strong>{document.title}</strong>
+								<small>
+									{document.file.originalName} ·{' '}
+									{formatFileSize(document.file.sizeBytes)}
+								</small>
+							</span>
+							<StatusPill status={document.status} />
+						</div>
+					))
+				) : (
+					<p>No documents uploaded yet.</p>
+				)}
+			</div>
+		</section>
+	);
+}
+
 function ApprovedPartnerWorkspace({ profile }: { profile: PartnerProfile }) {
 	const isCompany = profile.partnerType === 'COMPANY';
 
 	return (
 		<section className={shellStyles.featureBand}>
 			<div>
-				<h2>{isCompany ? 'Business partner workspace' : 'Individual partner workspace'}</h2>
+				<h2>
+					{isCompany
+						? 'Business partner workspace'
+						: 'Individual partner workspace'}
+				</h2>
 				<p>
 					Your profile is approved. You can now prepare listings, upload
 					supporting media, manage availability, and build your marketplace
@@ -546,7 +715,9 @@ function PendingReviewPanel({ profile }: { profile: PartnerProfile }) {
 				</div>
 				<div className={styles.timeline}>
 					<strong>Submitted</strong>
-					<span>{formatDate(profile.resubmittedAt ?? profile.submittedAt)}</span>
+					<span>
+						{formatDate(profile.resubmittedAt ?? profile.submittedAt)}
+					</span>
 				</div>
 			</div>
 		</section>
@@ -555,7 +726,10 @@ function PendingReviewPanel({ profile }: { profile: PartnerProfile }) {
 
 function PartnerProfileSkeleton() {
 	return (
-		<section className={styles.profilePanel} aria-label="Loading partner profile">
+		<section
+			className={styles.profilePanel}
+			aria-label="Loading partner profile"
+		>
 			<div className={styles.skeletonLine} />
 			<div className={styles.skeletonGrid}>
 				<div />
@@ -575,7 +749,9 @@ function PartnerProfileError({ onRetry }: { onRetry: () => void }) {
 				<div>
 					<span>Profile unavailable</span>
 					<h2>We could not load your partner profile</h2>
-					<p>Try again before submitting or editing your verification details.</p>
+					<p>
+						Try again before submitting or editing your verification details.
+					</p>
 				</div>
 				<Button type="button" onClick={onRetry}>
 					<RefreshCcw aria-hidden="true" />
@@ -838,7 +1014,13 @@ function validateForm(form: PartnerFormState, isCompany: boolean) {
 				'description',
 				'addressLine',
 			]
-		: ['legalName', 'nationalIdNumber', 'businessEmail', 'businessPhone', 'description'];
+		: [
+				'legalName',
+				'nationalIdNumber',
+				'businessEmail',
+				'businessPhone',
+				'description',
+			];
 
 	requiredFields.forEach((field) => {
 		if (!form[field].trim()) {
@@ -846,7 +1028,10 @@ function validateForm(form: PartnerFormState, isCompany: boolean) {
 		}
 	});
 
-	if (form.businessEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.businessEmail)) {
+	if (
+		form.businessEmail &&
+		!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.businessEmail)
+	) {
 		errors.businessEmail = 'Enter a valid business email.';
 	}
 
@@ -857,7 +1042,8 @@ function validateForm(form: PartnerFormState, isCompany: boolean) {
 			form.businessPhone,
 		)
 	) {
-		errors.businessPhone = 'Use a valid phone number for the selected country code.';
+		errors.businessPhone =
+			'Use a valid phone number for the selected country code.';
 	}
 
 	return errors;
@@ -918,4 +1104,12 @@ function formatDate(value?: string | null) {
 		day: 'numeric',
 		year: 'numeric',
 	}).format(new Date(value));
+}
+
+function formatFileSize(sizeBytes: number) {
+	if (sizeBytes < 1024 * 1024) {
+		return `${Math.max(1, Math.round(sizeBytes / 1024))} KB`;
+	}
+
+	return `${(sizeBytes / (1024 * 1024)).toFixed(1)} MB`;
 }
