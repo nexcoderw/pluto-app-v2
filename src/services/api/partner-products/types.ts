@@ -5,7 +5,7 @@ import type {
 	ProductListRequest,
 	ProductListResponse,
 	ProductStatus,
-} from '../products';
+} from "../products";
 
 export type CreateCarProductRequest = {
 	title: string;
@@ -34,11 +34,73 @@ export type CreateCarProductRequest = {
 	depositAmount?: string;
 };
 
-export type CreateListingRequest = CreateCarProductRequest & {
+export type CreateApartmentProductRequest = ProductBaseRequest & {
+	bedrooms: number;
+	bathrooms: number;
+	kitchens?: number;
+	livingRooms?: number;
+	furnished?: boolean;
+	wifi?: boolean;
+	parking?: boolean;
+	floorNumber?: number;
+	maxGuests: number;
+	hasBalcony?: boolean;
+	hasSecurity?: boolean;
+};
+
+export type CreateHotelRoomProductRequest = ProductBaseRequest & {
+	hotelName: string;
+	roomType: string;
+	bedType: string;
+	roomSizeSqm?: number;
+	breakfastIncluded?: boolean;
+	checkInTime: string;
+	checkOutTime: string;
+	maxGuests: number;
+	roomNumber?: string;
+	hasAirConditioning?: boolean;
+	hasPrivateBathroom?: boolean;
+};
+
+export type CreateAirbnbHouseProductRequest = ProductBaseRequest & {
+	houseType: string;
+	entirePlace?: boolean;
+	selfCheckIn?: boolean;
+	houseRules?: string;
+	cleaningFee?: string;
+	bedrooms: number;
+	bathrooms: number;
+	maxGuests: number;
+	allowPets?: boolean;
+	allowSmoking?: boolean;
+	allowParties?: boolean;
+};
+
+export type ProductBaseRequest = {
+	title: string;
+	description: string;
+	shortDescription?: string;
+	city: string;
+	country?: string;
+	basePrice: string;
+	currency?: string;
+	pricingUnit?: PricingUnit;
+};
+
+export type CreateListingRequest = (
+	| CreateCarProductRequest
+	| CreateApartmentProductRequest
+	| CreateHotelRoomProductRequest
+	| CreateAirbnbHouseProductRequest
+) & {
 	category: ProductCategory;
 };
 
-export type UpdateListingRequest = Partial<CreateCarProductRequest>;
+export type UpdateListingRequest = Partial<
+	CreateListingRequest & {
+		category?: ProductCategory;
+	}
+>;
 
 export type DeleteListingRequest = {
 	confirmationTitle: string;
