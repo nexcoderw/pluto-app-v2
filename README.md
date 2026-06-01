@@ -4,9 +4,9 @@ PLUTO Web App is the public-facing marketplace application for the PLUTO travel 
 
 This application is used by:
 
-* Public visitors
-* Customers
-* Partners
+- Public visitors
+- Customers
+- Partners
 
 It allows users to browse and book cars, apartments, hotel rooms, and Airbnb-style houses. It also allows approved partners to manage their listings, bookings, and business activities.
 
@@ -44,24 +44,24 @@ This app handles the customer and partner side of PLUTO.
 
 It must support:
 
-* Public product browsing
-* Product search and filtering
-* Product details
-* Customer registration
-* Customer login
-* Google login
-* Partner registration
-* Customer dashboard
-* Partner dashboard
-* Booking creation
-* Booking tracking
-* Booking history
-* Payment flow
-* Profile management
-* Partner product submission
-* Partner product status tracking
-* Partner booking management
-* Google Cloud Storage upload flow through backend signed URLs
+- Public product browsing
+- Product search and filtering
+- Product details
+- Customer registration
+- Customer login
+- Google login
+- Partner registration
+- Customer dashboard
+- Partner dashboard
+- Booking creation
+- Booking tracking
+- Booking history
+- Payment flow
+- Profile management
+- Partner product submission
+- Partner product status tracking
+- Partner booking management
+- Cloudinary upload flow through backend storage endpoints
 
 ---
 
@@ -69,16 +69,16 @@ It must support:
 
 Do not build these features in this app:
 
-* Admin dashboard
-* Superadmin dashboard
-* Partner approval management
-* Product approval management
-* Audit log management
-* Global payment supervision
-* User role management
-* Admin creation
-* Platform-wide settings
-* Security event monitoring
+- Admin dashboard
+- Superadmin dashboard
+- Partner approval management
+- Product approval management
+- Audit log management
+- Global payment supervision
+- User role management
+- Admin creation
+- Platform-wide settings
+- Security event monitoring
 
 Those features belong in:
 
@@ -190,18 +190,18 @@ NEXT_PUBLIC_ENABLE_GOOGLE_LOGIN=true
 
 Rules:
 
-* Never commit `.env.local`.
-* Never expose backend secrets in frontend environment variables.
-* Only variables prefixed with `NEXT_PUBLIC_` are exposed to the browser.
-* Do not place JWT secrets, SMTP credentials, database URLs, or cloud storage private keys in this app.
+- Never commit `.env.local`.
+- Never expose backend secrets in frontend environment variables.
+- Only variables prefixed with `NEXT_PUBLIC_` are exposed to the browser.
+- Do not place JWT secrets, SMTP credentials, database URLs, or cloud storage private keys in this app.
 
 Form UI rules:
 
-* Every input must use `src/components/ui/input.tsx`.
-* Every input must include a visible leading icon.
-* Inputs, select triggers, and buttons must share the same height as the login input.
-* Select triggers must use `src/components/ui/select.tsx`.
-* Every button must include an icon.
+- Every input must use `src/components/ui/input.tsx`.
+- Every input must include a visible leading icon.
+- Inputs, select triggers, and buttons must share the same height as the login input.
+- Select triggers must use `src/components/ui/select.tsx`.
+- Every button must include an icon.
 
 ---
 
@@ -499,24 +499,24 @@ This app must not use admin endpoints like:
 
 The app supports:
 
-* Email/password login
-* Google login
-* Customer registration
-* Partner registration
-* Complete profile flow after Google login
-* Password setup after Google login
-* Logout
-* Session refresh
+- Email/password login
+- Google login
+- Customer registration
+- Partner registration
+- Complete profile flow after Google login
+- Password setup after Google login
+- Logout
+- Session refresh
 
 Rules:
 
-* If Google account lacks phone number, redirect user to complete profile form.
-* If Google registration lacks required fields, do not allow full dashboard access until profile is complete.
-* Password can be set after Google login.
-* Admin and superadmin users should be redirected to the admin app.
-* Pending partners should be sent to `/partner/verification`.
-* Approved partners should access `/partner/dashboard`.
-* Suspended users must be blocked.
+- If Google account lacks phone number, redirect user to complete profile form.
+- If Google registration lacks required fields, do not allow full dashboard access until profile is complete.
+- Password can be set after Google login.
+- Admin and superadmin users should be redirected to the admin app.
+- Pending partners should be sent to `/partner/verification`.
+- Approved partners should access `/partner/dashboard`.
+- Suspended users must be blocked.
 
 Recommended post-login redirect logic:
 
@@ -775,18 +775,18 @@ PARTIALLY_REFUNDED
 
 ---
 
-# 17. Google Cloud Storage Upload Flow
+# 17. Cloudinary Upload Flow
 
 This app must not upload files directly to the backend as base64.
 
-Use signed upload URL flow:
+Use the backend upload flow:
 
 ```txt
 1. User selects file
 2. Frontend validates file type and size
-3. Frontend requests signed upload URL from backend
-4. Frontend uploads file directly to Google Cloud Storage
-5. Frontend confirms upload to backend
+3. Frontend sends multipart file to the backend endpoint
+4. Backend uploads to Cloudinary or local fallback storage
+5. Backend returns FileAsset metadata
 6. Backend saves FileAsset record
 7. Product/profile/document stores file reference
 ```
@@ -853,10 +853,10 @@ Example:
 
 ```ts
 export const queryKeys = {
-  products: ['products'],
-  product: (id: string) => ['products', id],
-  myBookings: ['me', 'bookings'],
-  partnerProducts: ['partner', 'products'],
+  products: ["products"],
+  product: (id: string) => ["products", id],
+  myBookings: ["me", "bookings"],
+  partnerProducts: ["partner", "products"],
 };
 ```
 
@@ -1143,7 +1143,7 @@ git add .
 git commit -m "Add partner product creation flow"
 
 git add .
-git commit -m "Add Google Cloud Storage upload flow to PLUTO web app"
+git commit -m "Add Cloudinary upload flow to PLUTO web app"
 ```
 
 ---
