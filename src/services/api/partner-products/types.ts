@@ -1,8 +1,10 @@
 import type {
 	PricingUnit,
 	Product,
+	ProductCategory,
 	ProductListRequest,
 	ProductListResponse,
+	ProductStatus,
 } from '../products';
 
 export type CreateCarProductRequest = {
@@ -32,10 +34,44 @@ export type CreateCarProductRequest = {
 	depositAmount?: string;
 };
 
-export type PartnerProductListRequest = ProductListRequest;
+export type CreateListingRequest = CreateCarProductRequest & {
+	category: ProductCategory;
+};
+
+export type UpdateListingRequest = Partial<CreateCarProductRequest>;
+
+export type DeleteListingRequest = {
+	confirmationTitle: string;
+};
+
+export type PartnerProductListRequest = ProductListRequest & {
+	status?: ProductStatus;
+	limit?: number;
+};
 export type PartnerProductListResponse = ProductListResponse;
 
 export type PartnerProductResponse = {
 	message?: string;
 	product: Product;
+};
+
+export type UploadProductImageRequest = {
+	productId: string;
+	file: File;
+	altText?: string;
+	isCover?: boolean;
+	sortOrder?: number;
+};
+
+export type UpdateProductImageRequest = {
+	productId: string;
+	imageId: string;
+	altText?: string;
+	isCover?: boolean;
+	sortOrder?: number;
+};
+
+export type DeleteProductImageRequest = {
+	productId: string;
+	imageId: string;
 };
