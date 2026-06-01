@@ -113,12 +113,15 @@ type PartnerFormState = {
 	description: string;
 	addressLine: string;
 	city: string;
-	country: string;
+	country: CountryCode;
 	websiteUrl: string;
 };
 
 type PartnerFormErrors = Partial<Record<keyof PartnerFormState, string>>;
-type PartnerTextField = Exclude<keyof PartnerFormState, 'businessPhoneCountry'>;
+type PartnerTextField = Exclude<
+	keyof PartnerFormState,
+	'businessPhoneCountry' | 'country'
+>;
 
 export function PartnerPortal() {
 	return (
@@ -209,7 +212,7 @@ function PartnerProfileForm({ profile }: { profile: PartnerProfile }) {
 						description: form.description.trim(),
 						addressLine: form.addressLine.trim(),
 						city: form.city.trim() || 'Kigali',
-						country: form.country.trim() || 'Rwanda',
+						country: getPhoneCountryOption(form.country).name,
 						websiteUrl: normalizeOptional(form.websiteUrl),
 					})
 				: saveIndividualPartnerProfile({
@@ -220,7 +223,7 @@ function PartnerProfileForm({ profile }: { profile: PartnerProfile }) {
 						description: form.description.trim(),
 						addressLine: normalizeOptional(form.addressLine),
 						city: form.city.trim() || 'Kigali',
-						country: form.country.trim() || 'Rwanda',
+						country: getPhoneCountryOption(form.country).name,
 						websiteUrl: normalizeOptional(form.websiteUrl),
 					});
 		},
@@ -375,11 +378,13 @@ function PartnerProfileForm({ profile }: { profile: PartnerProfile }) {
 					error={errors.city}
 					onChange={(event) => updateField('city', event)}
 				/>
-				<FormField
-					label="Country"
-					value={form.country}
+				<CountrySelectField
+					country={form.country}
 					error={errors.country}
-					onChange={(event) => updateField('country', event)}
+					onCountryChange={(country) => {
+						setForm((current) => ({ ...current, country }));
+						setErrors((current) => ({ ...current, country: undefined }));
+					}}
 				/>
 				<FormField
 					label="Website URL"
@@ -679,6 +684,57 @@ function BusinessPhoneField({
 	);
 }
 
+function CountrySelectField({
+	country,
+	error,
+	onCountryChange,
+}: {
+	country: CountryCode;
+	error?: string;
+	onCountryChange: (country: CountryCode) => void;
+}) {
+	const countryOption = getPhoneCountryOption(country);
+
+	return (
+		<label className={styles.formField}>
+			<span>Country</span>
+			<Select
+				value={country}
+				onValueChange={(value) => onCountryChange(value as CountryCode)}
+			>
+				<SelectTrigger
+					className={styles.countrySelectTrigger}
+					aria-label="Partner country"
+					aria-invalid={Boolean(error)}
+				>
+					<SelectValue>
+						<span>
+							<strong>{countryOption.name}</strong>
+							<small>{countryOption.code}</small>
+						</span>
+					</SelectValue>
+				</SelectTrigger>
+				<SelectContent
+					className={styles.countryCodeMenu}
+					align="start"
+					alignItemWithTrigger={false}
+				>
+					{PHONE_COUNTRIES.map((option) => (
+						<SelectItem key={option.code} value={option.code}>
+							<span className={styles.countryOption}>
+								<strong>{option.callingCode}</strong>
+								<span>{option.name}</span>
+								<small>{option.code}</small>
+							</span>
+						</SelectItem>
+					))}
+				</SelectContent>
+			</Select>
+			{error ? <small>{error}</small> : null}
+		</label>
+	);
+}
+
 function StatusPill({ status }: { status: PartnerProfileStatus }) {
 	return (
 		<span className={styles.statusPill} data-status={status}>
@@ -763,7 +819,7 @@ function toFormState(profile: PartnerProfile): PartnerFormState {
 		description: profile.description ?? '',
 		addressLine: profile.addressLine ?? '',
 		city: profile.city ?? 'Kigali',
-		country: profile.country ?? 'Rwanda',
+		country: toCountryCode(profile.country),
 		websiteUrl: profile.websiteUrl ?? '',
 	};
 }
@@ -821,6 +877,21 @@ function toPhoneFormState(phone?: string | null) {
 		businessPhoneCountry: RWANDA_PHONE_COUNTRY,
 		businessPhone: phone ?? '',
 	};
+}
+
+function toCountryCode(country?: string | null) {
+	if (!country) {
+		return RWANDA_PHONE_COUNTRY;
+	}
+
+	const normalizedCountry = country.trim().toLowerCase();
+	const matchedCountry = PHONE_COUNTRIES.find(
+		(option) =>
+			option.code.toLowerCase() === normalizedCountry ||
+			option.name.toLowerCase() === normalizedCountry,
+	);
+
+	return matchedCountry?.code ?? RWANDA_PHONE_COUNTRY;
 }
 
 function normalizeOptional(value: string) {
