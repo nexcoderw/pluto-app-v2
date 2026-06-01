@@ -1,7 +1,7 @@
 import { apiClient } from '../client';
 import { normalizeApiError } from '../errors';
-import { storeUserSession } from '../token-store';
 import { USER_AUTH_ROUTES } from './routes';
+import { storeAuthenticatedUserSession } from './session-bootstrap';
 import type { UserAuthProfile } from './types';
 
 // Request payload: Google registration must provide a phone number when missing.
@@ -25,7 +25,7 @@ export async function completeGooglePhone(
 			payload,
 		);
 
-		storeUserSession(response.data.user);
+		await storeAuthenticatedUserSession(response.data.user);
 		return response.data;
 	} catch (error) {
 		throw normalizeApiError(error);
