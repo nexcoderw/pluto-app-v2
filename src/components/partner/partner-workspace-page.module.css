@@ -1,0 +1,128 @@
+.workspacePanel {
+	display: grid;
+	gap: clamp(1rem, 2vw, 1.25rem);
+	padding: clamp(1rem, 2.4vw, 1.45rem);
+	border: 1px solid rgba(255, 255, 255, 0.72);
+	border-radius: 1.45rem;
+	background:
+		linear-gradient(
+			135deg,
+			rgba(255, 255, 255, 0.72),
+			rgba(255, 255, 255, 0.52)
+		),
+		rgba(255, 255, 255, 0.66);
+	box-shadow: 0 1.2rem 3rem rgba(16, 22, 33, 0.08);
+	backdrop-filter: blur(22px);
+}
+
+.workspaceHeader {
+	display: grid;
+	gap: 0.45rem;
+}
+
+.workspaceHeader span {
+	width: fit-content;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.45rem;
+	padding: 0.5rem 0.75rem;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	border-radius: 999px;
+	background: rgba(2, 0, 108, 0.05);
+	color: #02006c;
+	font-size: 0.73rem;
+	font-weight: 860;
+	text-transform: uppercase;
+}
+
+.workspaceHeader svg {
+	width: 0.95rem;
+	height: 0.95rem;
+}
+
+.workspaceHeader h2 {
+	margin: 0;
+	color: #17171f;
+	font-size: clamp(1.25rem, 3vw, 1.8rem);
+	font-weight: 840;
+	letter-spacing: 0;
+	line-height: 1.1;
+}
+
+.workspaceHeader p {
+	max-width: 48rem;
+	margin: 0;
+	color: rgba(23, 23, 31, 0.62);
+	font-size: 0.92rem;
+	line-height: 1.58;
+}
+
+.stepGrid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 0.85rem;
+}
+
+.stepGrid article {
+	min-height: 12rem;
+	display: grid;
+	align-content: start;
+	gap: 0.55rem;
+	padding: 1rem;
+	border: 1px solid rgba(2, 0, 108, 0.08);
+	border-radius: 1.2rem;
+	background: rgba(255, 255, 255, 0.58);
+	transition:
+		transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+		background 180ms ease,
+		border-color 180ms ease;
+}
+
+.stepGrid article:hover {
+	border-color: rgba(2, 0, 108, 0.16);
+	background: rgba(255, 255, 255, 0.8);
+	transform: translateY(-2px);
+}
+
+.stepGrid strong {
+	width: 2.35rem;
+	height: 2.35rem;
+	display: inline-grid;
+	place-items: center;
+	border-radius: 999px;
+	background: #02006c;
+	color: white;
+	font-size: 0.74rem;
+	font-weight: 900;
+}
+
+.stepGrid h3 {
+	margin: 0;
+	color: #17171f;
+	font-size: 0.98rem;
+	font-weight: 840;
+	letter-spacing: 0;
+}
+
+.stepGrid p {
+	margin: 0;
+	color: rgba(23, 23, 31, 0.58);
+	font-size: 0.82rem;
+	line-height: 1.5;
+}
+
+@media (max-width: 920px) {
+	.stepGrid {
+		grid-template-columns: 1fr;
+	}
+
+	.stepGrid article {
+		min-height: auto;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.stepGrid article {
+		transition: none;
+	}
+}
