@@ -6,7 +6,15 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
-import { Eye, EyeOff, LoaderCircle, LockKeyhole, LogIn, Mail, ShieldCheck } from 'lucide-react';
+import {
+	Eye,
+	EyeOff,
+	LoaderCircle,
+	LockKeyhole,
+	LogIn,
+	Mail,
+	ShieldCheck,
+} from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -22,7 +30,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { getUserPortalPath } from '@/lib/user-portal';
 import { ApiRequestError } from '@/services/api/errors';
 import {
 	isUserGoogleLoginEnabled,
@@ -30,11 +37,15 @@ import {
 	redirectToUserGoogleLogin,
 	refreshUserSession,
 } from '@/services/api/auth';
+import { hasKnownUserSession } from '@/services/api/token-store';
 import styles from './auth-form.module.css';
 
 const loginSchema = z.object({
 	email: z.string().email('Enter a valid email address.').max(254),
-	password: z.string().min(8, 'Password must be at least 8 characters.').max(128),
+	password: z
+		.string()
+		.min(8, 'Password must be at least 8 characters.')
+		.max(128),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -73,7 +84,9 @@ export function LoginForm() {
 			toast.success(response.message, {
 				description: 'Your Pluto Booking session is ready.',
 			});
-			router.replace(getUserPortalPath(response.user));
+			router.replace(
+				response.user.requiresPhoneNumber ? '/complete-phone' : '/',
+			);
 		},
 		onError: (error) => {
 			const apiError =
@@ -96,6 +109,12 @@ export function LoginForm() {
 	useEffect(() => {
 		let isActive = true;
 
+		if (!hasKnownUserSession()) {
+			return () => {
+				isActive = false;
+			};
+		}
+
 		refreshUserSession()
 			.then((response) => {
 				if (!isActive) {
@@ -103,9 +122,7 @@ export function LoginForm() {
 				}
 
 				router.replace(
-					response.user.requiresPhoneNumber
-						? '/complete-phone'
-						: getUserPortalPath(response.user),
+					response.user.requiresPhoneNumber ? '/complete-phone' : '/',
 				);
 			})
 			.catch(() => undefined);
@@ -122,15 +139,25 @@ export function LoginForm() {
 
 	return (
 		<>
-			<form className={styles.formWrap} onSubmit={form.handleSubmit(onSubmit)} noValidate>
+			<form
+				className={styles.formWrap}
+				onSubmit={form.handleSubmit(onSubmit)}
+				noValidate
+			>
 				<div className={styles.headingBlock}>
 					<h1>Welcome back</h1>
-					<p>Sign in to manage bookings, favorites, partner listings, and account details.</p>
+					<p>
+						Sign in to manage bookings, favorites, partner listings, and account
+						details.
+					</p>
 				</div>
 
 				<div className={styles.fieldGroup}>
 					<Label htmlFor="email">Email</Label>
-					<div className={styles.inputShell} data-invalid={Boolean(form.formState.errors.email)}>
+					<div
+						className={styles.inputShell}
+						data-invalid={Boolean(form.formState.errors.email)}
+					>
 						<Mail aria-hidden="true" />
 						<Input
 							id="email"
@@ -142,7 +169,9 @@ export function LoginForm() {
 						/>
 					</div>
 					{form.formState.errors.email ? (
-						<p className={styles.inlineError}>{form.formState.errors.email.message}</p>
+						<p className={styles.inlineError}>
+							{form.formState.errors.email.message}
+						</p>
 					) : null}
 				</div>
 
@@ -172,23 +201,33 @@ export function LoginForm() {
 							aria-label={showPassword ? 'Hide password' : 'Show password'}
 							onClick={() => setShowPassword((value) => !value)}
 						>
-							{showPassword ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}
+							{showPassword ? (
+								<EyeOff aria-hidden="true" />
+							) : (
+								<Eye aria-hidden="true" />
+							)}
 						</Button>
 					</div>
 					{form.formState.errors.password ? (
-						<p className={styles.inlineError}>{form.formState.errors.password.message}</p>
+						<p className={styles.inlineError}>
+							{form.formState.errors.password.message}
+						</p>
 					) : null}
 				</div>
 
 				{form.formState.errors.root ? (
-					<p className={styles.formError}>{form.formState.errors.root.message}</p>
+					<p className={styles.formError}>
+						{form.formState.errors.root.message}
+					</p>
 				) : null}
 
 				<Button
 					type="submit"
 					className={styles.submitButton}
 					disabled={loginMutation.isPending}
-					aria-label={loginMutation.isPending ? 'Signing in' : 'Sign in securely'}
+					aria-label={
+						loginMutation.isPending ? 'Signing in' : 'Sign in securely'
+					}
 				>
 					{loginMutation.isPending ? (
 						<LoaderCircle className={styles.spinner} aria-hidden="true" />
@@ -234,8 +273,7 @@ export function LoginForm() {
 					</AlertDialogHeader>
 					<AlertDialogFooter>
 						<AlertDialogAction onClick={() => setModalError(null)}>
-							<LogIn aria-hidden="true" />
-							I understand
+							<LogIn aria-hidden="true" />I understand
 						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>
