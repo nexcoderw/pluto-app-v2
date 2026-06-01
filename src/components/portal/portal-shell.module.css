@@ -2,16 +2,28 @@
 .forbiddenPage {
 	min-height: 100vh;
 	background:
-		radial-gradient(circle at 15% 12%, rgba(2, 0, 108, 0.09), transparent 28rem),
-		radial-gradient(circle at 85% 78%, rgba(247, 209, 84, 0.16), transparent 24rem),
+		radial-gradient(
+			circle at 15% 12%,
+			rgba(2, 0, 108, 0.09),
+			transparent 28rem
+		),
+		radial-gradient(
+			circle at 85% 78%,
+			rgba(247, 209, 84, 0.16),
+			transparent 24rem
+		),
 		linear-gradient(180deg, #f7f8fb 0%, #eef0f4 100%);
 	color: #17171f;
 }
 
-.portalPage[data-variant="partner"] {
+.portalPage[data-variant='partner'] {
 	background:
 		radial-gradient(circle at 15% 12%, rgba(2, 0, 108, 0.1), transparent 28rem),
-		radial-gradient(circle at 88% 72%, rgba(20, 138, 84, 0.13), transparent 24rem),
+		radial-gradient(
+			circle at 88% 72%,
+			rgba(20, 138, 84, 0.13),
+			transparent 24rem
+		),
 		linear-gradient(180deg, #f7f8fb 0%, #eef0f4 100%);
 }
 
@@ -35,8 +47,8 @@
 	top: clamp(1rem, 2.6vw, 1.8rem);
 	height: calc(100vh - clamp(2rem, 5.2vw, 3.6rem));
 	display: grid;
-	grid-template-rows: auto auto 1fr auto;
-	gap: 1rem;
+	grid-template-rows: auto 1fr;
+	gap: 1.15rem;
 	padding: 1rem;
 	border: 1px solid rgba(255, 255, 255, 0.72);
 	border-radius: 1.85rem;
@@ -72,11 +84,20 @@
 	align-items: center;
 	justify-content: center;
 	border-radius: 999px;
-	background: #02006c;
-	color: white;
+	background: rgba(255, 255, 255, 0.78);
+	color: #02006c;
 	font-size: 0.74rem;
 	font-weight: 900;
-	box-shadow: 0 0.8rem 1.8rem rgba(2, 0, 108, 0.2);
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.85),
+		0 0.8rem 1.8rem rgba(2, 0, 108, 0.12);
+	overflow: hidden;
+}
+
+.sidebarBrand img {
+	width: 1.65rem;
+	height: auto;
+	object-fit: contain;
 }
 
 .sidebarBrand strong {
@@ -97,62 +118,17 @@
 	color: #02006c;
 }
 
-.sidebarProfile {
-	display: grid;
-	grid-template-columns: auto minmax(0, 1fr);
-	align-items: center;
-	gap: 0.75rem;
-	padding: 0.75rem;
-	border: 1px solid rgba(2, 0, 108, 0.1);
-	border-radius: 1.25rem;
-	background: rgba(255, 255, 255, 0.52);
-}
-
-.sidebarAvatar {
-	width: 2.85rem;
-	height: 2.85rem;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	border-radius: 999px;
-	background: rgba(2, 0, 108, 0.1);
-	color: #02006c;
-	font-size: 0.84rem;
-	font-weight: 900;
-}
-
-.sidebarProfile span:last-child,
-.sidebarFooter span,
 .quickActions span {
 	min-width: 0;
 	display: grid;
 	gap: 0.1rem;
 }
 
-.sidebarProfile strong,
-.sidebarProfile small {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-.sidebarProfile strong {
-	color: #17171f;
-	font-size: 0.85rem;
-	font-weight: 820;
-}
-
-.sidebarProfile small {
-	color: rgba(23, 23, 31, 0.55);
-	font-size: 0.72rem;
-	font-weight: 650;
-}
-
 .sidebarNav {
 	display: grid;
 	align-content: start;
-	gap: 0.42rem;
-	padding-top: 0.15rem;
+	gap: 0.48rem;
+	padding: 0.25rem 0 0;
 }
 
 .sidebarNav a {
@@ -176,21 +152,20 @@
 }
 
 .sidebarNav a:hover,
-.sidebarNav a[data-active="true"] {
+.sidebarNav a[data-active='true'] {
 	border-color: rgba(2, 0, 108, 0.1);
 	background: rgba(255, 255, 255, 0.72);
 	color: #02006c;
 	transform: translateX(2px);
 }
 
-.sidebarNav a[data-active="true"] {
+.sidebarNav a[data-active='true'] {
 	background: #02006c;
 	color: white;
 	box-shadow: 0 0.9rem 2rem rgba(2, 0, 108, 0.2);
 }
 
 .sidebarNav svg,
-.sidebarFooter svg,
 .statusGrid svg,
 .quickActions svg {
 	width: 1rem;
@@ -198,59 +173,16 @@
 	color: #02006c;
 }
 
-.sidebarNav a[data-active="true"] svg {
+.sidebarNav a[data-active='true'] svg {
 	color: white;
 }
 
-.sidebarFooter {
-	display: grid;
-	gap: 0.8rem;
-}
-
-.sidebarFooter > div {
-	display: grid;
-	grid-template-columns: auto 1fr;
-	gap: 0.62rem;
-	padding: 0.75rem;
-	border: 1px solid rgba(2, 0, 108, 0.1);
-	border-radius: 1.2rem;
-	background: rgba(2, 0, 108, 0.05);
-}
-
-.sidebarFooter strong {
-	color: #17171f;
-	font-size: 0.78rem;
-	font-weight: 820;
-}
-
-.sidebarFooter small {
-	color: rgba(23, 23, 31, 0.56);
-	font-size: 0.7rem;
-	font-weight: 650;
-	line-height: 1.35;
-}
-
-.logoutButton,
 .topbarLogoutButton,
 .logoutDialog button {
 	height: var(--pluto-button-height);
 	min-height: var(--pluto-button-height);
 	border-radius: 999px;
 	cursor: pointer;
-}
-
-.logoutButton {
-	width: 100%;
-	gap: 0.5rem;
-	border-color: rgba(190, 18, 60, 0.16);
-	background: rgba(255, 255, 255, 0.58);
-	color: #be123c;
-	font-weight: 820;
-}
-
-.logoutButton:hover {
-	border-color: rgba(190, 18, 60, 0.3);
-	background: rgba(255, 241, 242, 0.76);
 }
 
 .portalShell {
@@ -266,34 +198,78 @@
 	grid-template-columns: auto minmax(0, 1fr) auto;
 	align-items: center;
 	gap: 0.85rem;
-	padding: 0.75rem 0.85rem;
+	padding: 0.7rem;
 	border: 1px solid rgba(255, 255, 255, 0.7);
-	border-radius: 1.35rem;
-	background: rgba(255, 255, 255, 0.56);
+	border-radius: 999px;
+	background:
+		linear-gradient(
+			135deg,
+			rgba(255, 255, 255, 0.78),
+			rgba(255, 255, 255, 0.5)
+		),
+		rgba(255, 255, 255, 0.56);
 	box-shadow: 0 1.2rem 3rem rgba(16, 22, 33, 0.08);
 	backdrop-filter: blur(22px);
 }
 
-.portalTopbar div {
+.topbarIdentity {
 	min-width: 0;
-	display: grid;
-	gap: 0.1rem;
+	display: flex;
+	align-items: center;
+	gap: 0.72rem;
 }
 
-.portalTopbar span {
+.topbarAvatar {
+	width: 3rem;
+	height: 3rem;
+	display: inline-flex;
+	flex: 0 0 auto;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	border-radius: 999px;
+	background:
+		var(--portal-avatar-image),
+		linear-gradient(135deg, rgba(2, 0, 108, 0.12), rgba(247, 209, 84, 0.26));
+	background-position: center;
+	background-size: cover;
+	color: #02006c;
+	font-size: 0.82rem;
+	font-weight: 900;
+	box-shadow: inset 0 0 0 0.22rem rgba(255, 255, 255, 0.72);
+}
+
+.topbarCopy {
+	min-width: 0;
+	display: grid;
+	gap: 0.08rem;
+}
+
+.topbarCopy small {
 	color: rgba(23, 23, 31, 0.54);
 	font-size: 0.72rem;
 	font-weight: 760;
 	text-transform: uppercase;
 }
 
-.portalTopbar strong {
+.topbarCopy strong,
+.topbarCopy em {
 	overflow: hidden;
-	color: #17171f;
-	font-size: 0.9rem;
-	font-weight: 820;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+}
+
+.topbarCopy strong {
+	color: #17171f;
+	font-size: 0.9rem;
+	font-weight: 840;
+}
+
+.topbarCopy em {
+	color: rgba(23, 23, 31, 0.56);
+	font-size: 0.76rem;
+	font-style: normal;
+	font-weight: 650;
 }
 
 .menuButton {
@@ -307,11 +283,21 @@
 
 .topbarLogoutButton {
 	gap: 0.5rem;
-	border-color: rgba(2, 0, 108, 0.12);
-	background: rgba(255, 255, 255, 0.58);
-	color: #02006c;
+	border-color: rgba(190, 18, 60, 0.2);
+	background: #be123c;
+	color: white;
 	font-size: 0.8rem;
 	font-weight: 820;
+	box-shadow: 0 0.8rem 1.8rem rgba(190, 18, 60, 0.18);
+}
+
+.topbarLogoutButton:hover {
+	background: #9f1239;
+	color: white;
+}
+
+.logoutLabel {
+	display: inline;
 }
 
 .portalHero,
@@ -545,6 +531,21 @@
 	backdrop-filter: blur(26px);
 }
 
+.logoutDialogIcon {
+	width: 3.7rem;
+	height: 3.7rem;
+	display: inline-grid;
+	place-items: center;
+	border-radius: 999px;
+	background: rgba(190, 18, 60, 0.09);
+	color: #be123c;
+}
+
+.logoutDialogIcon svg {
+	width: 1.55rem;
+	height: 1.55rem;
+}
+
 .logoutDialog h2 {
 	margin: 0;
 	color: #17171f;
@@ -567,8 +568,12 @@
 }
 
 .logoutDialog button:last-child {
-	background: #02006c;
+	background: #be123c;
 	color: white;
+}
+
+.logoutDialog button:last-child:hover {
+	background: #9f1239;
 }
 
 .forbiddenPage {
@@ -649,8 +654,6 @@
 }
 
 .skeletonBrand,
-.skeletonProfile,
-.skeletonFooter,
 .skeletonTopbar,
 .skeletonHero {
 	border-radius: 1.25rem;
@@ -660,17 +663,9 @@
 	height: 2.85rem;
 }
 
-.skeletonProfile {
-	height: 4.3rem;
-}
-
 .skeletonNav {
 	height: 20rem;
 	border-radius: 1.25rem;
-}
-
-.skeletonFooter {
-	height: 8rem;
 }
 
 .skeletonTopbar {
@@ -721,7 +716,7 @@
 		transition: opacity 180ms ease;
 	}
 
-	.mobileBackdrop[data-open="true"] {
+	.mobileBackdrop[data-open='true'] {
 		opacity: 1;
 		pointer-events: auto;
 	}
@@ -738,7 +733,7 @@
 		transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
 	}
 
-	.sidebar[data-open="true"] {
+	.sidebar[data-open='true'] {
 		transform: translateX(0);
 	}
 
@@ -773,7 +768,17 @@
 	}
 
 	.topbarLogoutButton {
-		display: none;
+		width: var(--pluto-button-height);
+		padding: 0;
+	}
+
+	.logoutLabel {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+		white-space: nowrap;
 	}
 
 	.statusGrid article,
@@ -796,7 +801,8 @@
 	}
 
 	.portalTopbar {
-		grid-template-columns: auto minmax(0, 1fr);
+		grid-template-columns: auto minmax(0, 1fr) auto;
+		border-radius: 1.35rem;
 	}
 
 	.portalHero h1 {
@@ -822,4 +828,3 @@
 		transition: none;
 	}
 }
-
