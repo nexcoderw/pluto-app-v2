@@ -66,19 +66,19 @@
 	white-space: nowrap;
 }
 
-.statusPill[data-status="APPROVED"] {
+.statusPill[data-status='APPROVED'] {
 	border-color: rgba(21, 128, 61, 0.18);
 	background: rgba(21, 128, 61, 0.08);
 	color: #15803d;
 }
 
-.statusPill[data-status="PENDING"] {
+.statusPill[data-status='PENDING'] {
 	border-color: rgba(180, 83, 9, 0.18);
 	background: rgba(180, 83, 9, 0.09);
 	color: #92400e;
 }
 
-.statusPill[data-status="REJECTED"] {
+.statusPill[data-status='REJECTED'] {
 	border-color: rgba(190, 18, 60, 0.18);
 	background: rgba(190, 18, 60, 0.08);
 	color: #be123c;
@@ -129,7 +129,7 @@
 	min-width: 0;
 }
 
-.formField[data-wide="true"] {
+.formField[data-wide='true'] {
 	grid-column: 1 / -1;
 }
 
@@ -162,8 +162,8 @@
 	resize: vertical;
 }
 
-.formField input[aria-invalid="true"],
-.formField textarea[aria-invalid="true"] {
+.formField input[aria-invalid='true'],
+.formField textarea[aria-invalid='true'] {
 	border-color: rgba(190, 18, 60, 0.54);
 	box-shadow: 0 0 0 0.18rem rgba(190, 18, 60, 0.08);
 }
@@ -195,7 +195,7 @@
 	background: rgba(255, 255, 255, 0.92);
 }
 
-.phoneInputShell[data-invalid="true"] {
+.phoneInputShell[data-invalid='true'] {
 	border-color: rgba(190, 18, 60, 0.54);
 	box-shadow: 0 0 0 0.18rem rgba(190, 18, 60, 0.08);
 }
@@ -252,12 +252,12 @@
 }
 
 .countrySelectTrigger:focus-visible,
-.countrySelectTrigger[data-state="open"] {
+.countrySelectTrigger[data-state='open'] {
 	border-color: rgba(2, 0, 108, 0.32);
 	box-shadow: 0 0 0 0.18rem rgba(2, 0, 108, 0.08);
 }
 
-.countrySelectTrigger[aria-invalid="true"] {
+.countrySelectTrigger[aria-invalid='true'] {
 	border-color: rgba(190, 18, 60, 0.54);
 	box-shadow: 0 0 0 0.18rem rgba(190, 18, 60, 0.08);
 }
@@ -366,6 +366,143 @@
 	padding-top: 0.35rem;
 }
 
+.documentPanel {
+	grid-column: 1 / -1;
+	display: grid;
+	gap: 0.95rem;
+	padding: 1rem;
+	border: 1px solid rgba(2, 0, 108, 0.08);
+	border-radius: 1.25rem;
+	background: rgba(255, 255, 255, 0.58);
+}
+
+.documentPanelHeader {
+	display: flex;
+	align-items: start;
+	justify-content: space-between;
+	gap: 1rem;
+}
+
+.documentPanelHeader > svg {
+	width: 2.4rem;
+	height: 2.4rem;
+	padding: 0.62rem;
+	border-radius: 999px;
+	background: rgba(2, 0, 108, 0.08);
+	color: #02006c;
+}
+
+.documentPanelHeader span {
+	color: #02006c;
+	font-size: 0.74rem;
+	font-weight: 850;
+}
+
+.documentPanelHeader h3,
+.documentPanelHeader p {
+	margin: 0;
+}
+
+.documentPanelHeader h3 {
+	margin-top: 0.2rem;
+	color: #17171f;
+	font-size: 1rem;
+	font-weight: 850;
+}
+
+.documentPanelHeader p {
+	max-width: 42rem;
+	margin-top: 0.35rem;
+	color: rgba(23, 23, 31, 0.58);
+	font-size: 0.84rem;
+	line-height: 1.55;
+}
+
+.documentUploadGrid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.85rem;
+}
+
+.documentUploadGrid input[type='file'] {
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+	padding: 0.78rem 1rem;
+	border-radius: 999px;
+}
+
+.documentUploadGrid textarea {
+	min-height: 6.5rem;
+	resize: vertical;
+}
+
+.fileHint {
+	color: rgba(2, 0, 108, 0.68) !important;
+}
+
+.documentActions {
+	display: flex;
+	justify-content: flex-end;
+}
+
+.documentActions button {
+	border-radius: 999px;
+}
+
+.documentList {
+	display: grid;
+	gap: 0.65rem;
+}
+
+.documentList p {
+	margin: 0;
+	color: rgba(23, 23, 31, 0.56);
+	font-size: 0.84rem;
+	font-weight: 720;
+}
+
+.documentItem {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr) auto;
+	align-items: center;
+	gap: 0.7rem;
+	padding: 0.75rem;
+	border: 1px solid rgba(2, 0, 108, 0.07);
+	border-radius: 1rem;
+	background: rgba(255, 255, 255, 0.64);
+}
+
+.documentItem > svg {
+	width: 1rem;
+	height: 1rem;
+	color: #02006c;
+}
+
+.documentItem span {
+	display: grid;
+	gap: 0.12rem;
+	min-width: 0;
+}
+
+.documentItem strong,
+.documentItem small {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.documentItem strong {
+	color: #17171f;
+	font-size: 0.84rem;
+	font-weight: 850;
+}
+
+.documentItem small {
+	color: rgba(23, 23, 31, 0.54);
+	font-size: 0.74rem;
+}
+
 .formActions button,
 .dialog button {
 	border-radius: 999px;
@@ -467,7 +604,8 @@
 	}
 
 	.profileForm,
-	.skeletonGrid {
+	.skeletonGrid,
+	.documentUploadGrid {
 		grid-template-columns: 1fr;
 	}
 
@@ -481,6 +619,20 @@
 	}
 
 	.formActions button {
+		width: 100%;
+	}
+
+	.documentPanelHeader,
+	.documentItem {
+		grid-template-columns: 1fr;
+	}
+
+	.documentPanelHeader {
+		display: grid;
+	}
+
+	.documentActions,
+	.documentActions button {
 		width: 100%;
 	}
 
