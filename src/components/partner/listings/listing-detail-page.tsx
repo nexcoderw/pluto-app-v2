@@ -1,16 +1,19 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import {
 	BadgeCheck,
 	CalendarClock,
+	Building2,
 	CarFront,
 	CircleDollarSign,
 	Clock3,
 	Eye,
+	Hotel,
+	House,
 	ImageIcon,
 	Info,
 	MapPin,
@@ -20,25 +23,25 @@ import {
 	Store,
 	Trash2,
 	XCircle,
-} from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
-import { Button } from '@/components/ui/button';
+} from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
 import {
 	PortalShell,
 	type PortalMetric,
-} from '@/components/portal/portal-shell';
-import { partnerPortalNavigation } from '@/constants/partner-portal-navigation';
-import type { Product, ProductStatus } from '@/services/api/products';
-import type { UserAuthProfile } from '@/services/api/auth';
-import { getPartnerProfile } from '@/services/api/partner-profile';
-import { getPartnerProduct } from '@/services/api/partner-products';
+} from "@/components/portal/portal-shell";
+import { partnerPortalNavigation } from "@/constants/partner-portal-navigation";
+import type { Product, ProductStatus } from "@/services/api/products";
+import type { UserAuthProfile } from "@/services/api/auth";
+import { getPartnerProfile } from "@/services/api/partner-profile";
+import { getPartnerProduct } from "@/services/api/partner-products";
 import {
 	PartnerAccessBoundary,
 	PartnerWorkspaceLoading,
-} from '../partner-access-boundary';
-import { PartnerStatusGate } from '../partner-dashboard';
-import { ListingDeleteDialog } from './listing-delete-dialog';
-import styles from './listing-detail-page.module.css';
+} from "../partner-access-boundary";
+import { PartnerStatusGate } from "../partner-dashboard";
+import { ListingDeleteDialog } from "./listing-delete-dialog";
+import styles from "./listing-detail-page.module.css";
 
 export function ListingDetailPage({ productId }: { productId: string }) {
 	return (
@@ -57,11 +60,11 @@ function ListingDetailWorkspace({
 }) {
 	const router = useRouter();
 	const profileQuery = useQuery({
-		queryKey: ['partner-profile'],
+		queryKey: ["partner-profile"],
 		queryFn: getPartnerProfile,
 	});
 	const productQuery = useQuery({
-		queryKey: ['partner-product', productId],
+		queryKey: ["partner-product", productId],
 		queryFn: () => getPartnerProduct(productId),
 	});
 	const profile = profileQuery.data?.profile;
@@ -69,8 +72,8 @@ function ListingDetailWorkspace({
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
 	useEffect(() => {
-		if (profile && profile.status !== 'APPROVED') {
-			router.replace('/partner-onboarding');
+		if (profile && profile.status !== "APPROVED") {
+			router.replace("/partner-onboarding");
 		}
 	}, [profile, router]);
 
@@ -83,7 +86,7 @@ function ListingDetailWorkspace({
 		);
 	}
 
-	if (profile && profile.status !== 'APPROVED') {
+	if (profile && profile.status !== "APPROVED") {
 		return (
 			<PartnerWorkspaceLoading
 				title="Redirecting to onboarding"
@@ -114,7 +117,7 @@ function ListingDetailWorkspace({
 				user={user}
 				eyebrow="Listing detail"
 				title={product.title}
-				description="Review customer-facing details, admin review status, media, and car specifications."
+				description="Review customer-facing details, admin review status, media, and category specifications."
 				homeHref="/partner/listings"
 				homeLabel="Back to listings"
 				navigation={partnerPortalNavigation}
@@ -183,7 +186,7 @@ function ListingDetail({ product }: { product: Product }) {
 									<ImageIcon aria-hidden="true" />
 								</span>
 							)}
-							<StatusPill status={product.status ?? 'DRAFT'} />
+							<StatusPill status={product.status ?? "DRAFT"} />
 						</div>
 						<ImageGallery
 							product={product}
@@ -209,67 +212,7 @@ function ListingDetail({ product }: { product: Product }) {
 						) : null}
 					</section>
 
-					{product.carDetails ? (
-						<section className={styles.specPanel}>
-							<div className={styles.sectionHeader}>
-								<span>
-									<CarFront aria-hidden="true" />
-									Car specifications
-								</span>
-								<h2>Vehicle details</h2>
-							</div>
-							<div className={styles.factGrid}>
-								<Fact label="Brand" value={product.carDetails.brand} />
-								<Fact label="Model" value={product.carDetails.model} />
-								<Fact label="Year" value={String(product.carDetails.year)} />
-								<Fact
-									label="Transmission"
-									value={product.carDetails.transmission}
-								/>
-								<Fact label="Fuel" value={product.carDetails.fuelType} />
-								<Fact label="Seats" value={String(product.carDetails.seats)} />
-								<Fact label="Doors" value={String(product.carDetails.doors)} />
-								<Fact
-									label="Plate"
-									value={product.carDetails.plateNumber ?? 'Not provided'}
-								/>
-								<Fact
-									label="Luggage"
-									value={
-										product.carDetails.luggageCapacity
-											? `${product.carDetails.luggageCapacity} bags`
-											: 'Not specified'
-									}
-								/>
-								<Fact
-									label="Driver age"
-									value={
-										product.carDetails.minimumDriverAge
-											? `${product.carDetails.minimumDriverAge}+`
-											: 'Not specified'
-									}
-								/>
-							</div>
-							<div className={styles.featureGrid}>
-								<Feature
-									enabled={product.carDetails.airConditioning}
-									label="Air conditioning"
-								/>
-								<Feature
-									enabled={product.carDetails.driverIncluded}
-									label="Driver included"
-								/>
-								<Feature
-									enabled={product.carDetails.insuranceIncluded}
-									label="Insurance included"
-								/>
-								<Feature
-									enabled={product.carDetails.requiresDeposit}
-									label="Deposit required"
-								/>
-							</div>
-						</section>
-					) : null}
+					<CategorySpecifications product={product} />
 				</div>
 
 				<aside className={styles.sideColumn}>
@@ -292,13 +235,13 @@ function ListingDetail({ product }: { product: Product }) {
 							/>
 							<Fact
 								label="Visibility"
-								value={product.visibility ?? 'PRIVATE'}
+								value={product.visibility ?? "PRIVATE"}
 							/>
 							<Fact label="Product no" value={product.productNo} />
 							<Fact label="Category" value={formatLabel(product.category)} />
 							<Fact
 								label="Available"
-								value={product.isAvailable ? 'Yes' : 'No'}
+								value={product.isAvailable ? "Yes" : "No"}
 							/>
 							<Fact label="Created" value={formatDate(product.createdAt)} />
 							<Fact label="Updated" value={formatDate(product.updatedAt)} />
@@ -406,6 +349,195 @@ function ImageGallery({
 	);
 }
 
+function CategorySpecifications({ product }: { product: Product }) {
+	if (product.apartmentDetails) {
+		const details = product.apartmentDetails;
+
+		return (
+			<section className={styles.specPanel}>
+				<div className={styles.sectionHeader}>
+					<span>
+						<Building2 aria-hidden="true" />
+						Apartment specifications
+					</span>
+					<h2>Apartment details</h2>
+				</div>
+				<div className={styles.factGrid}>
+					<Fact label="Bedrooms" value={String(details.bedrooms)} />
+					<Fact label="Bathrooms" value={String(details.bathrooms)} />
+					<Fact label="Kitchens" value={String(details.kitchens)} />
+					<Fact label="Living rooms" value={String(details.livingRooms)} />
+					<Fact label="Max guests" value={String(details.maxGuests)} />
+					<Fact
+						label="Floor"
+						value={
+							details.floorNumber !== null
+								? String(details.floorNumber)
+								: "Not specified"
+						}
+					/>
+				</div>
+				<div className={styles.featureGrid}>
+					<Feature enabled={details.furnished} label="Furnished" />
+					<Feature enabled={details.wifi} label="Wi-Fi" />
+					<Feature enabled={details.parking} label="Parking" />
+					<Feature enabled={details.hasBalcony} label="Balcony" />
+					<Feature enabled={details.hasSecurity} label="Security" />
+				</div>
+			</section>
+		);
+	}
+
+	if (product.hotelRoomDetails) {
+		const details = product.hotelRoomDetails;
+
+		return (
+			<section className={styles.specPanel}>
+				<div className={styles.sectionHeader}>
+					<span>
+						<Hotel aria-hidden="true" />
+						Hotel room specifications
+					</span>
+					<h2>{details.hotelName}</h2>
+				</div>
+				<div className={styles.factGrid}>
+					<Fact label="Room type" value={details.roomType} />
+					<Fact label="Bed type" value={details.bedType} />
+					<Fact label="Max guests" value={String(details.maxGuests)} />
+					<Fact label="Check-in" value={details.checkInTime} />
+					<Fact label="Check-out" value={details.checkOutTime} />
+					<Fact
+						label="Room size"
+						value={
+							details.roomSizeSqm
+								? `${details.roomSizeSqm} sqm`
+								: "Not specified"
+						}
+					/>
+					<Fact
+						label="Room number"
+						value={details.roomNumber ?? "Not provided"}
+					/>
+				</div>
+				<div className={styles.featureGrid}>
+					<Feature
+						enabled={details.breakfastIncluded}
+						label="Breakfast included"
+					/>
+					<Feature
+						enabled={details.hasAirConditioning}
+						label="Air conditioning"
+					/>
+					<Feature
+						enabled={details.hasPrivateBathroom}
+						label="Private bathroom"
+					/>
+				</div>
+			</section>
+		);
+	}
+
+	if (product.airbnbDetails) {
+		const details = product.airbnbDetails;
+
+		return (
+			<section className={styles.specPanel}>
+				<div className={styles.sectionHeader}>
+					<span>
+						<House aria-hidden="true" />
+						Airbnb house specifications
+					</span>
+					<h2>{details.houseType}</h2>
+					{details.houseRules ? <p>{details.houseRules}</p> : null}
+				</div>
+				<div className={styles.factGrid}>
+					<Fact label="Bedrooms" value={String(details.bedrooms)} />
+					<Fact label="Bathrooms" value={String(details.bathrooms)} />
+					<Fact label="Max guests" value={String(details.maxGuests)} />
+					<Fact
+						label="Cleaning fee"
+						value={
+							details.cleaningFee
+								? formatMoney(details.cleaningFee, product.currency)
+								: "Not charged"
+						}
+					/>
+				</div>
+				<div className={styles.featureGrid}>
+					<Feature enabled={details.entirePlace} label="Entire place" />
+					<Feature enabled={details.selfCheckIn} label="Self check-in" />
+					<Feature enabled={details.allowPets} label="Pets allowed" />
+					<Feature enabled={details.allowSmoking} label="Smoking allowed" />
+					<Feature enabled={details.allowParties} label="Parties allowed" />
+				</div>
+			</section>
+		);
+	}
+
+	if (!product.carDetails) {
+		return null;
+	}
+
+	return (
+		<section className={styles.specPanel}>
+			<div className={styles.sectionHeader}>
+				<span>
+					<CarFront aria-hidden="true" />
+					Car specifications
+				</span>
+				<h2>Vehicle details</h2>
+			</div>
+			<div className={styles.factGrid}>
+				<Fact label="Brand" value={product.carDetails.brand} />
+				<Fact label="Model" value={product.carDetails.model} />
+				<Fact label="Year" value={String(product.carDetails.year)} />
+				<Fact label="Transmission" value={product.carDetails.transmission} />
+				<Fact label="Fuel" value={product.carDetails.fuelType} />
+				<Fact label="Seats" value={String(product.carDetails.seats)} />
+				<Fact label="Doors" value={String(product.carDetails.doors)} />
+				<Fact
+					label="Plate"
+					value={product.carDetails.plateNumber ?? "Not provided"}
+				/>
+				<Fact
+					label="Luggage"
+					value={
+						product.carDetails.luggageCapacity
+							? `${product.carDetails.luggageCapacity} bags`
+							: "Not specified"
+					}
+				/>
+				<Fact
+					label="Driver age"
+					value={
+						product.carDetails.minimumDriverAge
+							? `${product.carDetails.minimumDriverAge}+`
+							: "Not specified"
+					}
+				/>
+			</div>
+			<div className={styles.featureGrid}>
+				<Feature
+					enabled={product.carDetails.airConditioning}
+					label="Air conditioning"
+				/>
+				<Feature
+					enabled={product.carDetails.driverIncluded}
+					label="Driver included"
+				/>
+				<Feature
+					enabled={product.carDetails.insuranceIncluded}
+					label="Insurance included"
+				/>
+				<Feature
+					enabled={product.carDetails.requiresDeposit}
+					label="Deposit required"
+				/>
+			</div>
+		</section>
+	);
+}
+
 function Fact({ label, value }: { label: string; value: string }) {
 	return (
 		<div className={styles.fact}>
@@ -431,7 +563,7 @@ function Feature({ enabled, label }: { enabled: boolean; label: string }) {
 function StatusPill({ status }: { status: ProductStatus }) {
 	return (
 		<span className={styles.statusPill} data-status={status}>
-			{status.toLowerCase().replace('_', ' ')}
+			{status.toLowerCase().replace("_", " ")}
 		</span>
 	);
 }
@@ -439,19 +571,19 @@ function StatusPill({ status }: { status: ProductStatus }) {
 function buildMetrics(product: Product): PortalMetric[] {
 	return [
 		{
-			label: 'Review status',
-			value: product.status ?? 'DRAFT',
-			description: 'Current admin review state.',
+			label: "Review status",
+			value: product.status ?? "DRAFT",
+			description: "Current admin review state.",
 			icon: ShieldCheck,
 		},
 		{
-			label: 'Images',
+			label: "Images",
 			value: String(product.images.length),
-			description: 'Media attached to the listing.',
+			description: "Media attached to the listing.",
 			icon: ImageIcon,
 		},
 		{
-			label: 'Price',
+			label: "Price",
 			value: formatMoney(product.basePrice, product.currency),
 			description: `Charged per ${product.pricingUnit.toLowerCase()}.`,
 			icon: CircleDollarSign,
@@ -460,53 +592,53 @@ function buildMetrics(product: Product): PortalMetric[] {
 }
 
 function buildStatusTimeline(product: Product) {
-	const status = product.status ?? 'DRAFT';
+	const status = product.status ?? "DRAFT";
 	const createdAt = formatDate(product.createdAt);
 	const reviewedAt = formatDate(product.reviewedAt);
 	const publishedAt = formatDate(product.publishedAt);
-	const isApproved = status === 'APPROVED';
-	const isRejected = status === 'REJECTED';
-	const isArchived = status === 'ARCHIVED';
-	const isPending = status === 'PENDING_REVIEW';
+	const isApproved = status === "APPROVED";
+	const isRejected = status === "REJECTED";
+	const isArchived = status === "ARCHIVED";
+	const isPending = status === "PENDING_REVIEW";
 
 	return [
 		{
-			label: 'Listing created',
+			label: "Listing created",
 			description: createdAt,
-			state: 'complete',
+			state: "complete",
 			icon: Store,
 		},
 		{
-			label: 'Submitted for review',
+			label: "Submitted for review",
 			description:
 				isPending || isApproved || isRejected
-					? 'Admin review queue'
-					: 'Submit changes to start review',
+					? "Admin review queue"
+					: "Submit changes to start review",
 			state: isPending
-				? 'current'
+				? "current"
 				: isApproved || isRejected
-					? 'complete'
-					: 'upcoming',
+					? "complete"
+					: "upcoming",
 			icon: Clock3,
 		},
 		{
-			label: isRejected ? 'Review rejected' : 'Admin decision',
+			label: isRejected ? "Review rejected" : "Admin decision",
 			description: isApproved
 				? `Approved ${reviewedAt}`
 				: isRejected
 					? `Rejected ${reviewedAt}`
 					: isArchived
-						? 'Archived listing'
-						: 'Waiting for review decision',
-			state: isApproved || isRejected || isArchived ? 'complete' : 'upcoming',
+						? "Archived listing"
+						: "Waiting for review decision",
+			state: isApproved || isRejected || isArchived ? "complete" : "upcoming",
 			icon: isRejected ? XCircle : ShieldCheck,
 		},
 		{
-			label: 'Marketplace visibility',
+			label: "Marketplace visibility",
 			description: isApproved
 				? `Published ${publishedAt}`
-				: 'Hidden until approved',
-			state: isApproved ? 'complete' : 'upcoming',
+				: "Hidden until approved",
+			state: isApproved ? "complete" : "upcoming",
 			icon: Eye,
 		},
 	] as const;
@@ -519,8 +651,8 @@ function formatMoney(value: string, currency: string) {
 		return `${currency} ${value}`;
 	}
 
-	return new Intl.NumberFormat('en-RW', {
-		style: 'currency',
+	return new Intl.NumberFormat("en-RW", {
+		style: "currency",
 		currency,
 		maximumFractionDigits: 0,
 	}).format(numericValue);
@@ -528,20 +660,20 @@ function formatMoney(value: string, currency: string) {
 
 function formatDate(value?: string | null) {
 	if (!value) {
-		return 'Not available';
+		return "Not available";
 	}
 
-	return new Intl.DateTimeFormat('en', {
-		month: 'short',
-		day: 'numeric',
-		year: 'numeric',
+	return new Intl.DateTimeFormat("en", {
+		month: "short",
+		day: "numeric",
+		year: "numeric",
 	}).format(new Date(value));
 }
 
 function formatLabel(value: string) {
 	return value
 		.toLowerCase()
-		.split('_')
+		.split("_")
 		.map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-		.join(' ');
+		.join(" ");
 }
