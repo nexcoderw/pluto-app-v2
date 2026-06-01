@@ -7,9 +7,7 @@ export function PortalSkeleton() {
 			<section className={styles.portalFrame}>
 				<aside className={styles.sidebar} aria-hidden="true">
 					<Skeleton className={styles.skeletonBrand} />
-					<Skeleton className={styles.skeletonProfile} />
 					<Skeleton className={styles.skeletonNav} />
-					<Skeleton className={styles.skeletonFooter} />
 				</aside>
 				<div className={styles.portalShell}>
 					<Skeleton className={styles.skeletonTopbar} />
@@ -24,4 +22,3 @@ export function PortalSkeleton() {
 		</main>
 	);
 }
-
