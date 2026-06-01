@@ -8,6 +8,7 @@ import {
 	useState,
 } from 'react';
 import { useRouter } from 'next/navigation';
+import { getCountries } from 'libphonenumber-js';
 import {
 	ArrowLeft,
 	ArrowRight,
@@ -109,6 +110,39 @@ const pricingUnits: Array<{ label: string; value: PricingUnit }> = [
 	{ label: 'Per month', value: 'MONTH' },
 ];
 const maxImageSize = 8 * 1024 * 1024;
+const imageFileExtensions = [
+	'.apng',
+	'.avif',
+	'.bmp',
+	'.dib',
+	'.gif',
+	'.heic',
+	'.heif',
+	'.ico',
+	'.jfif',
+	'.jpe',
+	'.jpeg',
+	'.jpg',
+	'.pjp',
+	'.pjpeg',
+	'.png',
+	'.tif',
+	'.tiff',
+	'.webp',
+] as const;
+const imageAccept = ['image/*', ...imageFileExtensions].join(',');
+const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
+const countryOptions = getCountries()
+	.map((code) => ({
+		code,
+		name: regionNames.of(code) ?? code,
+	}))
+	.sort((first, second) => {
+		if (first.code === 'RW') return -1;
+		if (second.code === 'RW') return 1;
+
+		return first.name.localeCompare(second.name);
+	});
 
 export function ListingForm({
 	mode,
@@ -200,13 +234,14 @@ export function ListingForm({
 	function handleFiles(event: ChangeEvent<HTMLInputElement>) {
 		const files = Array.from(event.target.files ?? []);
 		const imageFilesOnly = files.filter(
-			(file) => file.type.startsWith('image/') && file.size <= maxImageSize,
+			(file) => isImageFile(file) && file.size <= maxImageSize,
 		);
 
 		if (imageFilesOnly.length !== files.length) {
 			setErrors((current) => ({
 				...current,
-				images: 'Upload images only, with each file under 8 MB.',
+				images:
+					'Upload image files only, with each file under 8 MB. Video, audio, and documents are not accepted.',
 			}));
 		}
 
@@ -372,12 +407,10 @@ function ListingStoryStep({ values, errors, onChange }: StepProps) {
 				/>
 			</FormField>
 			<FormField label="Country" required error={errors.country}>
-				<Input
+				<CountrySelect
 					value={values.country}
-					onChange={(event) => onChange('country', event.target.value)}
-					placeholder="Rwanda"
-					icon={<MapPin aria-hidden="true" />}
-					aria-invalid={Boolean(errors.country)}
+					error={errors.country}
+					onChange={(country) => onChange('country', country)}
 				/>
 			</FormField>
 			<FormField
@@ -642,7 +675,7 @@ function PricingMediaStep({
 				<input
 					id="listing-images"
 					type="file"
-					accept="image/*"
+					accept={imageAccept}
 					multiple
 					onChange={onFiles}
 				/>
@@ -736,6 +769,57 @@ function ToggleField({
 			</span>
 			{label}
 		</button>
+	);
+}
+
+function CountrySelect({
+	value,
+	error,
+	onChange,
+}: {
+	value: string;
+	error?: string;
+	onChange: (country: string) => void;
+}) {
+	const selectedCountry =
+		countryOptions.find((country) => country.name === value) ??
+		countryOptions.find((country) => country.code === 'RW') ??
+		countryOptions[0];
+
+	return (
+		<Select
+			value={selectedCountry.name}
+			onValueChange={(country) => {
+				if (country) {
+					onChange(country);
+				}
+			}}
+		>
+			<SelectTrigger
+				className={styles.selectTrigger}
+				aria-label="Listing country"
+				aria-invalid={Boolean(error)}
+			>
+				<SelectValue>
+					<MapPin aria-hidden="true" />
+					{selectedCountry.name}
+				</SelectValue>
+			</SelectTrigger>
+			<SelectContent
+				className={styles.countryMenu}
+				align="start"
+				alignItemWithTrigger={false}
+			>
+				{countryOptions.map((country) => (
+					<SelectItem key={country.code} value={country.name}>
+						<span className={styles.countryOption}>
+							<strong>{country.name}</strong>
+							<small>{country.code}</small>
+						</span>
+					</SelectItem>
+				))}
+			</SelectContent>
+		</Select>
 	);
 }
 
@@ -911,4 +995,14 @@ function formatFileSize(size: number) {
 	}
 
 	return `${(size / 1024 / 1024).toFixed(1)} MB`;
+}
+
+function isImageFile(file: File) {
+	if (file.type.startsWith('image/')) {
+		return true;
+	}
+
+	const fileName = file.name.toLowerCase();
+
+	return imageFileExtensions.some((extension) => fileName.endsWith(extension));
 }
