@@ -1,12 +1,19 @@
-import type { Metadata } from 'next';
-import Link from 'next/link';
-import { ArrowRight, Building2, CarFront, Hotel, Search } from 'lucide-react';
-import styles from './page.module.css';
+import type { Metadata } from "next";
+import Link from "next/link";
+import {
+	ArrowRight,
+	Building2,
+	CarFront,
+	Hotel,
+	House,
+	Search,
+} from "lucide-react";
+import styles from "./page.module.css";
 
 export const metadata: Metadata = {
-	title: 'Book Trusted Stays and Rentals',
+	title: "Book Trusted Stays and Rentals",
 	description:
-		'Discover trusted cars, apartments, hotel rooms, and stays on Pluto Booking.',
+		"Discover trusted cars, apartments, hotel rooms, and stays on Pluto Booking.",
 };
 
 export default function HomePage() {
@@ -17,22 +24,26 @@ export default function HomePage() {
 					<span className={styles.eyebrow}>Travel marketplace</span>
 					<h1>Book the right place, ride, or room with confidence.</h1>
 					<p>
-						Pluto Booking helps customers find reviewed properties and rentals while
-						giving partners a clean path to list their spaces professionally.
+						Pluto Booking helps customers find reviewed properties and rentals
+						while giving partners a clean path to list their spaces
+						professionally.
 					</p>
 					<div className={styles.actions}>
-						<Link href="/register" className={styles.primaryAction}>
+						<Link href="/marketplace" className={styles.primaryAction}>
 							<ArrowRight aria-hidden="true" />
-							Create account
+							Explore marketplace
 						</Link>
-						<Link href="/login" className={styles.secondaryAction}>
+						<Link href="/register" className={styles.secondaryAction}>
 							<Search aria-hidden="true" />
-							Sign in
+							Create account
 						</Link>
 					</div>
 				</div>
 
-				<div className={styles.bookingPanel} aria-label="Booking categories preview">
+				<div
+					className={styles.bookingPanel}
+					aria-label="Booking categories preview"
+				>
 					<div className={styles.panelHeader}>
 						<span>Available soon</span>
 						<strong>Curated marketplace</strong>
@@ -49,6 +60,10 @@ export default function HomePage() {
 						<div>
 							<Hotel aria-hidden="true" />
 							<span>Hotel rooms</span>
+						</div>
+						<div>
+							<House aria-hidden="true" />
+							<span>Airbnb homes</span>
 						</div>
 					</div>
 					<div className={styles.trustLine}>
