@@ -3,5 +3,6 @@ export const PARTNER_PROFILE_ROUTES = {
 	saveIndividual: '/partner/profile/individual',
 	saveCompany: '/partner/profile/company',
 	submit: '/partner/profile/submit',
+	documents: '/partner/profile/documents',
 	startFresh: '/partner/profile/start-fresh',
 } as const;
