@@ -16,6 +16,16 @@ export const apiClient = axios.create({
 apiClient.interceptors.request.use((config) => {
 	const accessToken = getUserAccessToken();
 
+	if (isFormDataPayload(config.data) && config.headers) {
+		if (typeof config.headers.delete === 'function') {
+			config.headers.delete('Content-Type');
+			config.headers.delete('content-type');
+		} else {
+			delete (config.headers as Record<string, unknown>)['Content-Type'];
+			delete (config.headers as Record<string, unknown>)['content-type'];
+		}
+	}
+
 	if (accessToken) {
 		config.headers.Authorization = `Bearer ${accessToken}`;
 	}
@@ -33,3 +43,7 @@ apiClient.interceptors.response.use(
 		return Promise.reject(error);
 	},
 );
+
+function isFormDataPayload(payload: unknown): payload is FormData {
+	return typeof FormData !== 'undefined' && payload instanceof FormData;
+}
