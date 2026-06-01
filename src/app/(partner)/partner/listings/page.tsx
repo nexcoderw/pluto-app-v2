@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { PartnerWorkspacePage } from '@/components/partner/partner-workspace-page';
+import { PartnerListingsPage as PartnerListingsExperience } from '@/components/partner/listings/partner-listings-page';
 
 export const metadata: Metadata = {
 	title: 'Partner Listings',
@@ -12,5 +12,5 @@ export const metadata: Metadata = {
 };
 
 export default function PartnerListingsPage() {
-	return <PartnerWorkspacePage page="listings" />;
+	return <PartnerListingsExperience />;
 }
