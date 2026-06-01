@@ -1,6 +1,15 @@
 'use client';
 
-import { type ChangeEvent, type FormEvent, useMemo, useState } from 'react';
+import {
+	type ChangeEvent,
+	type FormEvent,
+	type ReactNode,
+	useEffect,
+	useMemo,
+	useState,
+} from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
 	parsePhoneNumberFromString,
@@ -9,25 +18,17 @@ import {
 import {
 	BadgeCheck,
 	Building2,
-	CalendarClock,
-	CarFront,
 	CheckCircle2,
-	ClipboardCheck,
 	FileText,
-	Home,
-	LayoutDashboard,
-	ListChecks,
 	Phone,
-	PlusCircle,
 	RefreshCcw,
 	Send,
-	Settings,
 	ShieldAlert,
 	ShieldCheck,
-	Tag,
 	UploadCloud,
 	UserRoundCheck,
 	X,
+	type LucideIcon,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -51,13 +52,7 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { PortalAccessBoundary } from '@/components/portal/portal-access-boundary';
-import {
-	PortalShell,
-	type PortalAction,
-	type PortalMetric,
-	type PortalNavItem,
-} from '@/components/portal/portal-shell';
-import shellStyles from '@/components/portal/portal-shell.module.css';
+import { PartnerStatusGate } from '@/components/partner/partner-dashboard';
 import {
 	getPartnerProfile,
 	saveCompanyPartnerProfile,
@@ -69,12 +64,6 @@ import {
 	type PartnerProfile,
 	type PartnerProfileStatus,
 } from '@/services/api/partner-profile';
-import {
-	createCarProduct,
-	listPartnerProducts,
-	type CreateCarProductRequest,
-} from '@/services/api/partner-products';
-import type { Product, ProductStatus } from '@/services/api/products';
 import type { UserAuthProfile } from '@/services/api/auth';
 import {
 	PHONE_COUNTRIES,
@@ -88,36 +77,6 @@ import {
 } from '@/lib/phone-number';
 import { ApiRequestError } from '@/services/api/errors';
 import styles from './partner-portal.module.css';
-
-const partnerNavigation: PortalNavItem[] = [
-	{
-		href: '/partner-onboarding',
-		label: 'Overview',
-		icon: LayoutDashboard,
-		active: true,
-	},
-	{ href: '/partner-onboarding', label: 'Listings', icon: Building2 },
-	{ href: '/partner-onboarding', label: 'Documents', icon: FileText },
-	{ href: '/partner-onboarding', label: 'Review queue', icon: ClipboardCheck },
-	{ href: '/partner-onboarding', label: 'Availability', icon: CalendarClock },
-	{ href: '/partner-onboarding', label: 'Settings', icon: Settings },
-];
-
-const partnerActions: PortalAction[] = [
-	{
-		href: '/partner-onboarding',
-		label: 'Create first listing',
-		description:
-			'Approved partners can prepare listing content and pricing here.',
-		icon: Building2,
-	},
-	{
-		href: '/partner-onboarding',
-		label: 'Upload documents',
-		description: 'Verification document tools will connect to this workspace.',
-		icon: UploadCloud,
-	},
-];
 
 type PartnerFormState = {
 	legalName: string;
@@ -143,62 +102,126 @@ type PartnerTextField = Exclude<
 	'businessPhoneCountry' | 'country'
 >;
 
-type ListingFormState = {
-	title: string;
+type OnboardingMetric = {
+	label: string;
+	value: string;
 	description: string;
-	shortDescription: string;
-	city: string;
-	basePrice: string;
-	brand: string;
-	model: string;
-	year: string;
-	transmission: string;
-	fuelType: string;
-	seats: string;
-	doors: string;
-	driverIncluded: boolean;
-	insuranceIncluded: boolean;
+	icon: LucideIcon;
 };
-
-type ListingFormErrors = Partial<Record<keyof ListingFormState, string>>;
 
 export function PartnerPortal() {
 	return (
-		<PortalAccessBoundary allowedRole="PARTNER">
+		<PortalAccessBoundary
+			allowedRole="PARTNER"
+			loadingFallback={
+				<PartnerStatusGate
+					title="Opening partner onboarding"
+					description="Checking your secure partner session before loading verification."
+				/>
+			}
+		>
 			{(user) => <PartnerPortalContent user={user} />}
 		</PortalAccessBoundary>
 	);
 }
 
 function PartnerPortalContent({ user }: { user: UserAuthProfile }) {
+	const router = useRouter();
 	const profileQuery = useQuery({
 		queryKey: ['partner-profile'],
 		queryFn: getPartnerProfile,
 	});
 	const profile = profileQuery.data?.profile;
+
+	useEffect(() => {
+		if (profile?.status === 'APPROVED') {
+			router.replace('/partner/dashboard');
+		}
+	}, [profile, router]);
+
+	if (profileQuery.isPending || profile?.status === 'APPROVED') {
+		return (
+			<PartnerStatusGate
+				title="Opening partner dashboard"
+				description="Your profile is approved. Redirecting you to the operational workspace."
+			/>
+		);
+	}
+
+	if (profileQuery.isError || !profile) {
+		return (
+			<PartnerStatusGate
+				title="Partner profile unavailable"
+				description="We could not load your partner onboarding status. Retry before editing or submitting verification details."
+				action={
+					<Button type="button" onClick={() => profileQuery.refetch()}>
+						<RefreshCcw aria-hidden="true" />
+						Retry
+					</Button>
+				}
+			/>
+		);
+	}
+
+	return (
+		<PartnerOnboardingShell user={user} profile={profile}>
+			<PartnerProfileWorkflow profile={profile} user={user} />
+		</PartnerOnboardingShell>
+	);
+}
+
+function PartnerOnboardingShell({
+	user,
+	profile,
+	children,
+}: {
+	user: UserAuthProfile;
+	profile: PartnerProfile;
+	children: ReactNode;
+}) {
 	const metrics = useMemo(() => buildMetrics(profile), [profile]);
 
 	return (
-		<PortalShell
-			variant="partner"
-			user={user}
-			eyebrow="Partner portal"
-			title={buildTitle(user.fullName, profile)}
-			description={buildDescription(profile)}
-			homeHref="/"
-			homeLabel="View marketplace"
-			navigation={partnerNavigation}
-			metrics={metrics}
-			actions={profile?.status === 'APPROVED' ? partnerActions : []}
-		>
-			{profileQuery.isPending ? (
-				<PartnerProfileSkeleton />
-			) : profileQuery.isError || !profile ? (
-				<PartnerProfileError onRetry={() => profileQuery.refetch()} />
-			) : (
-				<PartnerProfileWorkflow profile={profile} user={user} />
-			)}
-		</PortalShell>
+		<main className={styles.onboardingPage}>
+			<section className={styles.onboardingFrame}>
+				<header className={styles.onboardingHeader}>
+					<Link href="/" className={styles.onboardingBrand}>
+						<span>PB</span>
+						<strong>Pluto Booking</strong>
+					</Link>
+					<div className={styles.onboardingUser}>
+						<span>{getUserInitials(user.fullName || user.email)}</span>
+						<strong>{user.fullName}</strong>
+					</div>
+				</header>
+
+				<section className={styles.onboardingHero}>
+					<div>
+						<p>Partner onboarding</p>
+						<h1>{buildTitle(user.fullName, profile)}</h1>
+						<span>{buildDescription(profile)}</span>
+					</div>
+					<StatusPill status={profile.status} />
+				</section>
+
+				<div className={styles.onboardingMetrics}>
+					{metrics.map((metric) => {
+						const Icon = metric.icon;
+
+						return (
+							<article key={metric.label}>
+								<Icon aria-hidden="true" />
+								<strong>{metric.value}</strong>
+								<span>{metric.label}</span>
+								<small>{metric.description}</small>
+							</article>
+						);
+					})}
+				</div>
+
+				{children}
+			</section>
+		</main>
 	);
 }
 
@@ -210,7 +233,12 @@ function PartnerProfileWorkflow({
 	user: UserAuthProfile;
 }) {
 	if (profile.status === 'APPROVED') {
-		return <ApprovedPartnerWorkspace profile={profile} />;
+		return (
+			<PartnerStatusGate
+				title="Opening partner dashboard"
+				description="Your profile is approved. Redirecting you to the operational workspace."
+			/>
+		);
 	}
 
 	if (profile.status === 'PENDING') {
@@ -722,343 +750,6 @@ function DocumentUploadPanel({
 	);
 }
 
-function ApprovedPartnerWorkspace({ profile }: { profile: PartnerProfile }) {
-	const isCompany = profile.partnerType === 'COMPANY';
-	const queryClient = useQueryClient();
-	const [form, setForm] = useState<ListingFormState>(defaultListingForm);
-	const [errors, setErrors] = useState<ListingFormErrors>({});
-	const productsQuery = useQuery({
-		queryKey: ['partner-products'],
-		queryFn: () => listPartnerProducts({ page: 1 }),
-	});
-	const createListingMutation = useMutation({
-		mutationFn: (payload: CreateCarProductRequest) => createCarProduct(payload),
-		onSuccess: () => {
-			setForm(defaultListingForm);
-			setErrors({});
-			void queryClient.invalidateQueries({ queryKey: ['partner-products'] });
-			toast.success('Car listing submitted.', {
-				description: 'Admins can now review it before it goes public.',
-			});
-		},
-		onError: (error) => toast.error(getErrorMessage(error)),
-	});
-
-	function updateListingField(
-		field: keyof ListingFormState,
-		value: string | boolean,
-	) {
-		setForm((current) => ({ ...current, [field]: value }));
-		setErrors((current) => ({ ...current, [field]: undefined }));
-	}
-
-	function handleCreateListing(event: FormEvent<HTMLFormElement>) {
-		event.preventDefault();
-		const validationErrors = validateListingForm(form);
-
-		if (Object.keys(validationErrors).length) {
-			setErrors(validationErrors);
-			toast.error('Complete the highlighted listing fields.');
-			return;
-		}
-
-		createListingMutation.mutate(toCreateCarProductPayload(form));
-	}
-
-	return (
-		<section className={styles.approvedWorkspace}>
-			<div className={shellStyles.featureBand}>
-				<div>
-					<h2>
-						{isCompany
-							? 'Business partner workspace'
-							: 'Individual partner workspace'}
-					</h2>
-					<p>
-						Your profile is approved. Create accurate listings for admin review
-						before they become public in the marketplace.
-					</p>
-				</div>
-				<ul className={shellStyles.featureList}>
-					<li>
-						<ListChecks aria-hidden="true" />
-						Listing review workflow
-					</li>
-					<li>
-						<UploadCloud aria-hidden="true" />
-						Media-ready product records
-					</li>
-					<li>
-						<Home aria-hidden="true" />
-						Approved partner operations
-					</li>
-				</ul>
-			</div>
-
-			<div className={styles.listingGrid}>
-				<form className={styles.listingForm} onSubmit={handleCreateListing}>
-					<div className={styles.listingHeader}>
-						<span>
-							<CarFront aria-hidden="true" />
-							New car listing
-						</span>
-						<h3>Submit a vehicle for review</h3>
-						<p>
-							Start with the core listing details. Images, availability, and
-							advanced pricing can be connected after the review workflow.
-						</p>
-					</div>
-
-					<ListingField
-						label="Listing title"
-						value={form.title}
-						error={errors.title}
-						placeholder="Toyota RAV4 for Kigali trips"
-						onChange={(value) => updateListingField('title', value)}
-					/>
-					<ListingField
-						label="Short summary"
-						value={form.shortDescription}
-						error={errors.shortDescription}
-						placeholder="Comfortable SUV with flexible daily pricing"
-						onChange={(value) => updateListingField('shortDescription', value)}
-						optional
-					/>
-					<label className={styles.formField} data-wide="true">
-						<span>Description</span>
-						<Textarea
-							className={styles.descriptionTextarea}
-							value={form.description}
-							onChange={(event) =>
-								updateListingField('description', event.target.value)
-							}
-							placeholder="Describe the car, pickup rules, included services, and ideal customer use cases."
-							aria-invalid={Boolean(errors.description)}
-						/>
-						{errors.description ? <small>{errors.description}</small> : null}
-					</label>
-					<ListingField
-						label="City"
-						value={form.city}
-						error={errors.city}
-						placeholder="Kigali"
-						onChange={(value) => updateListingField('city', value)}
-					/>
-					<ListingField
-						label="Daily base price"
-						value={form.basePrice}
-						error={errors.basePrice}
-						placeholder="45000"
-						type="number"
-						onChange={(value) => updateListingField('basePrice', value)}
-					/>
-					<ListingField
-						label="Brand"
-						value={form.brand}
-						error={errors.brand}
-						placeholder="Toyota"
-						onChange={(value) => updateListingField('brand', value)}
-					/>
-					<ListingField
-						label="Model"
-						value={form.model}
-						error={errors.model}
-						placeholder="RAV4"
-						onChange={(value) => updateListingField('model', value)}
-					/>
-					<ListingField
-						label="Year"
-						value={form.year}
-						error={errors.year}
-						placeholder="2022"
-						type="number"
-						onChange={(value) => updateListingField('year', value)}
-					/>
-					<ListingField
-						label="Transmission"
-						value={form.transmission}
-						error={errors.transmission}
-						placeholder="Automatic"
-						onChange={(value) => updateListingField('transmission', value)}
-					/>
-					<ListingField
-						label="Fuel type"
-						value={form.fuelType}
-						error={errors.fuelType}
-						placeholder="Petrol"
-						onChange={(value) => updateListingField('fuelType', value)}
-					/>
-					<ListingField
-						label="Seats"
-						value={form.seats}
-						error={errors.seats}
-						placeholder="5"
-						type="number"
-						onChange={(value) => updateListingField('seats', value)}
-					/>
-					<ListingField
-						label="Doors"
-						value={form.doors}
-						error={errors.doors}
-						placeholder="4"
-						type="number"
-						onChange={(value) => updateListingField('doors', value)}
-					/>
-
-					<div className={styles.listingToggles} data-wide="true">
-						<label>
-							<input
-								type="checkbox"
-								checked={form.driverIncluded}
-								onChange={(event) =>
-									updateListingField('driverIncluded', event.target.checked)
-								}
-							/>
-							<span>Driver included</span>
-						</label>
-						<label>
-							<input
-								type="checkbox"
-								checked={form.insuranceIncluded}
-								onChange={(event) =>
-									updateListingField('insuranceIncluded', event.target.checked)
-								}
-							/>
-							<span>Insurance included</span>
-						</label>
-					</div>
-
-					<div className={styles.formActions} data-wide="true">
-						<Button type="submit" disabled={createListingMutation.isPending}>
-							<PlusCircle aria-hidden="true" />
-							{createListingMutation.isPending
-								? 'Submitting...'
-								: 'Submit listing'}
-						</Button>
-					</div>
-				</form>
-
-				<PartnerProductsPanel
-					products={productsQuery.data?.items ?? []}
-					isLoading={productsQuery.isPending}
-					isError={productsQuery.isError}
-					onRetry={() => productsQuery.refetch()}
-				/>
-			</div>
-		</section>
-	);
-}
-
-function ListingField({
-	label,
-	value,
-	error,
-	type = 'text',
-	optional = false,
-	placeholder,
-	onChange,
-}: {
-	label: string;
-	value: string;
-	error?: string;
-	type?: string;
-	optional?: boolean;
-	placeholder?: string;
-	onChange: (value: string) => void;
-}) {
-	return (
-		<label className={styles.formField}>
-			<span>
-				{label}
-				{optional ? <em>Optional</em> : null}
-			</span>
-			<Input
-				type={type}
-				value={value}
-				onChange={(event) => onChange(event.target.value)}
-				placeholder={placeholder}
-				aria-invalid={Boolean(error)}
-			/>
-			{error ? <small>{error}</small> : null}
-		</label>
-	);
-}
-
-function PartnerProductsPanel({
-	products,
-	isLoading,
-	isError,
-	onRetry,
-}: {
-	products: Product[];
-	isLoading: boolean;
-	isError: boolean;
-	onRetry: () => void;
-}) {
-	return (
-		<aside className={styles.productsPanel}>
-			<div className={styles.productsHeader}>
-				<span>
-					<Tag aria-hidden="true" />
-					Your listings
-				</span>
-				<h3>Review status</h3>
-				<p>
-					Track submitted listings and admin decisions before customers can see
-					them.
-				</p>
-			</div>
-
-			{isLoading ? (
-				<div className={styles.productsSkeleton} aria-label="Loading listings">
-					{Array.from({ length: 4 }).map((_, index) => (
-						<div key={index} />
-					))}
-				</div>
-			) : isError ? (
-				<div className={styles.productsEmpty}>
-					<ShieldAlert aria-hidden="true" />
-					<strong>Listings unavailable</strong>
-					<p>Refresh this panel before creating or reviewing listing status.</p>
-					<Button type="button" variant="outline" onClick={onRetry}>
-						<RefreshCcw aria-hidden="true" />
-						Retry
-					</Button>
-				</div>
-			) : products.length ? (
-				<div className={styles.productList}>
-					{products.map((product) => (
-						<div key={product.id} className={styles.productCard}>
-							<span>
-								<strong>{product.title}</strong>
-								<small>
-									{formatMoney(product.basePrice, product.currency)} /{' '}
-									{product.pricingUnit.toLowerCase()}
-								</small>
-							</span>
-							<ProductStatusPill status={product.status ?? 'PENDING_REVIEW'} />
-						</div>
-					))}
-				</div>
-			) : (
-				<div className={styles.productsEmpty}>
-					<CarFront aria-hidden="true" />
-					<strong>No listings yet</strong>
-					<p>Submit your first car listing for secure admin review.</p>
-				</div>
-			)}
-		</aside>
-	);
-}
-
-function ProductStatusPill({ status }: { status: ProductStatus }) {
-	return (
-		<span className={styles.productStatusPill} data-status={status}>
-			{status.toLowerCase().replace('_', ' ')}
-		</span>
-	);
-}
-
 function PendingReviewPanel({ profile }: { profile: PartnerProfile }) {
 	return (
 		<section className={styles.profilePanel}>
@@ -1281,7 +972,7 @@ function StatusPill({ status }: { status: PartnerProfileStatus }) {
 	);
 }
 
-function buildMetrics(profile?: PartnerProfile): PortalMetric[] {
+function buildMetrics(profile?: PartnerProfile): OnboardingMetric[] {
 	return [
 		{
 			label: 'Listings prepared',
@@ -1417,98 +1108,6 @@ function validateForm(form: PartnerFormState, isCompany: boolean) {
 	return errors;
 }
 
-const defaultListingForm: ListingFormState = {
-	title: '',
-	description: '',
-	shortDescription: '',
-	city: 'Kigali',
-	basePrice: '',
-	brand: '',
-	model: '',
-	year: '',
-	transmission: 'Automatic',
-	fuelType: 'Petrol',
-	seats: '5',
-	doors: '4',
-	driverIncluded: false,
-	insuranceIncluded: true,
-};
-
-function validateListingForm(form: ListingFormState) {
-	const errors: ListingFormErrors = {};
-	const requiredFields: (keyof ListingFormState)[] = [
-		'title',
-		'description',
-		'city',
-		'basePrice',
-		'brand',
-		'model',
-		'year',
-		'transmission',
-		'fuelType',
-		'seats',
-		'doors',
-	];
-
-	requiredFields.forEach((field) => {
-		if (typeof form[field] === 'string' && !form[field].trim()) {
-			errors[field] = 'This field is required.';
-		}
-	});
-
-	if (form.title.trim() && form.title.trim().length < 4) {
-		errors.title = 'Use at least 4 characters.';
-	}
-
-	if (form.description.trim() && form.description.trim().length < 30) {
-		errors.description = 'Use at least 30 characters.';
-	}
-
-	if (Number(form.basePrice) <= 0) {
-		errors.basePrice = 'Enter a valid price.';
-	}
-
-	const year = Number(form.year);
-	if (!Number.isInteger(year) || year < 1990 || year > 2035) {
-		errors.year = 'Enter a valid vehicle year.';
-	}
-
-	if (Number(form.seats) < 1) {
-		errors.seats = 'Enter at least 1 seat.';
-	}
-
-	if (Number(form.doors) < 1) {
-		errors.doors = 'Enter at least 1 door.';
-	}
-
-	return errors;
-}
-
-function toCreateCarProductPayload(
-	form: ListingFormState,
-): CreateCarProductRequest {
-	return {
-		title: form.title.trim(),
-		description: form.description.trim(),
-		shortDescription: normalizeOptional(form.shortDescription),
-		city: form.city.trim() || 'Kigali',
-		country: 'Rwanda',
-		basePrice: form.basePrice.trim(),
-		currency: 'RWF',
-		pricingUnit: 'DAY',
-		brand: form.brand.trim(),
-		model: form.model.trim(),
-		year: Number(form.year),
-		transmission: form.transmission.trim(),
-		fuelType: form.fuelType.trim(),
-		seats: Number(form.seats),
-		doors: Number(form.doors),
-		driverIncluded: form.driverIncluded,
-		insuranceIncluded: form.insuranceIncluded,
-		airConditioning: true,
-	};
-}
-
 function toPhoneFormState(phone?: string | null) {
 	const parsedPhone = phone ? parsePhoneNumberFromString(phone) : undefined;
 
@@ -1574,16 +1173,8 @@ function formatFileSize(sizeBytes: number) {
 	return `${(sizeBytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-function formatMoney(value: string, currency: string) {
-	const amount = Number(value);
+function getUserInitials(value: string) {
+	const [first = 'P', second = 'B'] = value.trim().split(/\s+/).filter(Boolean);
 
-	if (Number.isNaN(amount)) {
-		return `${currency} ${value}`;
-	}
-
-	return new Intl.NumberFormat('en', {
-		style: 'currency',
-		currency,
-		maximumFractionDigits: 0,
-	}).format(amount);
+	return `${first.charAt(0)}${second.charAt(0)}`.toUpperCase();
 }
