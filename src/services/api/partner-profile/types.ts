@@ -76,7 +76,7 @@ export type PartnerProfileResponse = {
 
 export type SaveIndividualPartnerProfileRequest = {
 	legalName: string;
-	nationalIdNumber: string;
+	nationalIdNumber?: string;
 	businessEmail: string;
 	businessPhone: string;
 	description: string;
