@@ -89,13 +89,13 @@
 }
 
 .stepList button:hover,
-.stepList button[data-active='true'] {
+.stepList button[data-active="true"] {
 	border-color: rgba(2, 0, 108, 0.2);
 	background: rgba(255, 255, 255, 0.84);
 	transform: translateY(-1px);
 }
 
-.stepList button[data-active='true'] {
+.stepList button[data-active="true"] {
 	background: #02006c;
 	color: white;
 }
@@ -111,7 +111,7 @@
 	color: #02006c;
 }
 
-.stepList button[data-active='true'] > span {
+.stepList button[data-active="true"] > span {
 	background: rgba(255, 255, 255, 0.16);
 	color: white;
 }
@@ -129,7 +129,7 @@
 	line-height: 1.4;
 }
 
-.stepList button[data-active='true'] small {
+.stepList button[data-active="true"] small {
 	color: rgba(255, 255, 255, 0.72);
 }
 
@@ -137,6 +137,117 @@
 	display: grid;
 	gap: 1rem;
 	padding: clamp(1rem, 2.4vw, 1.35rem);
+}
+
+.categoryGrid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.8rem;
+}
+
+.categoryCard {
+	min-height: 12rem;
+	display: grid;
+	align-content: start;
+	gap: 0.65rem;
+	padding: 1rem;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	border-radius: 1.25rem;
+	background: rgba(255, 255, 255, 0.56);
+	color: #17171f;
+	text-align: left;
+	cursor: pointer;
+	transition:
+		transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+		background 180ms ease,
+		border-color 180ms ease,
+		box-shadow 180ms ease;
+}
+
+.categoryCard:hover:not(:disabled),
+.categoryCard[data-active="true"] {
+	border-color: rgba(2, 0, 108, 0.26);
+	background: rgba(255, 255, 255, 0.9);
+	box-shadow: 0 1rem 2.4rem rgba(2, 0, 108, 0.1);
+	transform: translateY(-2px);
+}
+
+.categoryCard[data-active="true"] {
+	background: #02006c;
+	color: white;
+}
+
+.categoryCard:disabled {
+	cursor: not-allowed;
+	opacity: 0.82;
+}
+
+.categoryCard > span {
+	width: 2.8rem;
+	height: 2.8rem;
+	display: grid;
+	place-items: center;
+	border-radius: 999px;
+	background: rgba(2, 0, 108, 0.08);
+	color: #02006c;
+}
+
+.categoryCard[data-active="true"] > span {
+	background: rgba(255, 255, 255, 0.14);
+	color: white;
+}
+
+.categoryCard strong {
+	font-size: 1.02rem;
+	font-weight: 880;
+	line-height: 1.1;
+}
+
+.categoryCard small {
+	max-width: 22rem;
+	color: rgba(23, 23, 31, 0.56);
+	font-size: 0.78rem;
+	font-weight: 650;
+	line-height: 1.45;
+}
+
+.categoryCard[data-active="true"] small {
+	color: rgba(255, 255, 255, 0.76);
+}
+
+.categoryCard em {
+	width: fit-content;
+	margin-top: auto;
+	padding: 0.42rem 0.68rem;
+	border-radius: 999px;
+	background: rgba(2, 0, 108, 0.08);
+	color: #02006c;
+	font-size: 0.68rem;
+	font-style: normal;
+	font-weight: 850;
+	text-transform: uppercase;
+}
+
+.categoryCard[data-active="true"] em {
+	background: rgba(255, 255, 255, 0.16);
+	color: white;
+}
+
+.categoryNote {
+	grid-column: 1 / -1;
+	margin: 0;
+	padding: 0.9rem 1rem;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	border-radius: 1rem;
+	background: rgba(2, 0, 108, 0.05);
+	color: rgba(23, 23, 31, 0.66);
+	font-size: 0.82rem;
+	font-weight: 650;
+	line-height: 1.5;
+}
+
+.categoryGrid > .inlineError {
+	grid-column: 1 / -1;
 }
 
 .fieldGrid {
@@ -151,7 +262,7 @@
 	gap: 0.42rem;
 }
 
-.fieldGroup[data-wide='true'] {
+.fieldGroup[data-wide="true"] {
 	grid-column: 1 / -1;
 }
 
@@ -266,7 +377,7 @@
 }
 
 .toggleField:hover,
-.toggleField[data-active='true'] {
+.toggleField[data-active="true"] {
 	border-color: rgba(2, 0, 108, 0.2);
 	background: rgba(2, 0, 108, 0.08);
 	color: #02006c;
@@ -280,6 +391,43 @@
 	place-items: center;
 	border-radius: 999px;
 	background: rgba(2, 0, 108, 0.08);
+}
+
+.pricingNote {
+	grid-column: 1 / -1;
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	gap: 0.75rem;
+	align-items: start;
+	padding: 0.95rem 1rem;
+	border: 1px solid rgba(2, 0, 108, 0.12);
+	border-radius: 1.15rem;
+	background: rgba(2, 0, 108, 0.055);
+}
+
+.pricingNote > svg {
+	width: 1.35rem;
+	height: 1.35rem;
+	color: #02006c;
+}
+
+.pricingNote p {
+	display: grid;
+	gap: 0.2rem;
+	margin: 0;
+}
+
+.pricingNote strong {
+	color: #17171f;
+	font-size: 0.84rem;
+	font-weight: 850;
+}
+
+.pricingNote span {
+	color: rgba(23, 23, 31, 0.58);
+	font-size: 0.78rem;
+	font-weight: 650;
+	line-height: 1.45;
 }
 
 .dropzone {
@@ -346,7 +494,7 @@
 	font-weight: 740;
 }
 
-.dropzone[data-invalid='true'] label {
+.dropzone[data-invalid="true"] label {
 	border-color: rgba(190, 18, 60, 0.5);
 }
 
@@ -554,7 +702,7 @@
 	}
 
 	.stepList {
-		grid-template-columns: repeat(3, minmax(0, 1fr));
+		grid-template-columns: repeat(4, minmax(0, 1fr));
 	}
 }
 
@@ -562,6 +710,7 @@
 	.fieldGrid,
 	.toggleGrid,
 	.stepList,
+	.categoryGrid,
 	.currentImages ul {
 		grid-template-columns: 1fr;
 	}
