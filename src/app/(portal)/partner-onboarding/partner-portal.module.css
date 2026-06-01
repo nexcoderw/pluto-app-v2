@@ -581,6 +581,228 @@
 	border-radius: 1.35rem;
 }
 
+.approvedWorkspace {
+	display: grid;
+	gap: 1rem;
+	animation: panelRise 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.listingGrid {
+	display: grid;
+	grid-template-columns: minmax(0, 1.35fr) minmax(18rem, 0.65fr);
+	gap: 1rem;
+	align-items: start;
+}
+
+.listingForm,
+.productsPanel {
+	border: 1px solid rgba(255, 255, 255, 0.72);
+	border-radius: 1.45rem;
+	background: rgba(255, 255, 255, 0.68);
+	box-shadow: 0 1.2rem 3rem rgba(16, 22, 33, 0.08);
+	backdrop-filter: blur(22px);
+}
+
+.listingForm {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.9rem;
+	padding: clamp(1rem, 2vw, 1.25rem);
+}
+
+.listingHeader {
+	grid-column: 1 / -1;
+	display: grid;
+	gap: 0.3rem;
+	padding-bottom: 0.2rem;
+}
+
+.listingHeader span,
+.productsHeader span {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.38rem;
+	color: #02006c;
+	font-size: 0.74rem;
+	font-weight: 850;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.listingHeader h3,
+.productsHeader h3 {
+	margin: 0;
+	color: #17171f;
+	font-size: clamp(1.08rem, 1.6vw, 1.35rem);
+	font-weight: 850;
+	letter-spacing: 0;
+}
+
+.listingHeader p,
+.productsHeader p {
+	max-width: 42rem;
+	margin: 0;
+	color: rgba(23, 23, 31, 0.6);
+	font-size: 0.86rem;
+	line-height: 1.58;
+}
+
+.listingToggles {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.65rem;
+}
+
+.listingToggles label {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.48rem;
+	min-height: 2.65rem;
+	padding: 0 0.85rem;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.68);
+	color: #17171f;
+	font-size: 0.82rem;
+	font-weight: 780;
+}
+
+.listingToggles input {
+	width: 1rem;
+	height: 1rem;
+	accent-color: #02006c;
+}
+
+.productsPanel {
+	position: sticky;
+	top: 1rem;
+	display: grid;
+	gap: 1rem;
+	padding: clamp(1rem, 2vw, 1.25rem);
+}
+
+.productsHeader {
+	display: grid;
+	gap: 0.32rem;
+}
+
+.productList,
+.productsSkeleton {
+	display: grid;
+	gap: 0.7rem;
+}
+
+.productCard {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 0.85rem;
+	border: 1px solid rgba(2, 0, 108, 0.08);
+	border-radius: 1.1rem;
+	background: rgba(255, 255, 255, 0.62);
+}
+
+.productCard span {
+	display: grid;
+	gap: 0.16rem;
+	min-width: 0;
+}
+
+.productCard strong,
+.productCard small {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.productCard strong {
+	color: #17171f;
+	font-size: 0.88rem;
+	font-weight: 850;
+}
+
+.productCard small {
+	color: rgba(23, 23, 31, 0.54);
+	font-size: 0.76rem;
+	font-weight: 720;
+}
+
+.productStatusPill {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 2rem;
+	border-radius: 999px;
+	padding: 0 0.65rem;
+	font-size: 0.68rem;
+	font-weight: 850;
+	text-transform: capitalize;
+	white-space: nowrap;
+}
+
+.productStatusPill[data-status='PENDING_REVIEW'] {
+	background: #fff4cc;
+	color: #755600;
+}
+
+.productStatusPill[data-status='APPROVED'] {
+	background: #dff9ea;
+	color: #12683b;
+}
+
+.productStatusPill[data-status='REJECTED'] {
+	background: #ffe5e7;
+	color: #9f1d2d;
+}
+
+.productStatusPill[data-status='DRAFT'],
+.productStatusPill[data-status='ARCHIVED'],
+.productStatusPill[data-status='SUSPENDED'] {
+	background: rgba(2, 0, 108, 0.08);
+	color: #02006c;
+}
+
+.productsEmpty {
+	display: grid;
+	justify-items: start;
+	gap: 0.5rem;
+	padding: 1rem;
+	border: 1px dashed rgba(2, 0, 108, 0.18);
+	border-radius: 1.1rem;
+	background: rgba(255, 255, 255, 0.48);
+}
+
+.productsEmpty svg {
+	color: #02006c;
+}
+
+.productsEmpty strong {
+	color: #17171f;
+	font-size: 0.94rem;
+	font-weight: 850;
+}
+
+.productsEmpty p {
+	margin: 0;
+	color: rgba(23, 23, 31, 0.58);
+	font-size: 0.82rem;
+	line-height: 1.5;
+}
+
+.productsSkeleton div {
+	height: 4.25rem;
+	border-radius: 1rem;
+	background: linear-gradient(
+		90deg,
+		rgba(2, 0, 108, 0.06),
+		rgba(2, 0, 108, 0.12),
+		rgba(2, 0, 108, 0.06)
+	);
+	background-size: 220% 100%;
+	animation: shimmer 1.2s ease-in-out infinite;
+}
+
 @keyframes shimmer {
 	to {
 		background-position: -220% 0;
@@ -607,8 +829,14 @@
 
 	.profileForm,
 	.skeletonGrid,
-	.documentUploadGrid {
+	.documentUploadGrid,
+	.listingForm,
+	.listingGrid {
 		grid-template-columns: 1fr;
+	}
+
+	.productsPanel {
+		position: static;
 	}
 
 	.timeline {
