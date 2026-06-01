@@ -11,8 +11,22 @@ export type RefreshUserSessionRequest = void;
 // Response payload: rotated access token and safe profile.
 export type RefreshUserSessionResponse = UserAuthResponse;
 
+let refreshSessionPromise: Promise<RefreshUserSessionResponse> | null = null;
+
 // Endpoint call: use after reloads and Google callbacks.
 export async function refreshUserSession(): Promise<RefreshUserSessionResponse> {
+	if (refreshSessionPromise) {
+		return refreshSessionPromise;
+	}
+
+	refreshSessionPromise = performRefreshUserSession().finally(() => {
+		refreshSessionPromise = null;
+	});
+
+	return refreshSessionPromise;
+}
+
+async function performRefreshUserSession(): Promise<RefreshUserSessionResponse> {
 	try {
 		const response = await apiClient.post<RefreshUserSessionResponse>(
 			USER_AUTH_ROUTES.refreshSession,
