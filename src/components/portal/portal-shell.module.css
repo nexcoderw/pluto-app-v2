@@ -372,6 +372,13 @@
 	line-height: 1.6;
 }
 
+.heroActions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: 0.6rem;
+}
+
 .statusGrid {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -800,8 +807,15 @@
 	}
 
 	.primaryAction,
+	.heroActions,
 	.topbarLogoutButton {
 		width: 100%;
+	}
+
+	.heroActions {
+		display: grid;
+		grid-template-columns: 1fr;
+		justify-content: stretch;
 	}
 
 	.topbarActions {
