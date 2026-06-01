@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import {
-	ArrowLeft,
 	BadgeCheck,
 	CalendarClock,
 	CarFront,
@@ -68,6 +67,7 @@ function ListingDetailWorkspace({
 	});
 	const profile = profileQuery.data?.profile;
 	const product = productQuery.data?.product;
+	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
 	useEffect(() => {
 		if (profile && profile.status !== 'APPROVED') {
@@ -109,20 +109,48 @@ function ListingDetailWorkspace({
 	}
 
 	return (
-		<PortalShell
-			variant="partner"
-			user={user}
-			eyebrow="Listing detail"
-			title={product.title}
-			description="Review customer-facing details, admin review status, media, and car specifications."
-			homeHref="/partner/listings"
-			homeLabel="Back to listings"
-			navigation={partnerPortalNavigation}
-			metrics={buildMetrics(product)}
-			actions={buildActions(product)}
-		>
-			<ListingDetail product={product} />
-		</PortalShell>
+		<>
+			<PortalShell
+				variant="partner"
+				user={user}
+				eyebrow="Listing detail"
+				title={product.title}
+				description="Review customer-facing details, admin review status, media, and car specifications."
+				homeHref="/partner/listings"
+				homeLabel="Back to listings"
+				navigation={partnerPortalNavigation}
+				metrics={buildMetrics(product)}
+				actions={buildActions(product)}
+				heroActions={
+					<>
+						<Link
+							href={`/partner/listings/${product.id}/edit`}
+							className={styles.editLink}
+						>
+							<Pencil aria-hidden="true" />
+							Edit listing
+						</Link>
+						<Button
+							type="button"
+							variant="destructive"
+							className={styles.deleteTrigger}
+							onClick={() => setIsDeleteDialogOpen(true)}
+						>
+							<Trash2 aria-hidden="true" />
+							Delete listing
+						</Button>
+					</>
+				}
+			>
+				<ListingDetail product={product} />
+			</PortalShell>
+
+			<ListingDeleteDialog
+				open={isDeleteDialogOpen}
+				product={product}
+				onOpenChange={setIsDeleteDialogOpen}
+			/>
+		</>
 	);
 }
 
@@ -131,7 +159,6 @@ function ListingDetail({ product }: { product: Product }) {
 		() =>
 			(product.images.find((image) => image.isCover) ?? product.images[0])?.id,
 	);
-	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 	const coverImage =
 		product.images.find((image) => image.id === selectedImageId) ??
 		product.images.find((image) => image.isCover) ??
@@ -248,29 +275,6 @@ function ListingDetail({ product }: { product: Product }) {
 				</div>
 
 				<aside className={styles.sideColumn}>
-					<section className={styles.actionPanel}>
-						<Link href="/partner/listings" className={styles.backLink}>
-							<ArrowLeft aria-hidden="true" />
-							Back to listings
-						</Link>
-						<Link
-							href={`/partner/listings/${product.id}/edit`}
-							className={styles.editLink}
-						>
-							<Pencil aria-hidden="true" />
-							Edit listing
-						</Link>
-						<Button
-							type="button"
-							variant="destructive"
-							className={styles.deleteTrigger}
-							onClick={() => setIsDeleteDialogOpen(true)}
-						>
-							<Trash2 aria-hidden="true" />
-							Delete listing
-						</Button>
-					</section>
-
 					<section className={styles.infoPanel}>
 						<div className={styles.sectionHeader}>
 							<span>
@@ -355,12 +359,6 @@ function ListingDetail({ product }: { product: Product }) {
 					) : null}
 				</aside>
 			</section>
-
-			<ListingDeleteDialog
-				open={isDeleteDialogOpen}
-				product={product}
-				onOpenChange={setIsDeleteDialogOpen}
-			/>
 		</>
 	);
 }
