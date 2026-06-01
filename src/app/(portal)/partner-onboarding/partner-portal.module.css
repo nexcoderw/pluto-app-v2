@@ -1,0 +1,304 @@
+.profilePanel {
+	display: grid;
+	gap: 1rem;
+	padding: clamp(1rem, 2vw, 1.25rem);
+	border: 1px solid rgba(255, 255, 255, 0.72);
+	border-radius: 1.45rem;
+	background: rgba(255, 255, 255, 0.68);
+	box-shadow: 0 1.2rem 3rem rgba(16, 22, 33, 0.08);
+	backdrop-filter: blur(22px);
+	animation: panelRise 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.profileHeader,
+.pendingPanel {
+	display: flex;
+	align-items: start;
+	justify-content: space-between;
+	gap: 1rem;
+}
+
+.profileHeader div,
+.pendingPanel div {
+	min-width: 0;
+}
+
+.profileHeader span,
+.pendingPanel span {
+	display: inline-flex;
+	color: #02006c;
+	font-size: 0.76rem;
+	font-weight: 850;
+}
+
+.profileHeader h2,
+.pendingPanel h2 {
+	margin: 0.3rem 0 0;
+	color: #17171f;
+	font-size: clamp(1.35rem, 2vw, 1.9rem);
+	font-weight: 780;
+	letter-spacing: 0;
+}
+
+.profileHeader p,
+.pendingPanel p {
+	max-width: 45rem;
+	margin: 0.45rem 0 0;
+	color: rgba(23, 23, 31, 0.62);
+	font-size: 0.92rem;
+	line-height: 1.65;
+}
+
+.statusPill {
+	height: 2.35rem;
+	min-height: 2.35rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0 0.9rem;
+	border: 1px solid rgba(2, 0, 108, 0.12);
+	border-radius: 999px;
+	background: rgba(2, 0, 108, 0.08);
+	color: #02006c;
+	font-size: 0.74rem;
+	font-weight: 850;
+	text-transform: capitalize;
+	white-space: nowrap;
+}
+
+.statusPill[data-status="APPROVED"] {
+	border-color: rgba(21, 128, 61, 0.18);
+	background: rgba(21, 128, 61, 0.08);
+	color: #15803d;
+}
+
+.statusPill[data-status="PENDING"] {
+	border-color: rgba(180, 83, 9, 0.18);
+	background: rgba(180, 83, 9, 0.09);
+	color: #92400e;
+}
+
+.statusPill[data-status="REJECTED"] {
+	border-color: rgba(190, 18, 60, 0.18);
+	background: rgba(190, 18, 60, 0.08);
+	color: #be123c;
+}
+
+.rejectionNotice {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	gap: 0.75rem;
+	padding: 0.9rem;
+	border: 1px solid rgba(190, 18, 60, 0.12);
+	border-radius: 1.1rem;
+	background: rgba(255, 241, 242, 0.78);
+	color: #be123c;
+}
+
+.rejectionNotice svg,
+.pendingPanel > svg {
+	width: 1.25rem;
+	height: 1.25rem;
+	margin-top: 0.15rem;
+}
+
+.rejectionNotice span {
+	display: grid;
+	gap: 0.18rem;
+	min-width: 0;
+}
+
+.rejectionNotice strong {
+	font-size: 0.85rem;
+}
+
+.rejectionNotice small {
+	color: rgba(127, 29, 29, 0.72);
+	line-height: 1.5;
+}
+
+.profileForm {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.9rem;
+}
+
+.formField {
+	display: grid;
+	gap: 0.42rem;
+	min-width: 0;
+}
+
+.formField[data-wide="true"] {
+	grid-column: 1 / -1;
+}
+
+.formField span {
+	display: inline-flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.6rem;
+	color: #17171f;
+	font-size: 0.78rem;
+	font-weight: 830;
+}
+
+.formField em {
+	color: rgba(23, 23, 31, 0.44);
+	font-size: 0.7rem;
+	font-style: normal;
+	font-weight: 750;
+}
+
+.formField input,
+.formField textarea {
+	border-color: rgba(2, 0, 108, 0.1);
+	background: rgba(255, 255, 255, 0.76);
+	color: #17171f;
+}
+
+.formField textarea {
+	min-height: 8.5rem;
+	resize: vertical;
+}
+
+.formField input[aria-invalid="true"],
+.formField textarea[aria-invalid="true"] {
+	border-color: rgba(190, 18, 60, 0.54);
+	box-shadow: 0 0 0 0.18rem rgba(190, 18, 60, 0.08);
+}
+
+.formField small {
+	color: #be123c;
+	font-size: 0.74rem;
+	font-weight: 700;
+}
+
+.formActions {
+	grid-column: 1 / -1;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	flex-wrap: wrap;
+	gap: 0.7rem;
+	padding-top: 0.35rem;
+}
+
+.formActions button,
+.dialog button {
+	border-radius: 999px;
+}
+
+.pendingPanel {
+	align-items: center;
+}
+
+.pendingPanel > svg {
+	width: 3rem;
+	height: 3rem;
+	padding: 0.75rem;
+	border-radius: 999px;
+	background: rgba(2, 0, 108, 0.08);
+	color: #02006c;
+}
+
+.timeline {
+	min-width: 10rem;
+	padding: 0.9rem 1rem;
+	border: 1px solid rgba(2, 0, 108, 0.08);
+	border-radius: 1.1rem;
+	background: rgba(255, 255, 255, 0.7);
+	text-align: right;
+}
+
+.timeline strong,
+.timeline span {
+	display: block;
+}
+
+.timeline strong {
+	color: #17171f;
+	font-size: 0.78rem;
+}
+
+.timeline span {
+	margin-top: 0.2rem;
+	color: rgba(23, 23, 31, 0.58);
+	font-size: 0.78rem;
+	font-weight: 720;
+}
+
+.skeletonLine,
+.skeletonGrid div {
+	border-radius: 999px;
+	background: linear-gradient(
+		90deg,
+		rgba(2, 0, 108, 0.07),
+		rgba(2, 0, 108, 0.14),
+		rgba(2, 0, 108, 0.07)
+	);
+	background-size: 220% 100%;
+	animation: shimmer 1.2s ease-in-out infinite;
+}
+
+.skeletonLine {
+	width: min(28rem, 80%);
+	height: 2.4rem;
+}
+
+.skeletonGrid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.9rem;
+}
+
+.skeletonGrid div {
+	height: 3.25rem;
+}
+
+.dialog {
+	border-radius: 1.35rem;
+}
+
+@keyframes shimmer {
+	to {
+		background-position: -220% 0;
+	}
+}
+
+@keyframes panelRise {
+	from {
+		opacity: 0;
+		transform: translateY(12px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@media (max-width: 760px) {
+	.profileHeader,
+	.pendingPanel {
+		display: grid;
+	}
+
+	.profileForm,
+	.skeletonGrid {
+		grid-template-columns: 1fr;
+	}
+
+	.timeline {
+		width: 100%;
+		text-align: left;
+	}
+
+	.formActions {
+		justify-content: stretch;
+	}
+
+	.formActions button {
+		width: 100%;
+	}
+}
