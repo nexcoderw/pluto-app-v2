@@ -6,11 +6,8 @@ import {
 	ArrowRight,
 	Bath,
 	BedDouble,
-	CircleDollarSign,
 	House,
-	KeyRound,
 	MapPin,
-	PawPrint,
 	ShieldCheck,
 	Users,
 } from "lucide-react";
@@ -34,7 +31,6 @@ export function AirbnbListingCard({
 	const details = listing.airbnbDetails;
 	const coverImage = getListingCoverImage(listing);
 	const coverUrl = coverImage?.file.publicUrl;
-	const accessLabel = details?.entirePlace ? "Entire place" : "Hosted access";
 
 	return (
 		<article className={styles.card}>
@@ -61,13 +57,9 @@ export function AirbnbListingCard({
 			<div className={styles.body}>
 				<div className={styles.heading}>
 					<div>
-						<p className={styles.homeType}>
-							{details?.houseType ?? "Airbnb-style home"}
-						</p>
 						<h2>{listing.title}</h2>
 					</div>
 					<span className={styles.price}>
-						<CircleDollarSign aria-hidden="true" />
 						<strong>{formatMoney(listing.basePrice, listing.currency)}</strong>
 						<small>/{formatPricingUnit(listing.pricingUnit)}</small>
 					</span>
@@ -95,21 +87,6 @@ export function AirbnbListingCard({
 						<span>Guests</span>
 					</li>
 				</ul>
-
-				<div className={styles.amenities}>
-					<span data-active={Boolean(details?.entirePlace)}>
-						<House aria-hidden="true" />
-						{accessLabel}
-					</span>
-					<span data-active={Boolean(details?.selfCheckIn)}>
-						<KeyRound aria-hidden="true" />
-						Self check-in
-					</span>
-					<span data-active={Boolean(details?.allowPets)}>
-						<PawPrint aria-hidden="true" />
-						Pets
-					</span>
-				</div>
 
 				<Link href={detailHref} className={styles.detailsLink}>
 					View home
