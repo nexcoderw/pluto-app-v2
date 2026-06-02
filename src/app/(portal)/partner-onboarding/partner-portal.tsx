@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
 	type ChangeEvent,
@@ -7,14 +7,14 @@ import {
 	useEffect,
 	useMemo,
 	useState,
-} from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+} from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
 	parsePhoneNumberFromString,
 	type CountryCode,
-} from 'libphonenumber-js';
+} from "libphonenumber-js";
 import {
 	BadgeCheck,
 	Building2,
@@ -29,8 +29,8 @@ import {
 	UserRoundCheck,
 	X,
 	type LucideIcon,
-} from 'lucide-react';
-import { toast } from 'sonner';
+} from "lucide-react";
+import { toast } from "sonner";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -40,19 +40,19 @@ import {
 	AlertDialogFooter,
 	AlertDialogHeader,
 	AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { PortalAccessBoundary } from '@/components/portal/portal-access-boundary';
-import { PartnerStatusGate } from '@/components/partner/partner-dashboard';
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { PortalAccessBoundary } from "@/components/portal/portal-access-boundary";
+import { PartnerStatusGate } from "@/components/partner/partner-dashboard";
 import {
 	getPartnerProfile,
 	saveCompanyPartnerProfile,
@@ -63,20 +63,20 @@ import {
 	type PartnerDocument,
 	type PartnerProfile,
 	type PartnerProfileStatus,
-} from '@/services/api/partner-profile';
-import type { UserAuthProfile } from '@/services/api/auth';
+} from "@/services/api/partner-profile";
+import type { UserAuthProfile } from "@/services/api/auth";
 import {
 	PHONE_COUNTRIES,
 	RWANDA_PHONE_COUNTRY,
 	getPhoneCountryOption,
-} from '@/constants/phone-countries';
+} from "@/constants/phone-countries";
 import {
 	getPhonePlaceholder,
 	isValidInternationalPhoneNumber,
 	normalizePhoneNumber,
-} from '@/lib/phone-number';
-import { ApiRequestError } from '@/services/api/errors';
-import styles from './partner-portal.module.css';
+} from "@/lib/phone-number";
+import { ApiRequestError } from "@/services/api/errors";
+import styles from "./partner-portal.module.css";
 
 type PartnerFormState = {
 	legalName: string;
@@ -99,7 +99,7 @@ type PartnerFormState = {
 type PartnerFormErrors = Partial<Record<keyof PartnerFormState, string>>;
 type PartnerTextField = Exclude<
 	keyof PartnerFormState,
-	'businessPhoneCountry' | 'country'
+	"businessPhoneCountry" | "country"
 >;
 
 type OnboardingMetric = {
@@ -128,18 +128,18 @@ export function PartnerPortal() {
 function PartnerPortalContent({ user }: { user: UserAuthProfile }) {
 	const router = useRouter();
 	const profileQuery = useQuery({
-		queryKey: ['partner-profile'],
+		queryKey: ["partner-profile"],
 		queryFn: getPartnerProfile,
 	});
 	const profile = profileQuery.data?.profile;
 
 	useEffect(() => {
-		if (profile?.status === 'APPROVED') {
-			router.replace('/partner/dashboard');
+		if (profile?.status === "APPROVED") {
+			router.replace("/partner/dashboard");
 		}
 	}, [profile, router]);
 
-	if (profileQuery.isPending || profile?.status === 'APPROVED') {
+	if (profileQuery.isPending || profile?.status === "APPROVED") {
 		return (
 			<PartnerStatusGate
 				title="Opening partner dashboard"
@@ -232,7 +232,7 @@ function PartnerProfileWorkflow({
 	profile: PartnerProfile;
 	user: UserAuthProfile;
 }) {
-	if (profile.status === 'APPROVED') {
+	if (profile.status === "APPROVED") {
 		return (
 			<PartnerStatusGate
 				title="Opening partner dashboard"
@@ -241,7 +241,7 @@ function PartnerProfileWorkflow({
 		);
 	}
 
-	if (profile.status === 'PENDING') {
+	if (profile.status === "PENDING") {
 		return <PendingReviewPanel profile={profile} />;
 	}
 
@@ -260,12 +260,12 @@ function PartnerProfileForm({
 		toFormState(profile, user),
 	);
 	const [errors, setErrors] = useState<PartnerFormErrors>({});
-	const [documentTitle, setDocumentTitle] = useState('');
-	const [documentDescription, setDocumentDescription] = useState('');
+	const [documentTitle, setDocumentTitle] = useState("");
+	const [documentDescription, setDocumentDescription] = useState("");
 	const [documentFile, setDocumentFile] = useState<File | null>(null);
 	const [isSubmitDialogOpen, setIsSubmitDialogOpen] = useState(false);
 	const [isStartFreshDialogOpen, setIsStartFreshDialogOpen] = useState(false);
-	const isCompany = profile.partnerType === 'COMPANY';
+	const isCompany = profile.partnerType === "COMPANY";
 
 	const saveMutation = useMutation({
 		mutationFn: async () => {
@@ -277,7 +277,7 @@ function PartnerProfileForm({
 
 			if (Object.keys(validationErrors).length) {
 				setErrors(validationErrors);
-				throw new Error('Please complete the highlighted fields.');
+				throw new Error("Please complete the highlighted fields.");
 			}
 
 			return isCompany
@@ -291,7 +291,7 @@ function PartnerProfileForm({
 						representativeIdNumber: form.representativeIdNumber.trim(),
 						description: form.description.trim(),
 						addressLine: form.addressLine.trim(),
-						city: form.city.trim() || 'Kigali',
+						city: form.city.trim() || "Kigali",
 						country: getPhoneCountryOption(form.country).name,
 						websiteUrl: normalizeOptional(form.websiteUrl),
 					})
@@ -302,15 +302,15 @@ function PartnerProfileForm({
 						businessPhone,
 						description: form.description.trim(),
 						addressLine: normalizeOptional(form.addressLine),
-						city: form.city.trim() || 'Kigali',
+						city: form.city.trim() || "Kigali",
 						country: getPhoneCountryOption(form.country).name,
 						websiteUrl: normalizeOptional(form.websiteUrl),
 					});
 		},
 		onSuccess: (response) => {
-			queryClient.setQueryData(['partner-profile'], response);
-			toast.success('Partner profile saved.', {
-				description: 'Your draft is ready to submit for admin review.',
+			queryClient.setQueryData(["partner-profile"], response);
+			toast.success("Partner profile saved.", {
+				description: "Your draft is ready to submit for admin review.",
 			});
 		},
 		onError: (error) => {
@@ -321,10 +321,10 @@ function PartnerProfileForm({
 	const submitMutation = useMutation({
 		mutationFn: submitPartnerProfile,
 		onSuccess: (response) => {
-			queryClient.setQueryData(['partner-profile'], response);
+			queryClient.setQueryData(["partner-profile"], response);
 			setIsSubmitDialogOpen(false);
-			toast.success('Profile submitted for review.', {
-				description: 'The admin team can now review your partner application.',
+			toast.success("Profile submitted for review.", {
+				description: "The admin team can now review your partner application.",
 			});
 		},
 		onError: (error) => toast.error(getErrorMessage(error)),
@@ -333,11 +333,11 @@ function PartnerProfileForm({
 	const startFreshMutation = useMutation({
 		mutationFn: startFreshPartnerProfile,
 		onSuccess: (response) => {
-			queryClient.setQueryData(['partner-profile'], response);
+			queryClient.setQueryData(["partner-profile"], response);
 			setForm(toFormState(response.profile, user));
 			setIsStartFreshDialogOpen(false);
-			toast.success('Fresh application started.', {
-				description: 'The previous version was archived for audit history.',
+			toast.success("Fresh application started.", {
+				description: "The previous version was archived for audit history.",
 			});
 		},
 		onError: (error) => toast.error(getErrorMessage(error)),
@@ -346,11 +346,11 @@ function PartnerProfileForm({
 	const uploadDocumentMutation = useMutation({
 		mutationFn: () => {
 			if (!documentTitle.trim()) {
-				throw new Error('Add a clear document title before uploading.');
+				throw new Error("Add a clear document title before uploading.");
 			}
 
 			if (!documentFile) {
-				throw new Error('Choose a verification document to upload.');
+				throw new Error("Choose a verification document to upload.");
 			}
 
 			return uploadPartnerDocument({
@@ -360,12 +360,12 @@ function PartnerProfileForm({
 			});
 		},
 		onSuccess: () => {
-			setDocumentTitle('');
-			setDocumentDescription('');
+			setDocumentTitle("");
+			setDocumentDescription("");
 			setDocumentFile(null);
-			void queryClient.invalidateQueries({ queryKey: ['partner-profile'] });
-			toast.success('Document uploaded.', {
-				description: 'Admins can review it with your partner application.',
+			void queryClient.invalidateQueries({ queryKey: ["partner-profile"] });
+			toast.success("Document uploaded.", {
+				description: "Admins can review it with your partner application.",
 			});
 		},
 		onError: (error) => toast.error(getErrorMessage(error)),
@@ -389,30 +389,30 @@ function PartnerProfileForm({
 			<div className={styles.profileHeader}>
 				<div>
 					<span>
-						{isCompany ? 'Company verification' : 'Identity verification'}
+						{isCompany ? "Company verification" : "Identity verification"}
 					</span>
 					<h2>
-						{profile.status === 'REJECTED'
-							? 'Update your application'
-							: 'Complete partner profile'}
+						{profile.status === "REJECTED"
+							? "Update your application"
+							: "Complete partner profile"}
 					</h2>
 					<p>
 						{isCompany
-							? 'Submit business, tax, and representative information so admins can verify the company.'
-							: 'Submit your legal identity and contact information so admins can verify your individual partner account.'}
+							? "Submit business, tax, and representative information so admins can verify the company."
+							: "Submit your legal identity and contact information so admins can verify your individual partner account."}
 					</p>
 				</div>
 				<StatusPill status={profile.status} />
 			</div>
 
-			{profile.status === 'REJECTED' ? (
+			{profile.status === "REJECTED" ? (
 				<div className={styles.rejectionNotice}>
 					<ShieldAlert aria-hidden="true" />
 					<span>
 						<strong>Application rejected</strong>
 						<small>
 							{profile.rejectionReason ??
-								'Please review your information and submit again.'}
+								"Please review your information and submit again."}
 						</small>
 					</span>
 				</div>
@@ -426,35 +426,35 @@ function PartnerProfileForm({
 							value={form.businessName}
 							error={errors.businessName}
 							placeholder="Enter your registered business name"
-							onChange={(event) => updateField('businessName', event)}
+							onChange={(event) => updateField("businessName", event)}
 						/>
 						<FormField
 							label="Registration number"
 							value={form.registrationNumber}
 							error={errors.registrationNumber}
 							placeholder="Enter your company registration number"
-							onChange={(event) => updateField('registrationNumber', event)}
+							onChange={(event) => updateField("registrationNumber", event)}
 						/>
 						<FormField
 							label="Tax identification"
 							value={form.taxIdentification}
 							error={errors.taxIdentification}
 							placeholder="Enter your tax identification number"
-							onChange={(event) => updateField('taxIdentification', event)}
+							onChange={(event) => updateField("taxIdentification", event)}
 						/>
 						<FormField
 							label="Representative name"
 							value={form.representativeName}
 							error={errors.representativeName}
 							placeholder="Enter the authorized representative name"
-							onChange={(event) => updateField('representativeName', event)}
+							onChange={(event) => updateField("representativeName", event)}
 						/>
 						<FormField
 							label="Representative ID number"
 							value={form.representativeIdNumber}
 							error={errors.representativeIdNumber}
 							placeholder="Enter the representative ID number"
-							onChange={(event) => updateField('representativeIdNumber', event)}
+							onChange={(event) => updateField("representativeIdNumber", event)}
 						/>
 					</>
 				) : (
@@ -464,7 +464,7 @@ function PartnerProfileForm({
 							value={form.legalName}
 							error={errors.legalName}
 							placeholder="Use the full name on your Pluto Booking account"
-							onChange={(event) => updateField('legalName', event)}
+							onChange={(event) => updateField("legalName", event)}
 						/>
 						<FormField
 							label="National ID number"
@@ -472,7 +472,7 @@ function PartnerProfileForm({
 							error={errors.nationalIdNumber}
 							placeholder="Add your national ID number if available"
 							optional
-							onChange={(event) => updateField('nationalIdNumber', event)}
+							onChange={(event) => updateField("nationalIdNumber", event)}
 						/>
 					</>
 				)}
@@ -483,7 +483,7 @@ function PartnerProfileForm({
 					value={form.businessEmail}
 					error={errors.businessEmail}
 					placeholder="Use your account email or business email"
-					onChange={(event) => updateField('businessEmail', event)}
+					onChange={(event) => updateField("businessEmail", event)}
 				/>
 				<BusinessPhoneField
 					country={form.businessPhoneCountry}
@@ -496,14 +496,14 @@ function PartnerProfileForm({
 						}));
 						setErrors((current) => ({ ...current, businessPhone: undefined }));
 					}}
-					onPhoneChange={(event) => updateField('businessPhone', event)}
+					onPhoneChange={(event) => updateField("businessPhone", event)}
 				/>
 				<FormField
 					label="City"
 					value={form.city}
 					error={errors.city}
 					placeholder="Kigali"
-					onChange={(event) => updateField('city', event)}
+					onChange={(event) => updateField("city", event)}
 				/>
 				<CountrySelectField
 					country={form.country}
@@ -518,7 +518,7 @@ function PartnerProfileForm({
 					value={form.websiteUrl}
 					error={errors.websiteUrl}
 					placeholder="https://yourwebsite.com"
-					onChange={(event) => updateField('websiteUrl', event)}
+					onChange={(event) => updateField("websiteUrl", event)}
 					optional
 				/>
 				<FormField
@@ -526,7 +526,7 @@ function PartnerProfileForm({
 					value={form.addressLine}
 					error={errors.addressLine}
 					placeholder="Street, building, or business address"
-					onChange={(event) => updateField('addressLine', event)}
+					onChange={(event) => updateField("addressLine", event)}
 					optional={!isCompany}
 				/>
 
@@ -535,7 +535,7 @@ function PartnerProfileForm({
 					<Textarea
 						className={styles.descriptionTextarea}
 						value={form.description}
-						onChange={(event) => updateField('description', event)}
+						onChange={(event) => updateField("description", event)}
 						aria-invalid={Boolean(errors.description)}
 						placeholder="Describe your experience, services, and what you plan to list on Pluto Booking."
 					/>
@@ -559,7 +559,7 @@ function PartnerProfileForm({
 				/>
 
 				<div className={styles.formActions}>
-					{profile.status === 'REJECTED' ? (
+					{profile.status === "REJECTED" ? (
 						<Button
 							type="button"
 							variant="outline"
@@ -572,7 +572,7 @@ function PartnerProfileForm({
 					) : null}
 					<Button type="submit" disabled={saveMutation.isPending}>
 						<CheckCircle2 aria-hidden="true" />
-						{saveMutation.isPending ? 'Saving...' : 'Save draft'}
+						{saveMutation.isPending ? "Saving..." : "Save draft"}
 					</Button>
 					<Button
 						type="button"
@@ -611,7 +611,7 @@ function PartnerProfileForm({
 							}}
 						>
 							<Send aria-hidden="true" />
-							{submitMutation.isPending ? 'Submitting...' : 'Submit profile'}
+							{submitMutation.isPending ? "Submitting..." : "Submit profile"}
 						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>
@@ -642,7 +642,7 @@ function PartnerProfileForm({
 							}}
 						>
 							<RefreshCcw aria-hidden="true" />
-							{startFreshMutation.isPending ? 'Resetting...' : 'Start fresh'}
+							{startFreshMutation.isPending ? "Resetting..." : "Start fresh"}
 						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>
@@ -723,7 +723,7 @@ function DocumentUploadPanel({
 			<div className={styles.documentActions}>
 				<Button type="button" onClick={onUpload} disabled={isUploading}>
 					<UploadCloud aria-hidden="true" />
-					{isUploading ? 'Uploading...' : 'Upload document'}
+					{isUploading ? "Uploading..." : "Upload document"}
 				</Button>
 			</div>
 
@@ -735,7 +735,7 @@ function DocumentUploadPanel({
 							<span>
 								<strong>{document.title}</strong>
 								<small>
-									{document.file.originalName} ·{' '}
+									{document.file.originalName} ·{" "}
 									{formatFileSize(document.file.sizeBytes)}
 								</small>
 							</span>
@@ -816,7 +816,7 @@ function FormField({
 	label,
 	value,
 	error,
-	type = 'text',
+	type = "text",
 	optional = false,
 	placeholder,
 	onChange,
@@ -967,7 +967,7 @@ function CountrySelectField({
 function StatusPill({ status }: { status: PartnerProfileStatus }) {
 	return (
 		<span className={styles.statusPill} data-status={status}>
-			{status.toLowerCase().replace('_', ' ')}
+			{status.toLowerCase().replace("_", " ")}
 		</span>
 	);
 }
@@ -975,25 +975,25 @@ function StatusPill({ status }: { status: PartnerProfileStatus }) {
 function buildMetrics(profile?: PartnerProfile): OnboardingMetric[] {
 	return [
 		{
-			label: 'Listings prepared',
-			value: profile?.status === 'APPROVED' ? 'Ready' : 'Locked',
+			label: "Listings prepared",
+			value: profile?.status === "APPROVED" ? "Ready" : "Locked",
 			description:
-				profile?.status === 'APPROVED'
-					? 'Listing tools are available for approved partners.'
-					: 'Listing tools unlock after admin approval.',
+				profile?.status === "APPROVED"
+					? "Listing tools are available for approved partners."
+					: "Listing tools unlock after admin approval.",
 			icon: Building2,
 		},
 		{
-			label: 'Verification status',
-			value: profile ? profile.status : 'Loading',
-			description: 'Partner profile status controls portal access.',
+			label: "Verification status",
+			value: profile ? profile.status : "Loading",
+			description: "Partner profile status controls portal access.",
 			icon: BadgeCheck,
 		},
 		{
-			label: 'Partner type',
-			value: profile?.partnerType === 'COMPANY' ? 'Business' : 'Individual',
-			description: 'Verification questions adapt to the selected partner type.',
-			icon: profile?.partnerType === 'COMPANY' ? Building2 : UserRoundCheck,
+			label: "Partner type",
+			value: profile?.partnerType === "COMPANY" ? "Business" : "Individual",
+			description: "Verification questions adapt to the selected partner type.",
+			icon: profile?.partnerType === "COMPANY" ? Building2 : UserRoundCheck,
 		},
 	];
 }
@@ -1003,65 +1003,65 @@ function buildTitle(fullName: string, profile?: PartnerProfile) {
 		return `Welcome, ${fullName}`;
 	}
 
-	if (profile.status === 'APPROVED') {
-		return profile.partnerType === 'COMPANY'
-			? 'Business partner workspace'
-			: 'Individual partner workspace';
+	if (profile.status === "APPROVED") {
+		return profile.partnerType === "COMPANY"
+			? "Business partner workspace"
+			: "Individual partner workspace";
 	}
 
-	return profile.status === 'PENDING'
-		? 'Your application is under review'
-		: 'Complete your partner verification';
+	return profile.status === "PENDING"
+		? "Your application is under review"
+		: "Complete your partner verification";
 }
 
 function buildDescription(profile?: PartnerProfile) {
 	if (!profile) {
-		return 'Loading your secure partner profile and application status.';
+		return "Loading your secure partner profile and application status.";
 	}
 
-	if (profile.status === 'APPROVED') {
-		return 'Your profile is approved. Listing and marketplace operations are available from this secure partner workspace.';
+	if (profile.status === "APPROVED") {
+		return "Your profile is approved. Listing operations are available from this secure partner workspace.";
 	}
 
-	if (profile.status === 'PENDING') {
-		return 'Admin review is in progress. Your operational portal unlocks when the application is approved.';
+	if (profile.status === "PENDING") {
+		return "Admin review is in progress. Your operational portal unlocks when the application is approved.";
 	}
 
-	if (profile.status === 'REJECTED') {
-		return 'Review the admin feedback, update the application, or start fresh before resubmitting.';
+	if (profile.status === "REJECTED") {
+		return "Review the admin feedback, update the application, or start fresh before resubmitting.";
 	}
 
-	return 'Complete the verification form before submitting your partner profile for admin review.';
+	return "Complete the verification form before submitting your partner profile for admin review.";
 }
 
 function toFormState(
 	profile: PartnerProfile,
 	user?: UserAuthProfile,
 ): PartnerFormState {
-	const shouldUseAccountDefaults = profile.partnerType === 'INDIVIDUAL';
+	const shouldUseAccountDefaults = profile.partnerType === "INDIVIDUAL";
 	const fallbackLegalName = shouldUseAccountDefaults
-		? (user?.fullName ?? '')
-		: '';
-	const fallbackEmail = shouldUseAccountDefaults ? (user?.email ?? '') : '';
+		? (user?.fullName ?? "")
+		: "";
+	const fallbackEmail = shouldUseAccountDefaults ? (user?.email ?? "") : "";
 	const phoneSource =
 		profile.businessPhone ??
 		(shouldUseAccountDefaults ? (user?.phone ?? null) : null);
 
 	return {
 		legalName: profile.legalName ?? fallbackLegalName,
-		nationalIdNumber: profile.nationalIdNumber ?? '',
-		businessName: profile.businessName ?? '',
-		registrationNumber: profile.registrationNumber ?? '',
-		taxIdentification: profile.taxIdentification ?? '',
+		nationalIdNumber: profile.nationalIdNumber ?? "",
+		businessName: profile.businessName ?? "",
+		registrationNumber: profile.registrationNumber ?? "",
+		taxIdentification: profile.taxIdentification ?? "",
 		businessEmail: profile.businessEmail ?? fallbackEmail,
 		...toPhoneFormState(phoneSource),
-		representativeName: profile.representativeName ?? '',
-		representativeIdNumber: profile.representativeIdNumber ?? '',
-		description: profile.description ?? '',
-		addressLine: profile.addressLine ?? '',
-		city: profile.city ?? 'Kigali',
+		representativeName: profile.representativeName ?? "",
+		representativeIdNumber: profile.representativeIdNumber ?? "",
+		description: profile.description ?? "",
+		addressLine: profile.addressLine ?? "",
+		city: profile.city ?? "Kigali",
 		country: toCountryCode(profile.country),
-		websiteUrl: profile.websiteUrl ?? '',
+		websiteUrl: profile.websiteUrl ?? "",
 	};
 }
 
@@ -1069,21 +1069,21 @@ function validateForm(form: PartnerFormState, isCompany: boolean) {
 	const errors: PartnerFormErrors = {};
 	const requiredFields: PartnerTextField[] = isCompany
 		? [
-				'businessName',
-				'registrationNumber',
-				'taxIdentification',
-				'businessEmail',
-				'businessPhone',
-				'representativeName',
-				'representativeIdNumber',
-				'description',
-				'addressLine',
+				"businessName",
+				"registrationNumber",
+				"taxIdentification",
+				"businessEmail",
+				"businessPhone",
+				"representativeName",
+				"representativeIdNumber",
+				"description",
+				"addressLine",
 			]
-		: ['legalName', 'businessEmail', 'businessPhone', 'description'];
+		: ["legalName", "businessEmail", "businessPhone", "description"];
 
 	requiredFields.forEach((field) => {
 		if (!form[field].trim()) {
-			errors[field] = 'This field is required.';
+			errors[field] = "This field is required.";
 		}
 	});
 
@@ -1091,7 +1091,7 @@ function validateForm(form: PartnerFormState, isCompany: boolean) {
 		form.businessEmail &&
 		!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.businessEmail)
 	) {
-		errors.businessEmail = 'Enter a valid business email.';
+		errors.businessEmail = "Enter a valid business email.";
 	}
 
 	if (
@@ -1102,7 +1102,7 @@ function validateForm(form: PartnerFormState, isCompany: boolean) {
 		)
 	) {
 		errors.businessPhone =
-			'Use a valid phone number for the selected country code.';
+			"Use a valid phone number for the selected country code.";
 	}
 
 	return errors;
@@ -1120,7 +1120,7 @@ function toPhoneFormState(phone?: string | null) {
 
 	return {
 		businessPhoneCountry: RWANDA_PHONE_COUNTRY,
-		businessPhone: phone ?? '',
+		businessPhone: phone ?? "",
 	};
 }
 
@@ -1150,18 +1150,18 @@ function getErrorMessage(error: unknown) {
 		return error.message;
 	}
 
-	return 'The request could not be completed.';
+	return "The request could not be completed.";
 }
 
 function formatDate(value?: string | null) {
 	if (!value) {
-		return 'Not submitted yet';
+		return "Not submitted yet";
 	}
 
-	return new Intl.DateTimeFormat('en', {
-		month: 'short',
-		day: 'numeric',
-		year: 'numeric',
+	return new Intl.DateTimeFormat("en", {
+		month: "short",
+		day: "numeric",
+		year: "numeric",
 	}).format(new Date(value));
 }
 
@@ -1174,7 +1174,7 @@ function formatFileSize(sizeBytes: number) {
 }
 
 function getUserInitials(value: string) {
-	const [first = 'P', second = 'B'] = value.trim().split(/\s+/).filter(Boolean);
+	const [first = "P", second = "B"] = value.trim().split(/\s+/).filter(Boolean);
 
 	return `${first.charAt(0)}${second.charAt(0)}`.toUpperCase();
 }
