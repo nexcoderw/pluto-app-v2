@@ -15,19 +15,19 @@ import {
 import styles from "./public-footer.module.css";
 
 const navigationLinks = [
-	{ href: "/marketplace?category=CAR", label: "Cars", icon: CarFront },
+	{ href: "/listings?category=CAR", label: "Cars", icon: CarFront },
 	{
-		href: "/marketplace?category=APARTMENT",
+		href: "/listings?category=APARTMENT",
 		label: "Apartments",
 		icon: Building2,
 	},
 	{
-		href: "/marketplace?category=HOTEL_ROOM",
+		href: "/listings?category=HOTEL_ROOM",
 		label: "Hotel rooms",
 		icon: Hotel,
 	},
 	{
-		href: "/marketplace?category=AIRBNB_HOUSE",
+		href: "/listings?category=AIRBNB_HOUSE",
 		label: "AirBnB homes",
 		icon: House,
 	},
