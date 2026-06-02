@@ -33,6 +33,7 @@ type CategoryConfig = {
 	listListings: (params: ListingListRequest) => Promise<ListingListResponse>;
 	renderCard: (listing: PublicListing, detailHref: string) => ReactNode;
 	renderSidebar?: (props: ListingSidebarRenderProps) => ReactNode;
+	filterPresentation?: "sidebar" | "dialog";
 };
 
 const carFilters: ListingSidebarFilter[] = [
@@ -92,8 +93,9 @@ const categoryConfigs = {
 		detailBaseHref: "/listings/apartments",
 		filters: apartmentFilters,
 		listListings: listApartmentListings,
+		filterPresentation: "dialog",
 		renderSidebar: (sidebarProps) => (
-			<ApartmentListingsSidebar {...sidebarProps} />
+			<ApartmentListingsSidebar {...sidebarProps} variant="dialog" />
 		),
 		renderCard: (listing, detailHref) => (
 			<ApartmentListingCard
