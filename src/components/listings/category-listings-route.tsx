@@ -11,7 +11,6 @@ import {
 	type ListingListResponse,
 	type PublicListing,
 } from "@/services/api/listings";
-import { HotelRoomListingCard } from "./category-listing-cards";
 import { AirbnbListingCard } from "./airbnb-listing-card";
 import { AirbnbListingsSidebar } from "./airbnb-listings-sidebar";
 import { ApartmentListingCard } from "./apartment-listing-card";
@@ -23,6 +22,8 @@ import {
 } from "./category-listings-page";
 import { CarListingCard } from "./car-listing-card";
 import { CarListingsSidebar } from "./car-listings-sidebar";
+import { HotelRoomListingCard } from "./hotel-room-listing-card";
+import { HotelRoomListingsSidebar } from "./hotel-room-listings-sidebar";
 
 type CategoryConfig = {
 	categoryLabel: string;
@@ -108,6 +109,9 @@ const categoryConfigs = {
 		detailBaseHref: "/listings/hotel-rooms",
 		filters: hotelRoomFilters,
 		listListings: listHotelRoomListings,
+		renderSidebar: (sidebarProps) => (
+			<HotelRoomListingsSidebar {...sidebarProps} />
+		),
 		renderCard: (listing, detailHref) => (
 			<HotelRoomListingCard
 				key={listing.id}
