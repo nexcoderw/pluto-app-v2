@@ -31,42 +31,6 @@ type ListingCardProps = {
 	detailHref: string;
 };
 
-export function ApartmentListingCard({
-	listing,
-	detailHref,
-}: ListingCardProps) {
-	const details = listing.apartmentDetails;
-
-	return (
-		<ListingCardFrame
-			listing={listing}
-			detailHref={detailHref}
-			kind="apartment"
-			label="Apartment"
-			icon={<House aria-hidden="true" />}
-			specs={[
-				{
-					icon: <BedDouble aria-hidden="true" />,
-					label: details ? `${details.bedrooms} bedrooms` : "Bedrooms",
-				},
-				{
-					icon: <Bath aria-hidden="true" />,
-					label: details ? `${details.bathrooms} bathrooms` : "Bathrooms",
-				},
-				{
-					icon: <Users aria-hidden="true" />,
-					label: details ? `${details.maxGuests} guests` : "Guests",
-				},
-			]}
-			highlights={[
-				details?.furnished ? "Furnished" : "Unfurnished",
-				details?.wifi ? "WiFi ready" : "WiFi not listed",
-				details?.parking ? "Parking" : "Parking not listed",
-			]}
-		/>
-	);
-}
-
 export function HotelRoomListingCard({
 	listing,
 	detailHref,
