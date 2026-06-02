@@ -1,0 +1,122 @@
+"use client";
+
+import Image from "next/image";
+import Link from "next/link";
+import {
+	ArrowRight,
+	BriefcaseBusiness,
+	CalendarCheck,
+	CarFront,
+	CircleDollarSign,
+	Fuel,
+	Gauge,
+	MapPin,
+	ShieldCheck,
+	Sparkles,
+	Users,
+} from "lucide-react";
+import type { PublicListing } from "@/services/api/listings";
+import {
+	formatMoney,
+	formatPricingUnit,
+	getListingCoverImage,
+} from "./listing-formatters";
+import styles from "./car-listing-card.module.css";
+
+type CarListingCardProps = {
+	listing: PublicListing;
+	detailHref: string;
+};
+
+export function CarListingCard({ listing, detailHref }: CarListingCardProps) {
+	const details = listing.carDetails;
+	const coverImage = getListingCoverImage(listing);
+	const coverUrl = coverImage?.file.publicUrl;
+	const vehicleName = details
+		? `${details.brand} ${details.model}`
+		: "Approved vehicle";
+	const driverMode = details?.driverIncluded
+		? "Driver included"
+		: "Self-drive ready";
+
+	return (
+		<article className={styles.card}>
+			<Link href={detailHref} className={styles.media}>
+				{coverUrl ? (
+					<Image
+						src={coverUrl}
+						alt={coverImage.altText ?? listing.title}
+						fill
+						sizes="(max-width: 720px) 100vw, (max-width: 1280px) 31vw, 22vw"
+					/>
+				) : (
+					<span className={styles.emptyMedia}>
+						<CarFront aria-hidden="true" />
+						Vehicle image pending
+					</span>
+				)}
+				<span className={styles.statusPill}>
+					<ShieldCheck aria-hidden="true" />
+					Approved
+				</span>
+			</Link>
+
+			<div className={styles.body}>
+				<div className={styles.heading}>
+					<div>
+						<p className={styles.vehicleName}>{vehicleName}</p>
+						<h2>{listing.title}</h2>
+					</div>
+					<span className={styles.price}>
+						<CircleDollarSign aria-hidden="true" />
+						<strong>{formatMoney(listing.basePrice, listing.currency)}</strong>
+						<small>/{formatPricingUnit(listing.pricingUnit)}</small>
+					</span>
+				</div>
+
+				<p className={styles.location}>
+					<MapPin aria-hidden="true" />
+					{listing.city}, {listing.country}
+				</p>
+
+				<ul className={styles.specs} aria-label="Car highlights">
+					<li>
+						<Users aria-hidden="true" />
+						<strong>{details?.seats ?? "-"}</strong>
+						<span>Seats</span>
+					</li>
+					<li>
+						<Gauge aria-hidden="true" />
+						<strong>{details?.transmission ?? "Listed"}</strong>
+						<span>Gearbox</span>
+					</li>
+					<li>
+						<Fuel aria-hidden="true" />
+						<strong>{details?.fuelType ?? "Listed"}</strong>
+						<span>Fuel</span>
+					</li>
+				</ul>
+
+				<div className={styles.badges}>
+					<span>
+						<CalendarCheck aria-hidden="true" />
+						{details?.year ?? "Year verified"}
+					</span>
+					<span>
+						<BriefcaseBusiness aria-hidden="true" />
+						{driverMode}
+					</span>
+					<span>
+						<Sparkles aria-hidden="true" />
+						{details?.airConditioning ? "Air conditioned" : "Comfort listed"}
+					</span>
+				</div>
+
+				<Link href={detailHref} className={styles.detailsLink}>
+					View car details
+					<ArrowRight aria-hidden="true" />
+				</Link>
+			</div>
+		</article>
+	);
+}
