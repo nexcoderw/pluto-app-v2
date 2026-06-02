@@ -12,7 +12,7 @@ Before changing frontend code, read:
 - `docs/design-system.md` before designing UI.
 - `docs/styling.md` before editing CSS.
 - `docs/feedback-and-states.md` before handling loading, success, error, or empty states.
-- `docs/listing-categories.md` before changing listing, product, marketplace, or admin review flows.
+- `docs/listing-categories.md` before changing listing, product, public listings, or admin review flows.
 - `docs/seo.md` before adding pages.
 - `docs/git.md` before reporting commit commands.
 
