@@ -43,7 +43,10 @@ export function ApartmentListingsSidebar({
 	setDraftFilter,
 	applyFilters,
 	resetFilters,
-}: ListingSidebarRenderProps) {
+	variant = "sidebar",
+}: ListingSidebarRenderProps & {
+	variant?: "sidebar" | "dialog";
+}) {
 	const selectedBudget =
 		typeof draftFilters.maxPrice === "number"
 			? draftFilters.maxPrice
@@ -51,7 +54,11 @@ export function ApartmentListingsSidebar({
 	const hasBudgetFilter = typeof draftFilters.maxPrice === "number";
 
 	return (
-		<aside className={styles.sidebar} aria-label={`${categoryLabel} filters`}>
+		<aside
+			className={styles.sidebar}
+			data-variant={variant}
+			aria-label={`${categoryLabel} filters`}
+		>
 			<div className={styles.header}>
 				<span className={styles.iconBadge}>
 					<Building2 aria-hidden="true" />
