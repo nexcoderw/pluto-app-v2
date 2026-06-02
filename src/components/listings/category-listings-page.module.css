@@ -111,12 +111,30 @@
 }
 
 .toolbar[data-filter-presentation="dialog"] {
-	grid-template-columns: minmax(12rem, 25rem) auto minmax(10rem, auto) auto;
-	justify-content: start;
+	grid-template-columns:
+		minmax(12rem, 25rem) minmax(0, 1fr) auto minmax(10rem, auto)
+		auto;
+	justify-content: stretch;
 }
 
 .searchInput {
 	max-width: 25rem;
+}
+
+.toolbar[data-filter-presentation="dialog"] .searchInput {
+	grid-column: 1;
+}
+
+.toolbar[data-filter-presentation="dialog"] .filterButton {
+	grid-column: 3;
+}
+
+.toolbar[data-filter-presentation="dialog"] .selectTrigger {
+	grid-column: 4;
+}
+
+.toolbar[data-filter-presentation="dialog"] .sortButton {
+	grid-column: 5;
 }
 
 .selectTrigger {
@@ -145,6 +163,23 @@
 .page[data-category="hotel-rooms"] .grid,
 .page[data-category="airbnb"] .grid {
 	grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.apartmentMapLayout {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(22rem, 29rem);
+	gap: 1rem;
+	align-items: start;
+}
+
+.apartmentCardsColumn {
+	min-width: 0;
+	display: grid;
+	gap: 1rem;
+}
+
+.page[data-category="apartments"] .apartmentMapLayout .grid {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .card {
@@ -332,6 +367,16 @@
 	.page[data-category="airbnb"] .grid {
 		grid-template-columns: repeat(3, minmax(0, 1fr));
 	}
+
+	.page[data-category="apartments"] .apartmentMapLayout .grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 1180px) {
+	.apartmentMapLayout {
+		grid-template-columns: 1fr;
+	}
 }
 
 @media (max-width: 1080px) {
@@ -375,6 +420,13 @@
 		grid-template-columns: 1fr;
 	}
 
+	.toolbar[data-filter-presentation="dialog"] .searchInput,
+	.toolbar[data-filter-presentation="dialog"] .filterButton,
+	.toolbar[data-filter-presentation="dialog"] .selectTrigger,
+	.toolbar[data-filter-presentation="dialog"] .sortButton {
+		grid-column: auto;
+	}
+
 	.heroMetric,
 	.cardMeta,
 	.cardMeta a,
@@ -393,6 +445,10 @@
 
 	.cardMeta a {
 		justify-content: center;
+	}
+
+	.page[data-category="apartments"] .apartmentMapLayout .grid {
+		grid-template-columns: 1fr;
 	}
 }
 
