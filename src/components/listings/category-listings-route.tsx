@@ -19,8 +19,10 @@ import {
 import {
 	CategoryListingsPage,
 	type ListingSidebarFilter,
+	type ListingSidebarRenderProps,
 } from "./category-listings-page";
 import { CarListingCard } from "./car-listing-card";
+import { CarListingsSidebar } from "./car-listings-sidebar";
 
 type CategoryConfig = {
 	categoryLabel: string;
@@ -29,6 +31,7 @@ type CategoryConfig = {
 	filters: ListingSidebarFilter[];
 	listListings: (params: ListingListRequest) => Promise<ListingListResponse>;
 	renderCard: (listing: PublicListing, detailHref: string) => ReactNode;
+	renderSidebar?: (props: ListingSidebarRenderProps) => ReactNode;
 };
 
 const carFilters: ListingSidebarFilter[] = [
@@ -73,6 +76,7 @@ const categoryConfigs = {
 		detailBaseHref: "/listings/cars",
 		filters: carFilters,
 		listListings: listCarListings,
+		renderSidebar: (sidebarProps) => <CarListingsSidebar {...sidebarProps} />,
 		renderCard: (listing, detailHref) => (
 			<CarListingCard
 				key={listing.id}
