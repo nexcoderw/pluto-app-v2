@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import type { ComponentType, CSSProperties, ReactNode } from 'react';
-import { useState } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import type { ComponentType, CSSProperties, ReactNode } from "react";
+import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import {
 	ArrowRight,
 	LogOut,
@@ -13,12 +13,12 @@ import {
 	UserRound,
 	X,
 	type LucideProps,
-} from 'lucide-react';
-import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
-import { logoutUser, type UserAuthProfile } from '@/services/api/auth';
-import { PortalSignoutDialog } from './portal-signout-dialog';
-import styles from './portal-shell.module.css';
+} from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { logoutUser, type UserAuthProfile } from "@/services/api/auth";
+import { PortalSignoutDialog } from "./portal-signout-dialog";
+import styles from "./portal-shell.module.css";
 
 export type PortalNavItem = {
 	href: string;
@@ -42,7 +42,7 @@ export type PortalAction = {
 };
 
 type PortalShellProps = {
-	variant: 'customer' | 'partner';
+	variant: "customer" | "partner";
 	user: UserAuthProfile;
 	title: string;
 	description: string;
@@ -50,9 +50,10 @@ type PortalShellProps = {
 	homeHref: string;
 	homeLabel: string;
 	navigation: PortalNavItem[];
-	metrics: PortalMetric[];
+	metrics?: PortalMetric[];
 	actions?: PortalAction[];
 	heroActions?: ReactNode;
+	hideHero?: boolean;
 	children?: ReactNode;
 };
 
@@ -65,9 +66,10 @@ export function PortalShell({
 	homeHref,
 	homeLabel,
 	navigation,
-	metrics,
+	metrics = [],
 	actions,
 	heroActions,
+	hideHero = false,
 	children,
 }: PortalShellProps) {
 	const router = useRouter();
@@ -77,10 +79,10 @@ export function PortalShell({
 	const [isLoggingOut, setIsLoggingOut] = useState(false);
 	const userInitials = getUserInitials(user.fullName || user.email);
 	const portalLabel =
-		variant === 'partner' ? 'Partner portal' : 'Customer portal';
+		variant === "partner" ? "Partner portal" : "Customer portal";
 	const avatarStyle = user.imageUrl
 		? ({
-				'--portal-avatar-image': `url("${user.imageUrl}")`,
+				"--portal-avatar-image": `url("${user.imageUrl}")`,
 			} as CSSProperties)
 		: undefined;
 
@@ -90,17 +92,17 @@ export function PortalShell({
 
 		try {
 			await logoutUser();
-			toast.success('You have been signed out.', {
-				description: 'Your secure Pluto Booking session has ended.',
+			toast.success("You have been signed out.", {
+				description: "Your secure Pluto Booking session has ended.",
 			});
 		} catch {
-			toast.warning('Your local session was cleared.', {
-				description: 'Please sign in again before accessing protected pages.',
+			toast.warning("Your local session was cleared.", {
+				description: "Please sign in again before accessing protected pages.",
 			});
 		} finally {
 			setIsLoggingOut(false);
 			setIsLogoutDialogOpen(false);
-			router.replace('/');
+			router.replace("/");
 		}
 	}
 
@@ -205,42 +207,46 @@ export function PortalShell({
 							</div>
 						</header>
 
-						<div className={styles.portalHero}>
-							<div className={styles.avatarMark} aria-hidden="true">
-								<UserRound />
+						{hideHero ? null : (
+							<div className={styles.portalHero}>
+								<div className={styles.avatarMark} aria-hidden="true">
+									<UserRound />
+								</div>
+								<div>
+									<p className={styles.eyebrow}>{eyebrow}</p>
+									<h1>{title}</h1>
+									<p>{description}</p>
+								</div>
+								<div className={styles.heroActions}>
+									<Link href={homeHref} className={styles.primaryAction}>
+										<Search aria-hidden="true" />
+										{homeLabel}
+										<ArrowRight aria-hidden="true" />
+									</Link>
+									{heroActions}
+								</div>
 							</div>
-							<div>
-								<p className={styles.eyebrow}>{eyebrow}</p>
-								<h1>{title}</h1>
-								<p>{description}</p>
-							</div>
-							<div className={styles.heroActions}>
-								<Link href={homeHref} className={styles.primaryAction}>
-									<Search aria-hidden="true" />
-									{homeLabel}
-									<ArrowRight aria-hidden="true" />
-								</Link>
-								{heroActions}
-							</div>
-						</div>
+						)}
 
-						<div
-							className={styles.statusGrid}
-							aria-label={`${portalLabel} overview`}
-						>
-							{metrics.map((metric) => {
-								const Icon = metric.icon;
+						{metrics.length ? (
+							<div
+								className={styles.statusGrid}
+								aria-label={`${portalLabel} overview`}
+							>
+								{metrics.map((metric) => {
+									const Icon = metric.icon;
 
-								return (
-									<article key={metric.label}>
-										<Icon aria-hidden="true" />
-										<strong>{metric.value}</strong>
-										<span>{metric.label}</span>
-										<small>{metric.description}</small>
-									</article>
-								);
-							})}
-						</div>
+									return (
+										<article key={metric.label}>
+											<Icon aria-hidden="true" />
+											<strong>{metric.value}</strong>
+											<span>{metric.label}</span>
+											<small>{metric.description}</small>
+										</article>
+									);
+								})}
+							</div>
+						) : null}
 
 						{children}
 
@@ -277,7 +283,7 @@ export function PortalShell({
 }
 
 function getUserInitials(value: string) {
-	const [first = 'P', second = 'B'] = value.trim().split(/\s+/).filter(Boolean);
+	const [first = "P", second = "B"] = value.trim().split(/\s+/).filter(Boolean);
 
 	return `${first.charAt(0)}${second.charAt(0)}`.toUpperCase();
 }
