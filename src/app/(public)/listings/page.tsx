@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { MarketplacePage } from "@/components/marketplace/marketplace-page";
+import { ListingsPage } from "@/components/listings/listings-page";
 
 export const metadata: Metadata = {
-	title: "Marketplace",
+	title: "Listings",
 	description:
 		"Search approved cars, apartments, hotel rooms, and Airbnb homes on Pluto Booking.",
 };
 
-export default function MarketplaceRoute() {
-	return <MarketplacePage />;
+export default function ListingsRoute() {
+	return <ListingsPage />;
 }
