@@ -1,0 +1,222 @@
+.sidebar {
+	position: sticky;
+	top: 5.2rem;
+	display: grid;
+	gap: 0.85rem;
+	padding: 0.9rem;
+	border: 1px solid rgba(255, 255, 255, 0.78);
+	border-radius: 1.45rem;
+	background: rgba(255, 255, 255, 0.78);
+	box-shadow: 0 1.5rem 4rem rgba(16, 22, 33, 0.08);
+	backdrop-filter: blur(18px);
+}
+
+.header {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	gap: 0.75rem;
+	align-items: center;
+	padding: 0.2rem 0.15rem 0.35rem;
+}
+
+.iconBadge,
+.switchIcon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	color: #02006c;
+}
+
+.iconBadge {
+	width: 2.65rem;
+	height: 2.65rem;
+	border: 1px solid rgba(2, 0, 108, 0.12);
+	border-radius: 999px;
+	background: rgba(2, 0, 108, 0.06);
+	box-shadow: 0 0.85rem 1.9rem rgba(2, 0, 108, 0.08);
+}
+
+.header p,
+.sectionTitle,
+.priceHeader span {
+	margin: 0;
+	color: #02006c;
+	font-size: 0.68rem;
+	font-weight: 880;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.header h2 {
+	margin: 0.08rem 0 0;
+	color: #17171f;
+	font-size: 1.05rem;
+	font-weight: 880;
+	letter-spacing: 0;
+}
+
+.section {
+	display: grid;
+	gap: 0.55rem;
+	padding: 0.72rem;
+	border: 1px solid rgba(2, 0, 108, 0.08);
+	border-radius: 1.1rem;
+	background: rgba(255, 255, 255, 0.62);
+}
+
+.sectionTitle {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.38rem;
+}
+
+.sectionTitle svg {
+	width: 0.95rem;
+	height: 0.95rem;
+}
+
+.selectTrigger {
+	width: 100%;
+	border-radius: 999px;
+}
+
+.compactGrid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.5rem;
+}
+
+.priceCard {
+	display: grid;
+	gap: 0.65rem;
+	padding: 0.72rem;
+	border: 1px solid rgba(2, 0, 108, 0.08);
+	border-radius: 1rem;
+	background: rgba(255, 255, 255, 0.7);
+}
+
+.priceHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+}
+
+.priceHeader strong {
+	color: #17171f;
+	font-size: 0.9rem;
+	font-weight: 880;
+}
+
+.range {
+	width: 100%;
+	height: 0.42rem;
+	border-radius: 999px;
+	background: rgba(2, 0, 108, 0.16);
+	accent-color: #02006c;
+	cursor: pointer;
+}
+
+.range::-webkit-slider-thumb {
+	width: 1.05rem;
+	height: 1.05rem;
+	border: 0.22rem solid #ffffff;
+	border-radius: 999px;
+	background: #02006c;
+	box-shadow: 0 0.45rem 1rem rgba(2, 0, 108, 0.24);
+	cursor: pointer;
+	appearance: none;
+}
+
+.range::-moz-range-thumb {
+	width: 1.05rem;
+	height: 1.05rem;
+	border: 0.22rem solid #ffffff;
+	border-radius: 999px;
+	background: #02006c;
+	box-shadow: 0 0.45rem 1rem rgba(2, 0, 108, 0.24);
+	cursor: pointer;
+}
+
+.clearBudget {
+	justify-self: start;
+	min-height: 2rem;
+	padding: 0 0.65rem;
+	border: 1px solid rgba(2, 0, 108, 0.14);
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.76);
+	color: #02006c;
+	font-size: 0.68rem;
+	font-weight: 840;
+	cursor: pointer;
+}
+
+.switchRow {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr) auto;
+	gap: 0.65rem;
+	align-items: center;
+	padding: 0.65rem;
+	border: 1px solid rgba(2, 0, 108, 0.08);
+	border-radius: 1rem;
+	background: rgba(255, 255, 255, 0.72);
+	cursor: pointer;
+}
+
+.switchIcon {
+	width: 2.1rem;
+	height: 2.1rem;
+	border-radius: 999px;
+	background: rgba(2, 0, 108, 0.06);
+}
+
+.switchRow strong {
+	display: block;
+	color: #17171f;
+	font-size: 0.78rem;
+	font-weight: 860;
+}
+
+.switchRow small {
+	display: block;
+	margin-top: 0.12rem;
+	color: rgba(23, 23, 31, 0.58);
+	font-size: 0.68rem;
+	font-weight: 700;
+	line-height: 1.35;
+}
+
+.switch {
+	border-radius: 999px;
+}
+
+.actions {
+	display: grid;
+	gap: 0.55rem;
+}
+
+.actions button {
+	border-radius: 999px;
+}
+
+@media (max-width: 1080px) {
+	.sidebar {
+		position: static;
+		order: 2;
+	}
+}
+
+@media (max-width: 720px) {
+	.compactGrid,
+	.switchRow {
+		grid-template-columns: 1fr;
+	}
+
+	.switchRow {
+		justify-items: start;
+	}
+
+	.actions button {
+		width: 100%;
+	}
+}
