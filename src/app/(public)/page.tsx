@@ -21,7 +21,7 @@ export default function HomePage() {
 		<main className={styles.page}>
 			<section className={styles.hero}>
 				<div className={styles.heroCopy}>
-					<span className={styles.eyebrow}>Travel marketplace</span>
+					<span className={styles.eyebrow}>Travel listings</span>
 					<h1>Book the right place, ride, or room with confidence.</h1>
 					<p>
 						Pluto Booking helps customers find reviewed properties and rentals
@@ -29,9 +29,9 @@ export default function HomePage() {
 						professionally.
 					</p>
 					<div className={styles.actions}>
-						<Link href="/marketplace" className={styles.primaryAction}>
+						<Link href="/listings" className={styles.primaryAction}>
 							<ArrowRight aria-hidden="true" />
-							Explore marketplace
+							Explore listings
 						</Link>
 						<Link href="/register" className={styles.secondaryAction}>
 							<Search aria-hidden="true" />
@@ -46,7 +46,7 @@ export default function HomePage() {
 				>
 					<div className={styles.panelHeader}>
 						<span>Available soon</span>
-						<strong>Curated marketplace</strong>
+						<strong>Curated listings</strong>
 					</div>
 					<div className={styles.categoryGrid}>
 						<div>
