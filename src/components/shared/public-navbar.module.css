@@ -11,7 +11,7 @@
 	position: relative;
 	min-height: 4rem;
 	display: grid;
-	grid-template-columns: 15.5rem minmax(12rem, 1fr) auto;
+	grid-template-columns: 15.5rem minmax(11rem, 1fr) auto auto;
 	align-items: stretch;
 	margin: 0 auto;
 	border-left: 1px solid rgba(2, 0, 108, 0.08);
@@ -87,8 +87,8 @@
 	display: flex;
 	align-items: center;
 	justify-content: flex-end;
-	gap: clamp(1.25rem, 2.2vw, 2rem);
-	padding: 0 2rem;
+	gap: clamp(0.95rem, 1.55vw, 1.55rem);
+	padding: 0 1.35rem;
 }
 
 .links a {
@@ -115,6 +115,133 @@
 	display: none;
 }
 
+.authArea,
+.mobileAuth {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.authArea {
+	justify-content: flex-end;
+	padding: 0 1.1rem 0 0.85rem;
+	border-left: 1px solid rgba(2, 0, 108, 0.08);
+}
+
+.mobileAuth {
+	display: none;
+}
+
+.loginButton,
+.registerButton,
+.profileButton {
+	height: 2.65rem;
+	min-height: 2.65rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.42rem;
+	padding: 0 0.9rem;
+	border-radius: 999px;
+	font-size: 0.78rem;
+	font-weight: 850;
+	line-height: 1;
+	text-decoration: none;
+	white-space: nowrap;
+	cursor: pointer;
+	transition:
+		background 160ms ease,
+		border-color 160ms ease,
+		color 160ms ease,
+		transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.loginButton:hover,
+.registerButton:hover,
+.profileButton:hover {
+	transform: translateY(-1px);
+}
+
+.loginButton {
+	border: 1px solid rgba(2, 0, 108, 0.12);
+	background: rgba(255, 255, 255, 0.72);
+	color: #02006c;
+}
+
+.registerButton {
+	border: 1px solid #02006c;
+	background: #02006c;
+	color: white;
+	box-shadow: 0 0.7rem 1.5rem rgba(2, 0, 108, 0.16);
+}
+
+.registerButton:hover {
+	background: #09068f;
+}
+
+.loginButton svg,
+.registerButton svg {
+	width: 0.95rem;
+	height: 0.95rem;
+}
+
+.profileButton {
+	max-width: 15rem;
+	justify-content: flex-start;
+	padding: 0.22rem 0.82rem 0.22rem 0.25rem;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	background: rgba(255, 255, 255, 0.72);
+	color: #111827;
+}
+
+.avatar {
+	width: 2.18rem;
+	height: 2.18rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+	overflow: hidden;
+	border-radius: 999px;
+	background: #02006c;
+	color: white;
+	font-size: 0.74rem;
+	font-weight: 880;
+}
+
+.avatar[data-has-image="true"] {
+	background-image: var(--profile-avatar-image);
+	background-position: center;
+	background-size: cover;
+}
+
+.profileCopy {
+	min-width: 0;
+	display: grid;
+	gap: 0.06rem;
+	text-align: left;
+}
+
+.profileCopy strong,
+.profileCopy small {
+	max-width: 9rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.profileCopy strong {
+	color: #111827;
+	font-size: 0.76rem;
+	font-weight: 880;
+}
+
+.profileCopy small {
+	color: rgba(17, 24, 39, 0.58);
+	font-size: 0.64rem;
+	font-weight: 740;
+}
+
 .menuButton {
 	display: none;
 	width: 2.85rem;
@@ -127,7 +254,7 @@
 
 @media (max-width: 1080px) {
 	.nav {
-		grid-template-columns: 13.75rem minmax(10rem, 1fr) auto;
+		grid-template-columns: 13.75rem minmax(10rem, 1fr) auto auto;
 	}
 
 	.links {
@@ -150,6 +277,10 @@
 	}
 
 	.searchForm {
+		display: none;
+	}
+
+	.authArea {
 		display: none;
 	}
 
@@ -200,6 +331,22 @@
 		display: flex;
 		border: 1px solid rgba(2, 0, 108, 0.09);
 		background: rgba(247, 248, 251, 0.82);
+	}
+
+	.mobileAuth {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.45rem;
+	}
+
+	.mobileAuth .profileButton {
+		grid-column: 1 / -1;
+		max-width: none;
+	}
+
+	.mobileAuth .loginButton,
+	.mobileAuth .registerButton {
+		width: 100%;
 	}
 }
 
