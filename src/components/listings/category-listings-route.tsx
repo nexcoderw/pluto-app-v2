@@ -14,13 +14,13 @@ import {
 import {
 	AirbnbListingCard,
 	ApartmentListingCard,
-	CarListingCard,
 	HotelRoomListingCard,
 } from "./category-listing-cards";
 import {
 	CategoryListingsPage,
 	type ListingSidebarFilter,
 } from "./category-listings-page";
+import { CarListingCard } from "./car-listing-card";
 
 type CategoryConfig = {
 	categoryLabel: string;
