@@ -1,0 +1,244 @@
+.card {
+	position: relative;
+	overflow: hidden;
+	border: 1px solid rgba(255, 255, 255, 0.74);
+	border-radius: 1.45rem;
+	background: rgba(255, 255, 255, 0.78);
+	box-shadow: 0 1.5rem 4rem rgba(16, 22, 33, 0.08);
+	backdrop-filter: blur(18px);
+	animation: cardIn 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.card::before {
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	content: "";
+	opacity: 0.18;
+}
+
+.card[data-kind="car"]::before {
+	background: linear-gradient(135deg, #02006c, #22c55e);
+}
+
+.card[data-kind="apartment"]::before {
+	background: linear-gradient(135deg, #02006c, #0ea5e9);
+}
+
+.card[data-kind="hotel"]::before {
+	background: linear-gradient(135deg, #02006c, #f43f5e);
+}
+
+.card[data-kind="airbnb"]::before {
+	background: linear-gradient(135deg, #02006c, #14b8a6);
+}
+
+.media {
+	position: relative;
+	min-height: 14.5rem;
+	display: block;
+	overflow: hidden;
+	background: rgba(2, 0, 108, 0.08);
+	text-decoration: none;
+}
+
+.media img {
+	object-fit: cover;
+	transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.card:hover .media img {
+	transform: scale(1.04);
+}
+
+.media > span {
+	min-height: 14.5rem;
+	display: grid;
+	place-items: center;
+	gap: 0.4rem;
+	color: #02006c;
+	font-size: 0.78rem;
+	font-weight: 840;
+}
+
+.categoryBadge {
+	position: absolute;
+	left: 0.85rem;
+	bottom: 0.85rem;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.38rem;
+	min-height: 2.12rem;
+	padding: 0 0.75rem;
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.88);
+	color: #02006c;
+	font-size: 0.72rem;
+	font-weight: 880;
+	text-transform: uppercase;
+	backdrop-filter: blur(16px);
+}
+
+.body {
+	display: grid;
+	gap: 0.85rem;
+	padding: 1rem;
+}
+
+.titleRow {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	gap: 0.75rem;
+	align-items: start;
+}
+
+.titleRow h2 {
+	margin: 0;
+	overflow: hidden;
+	color: #17171f;
+	font-size: 1.02rem;
+	font-weight: 870;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.titleRow p,
+.footer span {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.34rem;
+	margin: 0.2rem 0 0;
+	color: rgba(23, 23, 31, 0.58);
+	font-size: 0.76rem;
+	font-weight: 740;
+}
+
+.price {
+	display: grid;
+	justify-items: end;
+	gap: 0.05rem;
+	color: #02006c;
+	font-size: 0.7rem;
+	font-weight: 780;
+}
+
+.price strong {
+	font-size: 0.9rem;
+}
+
+.price small {
+	color: rgba(23, 23, 31, 0.5);
+}
+
+.specGrid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 0.45rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.specGrid li {
+	min-height: 3.15rem;
+	display: grid;
+	place-items: center;
+	gap: 0.25rem;
+	padding: 0.45rem;
+	border: 1px solid rgba(2, 0, 108, 0.08);
+	border-radius: 1rem;
+	background: rgba(255, 255, 255, 0.68);
+	color: rgba(23, 23, 31, 0.72);
+	font-size: 0.69rem;
+	font-weight: 790;
+	text-align: center;
+}
+
+.specGrid svg {
+	color: #02006c;
+}
+
+.highlights {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem;
+}
+
+.highlights span {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.28rem;
+	min-height: 1.85rem;
+	padding: 0 0.58rem;
+	border-radius: 999px;
+	background: rgba(2, 0, 108, 0.06);
+	color: rgba(23, 23, 31, 0.72);
+	font-size: 0.68rem;
+	font-weight: 800;
+}
+
+.highlights svg {
+	color: #16a34a;
+}
+
+.footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.65rem;
+	padding-top: 0.1rem;
+}
+
+.footer span {
+	margin: 0;
+}
+
+.footer a {
+	min-height: var(--pluto-button-height);
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	padding: 0 0.9rem;
+	border-radius: 999px;
+	background: #02006c;
+	color: white;
+	font-size: 0.76rem;
+	font-weight: 850;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+	.titleRow,
+	.footer {
+		grid-template-columns: 1fr;
+	}
+
+	.titleRow {
+		display: grid;
+	}
+
+	.price {
+		justify-items: start;
+	}
+
+	.footer {
+		align-items: stretch;
+		flex-direction: column;
+	}
+
+	.footer a {
+		justify-content: center;
+	}
+}
+
+@keyframes cardIn {
+	from {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
