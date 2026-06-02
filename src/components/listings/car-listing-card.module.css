@@ -1,0 +1,252 @@
+.card {
+	position: relative;
+	overflow: hidden;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	border-radius: 1.35rem;
+	background: rgba(255, 255, 255, 0.86);
+	box-shadow: 0 1.3rem 3.2rem rgba(16, 22, 33, 0.08);
+	backdrop-filter: blur(18px);
+	animation: carCardIn 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.card::before {
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	content: "";
+	background: rgba(2, 0, 108, 0.035);
+}
+
+.media {
+	position: relative;
+	min-height: 12.5rem;
+	display: block;
+	overflow: hidden;
+	background: rgba(2, 0, 108, 0.06);
+	text-decoration: none;
+}
+
+.media::after {
+	position: absolute;
+	inset: auto 0 0;
+	height: 5.5rem;
+	content: "";
+	background: rgba(8, 10, 23, 0.3);
+	pointer-events: none;
+}
+
+.media img {
+	object-fit: cover;
+	transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.card:hover .media img {
+	transform: scale(1.045);
+}
+
+.emptyMedia {
+	min-height: 12.5rem;
+	display: grid;
+	place-items: center;
+	gap: 0.45rem;
+	color: #02006c;
+	font-size: 0.78rem;
+	font-weight: 850;
+	text-align: center;
+}
+
+.emptyMedia svg {
+	width: 2rem;
+	height: 2rem;
+}
+
+.statusPill {
+	position: absolute;
+	right: 0.75rem;
+	bottom: 0.75rem;
+	z-index: 1;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.34rem;
+	min-height: 2rem;
+	padding: 0 0.7rem;
+	border: 1px solid rgba(255, 255, 255, 0.58);
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.9);
+	color: #02006c;
+	font-size: 0.7rem;
+	font-weight: 880;
+	text-transform: uppercase;
+	backdrop-filter: blur(16px);
+}
+
+.body {
+	display: grid;
+	gap: 0.78rem;
+	padding: 0.9rem;
+}
+
+.heading {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	gap: 0.7rem;
+	align-items: start;
+}
+
+.vehicleName {
+	margin: 0 0 0.18rem;
+	color: #02006c;
+	font-size: 0.72rem;
+	font-weight: 850;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.heading h2 {
+	margin: 0;
+	overflow: hidden;
+	color: #17171f;
+	font-size: 0.98rem;
+	font-weight: 880;
+	line-height: 1.2;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.price {
+	display: grid;
+	justify-items: end;
+	gap: 0.02rem;
+	color: #02006c;
+	font-size: 0.68rem;
+	font-weight: 820;
+	white-space: nowrap;
+}
+
+.price strong {
+	font-size: 0.88rem;
+}
+
+.price small {
+	color: rgba(23, 23, 31, 0.52);
+}
+
+.location {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.36rem;
+	margin: 0;
+	color: rgba(23, 23, 31, 0.62);
+	font-size: 0.76rem;
+	font-weight: 760;
+}
+
+.location svg,
+.price svg,
+.specs svg,
+.badges svg,
+.detailsLink svg {
+	flex: 0 0 auto;
+}
+
+.specs {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 0.45rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.specs li {
+	min-height: 4.2rem;
+	display: grid;
+	justify-items: center;
+	align-content: center;
+	gap: 0.18rem;
+	padding: 0.45rem 0.35rem;
+	border: 1px solid rgba(2, 0, 108, 0.08);
+	border-radius: 1rem;
+	background: rgba(255, 255, 255, 0.72);
+	color: rgba(23, 23, 31, 0.62);
+	text-align: center;
+}
+
+.specs svg {
+	color: #02006c;
+}
+
+.specs strong {
+	max-width: 100%;
+	overflow: hidden;
+	color: #17171f;
+	font-size: 0.72rem;
+	font-weight: 880;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.specs span {
+	font-size: 0.64rem;
+	font-weight: 790;
+}
+
+.badges {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.38rem;
+}
+
+.badges span {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.28rem;
+	min-height: 1.8rem;
+	padding: 0 0.56rem;
+	border-radius: 999px;
+	background: rgba(2, 0, 108, 0.06);
+	color: rgba(23, 23, 31, 0.72);
+	font-size: 0.66rem;
+	font-weight: 820;
+}
+
+.badges svg {
+	color: #02006c;
+}
+
+.detailsLink {
+	min-height: var(--pluto-button-height);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.42rem;
+	width: 100%;
+	border-radius: 999px;
+	background: #02006c;
+	color: #ffffff;
+	font-size: 0.76rem;
+	font-weight: 870;
+	text-decoration: none;
+	box-shadow: 0 1rem 2rem rgba(2, 0, 108, 0.16);
+}
+
+@media (max-width: 520px) {
+	.heading {
+		grid-template-columns: 1fr;
+	}
+
+	.price {
+		justify-items: start;
+	}
+}
+
+@keyframes carCardIn {
+	from {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
