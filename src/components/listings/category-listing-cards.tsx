@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import {
 	ArrowRight,
-	Bath,
 	BedDouble,
 	CarFront,
 	CheckCircle2,
@@ -64,39 +63,6 @@ export function HotelRoomListingCard({
 					? "Breakfast included"
 					: "Breakfast optional",
 				details?.hasAirConditioning ? "Air conditioned" : "Cooling not listed",
-			]}
-		/>
-	);
-}
-
-export function AirbnbListingCard({ listing, detailHref }: ListingCardProps) {
-	const details = listing.airbnbDetails;
-
-	return (
-		<ListingCardFrame
-			listing={listing}
-			detailHref={detailHref}
-			kind="airbnb"
-			label="AirBnB home"
-			icon={<House aria-hidden="true" />}
-			specs={[
-				{
-					icon: <BedDouble aria-hidden="true" />,
-					label: details ? `${details.bedrooms} bedrooms` : "Bedrooms",
-				},
-				{
-					icon: <Bath aria-hidden="true" />,
-					label: details ? `${details.bathrooms} bathrooms` : "Bathrooms",
-				},
-				{
-					icon: <Users aria-hidden="true" />,
-					label: details ? `${details.maxGuests} guests` : "Guests",
-				},
-			]}
-			highlights={[
-				details?.houseType ?? "Private home",
-				details?.entirePlace ? "Entire place" : "Shared access",
-				details?.selfCheckIn ? "Self check-in" : "Hosted check-in",
 			]}
 		/>
 	);
