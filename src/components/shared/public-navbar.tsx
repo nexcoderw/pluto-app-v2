@@ -4,7 +4,7 @@ import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useMemo, useState, useSyncExternalStore, type FormEvent } from "react";
 import { LogIn, Menu, Power, Search, UserPlus, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -19,10 +19,10 @@ import {
 import styles from "./public-navbar.module.css";
 
 const navigationLinks = [
-	{ href: "/listings?category=CAR", label: "Cars" },
-	{ href: "/listings?category=APARTMENT", label: "Apartments" },
-	{ href: "/listings?category=HOTEL_ROOM", label: "Hotel Rooms" },
-	{ href: "/listings?category=AIRBNB_HOUSE", label: "AirBnB" },
+	{ href: "/listings/cars", label: "Cars" },
+	{ href: "/listings/apartments", label: "Apartments" },
+	{ href: "/listings/hotel-rooms", label: "Hotel Rooms" },
+	{ href: "/listings/airbnb", label: "AirBnB" },
 	{ href: "/#contact", label: "Contact us" },
 ] as const;
 
@@ -30,8 +30,12 @@ export function PublicNavbar() {
 	const router = useRouter();
 	const [isOpen, setIsOpen] = useState(false);
 	const [search, setSearch] = useState("");
-	const [currentUser, setCurrentUser] = useState<UserAuthProfile | null>(null);
 	const [isLoggingOut, setIsLoggingOut] = useState(false);
+	const currentUser = useSyncExternalStore(
+		(onStoreChange) => subscribeToUserSession(() => onStoreChange()),
+		getUserSessionSnapshot,
+		() => null,
+	);
 	const userPortalPath = currentUser
 		? getUserPortalPath(currentUser, getCachedPartnerProfileStatus())
 		: "/login";
@@ -44,15 +48,6 @@ export function PublicNavbar() {
 		() => getUserInitials(currentUser?.fullName ?? currentUser?.email ?? ""),
 		[currentUser],
 	);
-
-	// Session display: use cached profile state only so guests do not trigger background refresh noise.
-	useEffect(() => {
-		setCurrentUser(hasKnownUserSession() ? getCachedUserProfile() : null);
-
-		return subscribeToUserSession((user) => {
-			setCurrentUser(user);
-		});
-	}, []);
 
 	// Event handlers: keep the mobile menu local so public navigation stays reusable.
 	function closeMenu() {
@@ -79,7 +74,6 @@ export function PublicNavbar() {
 					"Your browser session was cleared. Sign in again before opening protected pages.",
 			});
 		} finally {
-			setCurrentUser(null);
 			setIsLoggingOut(false);
 			router.replace("/");
 		}
@@ -255,4 +249,8 @@ function getUserInitials(value: string) {
 	const [first = "P", second = "B"] = value.trim().split(/\s+/).filter(Boolean);
 
 	return `${first.charAt(0)}${second.charAt(0)}`.toUpperCase();
+}
+
+function getUserSessionSnapshot() {
+	return hasKnownUserSession() ? getCachedUserProfile() : null;
 }
