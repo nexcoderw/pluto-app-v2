@@ -49,7 +49,7 @@ export function CarListingCard({ listing, detailHref }: CarListingCardProps) {
 					</span>
 				)}
 				<span className={styles.statusPill}>
-					<ShieldCheck aria-hidden="true" />
+					<ShieldCheck aria-hidden="true" className="h-4" />
 					Approved
 				</span>
 			</Link>
