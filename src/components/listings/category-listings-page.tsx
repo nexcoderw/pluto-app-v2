@@ -1,6 +1,6 @@
 "use client";
 
-import type { ComponentType, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,7 +14,6 @@ import {
 	RefreshCcw,
 	Search,
 	SlidersHorizontal,
-	type LucideProps,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -47,10 +46,7 @@ export type ListingSidebarFilter = {
 type CategoryListingsPageProps = {
 	categorySlug: ListingCategorySlug;
 	categoryLabel: string;
-	eyebrow: string;
 	title: string;
-	description: string;
-	icon: ComponentType<LucideProps>;
 	detailBaseHref: string;
 	filters: ListingSidebarFilter[];
 	listListings: (params: ListingListRequest) => Promise<ListingListResponse>;
@@ -66,10 +62,7 @@ const sortOptions: Array<{ label: string; value: ListingOrderBy }> = [
 export function CategoryListingsPage({
 	categorySlug,
 	categoryLabel,
-	eyebrow,
 	title,
-	description,
-	icon: Icon,
 	detailBaseHref,
 	filters,
 	listListings,
@@ -127,18 +120,7 @@ export function CategoryListingsPage({
 	return (
 		<main className={styles.page}>
 			<section className={styles.hero}>
-				<div>
-					<span className={styles.eyebrow}>
-						<Icon aria-hidden="true" />
-						{eyebrow}
-					</span>
-					<h1>{title}</h1>
-					<p>{description}</p>
-				</div>
-				<div className={styles.heroMetric}>
-					<strong>{meta?.total ?? 0}</strong>
-					<span>{categoryLabel} in this view</span>
-				</div>
+				<h1>{title}</h1>
 			</section>
 
 			<section className={styles.workspace}>
