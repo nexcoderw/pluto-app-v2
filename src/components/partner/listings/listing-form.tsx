@@ -130,7 +130,7 @@ const steps = [
 	{
 		key: "category",
 		title: "Listing category",
-		description: "Choose the marketplace catalog this listing belongs to.",
+		description: "Choose the public listings category this listing belongs to.",
 		icon: Store,
 	},
 	{
