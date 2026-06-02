@@ -1,15 +1,15 @@
 .page {
 	min-height: calc(100vh - 8rem);
 	display: grid;
-	gap: clamp(1.25rem, 3vw, 2rem);
+	gap: clamp(1.2rem, 3vw, 2rem);
 	background:
 		linear-gradient(
 			180deg,
-			rgba(255, 255, 255, 0.9),
-			rgba(247, 248, 251, 0.97)
+			rgba(255, 255, 255, 0.88),
+			rgba(247, 248, 251, 0.96)
 		),
 		#f7f8fb;
-	padding: clamp(2rem, 5vw, 4rem) max(1rem, calc((100vw - 80rem) / 2));
+	padding: clamp(2rem, 5vw, 4rem) max(1rem, calc((100vw - 95%) / 2));
 	color: #17171f;
 }
 
