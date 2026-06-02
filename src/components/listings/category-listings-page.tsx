@@ -440,7 +440,7 @@ function DefaultListingCard({
 function CategoryListingsSkeleton() {
 	return (
 		<section className={styles.grid} aria-label="Loading listings">
-			{Array.from({ length: 6 }).map((_, index) => (
+			{Array.from({ length: 12 }).map((_, index) => (
 				<article key={index} className={styles.skeletonCard}>
 					<Skeleton className={styles.skeletonCover} />
 					<Skeleton className={styles.skeletonLine} />
