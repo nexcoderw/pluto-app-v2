@@ -11,10 +11,9 @@ import {
 	type ListingListResponse,
 	type PublicListing,
 } from "@/services/api/listings";
-import {
-	AirbnbListingCard,
-	HotelRoomListingCard,
-} from "./category-listing-cards";
+import { HotelRoomListingCard } from "./category-listing-cards";
+import { AirbnbListingCard } from "./airbnb-listing-card";
+import { AirbnbListingsSidebar } from "./airbnb-listings-sidebar";
 import { ApartmentListingCard } from "./apartment-listing-card";
 import { ApartmentListingsSidebar } from "./apartment-listings-sidebar";
 import {
@@ -123,6 +122,9 @@ const categoryConfigs = {
 		detailBaseHref: "/listings/airbnb",
 		filters: airbnbFilters,
 		listListings: listAirbnbListings,
+		renderSidebar: (sidebarProps) => (
+			<AirbnbListingsSidebar {...sidebarProps} />
+		),
 		renderCard: (listing, detailHref) => (
 			<AirbnbListingCard
 				key={listing.id}
