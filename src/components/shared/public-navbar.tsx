@@ -17,10 +17,10 @@ import {
 import styles from "./public-navbar.module.css";
 
 const navigationLinks = [
-	{ href: "/marketplace?category=CAR", label: "Cars" },
-	{ href: "/marketplace?category=APARTMENT", label: "Apartments" },
-	{ href: "/marketplace?category=HOTEL_ROOM", label: "Hotel Rooms" },
-	{ href: "/marketplace?category=AIRBNB_HOUSE", label: "AirBnB" },
+	{ href: "/listings?category=CAR", label: "Cars" },
+	{ href: "/listings?category=APARTMENT", label: "Apartments" },
+	{ href: "/listings?category=HOTEL_ROOM", label: "Hotel Rooms" },
+	{ href: "/listings?category=AIRBNB_HOUSE", label: "AirBnB" },
 	{ href: "/#contact", label: "Contact us" },
 ] as const;
 
