@@ -70,8 +70,8 @@
 	max-width: 30rem;
 	margin: 0;
 	color: rgba(255, 255, 255, 0.82);
-	font-size: 0.95rem;
-	font-weight: 560;
+	font-size: 0.75rem;
+	font-weight: 500;
 	line-height: 1.72;
 }
 
@@ -89,6 +89,7 @@
 	min-height: var(--pluto-button-height);
 	border-radius: 0.15rem;
 	font: inherit;
+	border-radius: 30px;
 }
 
 .newsletter input {
@@ -97,8 +98,8 @@
 	border: 1px solid rgba(255, 255, 255, 0.16);
 	background: rgba(255, 255, 255, 0.08);
 	color: white;
-	font-size: 0.88rem;
-	font-weight: 650;
+	font-size: 0.75rem;
+	font-weight: 600;
 	outline: none;
 }
 
@@ -116,8 +117,8 @@
 	border: 1px solid rgba(133, 162, 255, 0.75);
 	background: #2438ff;
 	color: white;
-	font-size: 0.84rem;
-	font-weight: 850;
+	font-size: 0.75rem;
+	font-weight: 600;
 	cursor: pointer;
 	transition:
 		background 160ms ease,
@@ -165,8 +166,8 @@
 	gap: 0.52rem;
 	width: fit-content;
 	color: rgba(255, 255, 255, 0.88);
-	font-size: 0.9rem;
-	font-weight: 650;
+	font-size: 0.75rem;
+	font-weight: 500;
 	text-decoration: none;
 	transition:
 		color 160ms ease,
