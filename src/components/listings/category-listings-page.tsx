@@ -43,6 +43,17 @@ export type ListingSidebarFilter = {
 	placeholder?: string;
 };
 
+export type ListingSidebarRenderProps = {
+	categoryLabel: string;
+	draftFilters: ListingListRequest;
+	setDraftFilter: <Key extends keyof ListingListRequest>(
+		key: Key,
+		value: ListingListRequest[Key] | undefined,
+	) => void;
+	applyFilters: () => void;
+	resetFilters: () => void;
+};
+
 type CategoryListingsPageProps = {
 	categorySlug: ListingCategorySlug;
 	categoryLabel: string;
@@ -51,6 +62,7 @@ type CategoryListingsPageProps = {
 	filters: ListingSidebarFilter[];
 	listListings: (params: ListingListRequest) => Promise<ListingListResponse>;
 	renderCard?: (listing: PublicListing, detailHref: string) => ReactNode;
+	renderSidebar?: (props: ListingSidebarRenderProps) => ReactNode;
 };
 
 const sortOptions: Array<{ label: string; value: ListingOrderBy }> = [
@@ -67,6 +79,7 @@ export function CategoryListingsPage({
 	filters,
 	listListings,
 	renderCard,
+	renderSidebar,
 }: CategoryListingsPageProps) {
 	const [search, setSearch] = useState("");
 	const [page, setPage] = useState(1);
@@ -107,14 +120,21 @@ export function CategoryListingsPage({
 		setPage(1);
 	}
 
+	function setDraftFilter<Key extends keyof ListingListRequest>(
+		key: Key,
+		value: ListingListRequest[Key] | undefined,
+	): void {
+		setDraftFilters((current) => ({
+			...current,
+			[key]: value,
+		}));
+	}
+
 	function updateDraftFilter(
 		filter: ListingSidebarFilter,
 		value: string,
 	): void {
-		setDraftFilters((current) => ({
-			...current,
-			[filter.key]: parseFilterValue(filter, value),
-		}));
+		setDraftFilter(filter.key, parseFilterValue(filter, value));
 	}
 
 	return (
@@ -124,95 +144,105 @@ export function CategoryListingsPage({
 			</section>
 
 			<section className={styles.workspace}>
-				<aside
-					className={styles.sidebar}
-					aria-label={`${categoryLabel} filters`}
-				>
-					<div className={styles.sidebarHeader}>
-						<span>
-							<SlidersHorizontal aria-hidden="true" />
-							Filters
-						</span>
-						<p>Refine by location, price, and category-specific details.</p>
-					</div>
+				{renderSidebar ? (
+					renderSidebar({
+						categoryLabel,
+						draftFilters,
+						setDraftFilter,
+						applyFilters,
+						resetFilters,
+					})
+				) : (
+					<aside
+						className={styles.sidebar}
+						aria-label={`${categoryLabel} filters`}
+					>
+						<div className={styles.sidebarHeader}>
+							<span>
+								<SlidersHorizontal aria-hidden="true" />
+								Filters
+							</span>
+							<p>Refine by location, price, and category-specific details.</p>
+						</div>
 
-					<div className={styles.filterGrid}>
-						<Input
-							type="text"
-							value={draftFilters.city ?? ""}
-							placeholder="City"
-							onChange={(event) =>
-								updateDraftFilter(
-									{ key: "city", label: "City", kind: "text" },
-									event.target.value,
-								)
-							}
-						/>
-						<Input
-							type="text"
-							value={draftFilters.country ?? ""}
-							placeholder="Country"
-							onChange={(event) =>
-								updateDraftFilter(
-									{ key: "country", label: "Country", kind: "text" },
-									event.target.value,
-								)
-							}
-						/>
-						<Input
-							type="number"
-							min={0}
-							value={draftFilters.minPrice ?? ""}
-							placeholder="Min price"
-							onChange={(event) =>
-								updateDraftFilter(
-									{
-										key: "minPrice",
-										label: "Min price",
-										kind: "number",
-									},
-									event.target.value,
-								)
-							}
-						/>
-						<Input
-							type="number"
-							min={0}
-							value={draftFilters.maxPrice ?? ""}
-							placeholder="Max price"
-							onChange={(event) =>
-								updateDraftFilter(
-									{
-										key: "maxPrice",
-										label: "Max price",
-										kind: "number",
-									},
-									event.target.value,
-								)
-							}
-						/>
-
-						{filters.map((filter) => (
-							<ListingFilterControl
-								key={filter.key}
-								filter={filter}
-								value={draftFilters[filter.key]}
-								onChange={updateDraftFilter}
+						<div className={styles.filterGrid}>
+							<Input
+								type="text"
+								value={draftFilters.city ?? ""}
+								placeholder="City"
+								onChange={(event) =>
+									updateDraftFilter(
+										{ key: "city", label: "City", kind: "text" },
+										event.target.value,
+									)
+								}
 							/>
-						))}
-					</div>
+							<Input
+								type="text"
+								value={draftFilters.country ?? ""}
+								placeholder="Country"
+								onChange={(event) =>
+									updateDraftFilter(
+										{ key: "country", label: "Country", kind: "text" },
+										event.target.value,
+									)
+								}
+							/>
+							<Input
+								type="number"
+								min={0}
+								value={draftFilters.minPrice ?? ""}
+								placeholder="Min price"
+								onChange={(event) =>
+									updateDraftFilter(
+										{
+											key: "minPrice",
+											label: "Min price",
+											kind: "number",
+										},
+										event.target.value,
+									)
+								}
+							/>
+							<Input
+								type="number"
+								min={0}
+								value={draftFilters.maxPrice ?? ""}
+								placeholder="Max price"
+								onChange={(event) =>
+									updateDraftFilter(
+										{
+											key: "maxPrice",
+											label: "Max price",
+											kind: "number",
+										},
+										event.target.value,
+									)
+								}
+							/>
 
-					<div className={styles.filterActions}>
-						<Button type="button" onClick={applyFilters}>
-							<Filter aria-hidden="true" />
-							Apply filters
-						</Button>
-						<Button type="button" variant="outline" onClick={resetFilters}>
-							<RefreshCcw aria-hidden="true" />
-							Reset
-						</Button>
-					</div>
-				</aside>
+							{filters.map((filter) => (
+								<ListingFilterControl
+									key={filter.key}
+									filter={filter}
+									value={draftFilters[filter.key]}
+									onChange={updateDraftFilter}
+								/>
+							))}
+						</div>
+
+						<div className={styles.filterActions}>
+							<Button type="button" onClick={applyFilters}>
+								<Filter aria-hidden="true" />
+								Apply filters
+							</Button>
+							<Button type="button" variant="outline" onClick={resetFilters}>
+								<RefreshCcw aria-hidden="true" />
+								Reset
+							</Button>
+						</div>
+					</aside>
+				)}
 
 				<section
 					className={styles.results}
