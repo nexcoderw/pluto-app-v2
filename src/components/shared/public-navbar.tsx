@@ -63,8 +63,13 @@ export function PublicNavbar() {
 		<header className={styles.header}>
 			<nav className={styles.nav} aria-label="Main navigation">
 				<Link href="/" className={styles.brand} onClick={closeMenu}>
-					<Image src="/favicon.png" alt="" width={28} height={28} priority />
-					<span>Pluto Booking</span>
+					<Image
+						src="/logo-b.png"
+						alt="Pluto Booking"
+						width={430}
+						height={85}
+						priority
+					/>
 				</Link>
 
 				<form className={styles.searchForm} onSubmit={handleSearchSubmit}>
