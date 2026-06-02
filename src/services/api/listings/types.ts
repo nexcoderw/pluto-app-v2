@@ -30,6 +30,8 @@ export type ListingListRequest = {
 	seats?: number;
 	minYear?: number;
 	maxYear?: number;
+	airConditioning?: boolean;
+	driverIncluded?: boolean;
 	bedrooms?: number;
 	bathrooms?: number;
 	guests?: number;
