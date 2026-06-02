@@ -1,6 +1,5 @@
 .detailHero {
 	display: grid;
-	grid-template-columns: minmax(0, 1fr) auto;
 	gap: 1rem;
 	padding: clamp(1rem, 2.5vw, 1.4rem);
 	border: 1px solid rgba(255, 255, 255, 0.76);
@@ -16,29 +15,36 @@
 	backdrop-filter: blur(22px);
 }
 
-.heroCopy {
+.heroHeader {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	gap: 1rem;
+	align-items: start;
+}
+
+.heroTitleGroup {
 	min-width: 0;
 	display: grid;
 	align-content: start;
 	gap: 0.55rem;
 }
 
-.heroCopy h1 {
+.heroTitleGroup h1 {
 	max-width: 54rem;
 	margin: 0;
 	color: #17171f;
-	font-size: clamp(1.7rem, 4vw, 3.35rem);
+	font-size: clamp(1.7rem, 4vw, 3rem);
 	font-weight: 890;
 	letter-spacing: 0;
 	line-height: 0.98;
 }
 
-.heroCopy p {
+.heroDescription {
 	max-width: 46rem;
 	margin: 0;
 	color: rgba(23, 23, 31, 0.64);
-	font-size: 0.94rem;
-	font-weight: 700;
+	font-size: 0.81rem;
+	font-weight: 600;
 	line-height: 1.55;
 }
 
@@ -61,6 +67,7 @@
 	display: flex;
 	align-items: start;
 	justify-content: flex-end;
+	flex-wrap: wrap;
 	gap: 0.6rem;
 }
 
@@ -269,7 +276,7 @@
 .sectionHeader h2 {
 	margin: 0;
 	color: #17171f;
-	font-size: clamp(1.25rem, 3vw, 1.8rem);
+	font-size: clamp(1.25rem, 3vw, 1.4rem);
 	font-weight: 850;
 	line-height: 1.05;
 	letter-spacing: 0;
