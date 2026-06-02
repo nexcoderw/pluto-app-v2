@@ -4,15 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import {
 	ArrowRight,
-	BriefcaseBusiness,
-	CalendarCheck,
 	CarFront,
-	CircleDollarSign,
 	Fuel,
 	Gauge,
 	MapPin,
 	ShieldCheck,
-	Sparkles,
 	Users,
 } from "lucide-react";
 import type { PublicListing } from "@/services/api/listings";
@@ -35,9 +31,6 @@ export function CarListingCard({ listing, detailHref }: CarListingCardProps) {
 	const vehicleName = details
 		? `${details.brand} ${details.model}`
 		: "Approved vehicle";
-	const driverMode = details?.driverIncluded
-		? "Driver included"
-		: "Self-drive ready";
 
 	return (
 		<article className={styles.card}>
@@ -68,7 +61,6 @@ export function CarListingCard({ listing, detailHref }: CarListingCardProps) {
 						<h2>{listing.title}</h2>
 					</div>
 					<span className={styles.price}>
-						<CircleDollarSign aria-hidden="true" />
 						<strong>{formatMoney(listing.basePrice, listing.currency)}</strong>
 						<small>/{formatPricingUnit(listing.pricingUnit)}</small>
 					</span>
@@ -96,21 +88,6 @@ export function CarListingCard({ listing, detailHref }: CarListingCardProps) {
 						<span>Fuel</span>
 					</li>
 				</ul>
-
-				<div className={styles.badges}>
-					<span>
-						<CalendarCheck aria-hidden="true" />
-						{details?.year ?? "Year verified"}
-					</span>
-					<span>
-						<BriefcaseBusiness aria-hidden="true" />
-						{driverMode}
-					</span>
-					<span>
-						<Sparkles aria-hidden="true" />
-						{details?.airConditioning ? "Air conditioned" : "Comfort listed"}
-					</span>
-				</div>
 
 				<Link href={detailHref} className={styles.detailsLink}>
 					View car details
