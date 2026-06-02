@@ -3,17 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
-	ArrowRight,
 	Bath,
 	BedDouble,
 	Building2,
-	CircleDollarSign,
-	DoorOpen,
 	MapPin,
 	ShieldCheck,
-	Sofa,
 	Users,
-	Wifi,
 } from "lucide-react";
 import type { PublicListing } from "@/services/api/listings";
 import {
@@ -28,14 +23,21 @@ type ApartmentListingCardProps = {
 	detailHref: string;
 };
 
+type ApartmentDetailsWithGuestAlias = NonNullable<
+	PublicListing["apartmentDetails"]
+> & {
+	guests?: number;
+};
+
 export function ApartmentListingCard({
 	listing,
 	detailHref,
 }: ApartmentListingCardProps) {
-	const details = listing.apartmentDetails;
+	const details =
+		listing.apartmentDetails as ApartmentDetailsWithGuestAlias | null;
 	const coverImage = getListingCoverImage(listing);
 	const coverUrl = coverImage?.file.publicUrl;
-	const livingLabel = details?.furnished ? "Furnished" : "Flexible living";
+	const guestCount = details?.maxGuests ?? details?.guests;
 
 	return (
 		<article className={styles.card}>
@@ -62,11 +64,9 @@ export function ApartmentListingCard({
 			<div className={styles.body}>
 				<div className={styles.heading}>
 					<div>
-						<p className={styles.categoryName}>{livingLabel}</p>
 						<h2>{listing.title}</h2>
 					</div>
 					<span className={styles.price}>
-						<CircleDollarSign aria-hidden="true" />
 						<strong>{formatMoney(listing.basePrice, listing.currency)}</strong>
 						<small>/{formatPricingUnit(listing.pricingUnit)}</small>
 					</span>
@@ -90,30 +90,10 @@ export function ApartmentListingCard({
 					</li>
 					<li>
 						<Users aria-hidden="true" />
-						<strong>{details?.maxGuests ?? "-"}</strong>
+						<strong>{guestCount ?? "-"}</strong>
 						<span>Guests</span>
 					</li>
 				</ul>
-
-				<div className={styles.amenities}>
-					<span data-active={Boolean(details?.wifi)}>
-						<Wifi aria-hidden="true" />
-						WiFi
-					</span>
-					<span data-active={Boolean(details?.furnished)}>
-						<Sofa aria-hidden="true" />
-						Furnished
-					</span>
-					<span data-active={Boolean(details?.parking)}>
-						<DoorOpen aria-hidden="true" />
-						Parking
-					</span>
-				</div>
-
-				<Link href={detailHref} className={styles.detailsLink}>
-					View apartment
-					<ArrowRight aria-hidden="true" />
-				</Link>
 			</div>
 		</article>
 	);
