@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
 	ArrowLeft,
 	ArrowRight,
-	BadgeCheck,
 	Building2,
 	CarFront,
 	ChevronsUpDown,
@@ -22,13 +21,21 @@ import {
 	Plus,
 	RefreshCcw,
 	Search,
-	ShieldCheck,
 	SlidersHorizontal,
 	Store,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
 	Select,
 	SelectContent,
@@ -37,10 +44,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-	PortalShell,
-	type PortalMetric,
-} from "@/components/portal/portal-shell";
+import { PortalShell } from "@/components/portal/portal-shell";
 import { partnerPortalNavigation } from "@/constants/partner-portal-navigation";
 import type {
 	Product,
@@ -48,10 +52,7 @@ import type {
 	ProductStatus,
 } from "@/services/api/products";
 import type { UserAuthProfile } from "@/services/api/auth";
-import {
-	getPartnerProfile,
-	type PartnerProfile,
-} from "@/services/api/partner-profile";
+import { getPartnerProfile } from "@/services/api/partner-profile";
 import { listPartnerProducts } from "@/services/api/partner-products";
 import {
 	PartnerAccessBoundary,
@@ -62,6 +63,22 @@ import styles from "./partner-listings-page.module.css";
 
 type ProductOrderBy = "createdAt" | "basePrice" | "title";
 type SortOrder = "asc" | "desc";
+
+type ListingsFilterState = {
+	search: string;
+	status: ProductStatus | "ALL";
+	category: ProductCategory | "ALL";
+	orderBy: ProductOrderBy;
+	order: SortOrder;
+};
+
+const defaultListingsFilters: ListingsFilterState = {
+	search: "",
+	status: "ALL",
+	category: "ALL",
+	orderBy: "createdAt",
+	order: "desc",
+};
 
 const statusOptions: Array<{ label: string; value: ProductStatus | "ALL" }> = [
 	{ label: "All statuses", value: "ALL" },
@@ -145,33 +162,41 @@ function PartnerListingsContent({ user }: { user: UserAuthProfile }) {
 		);
 	}
 
-	return <PartnerListingsWorkspace profile={profile} user={user} />;
+	return <PartnerListingsWorkspace user={user} />;
 }
 
-function PartnerListingsWorkspace({
-	profile,
-	user,
-}: {
-	profile: PartnerProfile;
-	user: UserAuthProfile;
-}) {
-	const [search, setSearch] = useState("");
+function PartnerListingsWorkspace({ user }: { user: UserAuthProfile }) {
 	const [page, setPage] = useState(1);
-	const [status, setStatus] = useState<ProductStatus | "ALL">("ALL");
-	const [category, setCategory] = useState<ProductCategory | "ALL">("ALL");
-	const [orderBy, setOrderBy] = useState<ProductOrderBy>("createdAt");
-	const [order, setOrder] = useState<SortOrder>("desc");
+	const [draftFilters, setDraftFilters] = useState<ListingsFilterState>(
+		defaultListingsFilters,
+	);
+	const [filters, setFilters] = useState<ListingsFilterState>(
+		defaultListingsFilters,
+	);
+
+	useEffect(() => {
+		const searchTimer = window.setTimeout(() => {
+			setPage(1);
+			setFilters((current) => ({
+				...current,
+				search: draftFilters.search,
+			}));
+		}, 320);
+
+		return () => window.clearTimeout(searchTimer);
+	}, [draftFilters.search]);
+
 	const query = useMemo(
 		() => ({
 			page,
 			limit: 8,
-			search: search.trim() || undefined,
-			status: status === "ALL" ? undefined : status,
-			category: category === "ALL" ? undefined : category,
-			orderBy,
-			order,
+			search: filters.search.trim() || undefined,
+			status: filters.status === "ALL" ? undefined : filters.status,
+			category: filters.category === "ALL" ? undefined : filters.category,
+			orderBy: filters.orderBy,
+			order: filters.order,
 		}),
-		[category, order, orderBy, page, search, status],
+		[filters, page],
 	);
 	const listingsQuery = useQuery({
 		queryKey: ["partner-products", query],
@@ -179,17 +204,32 @@ function PartnerListingsWorkspace({
 	});
 	const items = listingsQuery.data?.items ?? [];
 	const meta = listingsQuery.data?.meta;
-	const metrics = useMemo(
-		() => buildListingMetrics(items, listingsQuery.data?.meta.total ?? 0),
-		[items, listingsQuery.data?.meta.total],
+	const advancedFilterCount = useMemo(
+		() =>
+			[
+				filters.status !== "ALL",
+				filters.category !== "ALL",
+				filters.orderBy !== defaultListingsFilters.orderBy,
+				filters.order !== defaultListingsFilters.order,
+			].filter(Boolean).length,
+		[filters],
 	);
 
+	function updateDraftFilter<Key extends keyof ListingsFilterState>(
+		key: Key,
+		value: ListingsFilterState[Key],
+	) {
+		setDraftFilters((current) => ({ ...current, [key]: value }));
+	}
+
+	function applyFilters() {
+		setPage(1);
+		setFilters(draftFilters);
+	}
+
 	function resetFilters() {
-		setSearch("");
-		setStatus("ALL");
-		setCategory("ALL");
-		setOrderBy("createdAt");
-		setOrder("desc");
+		setDraftFilters(defaultListingsFilters);
+		setFilters(defaultListingsFilters);
 		setPage(1);
 	}
 
@@ -197,13 +237,13 @@ function PartnerListingsWorkspace({
 		<PortalShell
 			variant="partner"
 			user={user}
-			eyebrow="Listing operations"
-			title={getListingsTitle(profile)}
+			eyebrow="Listings"
+			title="Partner listings"
 			description="Search, filter, review, and prepare listings before they reach customers."
 			homeHref="/"
 			homeLabel="View marketplace"
 			navigation={partnerPortalNavigation}
-			metrics={metrics}
+			hideHero
 		>
 			<section className={styles.listingsPanel}>
 				<div className={styles.panelHeader}>
@@ -224,109 +264,14 @@ function PartnerListingsWorkspace({
 					</Link>
 				</div>
 
-				<div className={styles.filters} aria-label="Listing filters">
-					<Input
-						type="search"
-						value={search}
-						onChange={(event) => {
-							setSearch(event.target.value);
-							setPage(1);
-						}}
-						placeholder="Search by title, city, or description"
-						icon={<Search aria-hidden="true" />}
-					/>
-
-					<Select
-						value={status}
-						onValueChange={(value) => {
-							setStatus(value as ProductStatus | "ALL");
-							setPage(1);
-						}}
-					>
-						<SelectTrigger
-							className={styles.selectTrigger}
-							aria-label="Filter by status"
-						>
-							<SelectValue>
-								<ListFilter aria-hidden="true" />
-								{statusOptions.find((option) => option.value === status)?.label}
-							</SelectValue>
-						</SelectTrigger>
-						<SelectContent align="start" alignItemWithTrigger={false}>
-							{statusOptions.map((option) => (
-								<SelectItem key={option.value} value={option.value}>
-									{option.label}
-								</SelectItem>
-							))}
-						</SelectContent>
-					</Select>
-
-					<Select
-						value={category}
-						onValueChange={(value) => {
-							setCategory(value as ProductCategory | "ALL");
-							setPage(1);
-						}}
-					>
-						<SelectTrigger
-							className={styles.selectTrigger}
-							aria-label="Filter by category"
-						>
-							<SelectValue>
-								<Filter aria-hidden="true" />
-								{
-									categoryOptions.find((option) => option.value === category)
-										?.label
-								}
-							</SelectValue>
-						</SelectTrigger>
-						<SelectContent align="start" alignItemWithTrigger={false}>
-							{categoryOptions.map((option) => (
-								<SelectItem key={option.value} value={option.value}>
-									{option.label}
-								</SelectItem>
-							))}
-						</SelectContent>
-					</Select>
-
-					<Select
-						value={orderBy}
-						onValueChange={(value) => {
-							setOrderBy(value as ProductOrderBy);
-							setPage(1);
-						}}
-					>
-						<SelectTrigger
-							className={styles.selectTrigger}
-							aria-label="Sort listings by"
-						>
-							<SelectValue>
-								<SlidersHorizontal aria-hidden="true" />
-								{orderOptions.find((option) => option.value === orderBy)?.label}
-							</SelectValue>
-						</SelectTrigger>
-						<SelectContent align="start" alignItemWithTrigger={false}>
-							{orderOptions.map((option) => (
-								<SelectItem key={option.value} value={option.value}>
-									{option.label}
-								</SelectItem>
-							))}
-						</SelectContent>
-					</Select>
-
-					<Button
-						type="button"
-						variant="outline"
-						className={styles.sortButton}
-						onClick={() => {
-							setOrder((current) => (current === "asc" ? "desc" : "asc"));
-							setPage(1);
-						}}
-					>
-						<ChevronsUpDown aria-hidden="true" />
-						{order === "asc" ? "Ascending" : "Descending"}
-					</Button>
-				</div>
+				<ListingsFilters
+					filters={draftFilters}
+					activeFilterCount={advancedFilterCount}
+					isFetching={listingsQuery.isFetching}
+					onChange={updateDraftFilter}
+					onApply={applyFilters}
+					onReset={resetFilters}
+				/>
 
 				{listingsQuery.isPending ? (
 					<ListingsSkeleton />
@@ -354,6 +299,229 @@ function PartnerListingsWorkspace({
 				)}
 			</section>
 		</PortalShell>
+	);
+}
+
+function ListingsFilters({
+	filters,
+	activeFilterCount,
+	isFetching,
+	onChange,
+	onApply,
+	onReset,
+}: {
+	filters: ListingsFilterState;
+	activeFilterCount: number;
+	isFetching: boolean;
+	onChange: <Key extends keyof ListingsFilterState>(
+		key: Key,
+		value: ListingsFilterState[Key],
+	) => void;
+	onApply: () => void;
+	onReset: () => void;
+}) {
+	const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+	function applyDialogFilters() {
+		onApply();
+		setIsDialogOpen(false);
+	}
+
+	function resetAllFilters() {
+		onReset();
+		setIsDialogOpen(false);
+	}
+
+	return (
+		<>
+			<form
+				className={styles.filters}
+				aria-label="Listing filters"
+				onSubmit={(event) => {
+					event.preventDefault();
+					setIsDialogOpen(true);
+				}}
+			>
+				<div className={styles.searchField}>
+					<Label htmlFor="partner-listing-search">
+						<Search aria-hidden="true" />
+						Search
+					</Label>
+					<Input
+						id="partner-listing-search"
+						type="search"
+						value={filters.search}
+						onChange={(event) => onChange("search", event.target.value)}
+						placeholder="Search by title, city, or description"
+						icon={<Search aria-hidden="true" />}
+					/>
+				</div>
+
+				<div className={styles.filterActions}>
+					<Button type="button" onClick={() => setIsDialogOpen(true)}>
+						<Filter aria-hidden="true" />
+						Filter
+						{activeFilterCount ? (
+							<span className={styles.filterCount}>{activeFilterCount}</span>
+						) : null}
+					</Button>
+					<Button type="button" variant="outline" onClick={resetAllFilters}>
+						<RefreshCcw aria-hidden="true" />
+						Reset
+					</Button>
+				</div>
+			</form>
+
+			<ListingsFiltersDialog
+				open={isDialogOpen}
+				filters={filters}
+				isFetching={isFetching}
+				onChange={onChange}
+				onApply={applyDialogFilters}
+				onReset={resetAllFilters}
+				onOpenChange={setIsDialogOpen}
+			/>
+		</>
+	);
+}
+
+function ListingsFiltersDialog({
+	open,
+	filters,
+	isFetching,
+	onChange,
+	onApply,
+	onReset,
+	onOpenChange,
+}: {
+	open: boolean;
+	filters: ListingsFilterState;
+	isFetching: boolean;
+	onChange: <Key extends keyof ListingsFilterState>(
+		key: Key,
+		value: ListingsFilterState[Key],
+	) => void;
+	onApply: () => void;
+	onReset: () => void;
+	onOpenChange: (open: boolean) => void;
+}) {
+	return (
+		<Dialog open={open} onOpenChange={onOpenChange}>
+			<DialogContent className={styles.filterDialog}>
+				<DialogHeader className={styles.filterDialogHeader}>
+					<span>
+						<ListFilter aria-hidden="true" />
+					</span>
+					<div>
+						<DialogTitle>Filter listings</DialogTitle>
+						<DialogDescription>
+							Narrow inventory by review status, listing category, and sort
+							order without interrupting search.
+						</DialogDescription>
+					</div>
+				</DialogHeader>
+
+				<div className={styles.filterDialogGrid}>
+					<FilterSelect
+						label="Status"
+						icon={<ListFilter aria-hidden="true" />}
+						value={filters.status}
+						options={statusOptions}
+						onChange={(value) =>
+							onChange("status", value as ListingsFilterState["status"])
+						}
+					/>
+					<FilterSelect
+						label="Category"
+						icon={<Filter aria-hidden="true" />}
+						value={filters.category}
+						options={categoryOptions}
+						onChange={(value) =>
+							onChange("category", value as ListingsFilterState["category"])
+						}
+					/>
+					<FilterSelect
+						label="Order by"
+						icon={<SlidersHorizontal aria-hidden="true" />}
+						value={filters.orderBy}
+						options={orderOptions}
+						onChange={(value) =>
+							onChange("orderBy", value as ListingsFilterState["orderBy"])
+						}
+					/>
+					<FilterSelect
+						label="Direction"
+						icon={<ChevronsUpDown aria-hidden="true" />}
+						value={filters.order}
+						options={[
+							{ label: "Descending", value: "desc" },
+							{ label: "Ascending", value: "asc" },
+						]}
+						onChange={(value) =>
+							onChange("order", value as ListingsFilterState["order"])
+						}
+					/>
+				</div>
+
+				<DialogFooter className={styles.filterDialogFooter}>
+					<Button type="button" variant="outline" onClick={onReset}>
+						<RefreshCcw aria-hidden="true" />
+						Reset
+					</Button>
+					<Button type="button" disabled={isFetching} onClick={onApply}>
+						<Filter aria-hidden="true" />
+						Apply filters
+					</Button>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
+	);
+}
+
+function FilterSelect<Value extends string>({
+	label,
+	icon,
+	value,
+	options,
+	onChange,
+}: {
+	label: string;
+	icon: ReactNode;
+	value: Value;
+	options: Array<{ label: string; value: Value }>;
+	onChange: (value: Value) => void;
+}) {
+	const selectedOption = options.find((option) => option.value === value);
+
+	return (
+		<div className={styles.field}>
+			<Label>
+				{icon}
+				{label}
+			</Label>
+			<Select
+				value={value}
+				onValueChange={(nextValue) => onChange(nextValue as Value)}
+			>
+				<SelectTrigger className={styles.selectTrigger} aria-label={label}>
+					<SelectValue>
+						{icon}
+						{selectedOption?.label ?? "All"}
+					</SelectValue>
+				</SelectTrigger>
+				<SelectContent
+					className={styles.selectMenu}
+					align="start"
+					alignItemWithTrigger={false}
+				>
+					{options.map((option) => (
+						<SelectItem key={option.value} value={option.value}>
+							{option.label}
+						</SelectItem>
+					))}
+				</SelectContent>
+			</Select>
+		</div>
 	);
 }
 
@@ -547,40 +715,6 @@ function StatusPill({ status }: { status: ProductStatus }) {
 			{status.toLowerCase().replace("_", " ")}
 		</span>
 	);
-}
-
-function buildListingMetrics(items: Product[], total: number): PortalMetric[] {
-	const approved = items.filter((item) => item.status === "APPROVED").length;
-	const inReview = items.filter(
-		(item) => item.status === "PENDING_REVIEW",
-	).length;
-
-	return [
-		{
-			label: "Total listings",
-			value: String(total),
-			description: "Inventory connected to your approved partner account.",
-			icon: Store,
-		},
-		{
-			label: "Approved",
-			value: String(approved),
-			description: "Listings currently eligible for customers.",
-			icon: BadgeCheck,
-		},
-		{
-			label: "In review",
-			value: String(inReview),
-			description: "Listings waiting for admin decision.",
-			icon: ShieldCheck,
-		},
-	];
-}
-
-function getListingsTitle(profile: PartnerProfile) {
-	const name = profile.businessName ?? profile.legalName ?? "Partner";
-
-	return `${name} listings`;
 }
 
 function formatMoney(value: string, currency: string) {
