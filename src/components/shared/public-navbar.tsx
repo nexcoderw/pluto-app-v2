@@ -3,11 +3,13 @@
 import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { LogIn, Menu, Search, UserPlus, X } from "lucide-react";
+import { LogIn, Menu, Power, Search, UserPlus, X } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { getUserPortalPath } from "@/lib/user-portal";
-import type { UserAuthProfile } from "@/services/api/auth";
+import { logoutUser, type UserAuthProfile } from "@/services/api/auth";
 import {
 	getCachedPartnerProfileStatus,
 	getCachedUserProfile,
@@ -25,9 +27,11 @@ const navigationLinks = [
 ] as const;
 
 export function PublicNavbar() {
+	const router = useRouter();
 	const [isOpen, setIsOpen] = useState(false);
 	const [search, setSearch] = useState("");
 	const [currentUser, setCurrentUser] = useState<UserAuthProfile | null>(null);
+	const [isLoggingOut, setIsLoggingOut] = useState(false);
 	const userPortalPath = currentUser
 		? getUserPortalPath(currentUser, getCachedPartnerProfileStatus())
 		: "/login";
@@ -57,6 +61,28 @@ export function PublicNavbar() {
 
 	function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
+	}
+
+	// Logout flow: clear the refresh cookie, remove cached session state, and return to the public homepage.
+	async function handleLogout() {
+		setIsLoggingOut(true);
+		closeMenu();
+
+		try {
+			await logoutUser();
+			toast.success("Signed out successfully.", {
+				description: "Your Pluto Booking session has ended.",
+			});
+		} catch {
+			toast.success("Signed out locally.", {
+				description:
+					"Your browser session was cleared. Sign in again before opening protected pages.",
+			});
+		} finally {
+			setCurrentUser(null);
+			setIsLoggingOut(false);
+			router.replace("/");
+		}
 	}
 
 	return (
@@ -108,13 +134,18 @@ export function PublicNavbar() {
 							{link.label}
 						</Link>
 					))}
-					<div className={styles.mobileAuth}>
+					<div
+						className={styles.mobileAuth}
+						data-authenticated={Boolean(currentUser)}
+					>
 						<AuthActions
 							currentUser={currentUser}
 							userPortalPath={userPortalPath}
 							avatarStyle={avatarStyle}
 							userInitials={userInitials}
+							isLoggingOut={isLoggingOut}
 							onNavigate={closeMenu}
+							onLogout={handleLogout}
 						/>
 					</div>
 				</div>
@@ -125,7 +156,9 @@ export function PublicNavbar() {
 						userPortalPath={userPortalPath}
 						avatarStyle={avatarStyle}
 						userInitials={userInitials}
+						isLoggingOut={isLoggingOut}
 						onNavigate={closeMenu}
+						onLogout={handleLogout}
 					/>
 				</div>
 
@@ -150,38 +183,53 @@ function AuthActions({
 	userPortalPath,
 	avatarStyle,
 	userInitials,
+	isLoggingOut,
 	onNavigate,
+	onLogout,
 }: {
 	currentUser: UserAuthProfile | null;
 	userPortalPath: string;
 	avatarStyle?: CSSProperties;
 	userInitials: string;
+	isLoggingOut: boolean;
 	onNavigate: () => void;
+	onLogout: () => void;
 }) {
 	if (currentUser) {
 		return (
-			<Link
-				href={userPortalPath}
-				className={styles.profileButton}
-				onClick={onNavigate}
-			>
-				<span
-					className={styles.avatar}
-					data-has-image={Boolean(currentUser.imageUrl)}
-					style={avatarStyle}
-					aria-hidden="true"
+			<>
+				<Link
+					href={userPortalPath}
+					className={styles.profileButton}
+					onClick={onNavigate}
 				>
-					{currentUser.imageUrl ? null : userInitials}
-				</span>
-				<span className={styles.profileCopy}>
-					<strong>{currentUser.fullName}</strong>
-					<small>
-						{currentUser.role === "PARTNER"
-							? "Partner portal"
-							: "Customer portal"}
-					</small>
-				</span>
-			</Link>
+					<span
+						className={styles.avatar}
+						data-has-image={Boolean(currentUser.imageUrl)}
+						style={avatarStyle}
+						aria-hidden="true"
+					>
+						{currentUser.imageUrl ? null : userInitials}
+					</span>
+					<span className={styles.profileCopy}>
+						<strong>{currentUser.fullName}</strong>
+						<small>
+							{currentUser.role === "PARTNER"
+								? "Partner portal"
+								: "Customer portal"}
+						</small>
+					</span>
+				</Link>
+				<button
+					type="button"
+					className={styles.powerButton}
+					aria-label="Sign out and return to homepage"
+					disabled={isLoggingOut}
+					onClick={onLogout}
+				>
+					<Power aria-hidden="true" />
+				</button>
+			</>
 		);
 	}
 
