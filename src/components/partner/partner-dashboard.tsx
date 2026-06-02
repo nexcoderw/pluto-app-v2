@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import type { ReactNode } from 'react';
-import { useEffect, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import type { ReactNode } from "react";
+import { useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import {
 	BadgeCheck,
 	Building2,
@@ -17,37 +17,37 @@ import {
 	UploadCloud,
 	UserRoundCheck,
 	type LucideIcon,
-} from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
-import { Button } from '@/components/ui/button';
+} from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
 import {
 	PortalShell,
 	type PortalAction,
 	type PortalMetric,
-} from '@/components/portal/portal-shell';
-import { partnerPortalNavigation } from '@/constants/partner-portal-navigation';
+} from "@/components/portal/portal-shell";
+import { partnerPortalNavigation } from "@/constants/partner-portal-navigation";
 import {
 	PartnerAccessBoundary,
 	PartnerWorkspaceLoading,
-} from './partner-access-boundary';
+} from "./partner-access-boundary";
 import {
 	getPartnerProfile,
 	type PartnerProfile,
-} from '@/services/api/partner-profile';
-import type { UserAuthProfile } from '@/services/api/auth';
-import styles from './partner-dashboard.module.css';
+} from "@/services/api/partner-profile";
+import type { UserAuthProfile } from "@/services/api/auth";
+import styles from "./partner-dashboard.module.css";
 
 const partnerDashboardActions: PortalAction[] = [
 	{
-		href: '/partner/dashboard',
-		label: 'Create listing',
-		description: 'Prepare a reviewed listing for customers.',
+		href: "/partner/dashboard",
+		label: "Create listing",
+		description: "Prepare a reviewed listing for customers.",
 		icon: Building2,
 	},
 	{
-		href: '/partner/dashboard',
-		label: 'Manage availability',
-		description: 'Keep customer-facing inventory accurate.',
+		href: "/partner/dashboard",
+		label: "Manage availability",
+		description: "Keep customer-facing inventory accurate.",
 		icon: CalendarClock,
 	},
 ];
@@ -63,19 +63,19 @@ export function PartnerDashboard() {
 function PartnerDashboardContent({ user }: { user: UserAuthProfile }) {
 	const router = useRouter();
 	const profileQuery = useQuery({
-		queryKey: ['partner-profile'],
+		queryKey: ["partner-profile"],
 		queryFn: getPartnerProfile,
 	});
 	const profile = profileQuery.data?.profile;
 	const metrics = useMemo(() => buildDashboardMetrics(profile), [profile]);
 
 	useEffect(() => {
-		if (profile && profile.status !== 'APPROVED') {
-			router.replace('/partner-onboarding');
+		if (profile && profile.status !== "APPROVED") {
+			router.replace("/partner-onboarding");
 		}
 	}, [profile, router]);
 
-	if (profileQuery.isPending || (profile && profile.status !== 'APPROVED')) {
+	if (profileQuery.isPending || (profile && profile.status !== "APPROVED")) {
 		return (
 			<PartnerWorkspaceLoading
 				title="Checking partner approval"
@@ -90,7 +90,11 @@ function PartnerDashboardContent({ user }: { user: UserAuthProfile }) {
 				title="Partner status unavailable"
 				description="We could not confirm your approval status. Refresh before opening dashboard tools."
 				action={
-					<Button type="button" onClick={() => profileQuery.refetch()} className="rounded-full">
+					<Button
+						type="button"
+						onClick={() => profileQuery.refetch()}
+						className="rounded-full"
+					>
 						<RefreshCcw aria-hidden="true" />
 						Retry
 					</Button>
@@ -107,7 +111,7 @@ function PartnerDashboardContent({ user }: { user: UserAuthProfile }) {
 			title={getDashboardTitle(profile)}
 			description="Your partner profile is approved. Manage listings, availability, documents, and review activity from this secure workspace."
 			homeHref="/"
-			homeLabel="View marketplace"
+			homeLabel="View listings"
 			navigation={partnerPortalNavigation}
 			metrics={metrics}
 			actions={partnerDashboardActions}
@@ -118,7 +122,7 @@ function PartnerDashboardContent({ user }: { user: UserAuthProfile }) {
 }
 
 function PartnerDashboardWorkspace({ profile }: { profile: PartnerProfile }) {
-	const isCompany = profile.partnerType === 'COMPANY';
+	const isCompany = profile.partnerType === "COMPANY";
 
 	return (
 		<div className={styles.dashboardGrid}>
@@ -130,8 +134,8 @@ function PartnerDashboardWorkspace({ profile }: { profile: PartnerProfile }) {
 					</span>
 					<h2>
 						{isCompany
-							? 'Business command center'
-							: 'Individual command center'}
+							? "Business command center"
+							: "Individual command center"}
 					</h2>
 					<p>
 						Start with listing quality, availability, and document readiness.
@@ -171,9 +175,7 @@ function PartnerDashboardWorkspace({ profile }: { profile: PartnerProfile }) {
 							Account readiness
 						</span>
 						<h2>Approved profile</h2>
-						<p>
-							Your profile can now support operational marketplace activity.
-						</p>
+						<p>Your profile can now support operational listings activity.</p>
 					</div>
 					<ul className={styles.activityList}>
 						<li>
@@ -187,19 +189,19 @@ function PartnerDashboardWorkspace({ profile }: { profile: PartnerProfile }) {
 							<BadgeCheck aria-hidden="true" />
 							<span>
 								<strong>
-									{isCompany ? 'Business profile' : 'Individual profile'}
+									{isCompany ? "Business profile" : "Individual profile"}
 								</strong>
 								<small>
 									{profile.businessName ??
 										profile.legalName ??
-										'Profile approved'}
+										"Profile approved"}
 								</small>
 							</span>
 						</li>
 						<li>
 							<Home aria-hidden="true" />
 							<span>
-								<strong>Marketplace access</strong>
+								<strong>Listings access</strong>
 								<small>Listing tools are now available.</small>
 							</span>
 						</li>
@@ -269,40 +271,40 @@ export function PartnerStatusGate({
 function buildDashboardMetrics(profile?: PartnerProfile): PortalMetric[] {
 	return [
 		{
-			label: 'Profile status',
-			value: profile?.status ?? 'Checking',
-			description: 'Only approved partner profiles can open operations.',
+			label: "Profile status",
+			value: profile?.status ?? "Checking",
+			description: "Only approved partner profiles can open operations.",
 			icon: BadgeCheck,
 		},
 		{
-			label: 'Partner type',
-			value: profile?.partnerType === 'COMPANY' ? 'Business' : 'Individual',
-			description: 'Dashboard tools adapt to your approved profile type.',
-			icon: profile?.partnerType === 'COMPANY' ? Building2 : UserRoundCheck,
+			label: "Partner type",
+			value: profile?.partnerType === "COMPANY" ? "Business" : "Individual",
+			description: "Dashboard tools adapt to your approved profile type.",
+			icon: profile?.partnerType === "COMPANY" ? Building2 : UserRoundCheck,
 		},
 		{
-			label: 'Listings',
-			value: 'Ready',
-			description: 'Create and track listings through admin review.',
+			label: "Listings",
+			value: "Ready",
+			description: "Create and track listings through admin review.",
 			icon: PackageCheck,
 		},
 	];
 }
 
 function getDashboardTitle(profile: PartnerProfile) {
-	return profile.partnerType === 'COMPANY'
-		? 'Business partner dashboard'
-		: 'Individual partner dashboard';
+	return profile.partnerType === "COMPANY"
+		? "Business partner dashboard"
+		: "Individual partner dashboard";
 }
 
 function formatDate(value?: string | null) {
 	if (!value) {
-		return 'Approved by the admin team';
+		return "Approved by the admin team";
 	}
 
-	return new Intl.DateTimeFormat('en', {
-		month: 'short',
-		day: 'numeric',
-		year: 'numeric',
+	return new Intl.DateTimeFormat("en", {
+		month: "short",
+		day: "numeric",
+		year: "numeric",
 	}).format(new Date(value));
 }
