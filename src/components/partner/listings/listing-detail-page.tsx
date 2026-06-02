@@ -246,7 +246,7 @@ function ListingDetail({
 								<Info aria-hidden="true" />
 								Customer description
 							</span>
-							<h2>Marketplace copy</h2>
+							<h2>Listing copy</h2>
 							<p>
 								{product.description ?? "No full description provided yet."}
 							</p>
@@ -657,7 +657,7 @@ function buildStatusTimeline(product: Product) {
 			icon: isRejected ? XCircle : ShieldCheck,
 		},
 		{
-			label: "Marketplace visibility",
+			label: "Listing visibility",
 			description: isApproved
 				? `Published ${publishedAt}`
 				: "Hidden until approved",
