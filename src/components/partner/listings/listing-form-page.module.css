@@ -1,14 +1,45 @@
 .formPageHeader {
-	display: flex;
-	align-items: center;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: start;
 	justify-content: space-between;
-	gap: 0.85rem;
-	padding: 0.9rem 1rem;
+	gap: 1rem;
+	padding: clamp(1rem, 2.4vw, 1.25rem);
 	border: 1px solid rgba(255, 255, 255, 0.72);
-	border-radius: 1.2rem;
+	border-radius: 1.3rem;
 	background: rgba(255, 255, 255, 0.62);
 	box-shadow: 0 1rem 2.4rem rgba(16, 22, 33, 0.06);
 	backdrop-filter: blur(18px);
+}
+
+.headerCopy {
+	min-width: 0;
+	display: grid;
+	gap: 0.35rem;
+}
+
+.headerCopy span {
+	display: inline-flex;
+	width: fit-content;
+	align-items: center;
+	padding: 0.34rem 0.68rem;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	border-radius: 999px;
+	background: rgba(2, 0, 108, 0.06);
+	color: #02006c;
+	font-size: 0.7rem;
+	font-weight: 860;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.headerCopy h1 {
+	margin: 0;
+	color: #17171f;
+	font-size: clamp(1.45rem, 3vw, 2.2rem);
+	font-weight: 880;
+	letter-spacing: 0;
+	line-height: 1.05;
 }
 
 .formPageHeader a {
@@ -16,6 +47,7 @@
 	min-height: var(--pluto-button-height);
 	display: inline-flex;
 	align-items: center;
+	justify-content: center;
 	gap: 0.5rem;
 	padding: 0 1.15rem;
 	border: 1px solid rgba(2, 0, 108, 0.14);
@@ -33,17 +65,20 @@
 	height: 1rem;
 }
 
-.formPageHeader p {
+.headerCopy p {
+	max-width: 46rem;
 	margin: 0;
 	color: rgba(23, 23, 31, 0.62);
-	font-size: 0.84rem;
-	font-weight: 680;
-	line-height: 1.45;
+	font-size: 0.88rem;
+	font-weight: 700;
+	line-height: 1.5;
 }
 
 @media (max-width: 720px) {
 	.formPageHeader {
 		display: grid;
+		grid-template-columns: 1fr;
+		align-items: stretch;
 	}
 
 	.formPageHeader a {
