@@ -125,7 +125,8 @@
 
 .loginButton,
 .registerButton,
-.profileButton {
+.profileButton,
+.powerButton {
 	height: 2.65rem;
 	min-height: 2.65rem;
 	display: inline-flex;
@@ -144,12 +145,14 @@
 		background 160ms ease,
 		border-color 160ms ease,
 		color 160ms ease,
+		box-shadow 160ms ease,
 		transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .loginButton:hover,
 .registerButton:hover,
-.profileButton:hover {
+.profileButton:hover,
+.powerButton:hover {
 	transform: translateY(-1px);
 }
 
@@ -171,7 +174,8 @@
 }
 
 .loginButton svg,
-.registerButton svg {
+.registerButton svg,
+.powerButton svg {
 	width: 0.95rem;
 	height: 0.95rem;
 }
@@ -231,6 +235,26 @@
 	color: rgba(17, 24, 39, 0.58);
 	font-size: 0.64rem;
 	font-weight: 740;
+}
+
+.powerButton {
+	width: 2.65rem;
+	padding: 0;
+	border: 1px solid rgba(220, 38, 38, 0.18);
+	background: #dc2626;
+	color: #fff;
+	box-shadow: 0 0.75rem 1.4rem rgba(220, 38, 38, 0.18);
+}
+
+.powerButton:hover {
+	background: #b91c1c;
+	box-shadow: 0 0.9rem 1.65rem rgba(220, 38, 38, 0.24);
+}
+
+.powerButton:disabled {
+	cursor: not-allowed;
+	opacity: 0.68;
+	transform: none;
 }
 
 .menuButton {
@@ -330,13 +354,18 @@
 		gap: 0.45rem;
 	}
 
-	.mobileAuth .profileButton {
-		grid-column: 1 / -1;
+	.mobileAuth[data-authenticated="true"] {
+		grid-template-columns: minmax(0, 1fr) 2.9rem;
+	}
+
+	.mobileAuth[data-authenticated="true"] .profileButton {
+		grid-column: auto;
 		max-width: none;
 	}
 
 	.mobileAuth .loginButton,
-	.mobileAuth .registerButton {
+	.mobileAuth .registerButton,
+	.mobileAuth .powerButton {
 		width: 100%;
 	}
 }
