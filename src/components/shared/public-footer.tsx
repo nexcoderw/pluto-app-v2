@@ -1,19 +1,20 @@
-import Image from "next/image";
 import Link from "next/link";
 import {
 	ArrowRight,
 	Building2,
 	CarFront,
+	Globe,
 	Hotel,
 	House,
 	Mail,
-	MapPin,
-	ShieldCheck,
+	Phone,
+	Send,
+	Share2,
 	type LucideIcon,
 } from "lucide-react";
 import styles from "./public-footer.module.css";
 
-const listingLinks = [
+const navigationLinks = [
 	{ href: "/marketplace?category=CAR", label: "Cars", icon: CarFront },
 	{
 		href: "/marketplace?category=APARTMENT",
@@ -32,58 +33,30 @@ const listingLinks = [
 	},
 ] as const;
 
-const companyLinks = [
-	{ href: "/register", label: "Create account", icon: ArrowRight },
-	{ href: "/login", label: "Sign in", icon: ShieldCheck },
-	{ href: "/partner-register", label: "List with Pluto", icon: Building2 },
-	{
-		href: "mailto:support@plutobooking.com",
-		label: "Contact support",
-		icon: Mail,
-	},
+const socialLinks = [
+	{ href: "https://www.instagram.com", label: "Instagram", icon: Share2 },
+	{ href: "https://www.linkedin.com", label: "LinkedIn", icon: Globe },
 ] as const;
 
 export function PublicFooter() {
 	return (
 		<footer className={styles.footer}>
-			<div className={styles.wordmark} aria-hidden="true">
-				PLUTO
-			</div>
-
-			<div className={styles.inner}>
+			<div className={styles.panel}>
 				<section className={styles.topGrid}>
-					<div className={styles.brandBlock}>
-						<Image
-							src="/logo-b.png"
-							alt="Pluto Booking"
-							width={630}
-							height={185}
-						/>
+					<div className={styles.callout}>
+						<h2>Ready to plan your next booking?</h2>
 						<p>
-							A secure booking marketplace for verified partners, thoughtful
-							stays, reliable cars, and customer accounts built around trust.
+							Explore verified cars, apartments, hotel rooms, and AirBnB homes
+							from trusted Pluto Booking partners.
 						</p>
-						<div className={styles.location}>
-							<MapPin aria-hidden="true" />
-							<span>Kigali, Rwanda</span>
-						</div>
-					</div>
-
-					<div className={styles.newsletter}>
-						<span>Newsletter</span>
-						<h2>Get new verified listings and partner updates.</h2>
-						<p>
-							Monthly product notes, approved listing drops, and platform
-							improvements. No noise.
-						</p>
-						<form>
+						<form className={styles.newsletter}>
 							<label className="sr-only" htmlFor="footer-newsletter-email">
 								Email address
 							</label>
 							<input
 								id="footer-newsletter-email"
 								type="email"
-								placeholder="Email address"
+								placeholder="Join the newsletter"
 							/>
 							<button type="submit">
 								Subscribe
@@ -91,20 +64,62 @@ export function PublicFooter() {
 							</button>
 						</form>
 					</div>
-				</section>
 
-				<section className={styles.linkGrid} aria-label="Footer navigation">
-					<FooterColumn title="Listings" links={listingLinks} />
-					<FooterColumn title="Pluto Booking" links={companyLinks} />
+					<FooterColumn title="Navigation" links={navigationLinks} />
+
+					<div className={styles.contactColumn}>
+						<div>
+							<h2>Contact us</h2>
+							<a href="tel:+250700000000">
+								<Phone aria-hidden="true" />
+								+250 700 000 000
+							</a>
+							<a href="mailto:support@plutobooking.com">
+								<Mail aria-hidden="true" />
+								support@plutobooking.com
+							</a>
+						</div>
+
+						<div>
+							<h2>Follow us</h2>
+							{socialLinks.map((link) => {
+								const Icon = link.icon;
+
+								return (
+									<a
+										key={link.label}
+										href={link.href}
+										target="_blank"
+										rel="noreferrer"
+									>
+										<Icon aria-hidden="true" />
+										{link.label}
+									</a>
+								);
+							})}
+						</div>
+					</div>
 				</section>
 
 				<div className={styles.bottomBar}>
 					<p>
 						© {new Date().getFullYear()} Pluto Booking. All rights reserved.
 					</p>
-					<a href="https://www.nexcode.africa" target="_blank" rel="noreferrer">
-						Developed by NEXCODE Africa
-					</a>
+					<nav aria-label="Footer legal links">
+						<Link href="/terms">Terms of service</Link>
+						<Link href="/privacy">Privacy policy</Link>
+						<a
+							href="https://www.nexcode.africa"
+							target="_blank"
+							rel="noreferrer"
+						>
+							Developed by NEXCODE Africa
+						</a>
+					</nav>
+				</div>
+
+				<div className={styles.wordmark} aria-hidden="true">
+					PLUTO
 				</div>
 			</div>
 		</footer>
@@ -135,6 +150,10 @@ function FooterColumn({
 					</Link>
 				);
 			})}
+			<Link href="/partner-register" className={styles.partnerLink}>
+				<Send aria-hidden="true" />
+				List with Pluto
+			</Link>
 		</div>
 	);
 }
