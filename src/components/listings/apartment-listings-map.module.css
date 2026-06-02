@@ -1,0 +1,187 @@
+.panel {
+	position: sticky;
+	top: 5.2rem;
+	display: grid;
+	gap: 0.9rem;
+	min-height: 39rem;
+	padding: 0.95rem;
+	border: 1px solid rgba(2, 0, 108, 0.16);
+	border-radius: 1.45rem;
+	background: #ffffff;
+	box-shadow: 0 1.2rem 2.6rem rgba(16, 22, 33, 0.08);
+}
+
+.header {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	gap: 0.72rem;
+	align-items: center;
+}
+
+.header > span {
+	width: 2.65rem;
+	height: 2.65rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 999px;
+	background: rgba(2, 0, 108, 0.06);
+	color: #02006c;
+}
+
+.header p,
+.footer span {
+	margin: 0;
+	color: #02006c;
+	font-size: 0.68rem;
+	font-weight: 500;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.header h2 {
+	margin: 0.08rem 0 0;
+	color: #17171f;
+	font-size: 1.05rem;
+	font-weight: 880;
+	letter-spacing: 0;
+}
+
+.mapCanvas {
+	position: relative;
+	min-height: 29rem;
+	overflow: hidden;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	border-radius: 1.15rem;
+	background: #f8f9fc;
+}
+
+.mapViewport {
+	height: 29rem;
+	background: #f8f9fc;
+}
+
+.district {
+	position: absolute;
+	z-index: 2;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.28rem;
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.92);
+	color: #17171f;
+	font-size: 0.68rem;
+	font-weight: 500;
+	box-shadow: 0 0.65rem 1.4rem rgba(16, 22, 33, 0.08);
+}
+
+.district[data-position="north"] {
+	left: 1rem;
+	top: 1rem;
+}
+
+.district[data-position="south"] {
+	right: 1rem;
+	bottom: 1rem;
+}
+
+.district svg,
+.footer svg {
+	width: 0.9rem;
+	height: 0.9rem;
+	color: #02006c;
+}
+
+.mapMarker {
+	position: relative;
+	width: 2.25rem;
+	height: 2.25rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border: 0.24rem solid #ffffff;
+	border-radius: 999px;
+	background: #02006c;
+	color: #ffffff;
+	box-shadow: 0 0.7rem 1.55rem rgba(2, 0, 108, 0.24);
+}
+
+.mapMarker::before {
+	position: absolute;
+	inset: -0.34rem;
+	z-index: -1;
+	border: 1px solid rgba(2, 0, 108, 0.18);
+	border-radius: inherit;
+	content: "";
+}
+
+.mapMarker svg {
+	width: 0.9rem;
+	height: 0.9rem;
+}
+
+.markerLabel {
+	position: absolute;
+	left: 50%;
+	bottom: calc(100% + 0.35rem);
+	padding: 0.3rem 0.48rem;
+	border: 1px solid rgba(2, 0, 108, 0.12);
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.94);
+	color: rgba(23, 23, 31, 0.72);
+	font-size: 0.68rem;
+	font-weight: 500;
+	white-space: nowrap;
+	box-shadow: 0 0.55rem 1.2rem rgba(16, 22, 33, 0.08);
+	transform: translateX(-50%);
+}
+
+.footer {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.65rem;
+}
+
+.footer div {
+	display: grid;
+	gap: 0.18rem;
+	padding: 0.72rem;
+	border: 1px solid rgba(2, 0, 108, 0.08);
+	border-radius: 1rem;
+	background: rgba(2, 0, 108, 0.035);
+}
+
+.footer strong {
+	color: #17171f;
+	font-size: 0.78rem;
+	font-weight: 500;
+}
+
+@media (max-width: 1080px) {
+	.panel {
+		position: static;
+		min-height: auto;
+	}
+
+	.mapCanvas {
+		min-height: 24rem;
+	}
+
+	.mapViewport {
+		height: 24rem;
+	}
+}
+
+@media (max-width: 640px) {
+	.footer {
+		grid-template-columns: 1fr;
+	}
+
+	.mapCanvas {
+		min-height: 20rem;
+	}
+
+	.mapViewport {
+		height: 20rem;
+	}
+}
