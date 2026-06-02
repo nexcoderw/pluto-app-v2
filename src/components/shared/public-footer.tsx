@@ -57,6 +57,10 @@ export function PublicFooter() {
 								id="footer-newsletter-email"
 								type="email"
 								placeholder="Join the newsletter"
+								className={styles.newsletterInput}
+								required
+								autoComplete="email"
+								aria-label="Email address for newsletter subscription"
 							/>
 							<button type="submit">
 								Subscribe
