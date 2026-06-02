@@ -17,6 +17,13 @@ import {
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
 	Select,
@@ -63,6 +70,7 @@ type CategoryListingsPageProps = {
 	listListings: (params: ListingListRequest) => Promise<ListingListResponse>;
 	renderCard?: (listing: PublicListing, detailHref: string) => ReactNode;
 	renderSidebar?: (props: ListingSidebarRenderProps) => ReactNode;
+	filterPresentation?: "sidebar" | "dialog";
 };
 
 const sortOptions: Array<{ label: string; value: ListingOrderBy }> = [
@@ -80,6 +88,7 @@ export function CategoryListingsPage({
 	listListings,
 	renderCard,
 	renderSidebar,
+	filterPresentation = "sidebar",
 }: CategoryListingsPageProps) {
 	const [search, setSearch] = useState("");
 	const [page, setPage] = useState(1);
@@ -87,6 +96,8 @@ export function CategoryListingsPage({
 	const [sortOrder, setSortOrder] = useState<ListingSortOrder>("desc");
 	const [draftFilters, setDraftFilters] = useState<ListingListRequest>({});
 	const [appliedFilters, setAppliedFilters] = useState<ListingListRequest>({});
+	const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
+	const usesFilterDialog = filterPresentation === "dialog";
 	const request = useMemo(
 		() =>
 			cleanRequest({
@@ -109,6 +120,11 @@ export function CategoryListingsPage({
 	function applyFilters() {
 		setAppliedFilters(cleanRequest(draftFilters));
 		setPage(1);
+	}
+
+	function applyDialogFilters() {
+		applyFilters();
+		setIsFilterDialogOpen(false);
 	}
 
 	function resetFilters() {
@@ -143,8 +159,11 @@ export function CategoryListingsPage({
 				<h1>{title}</h1>
 			</section>
 
-			<section className={styles.workspace}>
-				{renderSidebar ? (
+			<section
+				className={styles.workspace}
+				data-filter-presentation={filterPresentation}
+			>
+				{usesFilterDialog ? null : renderSidebar ? (
 					renderSidebar({
 						categoryLabel,
 						draftFilters,
@@ -248,17 +267,32 @@ export function CategoryListingsPage({
 					className={styles.results}
 					aria-label={`${categoryLabel} results`}
 				>
-					<div className={styles.toolbar}>
+					<div
+						className={styles.toolbar}
+						data-filter-presentation={filterPresentation}
+					>
 						<Input
 							type="search"
 							value={search}
 							icon={<Search aria-hidden="true" />}
+							shellClassName={styles.searchInput}
 							placeholder={`Search ${categoryLabel.toLowerCase()}`}
 							onChange={(event) => {
 								setSearch(event.target.value);
 								setPage(1);
 							}}
 						/>
+						{usesFilterDialog ? (
+							<Button
+								type="button"
+								variant="outline"
+								className={styles.filterButton}
+								onClick={() => setIsFilterDialogOpen(true)}
+							>
+								<Filter aria-hidden="true" />
+								Filters
+							</Button>
+						) : null}
 						<Select
 							value={sortBy}
 							onValueChange={(value) => {
@@ -340,6 +374,25 @@ export function CategoryListingsPage({
 					)}
 				</section>
 			</section>
+			{usesFilterDialog && renderSidebar ? (
+				<Dialog open={isFilterDialogOpen} onOpenChange={setIsFilterDialogOpen}>
+					<DialogContent className={styles.filterDialogContent}>
+						<DialogHeader>
+							<DialogTitle>{categoryLabel} filters</DialogTitle>
+							<DialogDescription>
+								Refine by location, price, space, and apartment essentials.
+							</DialogDescription>
+						</DialogHeader>
+						{renderSidebar({
+							categoryLabel,
+							draftFilters,
+							setDraftFilter,
+							applyFilters: applyDialogFilters,
+							resetFilters,
+						})}
+					</DialogContent>
+				</Dialog>
+			) : null}
 		</main>
 	);
 }
