@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, type ComponentType, type ReactNode } from "react";
+import type { ComponentType, ReactNode } from "react";
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -54,7 +54,7 @@ type CategoryListingsPageProps = {
 	detailBaseHref: string;
 	filters: ListingSidebarFilter[];
 	listListings: (params: ListingListRequest) => Promise<ListingListResponse>;
-	renderCard?: (listing: PublicListing) => ReactNode;
+	renderCard?: (listing: PublicListing, detailHref: string) => ReactNode;
 };
 
 const sortOptions: Array<{ label: string; value: ListingOrderBy }> = [
@@ -301,17 +301,19 @@ export function CategoryListingsPage({
 					) : (
 						<>
 							<section className={styles.grid}>
-								{listings.map((listing) =>
-									renderCard ? (
-										<Fragment key={listing.id}>{renderCard(listing)}</Fragment>
+								{listings.map((listing) => {
+									const detailHref = `${detailBaseHref}/${listing.id}`;
+
+									return renderCard ? (
+										renderCard(listing, detailHref)
 									) : (
 										<DefaultListingCard
 											key={listing.id}
 											listing={listing}
-											detailHref={`${detailBaseHref}/${listing.id}`}
+											detailHref={detailHref}
 										/>
-									),
-								)}
+									);
+								})}
 							</section>
 							{meta ? (
 								<CategoryPagination
