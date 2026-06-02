@@ -5,14 +5,10 @@ import Link from "next/link";
 import {
 	ArrowRight,
 	BedDouble,
-	CircleDollarSign,
-	Coffee,
 	DoorOpen,
 	Hotel,
 	MapPin,
 	ShieldCheck,
-	ShowerHead,
-	Snowflake,
 	Users,
 } from "lucide-react";
 import type { PublicListing } from "@/services/api/listings";
@@ -35,7 +31,6 @@ export function HotelRoomListingCard({
 	const details = listing.hotelRoomDetails;
 	const coverImage = getListingCoverImage(listing);
 	const coverUrl = coverImage?.file.publicUrl;
-	const roomLabel = details?.roomType ?? "Hotel room";
 
 	return (
 		<article className={styles.card}>
@@ -62,11 +57,9 @@ export function HotelRoomListingCard({
 			<div className={styles.body}>
 				<div className={styles.heading}>
 					<div>
-						<p className={styles.roomType}>{roomLabel}</p>
 						<h2>{listing.title}</h2>
 					</div>
 					<span className={styles.price}>
-						<CircleDollarSign aria-hidden="true" />
 						<strong>{formatMoney(listing.basePrice, listing.currency)}</strong>
 						<small>/{formatPricingUnit(listing.pricingUnit)}</small>
 					</span>
@@ -95,21 +88,6 @@ export function HotelRoomListingCard({
 						<span>Check-in</span>
 					</li>
 				</ul>
-
-				<div className={styles.amenities}>
-					<span data-active={Boolean(details?.breakfastIncluded)}>
-						<Coffee aria-hidden="true" />
-						Breakfast
-					</span>
-					<span data-active={Boolean(details?.hasAirConditioning)}>
-						<Snowflake aria-hidden="true" />
-						Air conditioning
-					</span>
-					<span data-active={Boolean(details?.hasPrivateBathroom)}>
-						<ShowerHead aria-hidden="true" />
-						Private bath
-					</span>
-				</div>
 
 				<Link href={detailHref} className={styles.detailsLink}>
 					View room
