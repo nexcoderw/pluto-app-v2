@@ -3,8 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
+	ArrowLeft,
 	BadgeCheck,
 	CalendarClock,
 	Building2,
@@ -26,12 +27,9 @@ import {
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import {
-	PortalShell,
-	type PortalMetric,
-} from "@/components/portal/portal-shell";
+import { PortalShell } from "@/components/portal/portal-shell";
 import { partnerPortalNavigation } from "@/constants/partner-portal-navigation";
-import type { Product, ProductStatus } from "@/services/api/products";
+import type { Product } from "@/services/api/products";
 import type { UserAuthProfile } from "@/services/api/auth";
 import { getPartnerProfile } from "@/services/api/partner-profile";
 import { getPartnerProduct } from "@/services/api/partner-products";
@@ -121,29 +119,12 @@ function ListingDetailWorkspace({
 				homeHref="/partner/listings"
 				homeLabel="Back to listings"
 				navigation={partnerPortalNavigation}
-				metrics={buildMetrics(product)}
-				heroActions={
-					<>
-						<Link
-							href={`/partner/listings/${product.id}/edit`}
-							className={styles.editLink}
-						>
-							<Pencil aria-hidden="true" />
-							Edit listing
-						</Link>
-						<Button
-							type="button"
-							variant="destructive"
-							className={styles.deleteTrigger}
-							onClick={() => setIsDeleteDialogOpen(true)}
-						>
-							<Trash2 aria-hidden="true" />
-							Delete listing
-						</Button>
-					</>
-				}
+				hideHero
 			>
-				<ListingDetail product={product} />
+				<ListingDetail
+					product={product}
+					onRequestDelete={() => setIsDeleteDialogOpen(true)}
+				/>
 			</PortalShell>
 
 			<ListingDeleteDialog
@@ -155,7 +136,13 @@ function ListingDetailWorkspace({
 	);
 }
 
-function ListingDetail({ product }: { product: Product }) {
+function ListingDetail({
+	product,
+	onRequestDelete,
+}: {
+	product: Product;
+	onRequestDelete: () => void;
+}) {
 	const [selectedImageId, setSelectedImageId] = useState(
 		() =>
 			(product.images.find((image) => image.isCover) ?? product.images[0])?.id,
@@ -169,6 +156,63 @@ function ListingDetail({ product }: { product: Product }) {
 
 	return (
 		<>
+			<section className={styles.detailHero}>
+				<div className={styles.heroCopy}>
+					<Link href="/partner/listings" className={styles.backLink}>
+						<ArrowLeft aria-hidden="true" />
+						Back to listings
+					</Link>
+					<span className={styles.categoryPill}>
+						{formatLabel(product.category)}
+					</span>
+					<h1>{product.title}</h1>
+					<p>
+						{product.shortDescription ??
+							"Review the complete customer-facing listing before making changes."}
+					</p>
+				</div>
+				<div className={styles.heroActions}>
+					<Link
+						href={`/partner/listings/${product.id}/edit`}
+						className={styles.editLink}
+					>
+						<Pencil aria-hidden="true" />
+						Edit listing
+					</Link>
+					<Button
+						type="button"
+						variant="destructive"
+						className={styles.deleteTrigger}
+						onClick={onRequestDelete}
+					>
+						<Trash2 aria-hidden="true" />
+						Delete
+					</Button>
+				</div>
+				<div className={styles.heroFacts} aria-label="Listing overview">
+					<HeroFact
+						icon={<ShieldCheck aria-hidden="true" />}
+						label="Status"
+						value={formatLabel(product.status ?? "DRAFT")}
+					/>
+					<HeroFact
+						icon={<CircleDollarSign aria-hidden="true" />}
+						label="Price"
+						value={`${formatMoney(product.basePrice, product.currency)}/${product.pricingUnit.toLowerCase()}`}
+					/>
+					<HeroFact
+						icon={<MapPin aria-hidden="true" />}
+						label="Location"
+						value={`${product.city}, ${product.country}`}
+					/>
+					<HeroFact
+						icon={<ImageIcon aria-hidden="true" />}
+						label="Media"
+						value={`${product.images.length} image${product.images.length === 1 ? "" : "s"}`}
+					/>
+				</div>
+			</section>
+
 			<section className={styles.detailGrid}>
 				<div className={styles.primaryColumn}>
 					<div className={styles.mediaPanel}>
@@ -186,7 +230,6 @@ function ListingDetail({ product }: { product: Product }) {
 									<ImageIcon aria-hidden="true" />
 								</span>
 							)}
-							<StatusPill status={product.status ?? "DRAFT"} />
 						</div>
 						<ImageGallery
 							product={product}
@@ -201,15 +244,11 @@ function ListingDetail({ product }: { product: Product }) {
 								<Info aria-hidden="true" />
 								Customer description
 							</span>
-							<h2>{product.title}</h2>
-							<p>{product.description}</p>
+							<h2>Marketplace copy</h2>
+							<p>
+								{product.description ?? "No full description provided yet."}
+							</p>
 						</div>
-						{product.shortDescription ? (
-							<div className={styles.summaryNote}>
-								<strong>Marketplace summary</strong>
-								<p>{product.shortDescription}</p>
-							</div>
-						) : null}
 					</section>
 
 					<CategorySpecifications product={product} />
@@ -225,26 +264,19 @@ function ListingDetail({ product }: { product: Product }) {
 							<h2>Operational details</h2>
 						</div>
 						<div className={styles.factGrid}>
-							<Fact
-								label="Location"
-								value={`${product.city}, ${product.country}`}
-							/>
-							<Fact
-								label="Price"
-								value={`${formatMoney(product.basePrice, product.currency)}/${product.pricingUnit.toLowerCase()}`}
-							/>
+							<Fact label="Product no" value={product.productNo} />
 							<Fact
 								label="Visibility"
-								value={product.visibility ?? "PRIVATE"}
+								value={formatLabel(product.visibility ?? "PRIVATE")}
 							/>
-							<Fact label="Product no" value={product.productNo} />
-							<Fact label="Category" value={formatLabel(product.category)} />
 							<Fact
 								label="Available"
 								value={product.isAvailable ? "Yes" : "No"}
 							/>
-							<Fact label="Created" value={formatDate(product.createdAt)} />
-							<Fact label="Updated" value={formatDate(product.updatedAt)} />
+							<Fact
+								label="Last updated"
+								value={formatDate(product.updatedAt)}
+							/>
 						</div>
 					</section>
 
@@ -301,6 +333,26 @@ function ListingDetail({ product }: { product: Product }) {
 				</aside>
 			</section>
 		</>
+	);
+}
+
+function HeroFact({
+	icon,
+	label,
+	value,
+}: {
+	icon: ReactNode;
+	label: string;
+	value: string;
+}) {
+	return (
+		<div className={styles.heroFact}>
+			<span>{icon}</span>
+			<div>
+				<small>{label}</small>
+				<strong>{value}</strong>
+			</div>
+		</div>
 	);
 }
 
@@ -558,37 +610,6 @@ function Feature({ enabled, label }: { enabled: boolean; label: string }) {
 			{label}
 		</span>
 	);
-}
-
-function StatusPill({ status }: { status: ProductStatus }) {
-	return (
-		<span className={styles.statusPill} data-status={status}>
-			{status.toLowerCase().replace("_", " ")}
-		</span>
-	);
-}
-
-function buildMetrics(product: Product): PortalMetric[] {
-	return [
-		{
-			label: "Review status",
-			value: product.status ?? "DRAFT",
-			description: "Current admin review state.",
-			icon: ShieldCheck,
-		},
-		{
-			label: "Images",
-			value: String(product.images.length),
-			description: "Media attached to the listing.",
-			icon: ImageIcon,
-		},
-		{
-			label: "Price",
-			value: formatMoney(product.basePrice, product.currency),
-			description: `Charged per ${product.pricingUnit.toLowerCase()}.`,
-			icon: CircleDollarSign,
-		},
-	];
 }
 
 function buildStatusTimeline(product: Product) {
