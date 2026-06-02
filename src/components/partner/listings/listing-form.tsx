@@ -408,11 +408,6 @@ export function ListingForm({
 						<ShieldCheck aria-hidden="true" />
 						Review workflow
 					</span>
-					<h2>{isEdit ? "Update listing" : "Create listing"}</h2>
-					<p>
-						Every saved change returns the listing to admin review before it
-						reaches customers.
-					</p>
 				</div>
 
 				<div className={styles.stepList}>
@@ -429,9 +424,9 @@ export function ListingForm({
 							>
 								<span>
 									{index < currentStep ? (
-										<CheckCircle2 aria-hidden="true" />
+										<CheckCircle2 aria-hidden="true" className="h-5" />
 									) : (
-										<Icon aria-hidden="true" />
+										<Icon aria-hidden="true" className="h-5" />
 									)}
 								</span>
 								<strong>{step.title}</strong>
