@@ -1,0 +1,398 @@
+.page {
+	min-height: calc(100vh - 8rem);
+	display: grid;
+	gap: clamp(1.25rem, 3vw, 2rem);
+	background:
+		linear-gradient(
+			180deg,
+			rgba(255, 255, 255, 0.9),
+			rgba(247, 248, 251, 0.97)
+		),
+		#f7f8fb;
+	padding: clamp(2rem, 5vw, 4rem) max(1rem, calc((100vw - 80rem) / 2));
+	color: #17171f;
+}
+
+.hero {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	gap: 1.25rem;
+	align-items: end;
+}
+
+.eyebrow {
+	width: fit-content;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.45rem;
+	min-height: 2.25rem;
+	padding: 0 0.9rem;
+	border: 1px solid rgba(2, 0, 108, 0.12);
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.74);
+	color: #02006c;
+	font-size: 0.74rem;
+	font-weight: 850;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	backdrop-filter: blur(18px);
+}
+
+.hero h1 {
+	max-width: 56rem;
+	margin: 1rem 0 0.65rem;
+	color: #17171f;
+	font-size: clamp(2rem, 5vw, 4.6rem);
+	font-weight: 830;
+	line-height: 0.98;
+	letter-spacing: 0;
+}
+
+.hero p {
+	max-width: 42rem;
+	margin: 0;
+	color: rgba(23, 23, 31, 0.64);
+	font-size: clamp(0.98rem, 1.4vw, 1.12rem);
+	line-height: 1.65;
+}
+
+.heroMetric {
+	min-width: 12rem;
+	display: grid;
+	gap: 0.2rem;
+	padding: 1rem 1.1rem;
+	border: 1px solid rgba(2, 0, 108, 0.12);
+	border-radius: 1.3rem;
+	background: rgba(255, 255, 255, 0.76);
+	box-shadow: 0 1.4rem 3.5rem rgba(16, 22, 33, 0.09);
+	backdrop-filter: blur(20px);
+}
+
+.heroMetric strong {
+	color: #02006c;
+	font-size: 1.85rem;
+	line-height: 1;
+}
+
+.heroMetric span {
+	color: rgba(23, 23, 31, 0.58);
+	font-size: 0.78rem;
+	font-weight: 760;
+}
+
+.workspace {
+	display: grid;
+	grid-template-columns: minmax(16rem, 19rem) minmax(0, 1fr);
+	gap: 1rem;
+	align-items: start;
+}
+
+.sidebar,
+.toolbar,
+.card,
+.skeletonCard,
+.statePanel {
+	border: 1px solid rgba(255, 255, 255, 0.74);
+	border-radius: 1.45rem;
+	background: rgba(255, 255, 255, 0.74);
+	box-shadow: 0 1.5rem 4rem rgba(16, 22, 33, 0.08);
+	backdrop-filter: blur(18px);
+}
+
+.sidebar {
+	position: sticky;
+	top: 5.2rem;
+	display: grid;
+	gap: 1rem;
+	padding: 1rem;
+}
+
+.sidebarHeader {
+	display: grid;
+	gap: 0.45rem;
+}
+
+.sidebarHeader span {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.42rem;
+	color: #02006c;
+	font-size: 0.74rem;
+	font-weight: 860;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.sidebarHeader p {
+	margin: 0;
+	color: rgba(23, 23, 31, 0.6);
+	font-size: 0.84rem;
+	line-height: 1.5;
+}
+
+.filterGrid,
+.results {
+	display: grid;
+	gap: 0.75rem;
+}
+
+.filterActions {
+	display: grid;
+	gap: 0.55rem;
+}
+
+.filterActions button,
+.sortButton {
+	border-radius: 999px;
+}
+
+.toolbar {
+	position: sticky;
+	top: 4.8rem;
+	z-index: 2;
+	display: grid;
+	grid-template-columns: minmax(14rem, 1fr) minmax(10rem, auto) auto;
+	gap: 0.75rem;
+	align-items: center;
+	padding: 0.85rem;
+}
+
+.selectTrigger {
+	width: 100%;
+	border-radius: 999px;
+}
+
+.selectTrigger svg,
+.sortButton svg {
+	color: #02006c;
+}
+
+.grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 1rem;
+}
+
+.card {
+	overflow: hidden;
+	animation: cardIn 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.cover {
+	position: relative;
+	min-height: 14rem;
+	display: block;
+	overflow: hidden;
+	background: rgba(2, 0, 108, 0.08);
+}
+
+.cover img {
+	object-fit: cover;
+	transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.card:hover .cover img {
+	transform: scale(1.035);
+}
+
+.cover > span {
+	min-height: 14rem;
+	display: grid;
+	place-items: center;
+	color: #02006c;
+}
+
+.cardBody {
+	display: grid;
+	gap: 0.75rem;
+	padding: 1rem;
+}
+
+.cardBody strong {
+	display: block;
+	overflow: hidden;
+	color: #17171f;
+	font-size: 1rem;
+	font-weight: 850;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.cardBody small,
+.cardBody p {
+	color: rgba(23, 23, 31, 0.58);
+}
+
+.cardBody small {
+	display: block;
+	margin-top: 0.18rem;
+	font-size: 0.76rem;
+	font-weight: 730;
+}
+
+.cardBody p {
+	display: -webkit-box;
+	min-height: 2.8rem;
+	margin: 0;
+	overflow: hidden;
+	font-size: 0.84rem;
+	line-height: 1.5;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+}
+
+.cardMeta {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+}
+
+.cardMeta span,
+.cardMeta a {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.38rem;
+	font-size: 0.76rem;
+	font-weight: 830;
+}
+
+.cardMeta span {
+	color: rgba(23, 23, 31, 0.66);
+}
+
+.cardMeta a {
+	min-height: var(--pluto-button-height);
+	padding: 0 0.9rem;
+	border-radius: 999px;
+	background: #02006c;
+	color: white;
+	text-decoration: none;
+}
+
+.statePanel {
+	display: grid;
+	justify-items: center;
+	gap: 0.75rem;
+	padding: 3rem 1rem;
+	text-align: center;
+}
+
+.statePanel > svg {
+	color: #02006c;
+}
+
+.statePanel h2 {
+	margin: 0;
+	color: #17171f;
+	font-size: 1.35rem;
+	font-weight: 850;
+}
+
+.statePanel p {
+	max-width: 28rem;
+	margin: 0;
+	color: rgba(23, 23, 31, 0.62);
+	line-height: 1.55;
+}
+
+.skeletonCard {
+	display: grid;
+	gap: 0.8rem;
+	padding: 0.75rem;
+}
+
+.skeletonCover {
+	min-height: 14rem;
+	border-radius: 1rem;
+}
+
+.skeletonLine {
+	height: 1.2rem;
+	width: 70%;
+	border-radius: 999px;
+}
+
+.skeletonText {
+	height: 0.9rem;
+	border-radius: 999px;
+}
+
+.pagination {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+}
+
+.pagination span {
+	color: rgba(23, 23, 31, 0.62);
+	font-size: 0.86rem;
+	font-weight: 780;
+}
+
+@media (max-width: 1080px) {
+	.workspace {
+		grid-template-columns: 1fr;
+	}
+
+	.sidebar,
+	.toolbar {
+		position: static;
+	}
+
+	.sidebar {
+		order: 2;
+	}
+
+	.results {
+		order: 1;
+	}
+
+	.grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 720px) {
+	.hero,
+	.toolbar,
+	.grid {
+		grid-template-columns: 1fr;
+	}
+
+	.heroMetric,
+	.cardMeta,
+	.cardMeta a,
+	.pagination,
+	.pagination button {
+		width: 100%;
+	}
+
+	.cardMeta,
+	.pagination {
+		align-items: stretch;
+		flex-direction: column;
+	}
+
+	.cardMeta a {
+		justify-content: center;
+	}
+}
+
+@media (max-width: 520px) {
+	.page {
+		padding-inline: 0.7rem;
+	}
+}
+
+@keyframes cardIn {
+	from {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
