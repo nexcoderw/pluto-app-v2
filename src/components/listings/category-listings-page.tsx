@@ -41,6 +41,7 @@ import type {
 	ListingSortOrder,
 	PublicListing,
 } from "@/services/api/listings";
+import { ApartmentListingsMap } from "./apartment-listings-map";
 import styles from "./category-listings-page.module.css";
 
 export type ListingSidebarFilter = {
@@ -116,6 +117,7 @@ export function CategoryListingsPage({
 	});
 	const listings = listingsQuery.data?.items ?? [];
 	const meta = listingsQuery.data?.meta;
+	const usesApartmentMapLayout = categorySlug === "apartments";
 
 	function applyFilters() {
 		setAppliedFilters(cleanRequest(draftFilters));
@@ -151,6 +153,63 @@ export function CategoryListingsPage({
 		value: string,
 	): void {
 		setDraftFilter(filter.key, parseFilterValue(filter, value));
+	}
+
+	function renderListingResults() {
+		if (listingsQuery.isPending) {
+			return <CategoryListingsSkeleton />;
+		}
+
+		if (listingsQuery.isError) {
+			return (
+				<CategoryListingsState
+					title={`${categoryLabel} unavailable`}
+					message="Refresh this listing category before changing filters."
+					actionLabel="Retry"
+					onAction={() => listingsQuery.refetch()}
+				/>
+			);
+		}
+
+		if (listings.length === 0) {
+			return (
+				<CategoryListingsState
+					title={`No ${categoryLabel.toLowerCase()} found`}
+					message="Reset filters or search a wider location to see more options."
+					actionLabel="Clear filters"
+					onAction={resetFilters}
+				/>
+			);
+		}
+
+		return (
+			<>
+				<section className={styles.grid}>
+					{listings.map((listing) => {
+						const detailHref = `${detailBaseHref}/${listing.id}`;
+
+						return renderCard ? (
+							renderCard(listing, detailHref)
+						) : (
+							<DefaultListingCard
+								key={listing.id}
+								listing={listing}
+								detailHref={detailHref}
+							/>
+						);
+					})}
+				</section>
+				{meta ? (
+					<CategoryPagination
+						page={meta.page}
+						totalPages={meta.totalPages}
+						hasNextPage={meta.hasNextPage}
+						hasPreviousPage={meta.hasPreviousPage}
+						onPageChange={setPage}
+					/>
+				) : null}
+			</>
+		);
 	}
 
 	return (
@@ -328,49 +387,15 @@ export function CategoryListingsPage({
 						</Button>
 					</div>
 
-					{listingsQuery.isPending ? (
-						<CategoryListingsSkeleton />
-					) : listingsQuery.isError ? (
-						<CategoryListingsState
-							title={`${categoryLabel} unavailable`}
-							message="Refresh this listing category before changing filters."
-							actionLabel="Retry"
-							onAction={() => listingsQuery.refetch()}
-						/>
-					) : listings.length === 0 ? (
-						<CategoryListingsState
-							title={`No ${categoryLabel.toLowerCase()} found`}
-							message="Reset filters or search a wider location to see more options."
-							actionLabel="Clear filters"
-							onAction={resetFilters}
-						/>
+					{usesApartmentMapLayout ? (
+						<div className={styles.apartmentMapLayout}>
+							<div className={styles.apartmentCardsColumn}>
+								{renderListingResults()}
+							</div>
+							<ApartmentListingsMap />
+						</div>
 					) : (
-						<>
-							<section className={styles.grid}>
-								{listings.map((listing) => {
-									const detailHref = `${detailBaseHref}/${listing.id}`;
-
-									return renderCard ? (
-										renderCard(listing, detailHref)
-									) : (
-										<DefaultListingCard
-											key={listing.id}
-											listing={listing}
-											detailHref={detailHref}
-										/>
-									);
-								})}
-							</section>
-							{meta ? (
-								<CategoryPagination
-									page={meta.page}
-									totalPages={meta.totalPages}
-									hasNextPage={meta.hasNextPage}
-									hasPreviousPage={meta.hasPreviousPage}
-									onPageChange={setPage}
-								/>
-							) : null}
-						</>
+						renderListingResults()
 					)}
 				</section>
 			</section>
