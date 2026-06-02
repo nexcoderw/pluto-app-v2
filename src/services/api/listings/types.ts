@@ -41,6 +41,8 @@ export type ListingListRequest = {
 	roomType?: string;
 	bedType?: string;
 	breakfastIncluded?: boolean;
+	hasAirConditioning?: boolean;
+	hasPrivateBathroom?: boolean;
 	propertyType?: string;
 	entirePlace?: boolean;
 	selfCheckIn?: boolean;
