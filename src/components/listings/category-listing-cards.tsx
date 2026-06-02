@@ -5,12 +5,10 @@ import {
 	ArrowRight,
 	Bath,
 	BedDouble,
-	BriefcaseBusiness,
 	CarFront,
 	CheckCircle2,
 	CircleDollarSign,
 	DoorOpen,
-	Fuel,
 	Hotel,
 	House,
 	MapPin,
@@ -32,39 +30,6 @@ type ListingCardProps = {
 	listing: PublicListing;
 	detailHref: string;
 };
-
-export function CarListingCard({ listing, detailHref }: ListingCardProps) {
-	const details = listing.carDetails;
-
-	return (
-		<ListingCardFrame
-			listing={listing}
-			detailHref={detailHref}
-			kind="car"
-			label="Car rental"
-			icon={<CarFront aria-hidden="true" />}
-			specs={[
-				{
-					icon: <BriefcaseBusiness aria-hidden="true" />,
-					label: details ? `${details.brand} ${details.model}` : "Vehicle",
-				},
-				{
-					icon: <Users aria-hidden="true" />,
-					label: details ? `${details.seats} seats` : "Seats listed",
-				},
-				{
-					icon: <Fuel aria-hidden="true" />,
-					label: details?.fuelType ?? "Fuel listed",
-				},
-			]}
-			highlights={[
-				details ? `${details.year}` : "Approved",
-				details?.transmission ?? "Transmission ready",
-				details?.driverIncluded ? "Driver included" : "Self-drive ready",
-			]}
-		/>
-	);
-}
 
 export function ApartmentListingCard({
 	listing,
