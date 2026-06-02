@@ -241,7 +241,7 @@ function PartnerListingsWorkspace({ user }: { user: UserAuthProfile }) {
 			title="Partner listings"
 			description="Search, filter, review, and prepare listings before they reach customers."
 			homeHref="/"
-			homeLabel="View marketplace"
+			homeLabel="View listings"
 			navigation={partnerPortalNavigation}
 			hideHero
 		>
