@@ -34,7 +34,7 @@ import {
 	type Product,
 	type ProductCategory,
 } from "@/services/api/products";
-import styles from "./marketplace-page.module.css";
+import styles from "./listings-page.module.css";
 
 type ProductOrderBy = "createdAt" | "basePrice" | "title";
 type SortOrder = "asc" | "desc";
@@ -57,7 +57,7 @@ const orderOptions: Array<{ label: string; value: ProductOrderBy }> = [
 	{ label: "Title", value: "title" },
 ];
 
-export function MarketplacePage() {
+export function ListingsPage() {
 	const [search, setSearch] = useState("");
 	const [page, setPage] = useState(1);
 	const [category, setCategory] = useState<ProductCategory | "ALL">("ALL");
@@ -74,7 +74,7 @@ export function MarketplacePage() {
 		[category, order, orderBy, page, search],
 	);
 	const productsQuery = useQuery({
-		queryKey: ["public-products", request],
+		queryKey: ["public-listings", request],
 		queryFn: () => listProducts(request),
 	});
 	const products = productsQuery.data?.items ?? [];
@@ -94,7 +94,7 @@ export function MarketplacePage() {
 				<div>
 					<span className={styles.eyebrow}>
 						<ShieldCheck aria-hidden="true" />
-						Reviewed marketplace
+						Reviewed listings
 					</span>
 					<h1>Find trusted listings across every Pluto category.</h1>
 					<p>
@@ -108,7 +108,7 @@ export function MarketplacePage() {
 				</div>
 			</section>
 
-			<section className={styles.filters} aria-label="Marketplace filters">
+			<section className={styles.filters} aria-label="Listings filters">
 				<Input
 					type="search"
 					value={search}
@@ -182,16 +182,16 @@ export function MarketplacePage() {
 			</section>
 
 			{productsQuery.isPending ? (
-				<MarketplaceSkeleton />
+				<ListingsSkeleton />
 			) : productsQuery.isError ? (
-				<MarketplaceState
-					title="Marketplace unavailable"
+				<ListingsState
+					title="Listings unavailable"
 					message="Refresh the listing feed before changing filters."
 					actionLabel="Retry"
 					onAction={() => productsQuery.refetch()}
 				/>
 			) : products.length === 0 ? (
-				<MarketplaceState
+				<ListingsState
 					title="No listings match this search"
 					message="Clear filters or try a wider search across all categories."
 					actionLabel="Clear filters"
@@ -199,7 +199,7 @@ export function MarketplacePage() {
 				/>
 			) : (
 				<>
-					<section className={styles.grid} aria-label="Marketplace listings">
+					<section className={styles.grid} aria-label="Listings">
 						{products.map((product) => (
 							<ProductCard key={product.id} product={product} />
 						))}
@@ -273,9 +273,9 @@ function ProductCard({ product }: { product: Product }) {
 	);
 }
 
-function MarketplaceSkeleton() {
+function ListingsSkeleton() {
 	return (
-		<section className={styles.grid} aria-label="Loading marketplace listings">
+		<section className={styles.grid} aria-label="Loading listings">
 			{Array.from({ length: 6 }).map((_, index) => (
 				<article key={index} className={styles.skeletonCard}>
 					<Skeleton className={styles.skeletonCover} />
@@ -288,7 +288,7 @@ function MarketplaceSkeleton() {
 	);
 }
 
-function MarketplaceState({
+function ListingsState({
 	title,
 	message,
 	actionLabel,
@@ -326,7 +326,7 @@ function Pagination({
 	onPageChange: (page: number) => void;
 }) {
 	return (
-		<nav className={styles.pagination} aria-label="Marketplace pagination">
+		<nav className={styles.pagination} aria-label="Listings pagination">
 			<Button
 				type="button"
 				variant="outline"
