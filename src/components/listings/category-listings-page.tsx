@@ -439,16 +439,23 @@ function DefaultListingCard({
 
 function CategoryListingsSkeleton() {
 	return (
-		<section className={styles.grid} aria-label="Loading listings">
-			{Array.from({ length: 12 }).map((_, index) => (
-				<article key={index} className={styles.skeletonCard}>
-					<Skeleton className={styles.skeletonCover} />
-					<Skeleton className={styles.skeletonLine} />
-					<Skeleton className={styles.skeletonText} />
-					<Skeleton className={styles.skeletonText} />
-				</article>
-			))}
-		</section>
+		<>
+			<section className={styles.grid} aria-label="Loading listings">
+				{Array.from({ length: 12 }).map((_, index) => (
+					<article key={index} className={styles.skeletonCard}>
+						<Skeleton className={styles.skeletonCover} />
+						<Skeleton className={styles.skeletonLine} />
+						<Skeleton className={styles.skeletonText} />
+						<Skeleton className={styles.skeletonText} />
+					</article>
+				))}
+			</section>
+			<div className={styles.pagination} aria-hidden="true">
+				<Skeleton className={styles.skeletonPaginationButton} />
+				<Skeleton className={styles.skeletonPaginationText} />
+				<Skeleton className={styles.skeletonPaginationButton} />
+			</div>
+		</>
 	);
 }
 
