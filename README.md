@@ -1,6 +1,6 @@
 # PLUTO Web App
 
-PLUTO Web App is the public-facing marketplace application for the PLUTO travel platform.
+PLUTO Web App is the public-facing listings application for the PLUTO travel platform.
 
 This application is used by:
 
@@ -22,7 +22,7 @@ pluto/app/admin
 
 ```txt
 Project Name: PLUTO Web App
-Project Type: Public Marketplace + Customer Dashboard + Partner Dashboard
+Project Type: Public Listings + Customer Dashboard + Partner Dashboard
 Framework: Next.js
 Language: TypeScript
 Package Manager: npm
@@ -853,10 +853,10 @@ Example:
 
 ```ts
 export const queryKeys = {
-  products: ["products"],
-  product: (id: string) => ["products", id],
-  myBookings: ["me", "bookings"],
-  partnerProducts: ["partner", "products"],
+	products: ["products"],
+	product: (id: string) => ["products", id],
+	myBookings: ["me", "bookings"],
+	partnerProducts: ["partner", "products"],
 };
 ```
 
@@ -991,7 +991,7 @@ Never fetch all products at once.
 
 # 23. SEO Rules
 
-Public marketplace pages must be SEO-friendly.
+Public listings pages must be SEO-friendly.
 
 Important pages:
 
@@ -1134,7 +1134,7 @@ git add .
 git commit -m "Create PLUTO public web app foundation"
 
 git add .
-git commit -m "Add PLUTO marketplace landing page"
+git commit -m "Add PLUTO public listings landing page"
 
 git add .
 git commit -m "Add customer booking dashboard"
@@ -1178,7 +1178,7 @@ No broken responsive layout
 This app must remain focused on:
 
 ```txt
-Public marketplace
+Public listings
 Customer experience
 Partner experience
 Booking and payment flow
