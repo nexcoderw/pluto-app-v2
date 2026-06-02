@@ -3,19 +3,13 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { ArrowLeft, Eye, Plus, RefreshCcw, Store } from "lucide-react";
+import { ArrowLeft, RefreshCcw } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import {
-	PortalShell,
-	type PortalMetric,
-} from "@/components/portal/portal-shell";
+import { PortalShell } from "@/components/portal/portal-shell";
 import { partnerPortalNavigation } from "@/constants/partner-portal-navigation";
 import type { UserAuthProfile } from "@/services/api/auth";
-import {
-	getPartnerProfile,
-	type PartnerProfile,
-} from "@/services/api/partner-profile";
+import { getPartnerProfile } from "@/services/api/partner-profile";
 import { getPartnerProduct } from "@/services/api/partner-products";
 import {
 	PartnerAccessBoundary,
@@ -118,49 +112,30 @@ function ListingFormWorkspace({
 		<PortalShell
 			variant="partner"
 			user={user}
-			eyebrow="Listing workflow"
+			eyebrow="Listings"
 			title={mode === "edit" ? "Edit listing" : "Create listing"}
 			description="Use the guided workflow to keep details complete, reviewable, and easy for customers to understand."
 			homeHref="/partner/listings"
 			homeLabel="Back to listings"
 			navigation={partnerPortalNavigation}
-			metrics={buildMetrics(profile)}
+			hideHero
 		>
 			<div className={styles.formPageHeader}>
+				<div className={styles.headerCopy}>
+					<span>{mode === "edit" ? "Listing editor" : "New listing"}</span>
+					<h1>{mode === "edit" ? "Edit listing" : "Create listing"}</h1>
+					<p>
+						{mode === "edit"
+							? "Changes are saved as a reviewed update before becoming public."
+							: "Choose the correct category first, then complete the details required for admin review."}
+					</p>
+				</div>
 				<Link href="/partner/listings">
 					<ArrowLeft aria-hidden="true" />
 					Back to listings
 				</Link>
-				<p>
-					{mode === "edit"
-						? "Changes are saved as a reviewed update before becoming public."
-						: "Choose the correct category first, then complete the details required for admin review."}
-				</p>
 			</div>
 			<ListingForm mode={mode} product={product} />
 		</PortalShell>
 	);
-}
-
-function buildMetrics(profile: PartnerProfile): PortalMetric[] {
-	return [
-		{
-			label: "Partner status",
-			value: profile.status,
-			description: "Only approved partners can manage listings.",
-			icon: Store,
-		},
-		{
-			label: "Review path",
-			value: "Admin",
-			description: "Saved listings are checked before publishing.",
-			icon: Eye,
-		},
-		{
-			label: "Listing types",
-			value: "4",
-			description: "Cars, apartments, hotel rooms, and Airbnb homes.",
-			icon: Plus,
-		},
-	];
 }
