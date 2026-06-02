@@ -1,7 +1,6 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { Building2, CarFront, Hotel, House } from "lucide-react";
 import {
 	listAirbnbListings,
 	listApartmentListings,
@@ -25,10 +24,7 @@ import {
 
 type CategoryConfig = {
 	categoryLabel: string;
-	eyebrow: string;
 	title: string;
-	description: string;
-	icon: typeof CarFront;
 	detailBaseHref: string;
 	filters: ListingSidebarFilter[];
 	listListings: (params: ListingListRequest) => Promise<ListingListResponse>;
@@ -73,11 +69,7 @@ const airbnbFilters: ListingSidebarFilter[] = [
 const categoryConfigs = {
 	cars: {
 		categoryLabel: "Cars",
-		eyebrow: "Verified car rentals",
 		title: "Choose road-ready cars from approved Pluto partners.",
-		description:
-			"Compare trusted cars by location, price, transmission, seats, fuel type, and partner readiness.",
-		icon: CarFront,
 		detailBaseHref: "/listings/cars",
 		filters: carFilters,
 		listListings: listCarListings,
@@ -91,11 +83,7 @@ const categoryConfigs = {
 	},
 	apartments: {
 		categoryLabel: "Apartments",
-		eyebrow: "Approved apartments",
 		title: "Find comfortable apartments with the details already checked.",
-		description:
-			"Filter apartments by rooms, guests, furnished status, WiFi, parking, and location.",
-		icon: Building2,
 		detailBaseHref: "/listings/apartments",
 		filters: apartmentFilters,
 		listListings: listApartmentListings,
@@ -109,11 +97,7 @@ const categoryConfigs = {
 	},
 	"hotel-rooms": {
 		categoryLabel: "Hotel rooms",
-		eyebrow: "Reviewed hotel rooms",
 		title: "Book hotel rooms with room details visible upfront.",
-		description:
-			"Search approved rooms by hotel, bed type, guest capacity, breakfast, and stay location.",
-		icon: Hotel,
 		detailBaseHref: "/listings/hotel-rooms",
 		filters: hotelRoomFilters,
 		listListings: listHotelRoomListings,
@@ -127,11 +111,7 @@ const categoryConfigs = {
 	},
 	airbnb: {
 		categoryLabel: "AirBnB homes",
-		eyebrow: "Verified home stays",
 		title: "Discover AirBnB-style homes built for secure stays.",
-		description:
-			"Compare entire homes, self check-in, house rules, guest capacity, and approved partner details.",
-		icon: House,
 		detailBaseHref: "/listings/airbnb",
 		filters: airbnbFilters,
 		listListings: listAirbnbListings,
