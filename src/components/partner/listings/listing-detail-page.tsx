@@ -157,38 +157,40 @@ function ListingDetail({
 	return (
 		<>
 			<section className={styles.detailHero}>
-				<div className={styles.heroCopy}>
-					<Link href="/partner/listings" className={styles.backLink}>
-						<ArrowLeft aria-hidden="true" />
-						Back to listings
-					</Link>
-					<span className={styles.categoryPill}>
-						{formatLabel(product.category)}
-					</span>
-					<h1>{product.title}</h1>
-					<p>
-						{product.shortDescription ??
-							"Review the complete customer-facing listing before making changes."}
-					</p>
+				<div className={styles.heroHeader}>
+					<div className={styles.heroTitleGroup}>
+						<span className={styles.categoryPill}>
+							{formatLabel(product.category)}
+						</span>
+						<h1>{product.title}</h1>
+					</div>
+					<div className={styles.heroActions}>
+						<Link href="/partner/listings" className={styles.backLink}>
+							<ArrowLeft aria-hidden="true" />
+							Back to listings
+						</Link>
+						<Link
+							href={`/partner/listings/${product.id}/edit`}
+							className={styles.editLink}
+						>
+							<Pencil aria-hidden="true" />
+							Edit listing
+						</Link>
+						<Button
+							type="button"
+							variant="destructive"
+							className={styles.deleteTrigger}
+							onClick={onRequestDelete}
+						>
+							<Trash2 aria-hidden="true" />
+							Delete
+						</Button>
+					</div>
 				</div>
-				<div className={styles.heroActions}>
-					<Link
-						href={`/partner/listings/${product.id}/edit`}
-						className={styles.editLink}
-					>
-						<Pencil aria-hidden="true" />
-						Edit listing
-					</Link>
-					<Button
-						type="button"
-						variant="destructive"
-						className={styles.deleteTrigger}
-						onClick={onRequestDelete}
-					>
-						<Trash2 aria-hidden="true" />
-						Delete
-					</Button>
-				</div>
+				<p className={styles.heroDescription}>
+					{product.shortDescription ??
+						"Review the complete customer-facing listing before making changes."}
+				</p>
 				<div className={styles.heroFacts} aria-label="Listing overview">
 					<HeroFact
 						icon={<ShieldCheck aria-hidden="true" />}
