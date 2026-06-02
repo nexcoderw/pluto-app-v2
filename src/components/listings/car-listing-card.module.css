@@ -1,20 +1,11 @@
 .card {
 	position: relative;
 	overflow: hidden;
-	border: 1px solid rgba(2, 0, 108, 0.1);
+	border: 1px solid rgba(2, 0, 108, 0.18);
 	border-radius: 1.35rem;
-	background: rgba(255, 255, 255, 0.86);
-	box-shadow: 0 1.3rem 3.2rem rgba(16, 22, 33, 0.08);
-	backdrop-filter: blur(18px);
+	background: #ffffff;
+	box-shadow: 0 1rem 2.2rem rgba(16, 22, 33, 0.06);
 	animation: carCardIn 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.card::before {
-	position: absolute;
-	inset: 0;
-	z-index: -1;
-	content: "";
-	background: rgba(2, 0, 108, 0.035);
 }
 
 .media {
