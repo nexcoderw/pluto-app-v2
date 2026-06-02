@@ -118,7 +118,7 @@ export function CategoryListingsPage({
 	}
 
 	return (
-		<main className={styles.page}>
+		<main className={styles.page} data-category={categorySlug}>
 			<section className={styles.hero}>
 				<h1>{title}</h1>
 			</section>
