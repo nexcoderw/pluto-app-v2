@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { MapPin, Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { MapPin } from "lucide-react";
 import styles from "./google-place-picker.module.css";
 
 export type ListingPlaceValue = {
@@ -20,32 +19,42 @@ type GooglePlacePickerProps = {
 	onChange: (place: ListingPlaceValue) => void;
 };
 
-type GoogleLatLng = {
-	lat: () => number;
-	lng: () => number;
-};
+type GoogleLatLngLike =
+	| {
+			lat: () => number;
+			lng: () => number;
+	  }
+	| {
+			lat: number;
+			lng: number;
+	  };
 
-type GoogleAddressComponent = {
-	long_name: string;
-	short_name: string;
+type ModernAddressComponent = {
+	longText?: string;
+	shortText?: string;
 	types: string[];
 };
 
-type GooglePlaceResult = {
-	name?: string;
-	formatted_address?: string;
-	address_components?: GoogleAddressComponent[];
-	geometry?: {
-		location?: GoogleLatLng;
-	};
+type ModernGooglePlace = {
+	displayName?: string;
+	formattedAddress?: string;
+	location?: GoogleLatLngLike;
+	addressComponents?: ModernAddressComponent[];
+	fetchFields: (options: { fields: string[] }) => Promise<void>;
 };
 
-type GoogleAutocomplete = {
-	addListener: (
-		eventName: "place_changed",
-		callback: () => void,
-	) => { remove: () => void };
-	getPlace: () => GooglePlaceResult;
+type PlacePrediction = {
+	toPlace: () => ModernGooglePlace;
+};
+
+type PlaceSelectEvent = Event & {
+	placePrediction?: PlacePrediction;
+};
+
+type PlaceAutocompleteElement = HTMLElement & {
+	placeholder?: string;
+	value?: string;
+	includedRegionCodes?: string[];
 };
 
 type GoogleMap = {
@@ -53,55 +62,54 @@ type GoogleMap = {
 	setZoom: (zoom: number) => void;
 };
 
-type GoogleMarker = {
-	setPosition: (position: { lat: number; lng: number }) => void;
+type GoogleAdvancedMarker = {
+	position?: { lat: number; lng: number };
 };
 
 type GoogleMapsGlobal = {
 	maps: {
-		Map: new (
-			element: HTMLElement,
-			options: {
-				center: { lat: number; lng: number };
-				zoom: number;
-				disableDefaultUI?: boolean;
-				zoomControl?: boolean;
-				mapTypeControl?: boolean;
-				streetViewControl?: boolean;
-				fullscreenControl?: boolean;
-			},
-		) => GoogleMap;
-		Marker: new (options: {
-			map: GoogleMap;
-			position: { lat: number; lng: number };
-		}) => GoogleMarker;
-		places: {
-			Autocomplete: new (
-				input: HTMLInputElement,
-				options: {
-					fields: string[];
-					types?: string[];
-				},
-			) => GoogleAutocomplete;
-		};
+		importLibrary: (library: string) => Promise<Record<string, unknown>>;
 	};
 };
 
+type GoogleMapsLibraries = {
+	Map: new (
+		element: HTMLElement,
+		options: {
+			center: { lat: number; lng: number };
+			zoom: number;
+			mapId: string;
+			disableDefaultUI?: boolean;
+			zoomControl?: boolean;
+			mapTypeControl?: boolean;
+			streetViewControl?: boolean;
+			fullscreenControl?: boolean;
+		},
+	) => GoogleMap;
+	AdvancedMarkerElement: new (options: {
+		map: GoogleMap;
+		position: { lat: number; lng: number };
+	}) => GoogleAdvancedMarker;
+	PlaceAutocompleteElement: new () => PlaceAutocompleteElement;
+};
+
 let googleMapsPromise: Promise<GoogleMapsGlobal> | null = null;
+let googleLibrariesPromise: Promise<GoogleMapsLibraries> | null = null;
 
 export function GooglePlacePicker({
 	value,
 	error,
 	onChange,
 }: GooglePlacePickerProps) {
-	const inputRef = useRef<HTMLInputElement | null>(null);
+	const autocompleteHostRef = useRef<HTMLDivElement | null>(null);
 	const mapRef = useRef<HTMLDivElement | null>(null);
 	const mapInstanceRef = useRef<GoogleMap | null>(null);
-	const markerRef = useRef<GoogleMarker | null>(null);
-	const listenerRef = useRef<{ remove: () => void } | null>(null);
+	const markerRef = useRef<GoogleAdvancedMarker | null>(null);
+	const autocompleteRef = useRef<PlaceAutocompleteElement | null>(null);
 	const onChangeRef = useRef(onChange);
 	const initialValueRef = useRef(value);
 	const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+	const mapId = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID || "DEMO_MAP_ID";
 	const [isReady, setIsReady] = useState(false);
 	const [loadError, setLoadError] = useState<string | null>(() =>
 		apiKey
@@ -114,70 +122,75 @@ export function GooglePlacePicker({
 	}, [onChange]);
 
 	useEffect(() => {
-		if (!apiKey) {
-			return;
-		}
+		if (!apiKey) return;
 
 		let active = true;
+		let removeSelectListener: (() => void) | null = null;
+		let appendedHost: HTMLDivElement | null = null;
 
-		loadGoogleMaps(apiKey)
-			.then((googleMaps) => {
-				if (!active || !inputRef.current || !mapRef.current) return;
+		loadGoogleLibraries(apiKey)
+			.then(({ Map, AdvancedMarkerElement, PlaceAutocompleteElement }) => {
+				if (
+					!active ||
+					!autocompleteHostRef.current ||
+					!mapRef.current ||
+					autocompleteRef.current
+				) {
+					return;
+				}
+				const autocompleteHost = autocompleteHostRef.current;
+				const mapElement = mapRef.current;
+
+				if (!autocompleteHost || !mapElement) return;
 
 				const initialPosition = {
 					lat: Number(initialValueRef.current.latitude) || -1.9441,
 					lng: Number(initialValueRef.current.longitude) || 30.0619,
 				};
-				const map = new googleMaps.maps.Map(mapRef.current, {
+				const map = new Map(mapElement, {
 					center: initialPosition,
 					zoom:
 						initialValueRef.current.latitude &&
 						initialValueRef.current.longitude
 							? 15
 							: 12,
+					mapId,
 					disableDefaultUI: true,
 					zoomControl: true,
 					mapTypeControl: false,
 					streetViewControl: false,
 					fullscreenControl: false,
 				});
-				const marker = new googleMaps.maps.Marker({
+				const marker = new AdvancedMarkerElement({
 					map,
 					position: initialPosition,
 				});
-				const autocomplete = new googleMaps.maps.places.Autocomplete(
-					inputRef.current,
-					{
-						fields: [
-							"name",
-							"formatted_address",
-							"geometry",
-							"address_components",
-						],
-					},
-				);
-				listenerRef.current = autocomplete.addListener("place_changed", () => {
-					const place = autocomplete.getPlace();
-					const location = place.geometry?.location;
+				const autocomplete = new PlaceAutocompleteElement();
 
-					if (!location) {
-						setLoadError("Select a place from the Google suggestions list.");
-						return;
-					}
+				autocomplete.placeholder = "Search the listing address on Google Maps";
+				autocomplete.includedRegionCodes = ["rw"];
+				if (initialValueRef.current.address || initialValueRef.current.name) {
+					autocomplete.value =
+						initialValueRef.current.address || initialValueRef.current.name;
+				}
 
-					const nextPosition = {
-						lat: location.lat(),
-						lng: location.lng(),
-					};
-					const nextPlace = buildPlaceValue(place, nextPosition);
+				const handleSelect = (event: Event) => {
+					void handlePlaceSelect({
+						event: event as PlaceSelectEvent,
+						map,
+						marker,
+						onChange: onChangeRef.current,
+						onError: setLoadError,
+					});
+				};
 
-					map.setCenter(nextPosition);
-					map.setZoom(16);
-					marker.setPosition(nextPosition);
-					setLoadError(null);
-					onChangeRef.current(nextPlace);
-				});
+				autocomplete.addEventListener("gmp-select", handleSelect);
+				removeSelectListener = () =>
+					autocomplete.removeEventListener("gmp-select", handleSelect);
+				autocompleteHost.appendChild(autocomplete);
+				appendedHost = autocompleteHost;
 
+				autocompleteRef.current = autocomplete;
 				mapInstanceRef.current = map;
 				markerRef.current = marker;
 				setIsReady(true);
@@ -185,17 +198,22 @@ export function GooglePlacePicker({
 			.catch(() => {
 				if (active) {
 					setLoadError(
-						"Google Maps could not load. Check the API key and Places API access.",
+						"Google Maps could not load. Check the API key, Maps JavaScript API, Places API, and map ID.",
 					);
 				}
 			});
 
 		return () => {
 			active = false;
-			listenerRef.current?.remove();
-			listenerRef.current = null;
+			removeSelectListener?.();
+			const autocomplete = autocompleteRef.current;
+
+			if (appendedHost && autocomplete && appendedHost.contains(autocomplete)) {
+				appendedHost.removeChild(autocomplete);
+			}
+			autocompleteRef.current = null;
 		};
-	}, [apiKey]);
+	}, [apiKey, mapId]);
 
 	useEffect(() => {
 		const latitude = Number(value.latitude);
@@ -214,17 +232,15 @@ export function GooglePlacePicker({
 
 		mapInstanceRef.current.setCenter(position);
 		mapInstanceRef.current.setZoom(16);
-		markerRef.current.setPosition(position);
+		markerRef.current.position = position;
 	}, [value.latitude, value.longitude]);
 
 	return (
 		<div className={styles.picker} data-invalid={Boolean(error)}>
-			<Input
-				ref={inputRef}
-				defaultValue={value.address || value.name}
-				placeholder="Search the listing address on Google Maps"
-				icon={<Search aria-hidden="true" />}
-				aria-invalid={Boolean(error)}
+			<div
+				ref={autocompleteHostRef}
+				className={styles.autocompleteHost}
+				aria-label="Google place search"
 			/>
 			<div className={styles.mapPreview} ref={mapRef}>
 				{isReady ? null : (
@@ -254,6 +270,75 @@ export function GooglePlacePicker({
 	);
 }
 
+async function handlePlaceSelect({
+	event,
+	map,
+	marker,
+	onChange,
+	onError,
+}: {
+	event: PlaceSelectEvent;
+	map: GoogleMap;
+	marker: GoogleAdvancedMarker;
+	onChange: (place: ListingPlaceValue) => void;
+	onError: (message: string | null) => void;
+}) {
+	const place = event.placePrediction?.toPlace();
+
+	if (!place) {
+		onError("Select a place from the Google suggestions list.");
+		return;
+	}
+
+	await place.fetchFields({
+		fields: [
+			"displayName",
+			"formattedAddress",
+			"location",
+			"addressComponents",
+		],
+	});
+
+	const nextPosition = normalizeLatLng(place.location);
+
+	if (!nextPosition) {
+		onError("Select a place with a valid Google Maps location.");
+		return;
+	}
+
+	const nextPlace = buildPlaceValue(place, nextPosition);
+
+	map.setCenter(nextPosition);
+	map.setZoom(16);
+	marker.position = nextPosition;
+	onError(null);
+	onChange(nextPlace);
+}
+
+async function loadGoogleLibraries(
+	apiKey: string,
+): Promise<GoogleMapsLibraries> {
+	if (googleLibrariesPromise) return googleLibrariesPromise;
+
+	googleLibrariesPromise = loadGoogleMaps(apiKey).then(async (googleMaps) => {
+		const [mapsLibrary, markerLibrary, placesLibrary] = await Promise.all([
+			googleMaps.maps.importLibrary("maps"),
+			googleMaps.maps.importLibrary("marker"),
+			googleMaps.maps.importLibrary("places"),
+		]);
+
+		return {
+			Map: mapsLibrary.Map as GoogleMapsLibraries["Map"],
+			AdvancedMarkerElement:
+				markerLibrary.AdvancedMarkerElement as GoogleMapsLibraries["AdvancedMarkerElement"],
+			PlaceAutocompleteElement:
+				placesLibrary.PlaceAutocompleteElement as GoogleMapsLibraries["PlaceAutocompleteElement"],
+		};
+	});
+
+	return googleLibrariesPromise;
+}
+
 function loadGoogleMaps(apiKey: string): Promise<GoogleMapsGlobal> {
 	if (typeof window === "undefined") {
 		return Promise.reject(
@@ -263,7 +348,7 @@ function loadGoogleMaps(apiKey: string): Promise<GoogleMapsGlobal> {
 
 	const existingGoogle = getGoogleMaps();
 
-	if (existingGoogle?.maps.places) {
+	if (existingGoogle?.maps.importLibrary) {
 		return Promise.resolve(existingGoogle);
 	}
 
@@ -276,16 +361,16 @@ function loadGoogleMaps(apiKey: string): Promise<GoogleMapsGlobal> {
 
 		script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(
 			apiKey,
-		)}&libraries=places`;
+		)}&v=weekly&loading=async`;
 		script.async = true;
 		script.defer = true;
 		script.onload = () => {
 			const googleMaps = getGoogleMaps();
 
-			if (googleMaps?.maps.places) {
+			if (googleMaps?.maps.importLibrary) {
 				resolve(googleMaps);
 			} else {
-				reject(new Error("Google Places library was not available."));
+				reject(new Error("Google Maps importLibrary was not available."));
 			}
 		};
 		script.onerror = () =>
@@ -300,13 +385,26 @@ function getGoogleMaps() {
 	return (window as Window & { google?: GoogleMapsGlobal }).google;
 }
 
+function normalizeLatLng(location: GoogleLatLngLike | undefined) {
+	if (!location) return null;
+
+	const lat =
+		typeof location.lat === "function" ? location.lat() : location.lat;
+	const lng =
+		typeof location.lng === "function" ? location.lng() : location.lng;
+
+	if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+
+	return { lat, lng };
+}
+
 function buildPlaceValue(
-	place: GooglePlaceResult,
+	place: ModernGooglePlace,
 	position: { lat: number; lng: number },
 ): ListingPlaceValue {
 	return {
-		name: place.name ?? "",
-		address: place.formatted_address ?? place.name ?? "",
+		name: place.displayName ?? "",
+		address: place.formattedAddress ?? place.displayName ?? "",
 		latitude: String(position.lat),
 		longitude: String(position.lng),
 		city: findAddressComponent(place, [
@@ -318,10 +416,10 @@ function buildPlaceValue(
 	};
 }
 
-function findAddressComponent(place: GooglePlaceResult, types: string[]) {
-	const component = place.address_components?.find((item) =>
+function findAddressComponent(place: ModernGooglePlace, types: string[]) {
+	const component = place.addressComponents?.find((item) =>
 		types.some((type) => item.types.includes(type)),
 	);
 
-	return component?.long_name ?? "";
+	return component?.longText ?? component?.shortText ?? "";
 }
