@@ -16,7 +16,7 @@ import {
 	formatMoney,
 	formatPricingUnit,
 	getListingCoverImage,
-} from "./listing-formatters";
+} from "../listing-formatters";
 import styles from "./hotel-room-listing-card.module.css";
 
 type HotelRoomListingCardProps = {
