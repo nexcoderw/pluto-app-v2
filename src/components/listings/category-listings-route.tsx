@@ -31,7 +31,11 @@ type CategoryConfig = {
 	detailBaseHref: string;
 	filters: ListingSidebarFilter[];
 	listListings: (params: ListingListRequest) => Promise<ListingListResponse>;
-	renderCard: (listing: PublicListing, detailHref: string) => ReactNode;
+	renderCard: (
+		listing: PublicListing,
+		detailHref: string,
+		index: number,
+	) => ReactNode;
 	renderSidebar?: (props: ListingSidebarRenderProps) => ReactNode;
 	filterPresentation?: "sidebar" | "dialog";
 };
@@ -97,11 +101,12 @@ const categoryConfigs = {
 		renderSidebar: (sidebarProps) => (
 			<ApartmentListingsSidebar {...sidebarProps} variant="dialog" />
 		),
-		renderCard: (listing, detailHref) => (
+		renderCard: (listing, detailHref, index) => (
 			<ApartmentListingCard
 				key={listing.id}
 				listing={listing}
 				detailHref={detailHref}
+				priorityImage={index === 0}
 			/>
 		),
 	},
