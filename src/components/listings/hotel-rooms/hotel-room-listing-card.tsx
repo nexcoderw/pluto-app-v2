@@ -1,81 +1,165 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
 	ArrowRight,
 	BedDouble,
+	ChevronLeft,
+	ChevronRight,
 	DoorOpen,
-	Hotel,
+	Heart,
 	MapPin,
 	ShieldCheck,
+	Star,
 	Users,
 } from "lucide-react";
 import type { PublicListing } from "@/services/api/listings";
-import {
-	formatMoney,
-	formatPricingUnit,
-	getListingCoverImage,
-} from "../listing-formatters";
+import { formatMoney, formatPricingUnit } from "../listing-formatters";
 import styles from "./hotel-room-listing-card.module.css";
 
 type HotelRoomListingCardProps = {
 	listing: PublicListing;
 	detailHref: string;
+	priorityImage?: boolean;
 };
+
+const fallbackImage = "/hero/hero.jpg";
 
 export function HotelRoomListingCard({
 	listing,
 	detailHref,
+	priorityImage = false,
 }: HotelRoomListingCardProps) {
 	const details = listing.hotelRoomDetails;
-	const coverImage = getListingCoverImage(listing);
-	const coverUrl = coverImage?.file.publicUrl;
+	const [activeImageIndex, setActiveImageIndex] = useState(0);
+	const [favorite, setFavorite] = useState(false);
+	const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+	const images = useMemo(
+		() =>
+			listing.images
+				.filter((image) => Boolean(image.file.publicUrl))
+				.map((image) => ({
+					id: image.id,
+					src: image.file.publicUrl ?? fallbackImage,
+					alt: image.altText ?? listing.title,
+				})),
+		[listing.images, listing.title],
+	);
+	const gallery = images.length
+		? images
+		: [{ id: "fallback", src: fallbackImage, alt: "Pluto Booking hotel room" }];
+	const activeImage = gallery[activeImageIndex] ?? gallery[0];
+	const activeImageSrc = failedImages.has(activeImage.id)
+		? fallbackImage
+		: activeImage.src;
+	const ratingLabel =
+		listing.ratingAverage === null || listing.ratingAverage === undefined
+			? "0.00 (0)"
+			: `${listing.ratingAverage.toFixed(2)} (${listing.ratingCount ?? 0})`;
+	const hotelName = details?.hotelName ?? "Verified hotel";
+	const roomType = details?.roomType ?? "Curated room";
+
+	function showPreviousImage() {
+		setActiveImageIndex((current) =>
+			current === 0 ? gallery.length - 1 : current - 1,
+		);
+	}
+
+	function showNextImage() {
+		setActiveImageIndex((current) =>
+			current === gallery.length - 1 ? 0 : current + 1,
+		);
+	}
+
+	function markImageAsFailed(imageId: string) {
+		setFailedImages((current) => {
+			const next = new Set(current);
+			next.add(imageId);
+			return next;
+		});
+	}
 
 	return (
 		<article className={styles.card}>
-			<Link href={detailHref} className={styles.media}>
-				{coverUrl ? (
+			<div className={styles.media}>
+				<Link href={detailHref} className={styles.imageLink}>
 					<Image
-						src={coverUrl}
-						alt={coverImage.altText ?? listing.title}
+						src={activeImageSrc}
+						alt={activeImage.alt}
 						fill
-						sizes="(max-width: 720px) 100vw, (max-width: 1280px) 31vw, 22vw"
+						sizes="(max-width: 720px) 100vw, (max-width: 1280px) 43vw, 19vw"
+						loading={priorityImage ? "eager" : "lazy"}
+						priority={priorityImage}
+						onError={() => markImageAsFailed(activeImage.id)}
 					/>
-				) : (
-					<span className={styles.emptyMedia}>
-						<Hotel aria-hidden="true" />
-						Room image pending
-					</span>
-				)}
+				</Link>
 				<span className={styles.statusPill}>
 					<ShieldCheck aria-hidden="true" />
-					Approved room
+					Verified room
 				</span>
-			</Link>
+
+				{gallery.length > 1 ? (
+					<>
+						<button
+							type="button"
+							className={styles.galleryButton}
+							data-position="left"
+							aria-label="Show previous hotel room image"
+							onClick={showPreviousImage}
+						>
+							<ChevronLeft aria-hidden="true" />
+						</button>
+						<button
+							type="button"
+							className={styles.galleryButton}
+							data-position="right"
+							aria-label="Show next hotel room image"
+							onClick={showNextImage}
+						>
+							<ChevronRight aria-hidden="true" />
+						</button>
+						<div className={styles.galleryDots} aria-hidden="true">
+							{gallery.map((image, index) => (
+								<span key={image.id} data-active={index === activeImageIndex} />
+							))}
+						</div>
+					</>
+				) : null}
+			</div>
 
 			<div className={styles.body}>
 				<div className={styles.heading}>
 					<div>
-						<h2>{listing.title}</h2>
+						<p className={styles.roomType}>{roomType}</p>
+						<Link href={detailHref} className={styles.titleLink}>
+							<h2>{listing.title}</h2>
+						</Link>
 					</div>
-					<span className={styles.price}>
-						<strong>{formatMoney(listing.basePrice, listing.currency)}</strong>
-						<small>/{formatPricingUnit(listing.pricingUnit)}</small>
-					</span>
+					<button
+						type="button"
+						className={styles.favoriteButton}
+						aria-label={
+							favorite ? "Remove hotel room from favorites" : "Save hotel room"
+						}
+						aria-pressed={favorite}
+						onClick={() => setFavorite((current) => !current)}
+					>
+						<Heart aria-hidden="true" />
+					</button>
 				</div>
 
 				<p className={styles.location}>
 					<MapPin aria-hidden="true" />
-					{details?.hotelName ? `${details.hotelName} - ` : null}
-					{listing.city}, {listing.country}
+					{hotelName} · {listing.city}, {listing.country}
 				</p>
 
 				<ul className={styles.specs} aria-label="Hotel room highlights">
 					<li>
 						<BedDouble aria-hidden="true" />
 						<strong>{details?.bedType ?? "Listed"}</strong>
-						<span>Bed type</span>
+						<span>Bed</span>
 					</li>
 					<li>
 						<Users aria-hidden="true" />
@@ -89,10 +173,72 @@ export function HotelRoomListingCard({
 					</li>
 				</ul>
 
-				<Link href={detailHref} className={styles.detailsLink}>
-					View room
-					<ArrowRight aria-hidden="true" />
-				</Link>
+				<div className={styles.footer}>
+					<span className={styles.price}>
+						<strong>{formatMoney(listing.basePrice, listing.currency)}</strong>
+						<small>/{formatPricingUnit(listing.pricingUnit)}</small>
+					</span>
+					<span className={styles.rating}>
+						<Star aria-hidden="true" />
+						{ratingLabel}
+					</span>
+				</div>
+
+				<div className={styles.actionRow}>
+					<Link href={detailHref} className={styles.detailsLink}>
+						View room details
+						<ArrowRight aria-hidden="true" />
+					</Link>
+				</div>
+			</div>
+		</article>
+	);
+}
+
+export function HotelRoomListingCardSkeleton() {
+	return (
+		<article className={styles.card} aria-hidden="true">
+			<div className={styles.media}>
+				<span className={styles.skeletonImage} />
+				<span className={styles.skeletonStatusPill} />
+				<span className={styles.skeletonGalleryButton} data-position="left" />
+				<span className={styles.skeletonGalleryButton} data-position="right" />
+				<div className={styles.skeletonDots}>
+					{Array.from({ length: 4 }).map((_, index) => (
+						<span key={index} />
+					))}
+				</div>
+			</div>
+
+			<div className={styles.body}>
+				<div className={styles.heading}>
+					<div>
+						<span className={styles.skeletonRoomType} />
+						<span className={styles.skeletonTitle} />
+					</div>
+					<span className={styles.skeletonFavoriteButton} />
+				</div>
+
+				<span className={styles.skeletonLocation} />
+
+				<ul className={styles.specs}>
+					{Array.from({ length: 3 }).map((_, index) => (
+						<li key={index} className={styles.skeletonSpec}>
+							<span />
+							<strong />
+							<small />
+						</li>
+					))}
+				</ul>
+
+				<div className={styles.footer}>
+					<span className={styles.skeletonPrice} />
+					<span className={styles.skeletonRating} />
+				</div>
+
+				<div className={styles.actionRow}>
+					<span className={styles.skeletonDetailsLink} />
+				</div>
 			</div>
 		</article>
 	);
