@@ -18,7 +18,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import type { ListingListRequest } from "@/services/api/listings";
-import type { ListingSidebarRenderProps } from "./category-listings-page";
+import type { ListingSidebarRenderProps } from "../category-listings-page";
 import styles from "./apartment-listings-sidebar.module.css";
 
 const countries = ["Rwanda", "Kenya", "Uganda", "Tanzania", "Burundi"];
