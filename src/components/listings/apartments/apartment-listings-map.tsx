@@ -18,6 +18,11 @@ type ApartmentListingsMapProps = {
 	listings: PublicListing[];
 	detailBaseHref: string;
 	isLoading?: boolean;
+	ariaLabel?: string;
+	emptyTitle?: string;
+	emptyDescription?: string;
+	summarySingular?: string;
+	summaryPlural?: string;
 };
 
 type ListingMapMarker = {
@@ -86,6 +91,11 @@ export function ApartmentListingsMap({
 	listings,
 	detailBaseHref,
 	isLoading = false,
+	ariaLabel = "Apartment listings map",
+	emptyTitle = "No mapped apartments",
+	emptyDescription = "Listings with saved coordinates will appear here.",
+	summarySingular = "mapped apartment",
+	summaryPlural = "mapped apartments",
 }: ApartmentListingsMapProps) {
 	const markers = useMemo(
 		() =>
@@ -102,7 +112,7 @@ export function ApartmentListingsMap({
 	return (
 		<aside
 			className={styles.panel}
-			aria-label="Apartment listings map"
+			aria-label={ariaLabel}
 			data-empty={markers.length === 0}
 		>
 			<div className={styles.mapCanvas}>
@@ -152,7 +162,14 @@ export function ApartmentListingsMap({
 						<Home aria-hidden="true" />
 						{markers.length}
 					</span>
-					<small>{summaryLabel(markers.length, exactCount)}</small>
+					<small>
+						{summaryLabel(
+							markers.length,
+							exactCount,
+							summarySingular,
+							summaryPlural,
+						)}
+					</small>
 				</div>
 
 				{isLoading ? (
@@ -165,8 +182,8 @@ export function ApartmentListingsMap({
 				{markers.length === 0 && !isLoading ? (
 					<div className={styles.mapEmpty}>
 						<MapPin aria-hidden="true" />
-						<strong>No mapped apartments</strong>
-						<span>Listings with saved coordinates will appear here.</span>
+						<strong>{emptyTitle}</strong>
+						<span>{emptyDescription}</span>
 					</div>
 				) : null}
 
@@ -428,10 +445,15 @@ function isValidCoordinatePair(longitude: number, latitude: number) {
 	);
 }
 
-function summaryLabel(total: number, exactCount: number) {
+function summaryLabel(
+	total: number,
+	exactCount: number,
+	summarySingular: string,
+	summaryPlural: string,
+) {
 	if (total === 0) return "shown on map";
 	if (total === exactCount) {
-		return total === 1 ? "mapped apartment" : "mapped apartments";
+		return total === 1 ? summarySingular : summaryPlural;
 	}
 
 	return `${exactCount} exact · ${total - exactCount} approximate`;
