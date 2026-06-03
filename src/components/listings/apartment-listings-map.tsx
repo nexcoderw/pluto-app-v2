@@ -284,58 +284,127 @@ function ListingMapCamera({
 	useEffect(() => {
 		if (!map || !isLoaded) return;
 
-		if (selectedMarker) {
-			map.flyTo({
-				center: [selectedMarker.longitude, selectedMarker.latitude],
-				zoom: Math.max(Math.min(map.getZoom(), 12.4), 11.2),
-				duration: 700,
-				essential: true,
-			});
-			return;
-		}
+		let frameId = 0;
 
-		if (markers.length === 1) {
-			map.flyTo({
-				center: [markers[0].longitude, markers[0].latitude],
-				zoom: 11.8,
-				duration: 700,
-				essential: true,
-			});
-			return;
-		}
+		const fitVisibleListings = () => {
+			map.resize();
 
-		if (markers.length > 1) {
-			const bounds = markers.reduce(
-				(current, marker) => ({
-					minLng: Math.min(current.minLng, marker.longitude),
-					minLat: Math.min(current.minLat, marker.latitude),
-					maxLng: Math.max(current.maxLng, marker.longitude),
-					maxLat: Math.max(current.maxLat, marker.latitude),
-				}),
-				{
-					minLng: markers[0].longitude,
-					minLat: markers[0].latitude,
-					maxLng: markers[0].longitude,
-					maxLat: markers[0].latitude,
-				},
-			);
+			if (selectedMarker) {
+				map.flyTo({
+					center: [selectedMarker.longitude, selectedMarker.latitude],
+					zoom: Math.max(Math.min(map.getZoom(), 13.6), 12.4),
+					duration: 700,
+					essential: true,
+				});
+				return;
+			}
 
-			map.fitBounds(
-				[
-					[bounds.minLng, bounds.minLat],
-					[bounds.maxLng, bounds.maxLat],
-				],
-				{
-					padding: { top: 92, right: 72, bottom: 136, left: 72 },
+			if (markers.length === 1) {
+				const bounds = expandBounds(getMarkerBounds(markers), markers.length);
+
+				map.fitBounds(toMapLibreBounds(bounds), {
+					padding: getFitPadding(markers.length),
 					maxZoom: maxZoomForMarkerCount(markers.length),
 					duration: 700,
 					essential: true,
-				},
-			);
-		}
+				});
+				return;
+			}
+
+			if (markers.length > 1) {
+				const bounds = expandBounds(getMarkerBounds(markers), markers.length);
+
+				map.fitBounds(toMapLibreBounds(bounds), {
+					padding: getFitPadding(markers.length),
+					maxZoom: maxZoomForMarkerCount(markers.length),
+					duration: 700,
+					essential: true,
+				});
+			}
+		};
+
+		frameId = window.requestAnimationFrame(fitVisibleListings);
+
+		return () => {
+			window.cancelAnimationFrame(frameId);
+		};
 	}, [map, isLoaded, markerKey, markers, selectedMarker]);
 
 	return null;
+}
+
+type MarkerBounds = {
+	minLng: number;
+	minLat: number;
+	maxLng: number;
+	maxLat: number;
+};
+
+function getMarkerBounds(markers: ListingMapMarker[]): MarkerBounds {
+	return markers.reduce(
+		(current, marker) => ({
+			minLng: Math.min(current.minLng, marker.longitude),
+			minLat: Math.min(current.minLat, marker.latitude),
+			maxLng: Math.max(current.maxLng, marker.longitude),
+			maxLat: Math.max(current.maxLat, marker.latitude),
+		}),
+		{
+			minLng: markers[0]?.longitude ?? kigaliCenter[0],
+			minLat: markers[0]?.latitude ?? kigaliCenter[1],
+			maxLng: markers[0]?.longitude ?? kigaliCenter[0],
+			maxLat: markers[0]?.latitude ?? kigaliCenter[1],
+		},
+	);
+}
+
+function expandBounds(bounds: MarkerBounds, markerCount: number): MarkerBounds {
+	const lngSpan = Math.max(bounds.maxLng - bounds.minLng, 0);
+	const latSpan = Math.max(bounds.maxLat - bounds.minLat, 0);
+	const minimumSpan = minimumSpanForMarkerCount(markerCount);
+	const lngPadding = Math.max(lngSpan * 0.32, minimumSpan.lng);
+	const latPadding = Math.max(latSpan * 0.46, minimumSpan.lat);
+
+	return {
+		minLng: bounds.minLng - lngPadding,
+		minLat: bounds.minLat - latPadding,
+		maxLng: bounds.maxLng + lngPadding,
+		maxLat: bounds.maxLat + latPadding,
+	};
+}
+
+function toMapLibreBounds(
+	bounds: MarkerBounds,
+): [[number, number], [number, number]] {
+	return [
+		[bounds.minLng, bounds.minLat],
+		[bounds.maxLng, bounds.maxLat],
+	];
+}
+
+function minimumSpanForMarkerCount(count: number) {
+	if (count <= 1) return { lng: 0.011, lat: 0.008 };
+	if (count === 2) return { lng: 0.008, lat: 0.006 };
+	if (count <= 4) return { lng: 0.006, lat: 0.005 };
+	if (count <= 8) return { lng: 0.004, lat: 0.004 };
+
+	return { lng: 0.003, lat: 0.003 };
+}
+
+function getFitPadding(count: number) {
+	if (count <= 1) return { top: 94, right: 98, bottom: 150, left: 98 };
+	if (count === 2) return { top: 88, right: 96, bottom: 138, left: 96 };
+	if (count <= 4) return { top: 82, right: 84, bottom: 128, left: 84 };
+
+	return { top: 76, right: 72, bottom: 118, left: 72 };
+}
+
+function maxZoomForMarkerCount(count: number) {
+	if (count <= 1) return 14.1;
+	if (count === 2) return 13.9;
+	if (count <= 4) return 13.4;
+	if (count <= 8) return 12.7;
+
+	return 12.1;
 }
 
 function road(coordinates: Array<[number, number]>) {
@@ -358,15 +427,6 @@ function district(coordinates: Array<[number, number]>) {
 			coordinates: [coordinates],
 		},
 	};
-}
-
-function maxZoomForMarkerCount(count: number) {
-	if (count <= 1) return 11.8;
-	if (count === 2) return 12.2;
-	if (count <= 4) return 11.8;
-	if (count <= 8) return 11.3;
-
-	return 10.8;
 }
 
 function toListingMarker(
