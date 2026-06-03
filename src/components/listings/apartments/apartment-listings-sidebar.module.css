@@ -123,6 +123,36 @@
 	font-weight: 880;
 }
 
+.exchangePanel {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.5rem;
+}
+
+.exchangePanel span {
+	display: grid;
+	gap: 0.16rem;
+	padding: 0.62rem 0.7rem;
+	border: 1px solid rgba(2, 0, 108, 0.08);
+	border-radius: 0.9rem;
+	background: rgba(2, 0, 108, 0.045);
+}
+
+.exchangePanel small {
+	color: rgba(23, 23, 31, 0.58);
+	font-size: 0.66rem;
+	font-weight: 760;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+}
+
+.exchangePanel strong {
+	color: #02006c;
+	font-size: 0.78rem;
+	font-weight: 850;
+	line-height: 1.25;
+}
+
 .range {
 	width: 100%;
 	height: 0.42rem;
@@ -151,6 +181,14 @@
 	background: #02006c;
 	box-shadow: 0 0.45rem 1rem rgba(2, 0, 108, 0.24);
 	cursor: pointer;
+}
+
+.budgetHint {
+	margin: -0.18rem 0 0;
+	color: rgba(23, 23, 31, 0.62);
+	font-size: 0.72rem;
+	font-weight: 650;
+	line-height: 1.45;
 }
 
 .clearBudget {
@@ -187,6 +225,7 @@
 @media (max-width: 720px) {
 	.locationGrid,
 	.spaceGrid,
+	.exchangePanel,
 	.actions {
 		grid-template-columns: 1fr;
 	}
