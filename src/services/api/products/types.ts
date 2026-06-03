@@ -117,6 +117,8 @@ export type Product = {
 	rejectionReason?: string | null;
 	adminNotes?: string | null;
 	publishedAt: string | null;
+	ratingAverage?: number | null;
+	ratingCount?: number;
 	reviewedAt?: string | null;
 	createdAt?: string;
 	updatedAt?: string;
