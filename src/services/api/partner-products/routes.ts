@@ -5,6 +5,10 @@ export const PARTNER_PRODUCT_ROUTES = {
 	update: (productId: string) => `/partner/products/${productId}`,
 	delete: (productId: string) => `/partner/products/${productId}`,
 	createCar: '/partner/products/cars',
+	imageUploadSignature: (productId: string) =>
+		`/partner/products/${productId}/images/signature`,
+	completeImageUpload: (productId: string) =>
+		`/partner/products/${productId}/images/complete`,
 	images: (productId: string) => `/partner/products/${productId}/images`,
 	image: (productId: string, imageId: string) =>
 		`/partner/products/${productId}/images/${imageId}`,
