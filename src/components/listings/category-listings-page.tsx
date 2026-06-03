@@ -118,7 +118,11 @@ export function CategoryListingsPage({
 	const listings = listingsQuery.data?.items ?? [];
 	const meta = listingsQuery.data?.meta;
 	const usesStayMapLayout =
-		categorySlug === "apartments" || categorySlug === "hotel-rooms";
+		categorySlug === "apartments" ||
+		categorySlug === "hotel-rooms" ||
+		categorySlug === "airbnb";
+	const mapListingSingular = getMapListingLabel(categoryLabel, "singular");
+	const mapListingPlural = getMapListingLabel(categoryLabel, "plural");
 
 	function applyFilters() {
 		setAppliedFilters(cleanRequest(draftFilters));
@@ -400,10 +404,10 @@ export function CategoryListingsPage({
 								detailBaseHref={detailBaseHref}
 								isLoading={listingsQuery.isFetching}
 								ariaLabel={`${categoryLabel} map`}
-								emptyTitle={`No mapped ${categoryLabel.toLowerCase()}`}
-								emptyDescription={`${categoryLabel} with saved coordinates will appear here.`}
-								summarySingular={`mapped ${singularizeCategory(categoryLabel)}`}
-								summaryPlural={`mapped ${categoryLabel.toLowerCase()}`}
+								emptyTitle={`No mapped ${mapListingPlural}`}
+								emptyDescription={`${sentenceCase(mapListingPlural)} with saved coordinates will appear here.`}
+								summarySingular={`mapped ${mapListingSingular}`}
+								summaryPlural={`mapped ${mapListingPlural}`}
 							/>
 						</div>
 					) : (
@@ -696,13 +700,29 @@ function formatFilterInputValue(
 	return typeof value === "boolean" ? String(value) : (value ?? "");
 }
 
-function singularizeCategory(categoryLabel: string) {
+function getMapListingLabel(
+	categoryLabel: string,
+	count: "singular" | "plural",
+) {
 	const normalizedLabel = categoryLabel.toLowerCase();
 
-	if (normalizedLabel === "hotel rooms") return "hotel room";
-	if (normalizedLabel.endsWith("s")) return normalizedLabel.slice(0, -1);
+	if (normalizedLabel === "hotel rooms") {
+		return count === "singular" ? "hotel room" : "hotel rooms";
+	}
+
+	if (normalizedLabel === "airbnb") {
+		return count === "singular" ? "AirBnB stay" : "AirBnB stays";
+	}
+
+	if (count === "singular" && normalizedLabel.endsWith("s")) {
+		return normalizedLabel.slice(0, -1);
+	}
 
 	return normalizedLabel;
+}
+
+function sentenceCase(value: string) {
+	return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
 function formatMoney(value: string, currency: string) {
