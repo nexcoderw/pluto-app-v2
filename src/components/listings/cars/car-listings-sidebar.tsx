@@ -1,6 +1,5 @@
 "use client";
 
-import type { ReactNode } from "react";
 import {
 	CarFront,
 	CircleDollarSign,
@@ -8,10 +7,7 @@ import {
 	MapPin,
 	RefreshCcw,
 	Search,
-	ShieldCheck,
 	SlidersHorizontal,
-	Snowflake,
-	Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,7 +18,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import type { ListingListRequest } from "@/services/api/listings";
 import type { ListingSidebarRenderProps } from "../category-listings-page";
 import styles from "./car-listings-sidebar.module.css";
@@ -34,6 +29,8 @@ const seatOptions = [2, 4, 5, 7, 8];
 const minYearOptions = [2024, 2022, 2020, 2018, 2015, 2010];
 const maxBudget = 500000;
 const budgetStep = 5000;
+const usdToRwfSellRate = 1460;
+const rwfToUsdBuyRate = 1470;
 
 export function CarListingsSidebar({
 	categoryLabel,
@@ -72,30 +69,32 @@ export function CarListingsSidebar({
 					<MapPin aria-hidden="true" />
 					<span>Location</span>
 				</div>
-				<Input
-					type="text"
-					value={textValue(draftFilters.city)}
-					placeholder="City"
-					onChange={(event) => setDraftFilter("city", event.target.value)}
-				/>
-				<Select
-					value={selectValue(draftFilters.country)}
-					onValueChange={(value) =>
-						setDraftFilter("country", optionalText(value))
-					}
-				>
-					<SelectTrigger className={styles.selectTrigger}>
-						<SelectValue>Country</SelectValue>
-					</SelectTrigger>
-					<SelectContent align="start" alignItemWithTrigger={false}>
-						<SelectItem value="ANY">Any country</SelectItem>
-						{countries.map((country) => (
-							<SelectItem key={country} value={country}>
-								{country}
-							</SelectItem>
-						))}
-					</SelectContent>
-				</Select>
+				<div className={styles.locationGrid}>
+					<Input
+						type="text"
+						value={textValue(draftFilters.city)}
+						placeholder="City"
+						onChange={(event) => setDraftFilter("city", event.target.value)}
+					/>
+					<Select
+						value={selectValue(draftFilters.country)}
+						onValueChange={(value) =>
+							setDraftFilter("country", optionalText(value))
+						}
+					>
+						<SelectTrigger className={styles.selectTrigger}>
+							<SelectValue>Country</SelectValue>
+						</SelectTrigger>
+						<SelectContent align="start" alignItemWithTrigger={false}>
+							<SelectItem value="ANY">Any country</SelectItem>
+							{countries.map((country) => (
+								<SelectItem key={country} value={country}>
+									{country}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+				</div>
 			</div>
 
 			<div className={styles.section}>
@@ -103,18 +102,20 @@ export function CarListingsSidebar({
 					<Search aria-hidden="true" />
 					<span>Vehicle identity</span>
 				</div>
-				<Input
-					type="text"
-					value={textValue(draftFilters.make)}
-					placeholder="Make, e.g. Toyota"
-					onChange={(event) => setDraftFilter("make", event.target.value)}
-				/>
-				<Input
-					type="text"
-					value={textValue(draftFilters.model)}
-					placeholder="Model, e.g. RAV4"
-					onChange={(event) => setDraftFilter("model", event.target.value)}
-				/>
+				<div className={styles.identityGrid}>
+					<Input
+						type="text"
+						value={textValue(draftFilters.make)}
+						placeholder="Make, e.g. Toyota"
+						onChange={(event) => setDraftFilter("make", event.target.value)}
+					/>
+					<Input
+						type="text"
+						value={textValue(draftFilters.model)}
+						placeholder="Model, e.g. RAV4"
+						onChange={(event) => setDraftFilter("model", event.target.value)}
+					/>
+				</div>
 			</div>
 
 			<div className={styles.section}>
@@ -122,43 +123,43 @@ export function CarListingsSidebar({
 					<Fuel aria-hidden="true" />
 					<span>Specifications</span>
 				</div>
-				<Select
-					value={selectValue(draftFilters.transmission)}
-					onValueChange={(value) =>
-						setDraftFilter("transmission", optionalText(value))
-					}
-				>
-					<SelectTrigger className={styles.selectTrigger}>
-						<SelectValue>Transmission</SelectValue>
-					</SelectTrigger>
-					<SelectContent align="start" alignItemWithTrigger={false}>
-						<SelectItem value="ANY">Any transmission</SelectItem>
-						{transmissions.map((transmission) => (
-							<SelectItem key={transmission} value={transmission}>
-								{transmission}
-							</SelectItem>
-						))}
-					</SelectContent>
-				</Select>
-				<Select
-					value={selectValue(draftFilters.fuelType)}
-					onValueChange={(value) =>
-						setDraftFilter("fuelType", optionalText(value))
-					}
-				>
-					<SelectTrigger className={styles.selectTrigger}>
-						<SelectValue>Fuel type</SelectValue>
-					</SelectTrigger>
-					<SelectContent align="start" alignItemWithTrigger={false}>
-						<SelectItem value="ANY">Any fuel type</SelectItem>
-						{fuelTypes.map((fuelType) => (
-							<SelectItem key={fuelType} value={fuelType}>
-								{fuelType}
-							</SelectItem>
-						))}
-					</SelectContent>
-				</Select>
-				<div className={styles.compactGrid}>
+				<div className={styles.specGrid}>
+					<Select
+						value={selectValue(draftFilters.transmission)}
+						onValueChange={(value) =>
+							setDraftFilter("transmission", optionalText(value))
+						}
+					>
+						<SelectTrigger className={styles.selectTrigger}>
+							<SelectValue>Transmission</SelectValue>
+						</SelectTrigger>
+						<SelectContent align="start" alignItemWithTrigger={false}>
+							<SelectItem value="ANY">Any transmission</SelectItem>
+							{transmissions.map((transmission) => (
+								<SelectItem key={transmission} value={transmission}>
+									{transmission}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+					<Select
+						value={selectValue(draftFilters.fuelType)}
+						onValueChange={(value) =>
+							setDraftFilter("fuelType", optionalText(value))
+						}
+					>
+						<SelectTrigger className={styles.selectTrigger}>
+							<SelectValue>Fuel type</SelectValue>
+						</SelectTrigger>
+						<SelectContent align="start" alignItemWithTrigger={false}>
+							<SelectItem value="ANY">Any fuel type</SelectItem>
+							{fuelTypes.map((fuelType) => (
+								<SelectItem key={fuelType} value={fuelType}>
+									{fuelType}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
 					<Select
 						value={selectValue(draftFilters.seats)}
 						onValueChange={(value) =>
@@ -207,8 +208,18 @@ export function CarListingsSidebar({
 					<div className={styles.priceHeader}>
 						<span>Max budget</span>
 						<strong>
-							{hasBudgetFilter ? formatBudget(selectedBudget) : "Any budget"}
+							{formatBudgetLabel(selectedBudget, hasBudgetFilter)}
 						</strong>
+					</div>
+					<div className={styles.exchangePanel}>
+						<span>
+							<small>USD sell</small>
+							<strong>$1 = RWF {formatPlainNumber(usdToRwfSellRate)}</strong>
+						</span>
+						<span>
+							<small>RWF buy</small>
+							<strong>RWF {formatPlainNumber(rwfToUsdBuyRate)} = $1</strong>
+						</span>
 					</div>
 					<input
 						type="range"
@@ -222,6 +233,11 @@ export function CarListingsSidebar({
 						}
 						aria-label="Maximum car listing price"
 					/>
+					<p className={styles.budgetHint}>
+						{hasBudgetFilter
+							? `Budget equivalent: ${formatUsdEquivalent(selectedBudget)} using the RWF buy rate. USD listings are filtered with the USD sell rate.`
+							: "Set a RWF budget to filter both RWF and USD car listings fairly."}
+					</p>
 					<button
 						type="button"
 						className={styles.clearBudget}
@@ -230,31 +246,6 @@ export function CarListingsSidebar({
 						Clear budget
 					</button>
 				</div>
-			</div>
-
-			<div className={styles.section}>
-				<div className={styles.sectionTitle}>
-					<ShieldCheck aria-hidden="true" />
-					<span>Comfort</span>
-				</div>
-				<SwitchRow
-					icon={<Snowflake aria-hidden="true" />}
-					label="Air conditioning"
-					description="Show cars with cabin cooling listed."
-					checked={draftFilters.airConditioning === true}
-					onCheckedChange={(checked) =>
-						setDraftFilter("airConditioning", checked ? true : undefined)
-					}
-				/>
-				<SwitchRow
-					icon={<Users aria-hidden="true" />}
-					label="Driver included"
-					description="Only show cars that include a driver."
-					checked={draftFilters.driverIncluded === true}
-					onCheckedChange={(checked) =>
-						setDraftFilter("driverIncluded", checked ? true : undefined)
-					}
-				/>
 			</div>
 
 			<div className={styles.actions}>
@@ -268,35 +259,6 @@ export function CarListingsSidebar({
 				</Button>
 			</div>
 		</aside>
-	);
-}
-
-function SwitchRow({
-	icon,
-	label,
-	description,
-	checked,
-	onCheckedChange,
-}: {
-	icon: ReactNode;
-	label: string;
-	description: string;
-	checked: boolean;
-	onCheckedChange: (checked: boolean) => void;
-}) {
-	return (
-		<label className={styles.switchRow}>
-			<span className={styles.switchIcon}>{icon}</span>
-			<span>
-				<strong>{label}</strong>
-				<small>{description}</small>
-			</span>
-			<Switch
-				checked={checked}
-				onCheckedChange={onCheckedChange}
-				className={styles.switch}
-			/>
-		</label>
 	);
 }
 
@@ -321,7 +283,23 @@ function optionalNumber(value: string | null) {
 	return Number.isFinite(numberValue) ? numberValue : undefined;
 }
 
-function formatBudget(value: number) {
+function formatBudgetLabel(value: number, hasBudgetFilter: boolean) {
+	if (!hasBudgetFilter) {
+		return "Any budget";
+	}
+
+	return `RWF ${formatPlainNumber(value)}`;
+}
+
+function formatUsdEquivalent(value: number) {
+	return new Intl.NumberFormat("en-US", {
+		style: "currency",
+		currency: "USD",
+		maximumFractionDigits: 0,
+	}).format(value / rwfToUsdBuyRate);
+}
+
+function formatPlainNumber(value: number) {
 	return new Intl.NumberFormat("en-US", {
 		maximumFractionDigits: 0,
 	}).format(value);
