@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import type { ListingListRequest } from "@/services/api/listings";
-import type { ListingSidebarRenderProps } from "./category-listings-page";
+import type { ListingSidebarRenderProps } from "../category-listings-page";
 import styles from "./airbnb-listings-sidebar.module.css";
 
 const countries = ["Rwanda", "Kenya", "Uganda", "Tanzania", "Burundi"];
@@ -44,7 +44,10 @@ export function AirbnbListingsSidebar({
 	setDraftFilter,
 	applyFilters,
 	resetFilters,
-}: ListingSidebarRenderProps) {
+	variant = "sidebar",
+}: ListingSidebarRenderProps & {
+	variant?: "sidebar" | "dialog";
+}) {
 	const selectedBudget =
 		typeof draftFilters.maxPrice === "number"
 			? draftFilters.maxPrice
@@ -52,7 +55,11 @@ export function AirbnbListingsSidebar({
 	const hasBudgetFilter = typeof draftFilters.maxPrice === "number";
 
 	return (
-		<aside className={styles.sidebar} aria-label={`${categoryLabel} filters`}>
+		<aside
+			className={styles.sidebar}
+			data-variant={variant}
+			aria-label={`${categoryLabel} filters`}
+		>
 			<div className={styles.header}>
 				<span className={styles.iconBadge}>
 					<House aria-hidden="true" />
