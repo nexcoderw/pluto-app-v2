@@ -13,7 +13,7 @@ import {
 	Users,
 } from "lucide-react";
 import type { PublicListing } from "@/services/api/listings";
-import { formatMoney } from "./listing-formatters";
+import { formatMoney } from "../listing-formatters";
 import styles from "./apartment-listing-card.module.css";
 
 type ApartmentListingCardProps = {
@@ -147,9 +147,7 @@ export function ApartmentListingCard({
 					<h2>{listing.title}</h2>
 				</Link>
 
-				<p className={styles.summary}>
-					{listing.shortDescription}
-				</p>
+				<p className={styles.summary}>{listing.shortDescription}</p>
 
 				<p className={styles.location}>
 					{details?.bedrooms ?? "-"} bedrooms · {details?.bathrooms ?? "-"}{" "}
