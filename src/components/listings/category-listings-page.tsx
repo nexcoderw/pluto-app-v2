@@ -68,6 +68,7 @@ type CategoryListingsPageProps = {
 		detailHref: string,
 		index: number,
 	) => ReactNode;
+	renderSkeletonCard?: (index: number) => ReactNode;
 	renderSidebar?: (props: ListingSidebarRenderProps) => ReactNode;
 	filterPresentation?: "sidebar" | "dialog";
 };
@@ -86,6 +87,7 @@ export function CategoryListingsPage({
 	filters,
 	listListings,
 	renderCard,
+	renderSkeletonCard,
 	renderSidebar,
 	filterPresentation = "sidebar",
 }: CategoryListingsPageProps) {
@@ -155,7 +157,7 @@ export function CategoryListingsPage({
 
 	function renderListingResults() {
 		if (listingsQuery.isPending) {
-			return <CategoryListingsSkeleton />;
+			return <CategoryListingsSkeleton renderCard={renderSkeletonCard} />;
 		}
 
 		if (listingsQuery.isError) {
@@ -515,18 +517,26 @@ function DefaultListingCard({
 	);
 }
 
-function CategoryListingsSkeleton() {
+function CategoryListingsSkeleton({
+	renderCard,
+}: {
+	renderCard?: (index: number) => ReactNode;
+}) {
 	return (
 		<>
 			<section className={styles.grid} aria-label="Loading listings">
-				{Array.from({ length: 12 }).map((_, index) => (
-					<article key={index} className={styles.skeletonCard}>
-						<Skeleton className={styles.skeletonCover} />
-						<Skeleton className={styles.skeletonLine} />
-						<Skeleton className={styles.skeletonText} />
-						<Skeleton className={styles.skeletonText} />
-					</article>
-				))}
+				{Array.from({ length: 12 }).map((_, index) =>
+					renderCard ? (
+						renderCard(index)
+					) : (
+						<article key={index} className={styles.skeletonCard}>
+							<Skeleton className={styles.skeletonCover} />
+							<Skeleton className={styles.skeletonLine} />
+							<Skeleton className={styles.skeletonText} />
+							<Skeleton className={styles.skeletonText} />
+						</article>
+					),
+				)}
 			</section>
 		</>
 	);
