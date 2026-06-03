@@ -40,6 +40,10 @@
 	grid-template-columns: minmax(0, 1fr);
 }
 
+.page[data-category="cars"] .workspace {
+	grid-template-columns: minmax(25rem, 29rem) minmax(0, 1fr);
+}
+
 .sidebar,
 .toolbar,
 .card,
@@ -461,7 +465,8 @@
 }
 
 @media (max-width: 1080px) {
-	.workspace {
+	.workspace,
+	.page[data-category="cars"] .workspace {
 		grid-template-columns: 1fr;
 	}
 
