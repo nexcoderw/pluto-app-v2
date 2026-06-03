@@ -69,7 +69,11 @@ type CategoryListingsPageProps = {
 	detailBaseHref: string;
 	filters: ListingSidebarFilter[];
 	listListings: (params: ListingListRequest) => Promise<ListingListResponse>;
-	renderCard?: (listing: PublicListing, detailHref: string) => ReactNode;
+	renderCard?: (
+		listing: PublicListing,
+		detailHref: string,
+		index: number,
+	) => ReactNode;
 	renderSidebar?: (props: ListingSidebarRenderProps) => ReactNode;
 	filterPresentation?: "sidebar" | "dialog";
 };
@@ -185,11 +189,11 @@ export function CategoryListingsPage({
 		return (
 			<>
 				<section className={styles.grid}>
-					{listings.map((listing) => {
+					{listings.map((listing, index) => {
 						const detailHref = `${detailBaseHref}/${listing.id}`;
 
 						return renderCard ? (
-							renderCard(listing, detailHref)
+							renderCard(listing, detailHref, index)
 						) : (
 							<DefaultListingCard
 								key={listing.id}
