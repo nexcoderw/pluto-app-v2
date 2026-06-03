@@ -117,7 +117,8 @@ export function CategoryListingsPage({
 	});
 	const listings = listingsQuery.data?.items ?? [];
 	const meta = listingsQuery.data?.meta;
-	const usesApartmentMapLayout = categorySlug === "apartments";
+	const usesStayMapLayout =
+		categorySlug === "apartments" || categorySlug === "hotel-rooms";
 
 	function applyFilters() {
 		setAppliedFilters(cleanRequest(draftFilters));
@@ -389,7 +390,7 @@ export function CategoryListingsPage({
 						</Button>
 					</div>
 
-					{usesApartmentMapLayout ? (
+					{usesStayMapLayout ? (
 						<div className={styles.apartmentMapLayout}>
 							<div className={styles.apartmentCardsColumn}>
 								{renderListingResults()}
@@ -398,6 +399,11 @@ export function CategoryListingsPage({
 								listings={listings}
 								detailBaseHref={detailBaseHref}
 								isLoading={listingsQuery.isFetching}
+								ariaLabel={`${categoryLabel} map`}
+								emptyTitle={`No mapped ${categoryLabel.toLowerCase()}`}
+								emptyDescription={`${categoryLabel} with saved coordinates will appear here.`}
+								summarySingular={`mapped ${singularizeCategory(categoryLabel)}`}
+								summaryPlural={`mapped ${categoryLabel.toLowerCase()}`}
 							/>
 						</div>
 					) : (
@@ -688,6 +694,15 @@ function formatFilterInputValue(
 	value: ListingListRequest[keyof ListingListRequest],
 ) {
 	return typeof value === "boolean" ? String(value) : (value ?? "");
+}
+
+function singularizeCategory(categoryLabel: string) {
+	const normalizedLabel = categoryLabel.toLowerCase();
+
+	if (normalizedLabel === "hotel rooms") return "hotel room";
+	if (normalizedLabel.endsWith("s")) return normalizedLabel.slice(0, -1);
+
+	return normalizedLabel;
 }
 
 function formatMoney(value: string, currency: string) {
