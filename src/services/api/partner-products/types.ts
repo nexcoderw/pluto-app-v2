@@ -135,6 +135,34 @@ export type UploadProductImageRequest = {
 	sortOrder?: number;
 };
 
+export type ProductImageUploadSignatureRequest = {
+	productId: string;
+	file: File;
+};
+
+export type ProductImageUploadSignatureResponse = {
+	message?: string;
+	cloudName: string;
+	apiKey: string;
+	publicId: string;
+	uploadUrl: string;
+	timestamp: number;
+	signature: string;
+	uploadParameters: Record<string, string | number>;
+	expiresAt: string;
+};
+
+export type CompleteProductImageUploadRequest = {
+	productId: string;
+	publicId: string;
+	originalName: string;
+	mimeType: string;
+	sizeBytes: number;
+	altText?: string;
+	isCover?: boolean;
+	sortOrder?: number;
+};
+
 export type UpdateProductImageRequest = {
 	productId: string;
 	imageId: string;
