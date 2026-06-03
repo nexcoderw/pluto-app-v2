@@ -68,6 +68,10 @@ import {
 	GooglePlacePicker,
 	type ListingPlaceValue,
 } from "./google-place-picker";
+import {
+	ListingSaveProgressDialog,
+	type ListingSaveProgressState,
+} from "./listing-save-progress-dialog";
 import styles from "./listing-form.module.css";
 
 type ListingFormMode = "create" | "edit";
@@ -243,6 +247,12 @@ const countryOptions = getCountries()
 
 		return first.name.localeCompare(second.name);
 	});
+const initialProgressState: ListingSaveProgressState = {
+	phase: "preparing",
+	progress: 0,
+	mediaCompleted: 0,
+	mediaTotal: 0,
+};
 
 export function ListingForm({
 	mode,
@@ -262,45 +272,112 @@ export function ListingForm({
 		sortImages(product?.images ?? []),
 	);
 	const [imageFiles, setImageFiles] = useState<File[]>([]);
+	const [progressOpen, setProgressOpen] = useState(false);
+	const [progressState, setProgressState] =
+		useState<ListingSaveProgressState>(initialProgressState);
 	const isEdit = mode === "edit" && Boolean(product);
 	const mutation = useMutation({
 		mutationFn: async () => {
+			setProgressState({
+				phase: "preparing",
+				progress: 8,
+				mediaCompleted: 0,
+				mediaTotal: imageFiles.length,
+			});
 			const payload = toListingPayload(values);
+			setProgressState({
+				phase: "saving",
+				progress: 24,
+				mediaCompleted: 0,
+				mediaTotal: imageFiles.length,
+			});
 			const response =
 				isEdit && product
 					? await updateListing(product.id, payload as UpdateListingRequest)
 					: await createListing(payload as CreateListingRequest);
 
-			await Promise.all(
-				imageFiles.map((file, index) =>
-					uploadProductImage({
-						productId: response.product.id,
-						file,
-						isCover: index === 0 && existingImages.length === 0,
-						sortOrder: existingImages.length + index,
-						altText: `${values.title} image ${index + 1}`,
+			if (imageFiles.length > 0) {
+				setProgressState({
+					phase: "uploading",
+					progress: 48,
+					mediaCompleted: 0,
+					mediaTotal: imageFiles.length,
+				});
+
+				await Promise.all(
+					imageFiles.map(async (file, index) => {
+						const uploadedImage = await uploadProductImage({
+							productId: response.product.id,
+							file,
+							isCover: index === 0 && existingImages.length === 0,
+							sortOrder: existingImages.length + index,
+							altText: `${values.title} image ${index + 1}`,
+						});
+
+						setProgressState((current) => {
+							const nextCompleted = Math.min(
+								current.mediaCompleted + 1,
+								imageFiles.length,
+							);
+							const mediaProgress =
+								48 + Math.round((nextCompleted / imageFiles.length) * 34);
+
+							return {
+								...current,
+								phase: "uploading",
+								progress: mediaProgress,
+								mediaCompleted: nextCompleted,
+								mediaTotal: imageFiles.length,
+							};
+						});
+
+						return uploadedImage;
 					}),
-				),
-			);
+				);
+			}
+
+			setProgressState({
+				phase: "finalizing",
+				progress: 92,
+				mediaCompleted: imageFiles.length,
+				mediaTotal: imageFiles.length,
+			});
 
 			return response;
 		},
 		onSuccess: async (response) => {
+			setProgressState({
+				phase: "success",
+				progress: 100,
+				mediaCompleted: imageFiles.length,
+				mediaTotal: imageFiles.length,
+				message: "Your listing has been saved and prepared for admin review.",
+			});
 			await queryClient.invalidateQueries({ queryKey: ["partner-products"] });
 			toast.success(isEdit ? "Listing updated." : "Listing created.", {
 				description: "Your listing has been sent for admin review.",
 			});
+			await wait(700);
+			setProgressOpen(false);
 			router.push(`/partner/listings/${response.product.id}`);
 		},
-		onError: (error) => {
+		onError: async (error) => {
 			const message =
 				error instanceof ApiRequestError
 					? error.message
 					: "The listing could not be saved. Please try again.";
 
+			setProgressState((current) => ({
+				...current,
+				phase: "error",
+				progress: 100,
+				message,
+			}));
 			toast.error("Listing was not saved", {
 				description: message,
 			});
+			await wait(1400);
+			setProgressOpen(false);
 		},
 	});
 	const deleteImageMutation = useMutation({
@@ -455,136 +532,150 @@ export function ListingForm({
 			return;
 		}
 
+		setProgressState({
+			phase: "preparing",
+			progress: 4,
+			mediaCompleted: 0,
+			mediaTotal: imageFiles.length,
+		});
+		setProgressOpen(true);
 		mutation.mutate();
 	}
 
 	return (
-		<form className={styles.formShell} onSubmit={handleSubmit}>
-			<aside className={styles.stepSidebar} aria-label="Listing form steps">
-				<div className={styles.stepIntro}>
-					<span>
-						<ShieldCheck aria-hidden="true" />
-						Review workflow
-					</span>
-				</div>
+		<>
+			<ListingSaveProgressDialog
+				open={progressOpen}
+				mode={mode}
+				{...progressState}
+			/>
+			<form className={styles.formShell} onSubmit={handleSubmit}>
+				<aside className={styles.stepSidebar} aria-label="Listing form steps">
+					<div className={styles.stepIntro}>
+						<span>
+							<ShieldCheck aria-hidden="true" />
+							Review workflow
+						</span>
+					</div>
 
-				<div className={styles.stepList}>
-					{visibleSteps.map((step, index) => {
-						const Icon = step.icon;
+					<div className={styles.stepList}>
+						{visibleSteps.map((step, index) => {
+							const Icon = step.icon;
 
-						return (
-							<button
-								key={step.key}
-								type="button"
-								data-active={index === currentStep}
-								data-complete={index < currentStep}
-								onClick={() => goToStep(index)}
-							>
-								<span>
-									{index < currentStep ? (
-										<CheckCircle2 aria-hidden="true" className="h-5" />
-									) : (
-										<Icon aria-hidden="true" className="h-5" />
-									)}
-								</span>
-								<strong>{step.title}</strong>
-								<small>{step.description}</small>
-							</button>
-						);
-					})}
-				</div>
-			</aside>
+							return (
+								<button
+									key={step.key}
+									type="button"
+									data-active={index === currentStep}
+									data-complete={index < currentStep}
+									onClick={() => goToStep(index)}
+								>
+									<span>
+										{index < currentStep ? (
+											<CheckCircle2 aria-hidden="true" className="h-5" />
+										) : (
+											<Icon aria-hidden="true" className="h-5" />
+										)}
+									</span>
+									<strong>{step.title}</strong>
+									<small>{step.description}</small>
+								</button>
+							);
+						})}
+					</div>
+				</aside>
 
-			<section className={styles.formPanel}>
-				<div className={styles.formHeader}>
-					<span>
-						<StepIcon aria-hidden="true" />
-						Step {currentStep + 1} of {visibleSteps.length}
-					</span>
-					<h1>{selectedStep.title}</h1>
-					<p>{selectedStep.description}</p>
-				</div>
+				<section className={styles.formPanel}>
+					<div className={styles.formHeader}>
+						<span>
+							<StepIcon aria-hidden="true" />
+							Step {currentStep + 1} of {visibleSteps.length}
+						</span>
+						<h1>{selectedStep.title}</h1>
+						<p>{selectedStep.description}</p>
+					</div>
 
-				{selectedStep.key === "category" ? (
-					<CategoryStep
-						values={values}
-						error={errors.category}
-						isEdit={isEdit}
-						onChange={updateField}
-					/>
-				) : null}
+					{selectedStep.key === "category" ? (
+						<CategoryStep
+							values={values}
+							error={errors.category}
+							isEdit={isEdit}
+							onChange={updateField}
+						/>
+					) : null}
 
-				{selectedStep.key === "story" ? (
-					<ListingStoryStep
-						values={values}
-						errors={errors}
-						onChange={updateField}
-					/>
-				) : null}
+					{selectedStep.key === "story" ? (
+						<ListingStoryStep
+							values={values}
+							errors={errors}
+							onChange={updateField}
+						/>
+					) : null}
 
-				{selectedStep.key === "details" ? (
-					<CategoryDetailsStep
-						values={values}
-						errors={errors}
-						onChange={updateField}
-					/>
-				) : null}
+					{selectedStep.key === "details" ? (
+						<CategoryDetailsStep
+							values={values}
+							errors={errors}
+							onChange={updateField}
+						/>
+					) : null}
 
-				{selectedStep.key === "location" ? (
-					<ListingLocationStep
-						values={values}
-						errors={errors}
-						onChange={updateField}
-					/>
-				) : null}
+					{selectedStep.key === "location" ? (
+						<ListingLocationStep
+							values={values}
+							errors={errors}
+							onChange={updateField}
+						/>
+					) : null}
 
-				{selectedStep.key === "pricing" ? (
-					<PricingMediaStep
-						values={values}
-						errors={errors}
-						selectedCategoryTitle={selectedCategory?.title ?? "Listing"}
-						existingImages={existingImages}
-						imageFiles={imageFiles}
-						imageSummary={imageSummary}
-						deletingImageId={deleteImageMutation.variables?.imageId}
-						isDeletingImage={deleteImageMutation.isPending}
-						onChange={updateField}
-						onFiles={handleFiles}
-						onDeleteExistingImage={deleteExistingImage}
-						onRemoveImage={removeImage}
-					/>
-				) : null}
+					{selectedStep.key === "pricing" ? (
+						<PricingMediaStep
+							values={values}
+							errors={errors}
+							selectedCategoryTitle={selectedCategory?.title ?? "Listing"}
+							existingImages={existingImages}
+							imageFiles={imageFiles}
+							imageSummary={imageSummary}
+							deletingImageId={deleteImageMutation.variables?.imageId}
+							isDeletingImage={deleteImageMutation.isPending}
+							onChange={updateField}
+							onFiles={handleFiles}
+							onDeleteExistingImage={deleteExistingImage}
+							onRemoveImage={removeImage}
+						/>
+					) : null}
 
-				<div className={styles.formActions}>
-					<Button
-						type="button"
-						variant="outline"
-						disabled={currentStep === 0 || mutation.isPending}
-						onClick={() => setCurrentStep((step) => Math.max(step - 1, 0))}
-					>
-						<ArrowLeft aria-hidden="true" />
-						Back
-					</Button>
-					{currentStep < visibleSteps.length - 1 ? (
-						<Button type="button" onClick={handleNext}>
-							Next
-							<ArrowRight aria-hidden="true" />
+					<div className={styles.formActions}>
+						<Button
+							type="button"
+							variant="outline"
+							disabled={currentStep === 0 || mutation.isPending}
+							onClick={() => setCurrentStep((step) => Math.max(step - 1, 0))}
+						>
+							<ArrowLeft aria-hidden="true" />
+							Back
 						</Button>
-					) : (
-						<Button type="submit" disabled={mutation.isPending}>
-							{mutation.isPending ? (
-								<LoaderCircle className={styles.spinner} aria-hidden="true" />
-							) : (
-								<>
-									<BadgeCheck aria-hidden="true" />
-									{isEdit ? "Save changes" : "Submit listing"}
-								</>
-							)}
-						</Button>
-					)}
-				</div>
-			</section>
-		</form>
+						{currentStep < visibleSteps.length - 1 ? (
+							<Button type="button" onClick={handleNext}>
+								Next
+								<ArrowRight aria-hidden="true" />
+							</Button>
+						) : (
+							<Button type="submit" disabled={mutation.isPending}>
+								{mutation.isPending ? (
+									<LoaderCircle className={styles.spinner} aria-hidden="true" />
+								) : (
+									<>
+										<BadgeCheck aria-hidden="true" />
+										{isEdit ? "Save changes" : "Submit listing"}
+									</>
+								)}
+							</Button>
+						)}
+					</div>
+				</section>
+			</form>
+		</>
 	);
 }
 
@@ -1943,5 +2034,11 @@ function sortImages(images: ProductImage[]) {
 		}
 
 		return first.sortOrder - second.sortOrder;
+	});
+}
+
+function wait(milliseconds: number) {
+	return new Promise((resolve) => {
+		window.setTimeout(resolve, milliseconds);
 	});
 }
