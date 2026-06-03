@@ -1,12 +1,17 @@
-import { apiClient } from '../client';
-import { normalizeApiError } from '../errors';
-import { PARTNER_PRODUCT_ROUTES } from './routes';
+import { ApiRequestError } from '../errors';
+import { completeProductImageUpload } from './complete-product-image-upload';
+import { createProductImageUploadSignature } from './create-product-image-upload-signature';
 import type {
 	PartnerProductResponse,
 	UploadProductImageRequest,
 } from './types';
 
-// Request: uploads one listing image as multipart form data.
+type CloudinaryUploadResponse = {
+	public_id: string;
+	secure_url?: string;
+};
+
+// Request: uploads one listing image directly to Cloudinary, then registers it on the API.
 export async function uploadProductImage({
 	productId,
 	file,
@@ -14,31 +19,61 @@ export async function uploadProductImage({
 	isCover,
 	sortOrder,
 }: UploadProductImageRequest): Promise<PartnerProductResponse> {
+	const signature = await createProductImageUploadSignature({ productId, file });
+	const uploadResult = await uploadDirectlyToCloudinary(file, signature);
+
+	return completeProductImageUpload({
+		productId,
+		publicId: uploadResult.public_id || signature.publicId,
+		originalName: file.name,
+		mimeType: file.type || 'application/octet-stream',
+		sizeBytes: file.size,
+		altText,
+		isCover,
+		sortOrder,
+	});
+}
+
+async function uploadDirectlyToCloudinary(
+	file: File,
+	signature: Awaited<ReturnType<typeof createProductImageUploadSignature>>,
+): Promise<CloudinaryUploadResponse> {
 	const formData = new FormData();
 
 	formData.append('file', file);
+	formData.append('api_key', signature.apiKey);
+	formData.append('signature', signature.signature);
 
-	if (altText) {
-		formData.append('altText', altText);
-	}
-
-	if (isCover !== undefined) {
-		formData.append('isCover', String(isCover));
-	}
-
-	if (sortOrder !== undefined) {
-		formData.append('sortOrder', String(sortOrder));
+	for (const [key, value] of Object.entries(signature.uploadParameters)) {
+		formData.append(key, String(value));
 	}
 
 	try {
-		const response = await apiClient.post<PartnerProductResponse>(
-			PARTNER_PRODUCT_ROUTES.images(productId),
-			formData,
-		);
+		const response = await fetch(signature.uploadUrl, {
+			method: 'POST',
+			body: formData,
+		});
 
-		return response.data;
+		if (!response.ok) {
+			throw new ApiRequestError({
+				message:
+					'Cloudinary could not receive this image. Check the file and try again.',
+				statusCode: response.status,
+				code: 'CLOUDINARY_UPLOAD_FAILED',
+			});
+		}
+
+		return (await response.json()) as CloudinaryUploadResponse;
 	} catch (error) {
-		// Upload errors are normalized for toast or inline upload feedback.
-		throw normalizeApiError(error);
+		if (error instanceof ApiRequestError) {
+			throw error;
+		}
+
+		throw new ApiRequestError({
+			message:
+				'The image could not be uploaded to Cloudinary. Check your connection and try again.',
+			code: 'CLOUDINARY_UPLOAD_NETWORK_ERROR',
+			isNetworkError: true,
+		});
 	}
 }
