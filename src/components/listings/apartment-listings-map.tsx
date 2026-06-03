@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Home, MapPin } from "lucide-react";
+import type { StyleSpecification } from "maplibre-gl";
 import {
 	Map,
 	MapControls,
@@ -33,6 +34,26 @@ type ListingMapMarker = {
 };
 
 const kigaliCenter: [number, number] = [30.0619, -1.9441];
+const apartmentMapStyle: StyleSpecification = {
+	version: 8,
+	sources: {
+		"carto-light-raster": {
+			type: "raster",
+			tiles: ["https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"],
+			tileSize: 256,
+			attribution: "© CARTO, © OpenStreetMap contributors",
+		},
+	},
+	layers: [
+		{
+			id: "carto-light-raster",
+			type: "raster",
+			source: "carto-light-raster",
+			minzoom: 0,
+			maxzoom: 20,
+		},
+	],
+};
 const kigaliNeighborhoods: Array<{
 	keywords: string[];
 	position: [number, number];
@@ -80,6 +101,10 @@ export function ApartmentListingsMap({
 					pitch={28}
 					bearing={-6}
 					theme="light"
+					styles={{
+						light: apartmentMapStyle,
+						dark: apartmentMapStyle,
+					}}
 				>
 					<ListingMapCamera markers={markers} selectedMarker={selectedMarker} />
 					<MapControls
