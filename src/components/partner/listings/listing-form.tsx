@@ -8,6 +8,7 @@ import {
 	useMemo,
 	useState,
 } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { getCountries } from "libphonenumber-js";
 import {
@@ -63,6 +64,10 @@ import {
 	type UpdateListingRequest,
 } from "@/services/api/partner-products";
 import { ApiRequestError } from "@/services/api/errors";
+import {
+	GooglePlacePicker,
+	type ListingPlaceValue,
+} from "./google-place-picker";
 import styles from "./listing-form.module.css";
 
 type ListingFormMode = "create" | "edit";
@@ -73,6 +78,10 @@ type ListingFormValues = {
 	description: string;
 	city: string;
 	country: string;
+	locationName: string;
+	locationAddress: string;
+	locationLatitude: string;
+	locationLongitude: string;
 	basePrice: string;
 	currency: string;
 	pricingUnit: PricingUnit;
@@ -146,12 +155,19 @@ const steps = [
 		icon: BadgeCheck,
 	},
 	{
+		key: "location",
+		title: "Map location",
+		description: "Select the exact Google Maps place customers will visit.",
+		icon: MapPin,
+	},
+	{
 		key: "pricing",
 		title: "Pricing and media",
 		description: "Rates, booking options, and optional images.",
 		icon: CircleDollarSign,
 	},
 ] as const;
+type ListingFormStepKey = (typeof steps)[number]["key"];
 
 const categoryOptions: Array<{
 	value: ProductCategory;
@@ -307,7 +323,14 @@ export function ListingForm({
 			});
 		},
 	});
-	const selectedStep = steps[currentStep];
+	const visibleSteps = useMemo(
+		() =>
+			values.category === "CAR"
+				? steps.filter((step) => step.key !== "location")
+				: steps,
+		[values.category],
+	);
+	const selectedStep = visibleSteps[currentStep] ?? visibleSteps[0];
 	const StepIcon = selectedStep.icon;
 	const selectedCategory = categoryOptions.find(
 		(category) => category.value === values.category,
@@ -321,8 +344,14 @@ export function ListingForm({
 	);
 
 	useEffect(() => {
+		// eslint-disable-next-line react-hooks/set-state-in-effect -- Product images can change after upload/delete responses and must resync local gallery state.
 		setExistingImages(sortImages(product?.images ?? []));
 	}, [product?.images]);
+
+	useEffect(() => {
+		// eslint-disable-next-line react-hooks/set-state-in-effect -- Category changes can remove the location step, so the active wizard index must stay in range.
+		setCurrentStep((step) => Math.min(step, visibleSteps.length - 1));
+	}, [visibleSteps.length]);
 
 	function updateField<K extends keyof ListingFormValues>(
 		field: K,
@@ -340,7 +369,7 @@ export function ListingForm({
 
 	function handleNext() {
 		if (validateStep(currentStep)) {
-			setCurrentStep((step) => Math.min(step + 1, steps.length - 1));
+			setCurrentStep((step) => Math.min(step + 1, visibleSteps.length - 1));
 		}
 	}
 
@@ -380,7 +409,7 @@ export function ListingForm({
 	}
 
 	function validateStep(step: number) {
-		const nextErrors = validateValues(values, step);
+		const nextErrors = validateValues(values, visibleSteps[step]?.key);
 
 		setErrors((current) => ({ ...current, ...nextErrors }));
 
@@ -393,7 +422,7 @@ export function ListingForm({
 
 		if (Object.keys(nextErrors).length > 0) {
 			setErrors(nextErrors);
-			setCurrentStep(getFirstErrorStep(nextErrors));
+			setCurrentStep(getFirstErrorStep(nextErrors, values.category));
 			return;
 		}
 
@@ -411,7 +440,7 @@ export function ListingForm({
 				</div>
 
 				<div className={styles.stepList}>
-					{steps.map((step, index) => {
+					{visibleSteps.map((step, index) => {
 						const Icon = step.icon;
 
 						return (
@@ -441,13 +470,13 @@ export function ListingForm({
 				<div className={styles.formHeader}>
 					<span>
 						<StepIcon aria-hidden="true" />
-						Step {currentStep + 1} of {steps.length}
+						Step {currentStep + 1} of {visibleSteps.length}
 					</span>
 					<h1>{selectedStep.title}</h1>
 					<p>{selectedStep.description}</p>
 				</div>
 
-				{currentStep === 0 ? (
+				{selectedStep.key === "category" ? (
 					<CategoryStep
 						values={values}
 						error={errors.category}
@@ -456,7 +485,7 @@ export function ListingForm({
 					/>
 				) : null}
 
-				{currentStep === 1 ? (
+				{selectedStep.key === "story" ? (
 					<ListingStoryStep
 						values={values}
 						errors={errors}
@@ -464,7 +493,7 @@ export function ListingForm({
 					/>
 				) : null}
 
-				{currentStep === 2 ? (
+				{selectedStep.key === "details" ? (
 					<CategoryDetailsStep
 						values={values}
 						errors={errors}
@@ -472,7 +501,15 @@ export function ListingForm({
 					/>
 				) : null}
 
-				{currentStep === 3 ? (
+				{selectedStep.key === "location" ? (
+					<ListingLocationStep
+						values={values}
+						errors={errors}
+						onChange={updateField}
+					/>
+				) : null}
+
+				{selectedStep.key === "pricing" ? (
 					<PricingMediaStep
 						values={values}
 						errors={errors}
@@ -499,7 +536,7 @@ export function ListingForm({
 						<ArrowLeft aria-hidden="true" />
 						Back
 					</Button>
-					{currentStep < steps.length - 1 ? (
+					{currentStep < visibleSteps.length - 1 ? (
 						<Button type="button" onClick={handleNext}>
 							Next
 							<ArrowRight aria-hidden="true" />
@@ -651,6 +688,48 @@ function CategoryDetailsStep({ values, errors, onChange }: StepProps) {
 	}
 
 	return <VehicleStep values={values} errors={errors} onChange={onChange} />;
+}
+
+function ListingLocationStep({ values, errors, onChange }: StepProps) {
+	const selectedPlace: ListingPlaceValue = {
+		name: values.locationName,
+		address: values.locationAddress,
+		latitude: values.locationLatitude,
+		longitude: values.locationLongitude,
+		city: values.city,
+		country: values.country,
+	};
+
+	return (
+		<div className={styles.locationStep}>
+			<div className={styles.pricingNote}>
+				<MapPin aria-hidden="true" />
+				<p>
+					<strong>Select the exact customer arrival point</strong>
+					<span>
+						Search with Google Places, then choose the correct suggestion. Pluto
+						Booking stores the selected latitude and longitude for this listing.
+					</span>
+				</p>
+			</div>
+			<GooglePlacePicker
+				value={selectedPlace}
+				error={
+					errors.locationAddress ??
+					errors.locationLatitude ??
+					errors.locationLongitude
+				}
+				onChange={(place) => {
+					onChange("locationName", place.name);
+					onChange("locationAddress", place.address);
+					onChange("locationLatitude", place.latitude);
+					onChange("locationLongitude", place.longitude);
+					if (place.city) onChange("city", place.city);
+					if (place.country) onChange("country", place.country);
+				}}
+			/>
+		</div>
+	);
 }
 
 function VehicleStep({ values, errors, onChange }: StepProps) {
@@ -1213,9 +1292,12 @@ function PricingMediaStep({
 							return (
 								<li key={image.id}>
 									{image.file.publicUrl ? (
-										<img
+										<Image
 											src={image.file.publicUrl}
 											alt={image.altText ?? image.file.originalName}
+											width={64}
+											height={64}
+											unoptimized
 										/>
 									) : (
 										<span className={styles.imagePlaceholder}>
@@ -1411,6 +1493,7 @@ function createInitialValues(product?: Product): ListingFormValues {
 	const apartment = product?.apartmentDetails;
 	const hotelRoom = product?.hotelRoomDetails;
 	const airbnb = product?.airbnbDetails;
+	const location = product?.location;
 
 	return {
 		category: product?.category ?? "CAR",
@@ -1419,6 +1502,10 @@ function createInitialValues(product?: Product): ListingFormValues {
 		description: product?.description ?? "",
 		city: product?.city ?? "Kigali",
 		country: product?.country ?? "Rwanda",
+		locationName: location?.name ?? "",
+		locationAddress: location?.addressLine ?? "",
+		locationLatitude: location?.latitude ?? "",
+		locationLongitude: location?.longitude ?? "",
 		basePrice: product?.basePrice ?? "",
 		currency: product?.currency ?? "RWF",
 		pricingUnit: product?.pricingUnit ?? "DAY",
@@ -1485,17 +1572,17 @@ function createInitialValues(product?: Product): ListingFormValues {
 
 function validateValues(
 	values: ListingFormValues,
-	step?: number,
+	step?: ListingFormStepKey,
 ): ListingFormErrors {
 	const errors: ListingFormErrors = {};
-	const shouldValidate = (targetStep: number) =>
+	const shouldValidate = (targetStep: ListingFormStepKey) =>
 		step === undefined || step === targetStep;
 
-	if (shouldValidate(0)) {
+	if (shouldValidate("category")) {
 		if (!values.category) errors.category = "Choose a listing category.";
 	}
 
-	if (shouldValidate(1)) {
+	if (shouldValidate("story")) {
 		if (values.title.trim().length < 4)
 			errors.title = "Title must be at least 4 characters.";
 		if (values.description.trim().length < 30)
@@ -1507,7 +1594,7 @@ function validateValues(
 		if (!values.country.trim()) errors.country = "Country is required.";
 	}
 
-	if (shouldValidate(2)) {
+	if (shouldValidate("details")) {
 		if (values.category === "CAR") {
 			if (values.brand.trim().length < 2) errors.brand = "Brand is required.";
 			if (!values.model.trim()) errors.model = "Model is required.";
@@ -1571,7 +1658,16 @@ function validateValues(
 		}
 	}
 
-	if (shouldValidate(3)) {
+	if (shouldValidate("location") && values.category !== "CAR") {
+		if (!values.locationName.trim() && !values.locationAddress.trim())
+			errors.locationAddress = "Select a Google Maps place for this listing.";
+		if (!isValidCoordinate(values.locationLatitude, -90, 90))
+			errors.locationLatitude = "Select a place with a valid latitude.";
+		if (!isValidCoordinate(values.locationLongitude, -180, 180))
+			errors.locationLongitude = "Select a place with a valid longitude.";
+	}
+
+	if (shouldValidate("pricing")) {
 		if (!isPositiveDecimal(values.basePrice))
 			errors.basePrice = "Base price must be a valid positive amount.";
 		if (!values.currency.trim()) errors.currency = "Currency is required.";
@@ -1601,7 +1697,10 @@ function validateValues(
 	return errors;
 }
 
-function getFirstErrorStep(errors: ListingFormErrors) {
+function getFirstErrorStep(
+	errors: ListingFormErrors,
+	category: ProductCategory,
+) {
 	if (errors.category) return 0;
 
 	const stepOneFields = [
@@ -1636,11 +1735,23 @@ function getFirstErrorStep(errors: ListingFormErrors) {
 		"houseRules",
 		"cleaningFee",
 	];
+	const locationFields = [
+		"locationName",
+		"locationAddress",
+		"locationLatitude",
+		"locationLongitude",
+	];
+	const pricingStep = category === "CAR" ? 3 : 4;
 
 	if (Object.keys(errors).some((key) => stepOneFields.includes(key))) return 1;
 	if (Object.keys(errors).some((key) => stepTwoFields.includes(key))) return 2;
+	if (
+		category !== "CAR" &&
+		Object.keys(errors).some((key) => locationFields.includes(key))
+	)
+		return 3;
 
-	return 3;
+	return pricingStep;
 }
 
 function toListingPayload(values: ListingFormValues) {
@@ -1659,6 +1770,7 @@ function toListingPayload(values: ListingFormValues) {
 	if (values.category === "APARTMENT") {
 		return {
 			...basePayload,
+			...toLocationPayload(values),
 			bedrooms: Number(values.bedrooms),
 			bathrooms: Number(values.bathrooms),
 			kitchens: optionalNumber(values.kitchens),
@@ -1676,6 +1788,7 @@ function toListingPayload(values: ListingFormValues) {
 	if (values.category === "HOTEL_ROOM") {
 		return {
 			...basePayload,
+			...toLocationPayload(values),
 			hotelName: values.hotelName.trim(),
 			roomType: values.roomType.trim(),
 			bedType: values.bedType.trim(),
@@ -1693,6 +1806,7 @@ function toListingPayload(values: ListingFormValues) {
 	if (values.category === "AIRBNB_HOUSE") {
 		return {
 			...basePayload,
+			...toLocationPayload(values),
 			houseType: values.houseType.trim(),
 			entirePlace: values.entirePlace,
 			selfCheckIn: values.selfCheckIn,
@@ -1730,6 +1844,15 @@ function toListingPayload(values: ListingFormValues) {
 	};
 }
 
+function toLocationPayload(values: ListingFormValues) {
+	return {
+		locationName: values.locationName.trim() || undefined,
+		locationAddress: values.locationAddress.trim() || undefined,
+		locationLatitude: Number(values.locationLatitude),
+		locationLongitude: Number(values.locationLongitude),
+	};
+}
+
 function getTitlePlaceholder(category: ProductCategory) {
 	switch (category) {
 		case "APARTMENT":
@@ -1758,6 +1881,12 @@ function isPositiveDecimal(value: string) {
 	const number = Number(value);
 
 	return Number.isFinite(number) && number > 0;
+}
+
+function isValidCoordinate(value: string, min: number, max: number) {
+	const number = Number(value);
+
+	return Number.isFinite(number) && number >= min && number <= max;
 }
 
 function formatFileSize(size: number) {
