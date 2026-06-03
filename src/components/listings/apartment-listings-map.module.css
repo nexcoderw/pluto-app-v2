@@ -106,6 +106,23 @@
 	transform: translateY(-2px) scale(1.04);
 }
 
+.priceMarker[data-approximate="true"] {
+	border-style: dashed;
+	background: rgba(255, 255, 255, 0.92);
+	color: #02006c;
+}
+
+.priceMarker[data-approximate="true"]::after {
+	border-style: dashed;
+}
+
+.priceMarker[data-approximate="true"]:hover,
+.priceMarker[data-approximate="true"]:focus-visible,
+.priceMarker[data-approximate="true"][data-selected="true"] {
+	background: #02006c;
+	color: #ffffff;
+}
+
 .priceMarker:focus-visible {
 	outline: none;
 }
