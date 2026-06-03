@@ -16,7 +16,7 @@ import {
 	formatMoney,
 	formatPricingUnit,
 	getListingCoverImage,
-} from "./listing-formatters";
+} from "../listing-formatters";
 import styles from "./airbnb-listing-card.module.css";
 
 type AirbnbListingCardProps = {
