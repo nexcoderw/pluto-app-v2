@@ -97,3 +97,38 @@ export function CarListingCard({ listing, detailHref }: CarListingCardProps) {
 		</article>
 	);
 }
+
+export function CarListingCardSkeleton() {
+	return (
+		<article className={styles.card} aria-hidden="true">
+			<div className={styles.media}>
+				<span className={styles.skeletonMediaIcon} />
+				<span className={styles.skeletonStatusPill} />
+			</div>
+
+			<div className={styles.body}>
+				<div className={styles.heading}>
+					<div>
+						<span className={styles.skeletonVehicleName} />
+						<span className={styles.skeletonTitle} />
+					</div>
+					<span className={styles.skeletonPrice} />
+				</div>
+
+				<span className={styles.skeletonLocation} />
+
+				<ul className={styles.specs}>
+					{Array.from({ length: 3 }).map((_, index) => (
+						<li key={index} className={styles.skeletonSpec}>
+							<span />
+							<strong />
+							<small />
+						</li>
+					))}
+				</ul>
+
+				<span className={styles.skeletonDetailsButton} />
+			</div>
+		</article>
+	);
+}
