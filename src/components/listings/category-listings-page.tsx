@@ -34,7 +34,7 @@ import type {
 	ListingSortOrder,
 	PublicListing,
 } from "@/services/api/listings";
-import { ApartmentListingsMap } from "./apartment-listings-map";
+import { ApartmentListingsMap } from "./apartments/apartment-listings-map";
 import styles from "./category-listings-page.module.css";
 import { ListingFilterDialog } from "./listing-filter-dialog";
 
