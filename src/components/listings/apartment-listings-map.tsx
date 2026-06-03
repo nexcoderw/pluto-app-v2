@@ -1,7 +1,12 @@
 "use client";
 
 import { MapPin } from "lucide-react";
-import { Map, MapMarker, MarkerContent } from "@/components/ui/map";
+import {
+	Map,
+	MapControls,
+	MapMarker,
+	MarkerContent,
+} from "@/components/ui/map";
 import styles from "./apartment-listings-map.module.css";
 
 const kigaliMarkers = [
@@ -24,8 +29,13 @@ export function ApartmentListingsMap() {
 					pitch={36}
 					bearing={-8}
 					theme="dark"
-					interactive={false}
 				>
+					<MapControls
+						position="top-right"
+						showCompass
+						showFullscreen
+						className={styles.mapControls}
+					/>
 					{kigaliMarkers.map((marker) => (
 						<MapMarker
 							key={marker.label}
