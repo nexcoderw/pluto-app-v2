@@ -11,19 +11,23 @@ import {
 	type ListingListResponse,
 	type PublicListing,
 } from "@/services/api/listings";
-import { AirbnbListingCard } from "./airbnb-listing-card";
-import { AirbnbListingsSidebar } from "./airbnb-listings-sidebar";
-import { ApartmentListingCard } from "./apartment-listing-card";
-import { ApartmentListingsSidebar } from "./apartment-listings-sidebar";
+import { AirbnbListingCard } from "./airbnb/airbnb-listing-card";
+import { AirbnbListingsSidebar } from "./airbnb/airbnb-listings-sidebar";
+import { airbnbFilters } from "./airbnb/filters";
+import { ApartmentListingCard } from "./apartments/apartment-listing-card";
+import { ApartmentListingsSidebar } from "./apartments/apartment-listings-sidebar";
+import { apartmentFilters } from "./apartments/filters";
 import {
 	CategoryListingsPage,
 	type ListingSidebarFilter,
 	type ListingSidebarRenderProps,
 } from "./category-listings-page";
-import { CarListingCard } from "./car-listing-card";
-import { CarListingsSidebar } from "./car-listings-sidebar";
-import { HotelRoomListingCard } from "./hotel-room-listing-card";
-import { HotelRoomListingsSidebar } from "./hotel-room-listings-sidebar";
+import { CarListingCard } from "./cars/car-listing-card";
+import { CarListingsSidebar } from "./cars/car-listings-sidebar";
+import { carFilters } from "./cars/filters";
+import { hotelRoomFilters } from "./hotel-rooms/filters";
+import { HotelRoomListingCard } from "./hotel-rooms/hotel-room-listing-card";
+import { HotelRoomListingsSidebar } from "./hotel-rooms/hotel-room-listings-sidebar";
 
 type CategoryConfig = {
 	categoryLabel: string;
@@ -40,38 +44,6 @@ type CategoryConfig = {
 	filterPresentation?: "sidebar" | "dialog";
 };
 
-const carFilters: ListingSidebarFilter[] = [
-	{ key: "make", label: "Make", kind: "text", placeholder: "Toyota" },
-	{ key: "model", label: "Model", kind: "text", placeholder: "RAV4" },
-	{ key: "transmission", label: "Transmission", kind: "text" },
-	{ key: "fuelType", label: "Fuel type", kind: "text" },
-	{ key: "seats", label: "Minimum seats", kind: "number" },
-	{ key: "minYear", label: "Minimum year", kind: "number" },
-];
-
-const apartmentFilters: ListingSidebarFilter[] = [
-	{ key: "bedrooms", label: "Bedrooms", kind: "number" },
-	{ key: "bathrooms", label: "Bathrooms", kind: "number" },
-	{ key: "guests", label: "Guests", kind: "number" },
-];
-
-const hotelRoomFilters: ListingSidebarFilter[] = [
-	{ key: "roomType", label: "Room type", kind: "text" },
-	{ key: "bedType", label: "Bed type", kind: "text" },
-	{ key: "guests", label: "Guests", kind: "number" },
-	{ key: "breakfastIncluded", label: "Breakfast", kind: "boolean" },
-];
-
-const airbnbFilters: ListingSidebarFilter[] = [
-	{ key: "propertyType", label: "Property type", kind: "text" },
-	{ key: "bedrooms", label: "Bedrooms", kind: "number" },
-	{ key: "bathrooms", label: "Bathrooms", kind: "number" },
-	{ key: "guests", label: "Guests", kind: "number" },
-	{ key: "entirePlace", label: "Entire place", kind: "boolean" },
-	{ key: "selfCheckIn", label: "Self check-in", kind: "boolean" },
-	{ key: "allowPets", label: "Pets allowed", kind: "boolean" },
-];
-
 const categoryConfigs = {
 	cars: {
 		categoryLabel: "Cars",
@@ -79,7 +51,10 @@ const categoryConfigs = {
 		detailBaseHref: "/listings/cars",
 		filters: carFilters,
 		listListings: listCarListings,
-		renderSidebar: (sidebarProps) => <CarListingsSidebar {...sidebarProps} />,
+		filterPresentation: "dialog",
+		renderSidebar: (sidebarProps) => (
+			<CarListingsSidebar {...sidebarProps} variant="dialog" />
+		),
 		renderCard: (listing, detailHref) => (
 			<CarListingCard
 				key={listing.id}
@@ -113,8 +88,9 @@ const categoryConfigs = {
 		detailBaseHref: "/listings/hotel-rooms",
 		filters: hotelRoomFilters,
 		listListings: listHotelRoomListings,
+		filterPresentation: "dialog",
 		renderSidebar: (sidebarProps) => (
-			<HotelRoomListingsSidebar {...sidebarProps} />
+			<HotelRoomListingsSidebar {...sidebarProps} variant="dialog" />
 		),
 		renderCard: (listing, detailHref) => (
 			<HotelRoomListingCard
@@ -130,8 +106,9 @@ const categoryConfigs = {
 		detailBaseHref: "/listings/airbnb",
 		filters: airbnbFilters,
 		listListings: listAirbnbListings,
+		filterPresentation: "dialog",
 		renderSidebar: (sidebarProps) => (
-			<AirbnbListingsSidebar {...sidebarProps} />
+			<AirbnbListingsSidebar {...sidebarProps} variant="dialog" />
 		),
 		renderCard: (listing, detailHref) => (
 			<AirbnbListingCard
