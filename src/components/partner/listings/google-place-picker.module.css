@@ -3,6 +3,22 @@
 	gap: 0.75rem;
 }
 
+.autocompleteHost {
+	min-width: 0;
+}
+
+.autocompleteHost :global(gmp-place-autocomplete) {
+	width: 100%;
+	display: block;
+	border-radius: 999px;
+	color-scheme: light;
+}
+
+.autocompleteHost :global(input) {
+	min-height: var(--pluto-button-height);
+	border-radius: 999px;
+}
+
 .mapPreview {
 	position: relative;
 	min-height: 18rem;
