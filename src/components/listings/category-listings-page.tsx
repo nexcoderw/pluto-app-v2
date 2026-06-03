@@ -17,13 +17,6 @@ import {
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogHeader,
-	DialogTitle,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
 	Select,
@@ -43,6 +36,7 @@ import type {
 } from "@/services/api/listings";
 import { ApartmentListingsMap } from "./apartment-listings-map";
 import styles from "./category-listings-page.module.css";
+import { ListingFilterDialog } from "./listing-filter-dialog";
 
 export type ListingSidebarFilter = {
 	key: keyof ListingListRequest;
@@ -410,23 +404,19 @@ export function CategoryListingsPage({
 				</section>
 			</section>
 			{usesFilterDialog && renderSidebar ? (
-				<Dialog open={isFilterDialogOpen} onOpenChange={setIsFilterDialogOpen}>
-					<DialogContent className={styles.filterDialogContent}>
-						<DialogHeader>
-							<DialogTitle>{categoryLabel} filters</DialogTitle>
-							<DialogDescription>
-								Refine by location, price, space, and apartment essentials.
-							</DialogDescription>
-						</DialogHeader>
-						{renderSidebar({
-							categoryLabel,
-							draftFilters,
-							setDraftFilter,
-							applyFilters: applyDialogFilters,
-							resetFilters,
-						})}
-					</DialogContent>
-				</Dialog>
+				<ListingFilterDialog
+					categoryLabel={categoryLabel}
+					open={isFilterDialogOpen}
+					onOpenChange={setIsFilterDialogOpen}
+				>
+					{renderSidebar({
+						categoryLabel,
+						draftFilters,
+						setDraftFilter,
+						applyFilters: applyDialogFilters,
+						resetFilters,
+					})}
+				</ListingFilterDialog>
 			) : null}
 		</main>
 	);
