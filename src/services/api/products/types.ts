@@ -28,6 +28,20 @@ export type ProductImage = {
 	};
 };
 
+export type ProductLocation = {
+	id: string;
+	name: string | null;
+	addressLine: string | null;
+	city: string;
+	district: string | null;
+	province: string | null;
+	country: string;
+	latitude: string | null;
+	longitude: string | null;
+	createdAt?: string;
+	updatedAt?: string;
+};
+
 export type CarDetails = {
 	id: string;
 	productId: string;
@@ -110,6 +124,7 @@ export type Product = {
 	shortDescription: string | null;
 	city: string;
 	country: string;
+	location?: ProductLocation | null;
 	basePrice: string;
 	currency: string;
 	pricingUnit: PricingUnit;
