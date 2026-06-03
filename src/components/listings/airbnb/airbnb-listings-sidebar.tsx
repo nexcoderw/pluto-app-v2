@@ -1,20 +1,13 @@
 "use client";
 
-import type { ReactNode } from "react";
 import {
-	Bath,
 	BedDouble,
 	CircleDollarSign,
-	Heart,
 	House,
-	KeyRound,
 	MapPin,
-	PawPrint,
 	RefreshCcw,
 	Search,
-	ShieldCheck,
 	SlidersHorizontal,
-	Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,7 +18,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import type { ListingListRequest } from "@/services/api/listings";
 import type { ListingSidebarRenderProps } from "../category-listings-page";
 import styles from "./airbnb-listings-sidebar.module.css";
@@ -75,30 +67,32 @@ export function AirbnbListingsSidebar({
 					<MapPin aria-hidden="true" />
 					<span>Location</span>
 				</div>
-				<Input
-					type="text"
-					value={textValue(draftFilters.city)}
-					placeholder="City"
-					onChange={(event) => setDraftFilter("city", event.target.value)}
-				/>
-				<Select
-					value={selectValue(draftFilters.country)}
-					onValueChange={(value) =>
-						setDraftFilter("country", optionalText(value))
-					}
-				>
-					<SelectTrigger className={styles.selectTrigger}>
-						<SelectValue>Country</SelectValue>
-					</SelectTrigger>
-					<SelectContent align="start" alignItemWithTrigger={false}>
-						<SelectItem value="ANY">Any country</SelectItem>
-						{countries.map((country) => (
-							<SelectItem key={country} value={country}>
-								{country}
-							</SelectItem>
-						))}
-					</SelectContent>
-				</Select>
+				<div className={styles.locationGrid}>
+					<Input
+						type="text"
+						value={textValue(draftFilters.city)}
+						placeholder="City"
+						onChange={(event) => setDraftFilter("city", event.target.value)}
+					/>
+					<Select
+						value={selectValue(draftFilters.country)}
+						onValueChange={(value) =>
+							setDraftFilter("country", optionalText(value))
+						}
+					>
+						<SelectTrigger className={styles.selectTrigger}>
+							<SelectValue>Country</SelectValue>
+						</SelectTrigger>
+						<SelectContent align="start" alignItemWithTrigger={false}>
+							<SelectItem value="ANY">Any country</SelectItem>
+							{countries.map((country) => (
+								<SelectItem key={country} value={country}>
+									{country}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+				</div>
 			</div>
 
 			<div className={styles.section}>
@@ -106,30 +100,32 @@ export function AirbnbListingsSidebar({
 					<Search aria-hidden="true" />
 					<span>Home type</span>
 				</div>
-				<Select
-					value={selectValue(draftFilters.propertyType)}
-					onValueChange={(value) =>
-						setDraftFilter("propertyType", optionalText(value))
-					}
-				>
-					<SelectTrigger className={styles.selectTrigger}>
-						<SelectValue>Property type</SelectValue>
-					</SelectTrigger>
-					<SelectContent align="start" alignItemWithTrigger={false}>
-						<SelectItem value="ANY">Any property type</SelectItem>
-						{propertyTypes.map((propertyType) => (
-							<SelectItem key={propertyType} value={propertyType}>
-								{propertyType}
-							</SelectItem>
-						))}
-					</SelectContent>
-				</Select>
-				<Input
-					type="text"
-					value={textValue(draftFilters.amenity)}
-					placeholder="Amenity, e.g. pool"
-					onChange={(event) => setDraftFilter("amenity", event.target.value)}
-				/>
+				<div className={styles.homeTypeGrid}>
+					<Select
+						value={selectValue(draftFilters.propertyType)}
+						onValueChange={(value) =>
+							setDraftFilter("propertyType", optionalText(value))
+						}
+					>
+						<SelectTrigger className={styles.selectTrigger}>
+							<SelectValue>Property type</SelectValue>
+						</SelectTrigger>
+						<SelectContent align="start" alignItemWithTrigger={false}>
+							<SelectItem value="ANY">Any property type</SelectItem>
+							{propertyTypes.map((propertyType) => (
+								<SelectItem key={propertyType} value={propertyType}>
+									{propertyType}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+					<Input
+						type="text"
+						value={textValue(draftFilters.amenity)}
+						placeholder="Amenity, e.g. pool"
+						onChange={(event) => setDraftFilter("amenity", event.target.value)}
+					/>
+				</div>
 			</div>
 
 			<div className={styles.section}>
@@ -137,7 +133,7 @@ export function AirbnbListingsSidebar({
 					<BedDouble aria-hidden="true" />
 					<span>Space</span>
 				</div>
-				<div className={styles.compactGrid}>
+				<div className={styles.spaceGrid}>
 					<Select
 						value={selectValue(draftFilters.bedrooms)}
 						onValueChange={(value) =>
@@ -174,25 +170,25 @@ export function AirbnbListingsSidebar({
 							))}
 						</SelectContent>
 					</Select>
+					<Select
+						value={selectValue(draftFilters.guests)}
+						onValueChange={(value) =>
+							setDraftFilter("guests", optionalNumber(value))
+						}
+					>
+						<SelectTrigger className={styles.selectTrigger}>
+							<SelectValue>Guests</SelectValue>
+						</SelectTrigger>
+						<SelectContent align="start" alignItemWithTrigger={false}>
+							<SelectItem value="ANY">Any guests</SelectItem>
+							{guestOptions.map((guests) => (
+								<SelectItem key={guests} value={String(guests)}>
+									{guests}+ guests
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
 				</div>
-				<Select
-					value={selectValue(draftFilters.guests)}
-					onValueChange={(value) =>
-						setDraftFilter("guests", optionalNumber(value))
-					}
-				>
-					<SelectTrigger className={styles.selectTrigger}>
-						<SelectValue>Guests</SelectValue>
-					</SelectTrigger>
-					<SelectContent align="start" alignItemWithTrigger={false}>
-						<SelectItem value="ANY">Any guests</SelectItem>
-						{guestOptions.map((guests) => (
-							<SelectItem key={guests} value={String(guests)}>
-								{guests}+ guests
-							</SelectItem>
-						))}
-					</SelectContent>
-				</Select>
 			</div>
 
 			<div className={styles.section}>
@@ -229,55 +225,6 @@ export function AirbnbListingsSidebar({
 				</div>
 			</div>
 
-			<div className={styles.section}>
-				<div className={styles.sectionTitle}>
-					<ShieldCheck aria-hidden="true" />
-					<span>Stay preferences</span>
-				</div>
-				<SwitchRow
-					icon={<House aria-hidden="true" />}
-					label="Entire place"
-					description="Only show homes where guests get the full place."
-					checked={draftFilters.entirePlace === true}
-					onCheckedChange={(checked) =>
-						setDraftFilter("entirePlace", checked ? true : undefined)
-					}
-				/>
-				<SwitchRow
-					icon={<KeyRound aria-hidden="true" />}
-					label="Self check-in"
-					description="Show stays that support independent arrival."
-					checked={draftFilters.selfCheckIn === true}
-					onCheckedChange={(checked) =>
-						setDraftFilter("selfCheckIn", checked ? true : undefined)
-					}
-				/>
-				<SwitchRow
-					icon={<PawPrint aria-hidden="true" />}
-					label="Pets allowed"
-					description="Only include homes that allow pets."
-					checked={draftFilters.allowPets === true}
-					onCheckedChange={(checked) =>
-						setDraftFilter("allowPets", checked ? true : undefined)
-					}
-				/>
-			</div>
-
-			<div className={styles.summary}>
-				<span>
-					<Heart aria-hidden="true" />
-					Home rules
-				</span>
-				<span>
-					<Bath aria-hidden="true" />
-					Bathrooms
-				</span>
-				<span>
-					<Users aria-hidden="true" />
-					Guests
-				</span>
-			</div>
-
 			<div className={styles.actions}>
 				<Button type="button" onClick={applyFilters}>
 					<SlidersHorizontal aria-hidden="true" />
@@ -289,35 +236,6 @@ export function AirbnbListingsSidebar({
 				</Button>
 			</div>
 		</aside>
-	);
-}
-
-function SwitchRow({
-	icon,
-	label,
-	description,
-	checked,
-	onCheckedChange,
-}: {
-	icon: ReactNode;
-	label: string;
-	description: string;
-	checked: boolean;
-	onCheckedChange: (checked: boolean) => void;
-}) {
-	return (
-		<label className={styles.switchRow}>
-			<span className={styles.switchIcon}>{icon}</span>
-			<span>
-				<strong>{label}</strong>
-				<small>{description}</small>
-			</span>
-			<Switch
-				checked={checked}
-				onCheckedChange={onCheckedChange}
-				className={styles.switch}
-			/>
-		</label>
 	);
 }
 
