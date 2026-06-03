@@ -37,106 +37,31 @@ const kigaliCenter: [number, number] = [30.0619, -1.9441];
 const apartmentMapStyle: StyleSpecification = {
 	version: 8,
 	sources: {
-		"kigali-roads": {
-			type: "geojson",
-			data: {
-				type: "FeatureCollection",
-				features: [
-					road([
-						[30.016, -1.967],
-						[30.046, -1.958],
-						[30.081, -1.951],
-						[30.116, -1.957],
-						[30.148, -1.976],
-					]),
-					road([
-						[30.041, -1.919],
-						[30.062, -1.936],
-						[30.087, -1.961],
-						[30.11, -1.992],
-					]),
-					road([
-						[30.025, -1.994],
-						[30.055, -1.978],
-						[30.091, -1.973],
-						[30.13, -1.984],
-					]),
-					road([
-						[30.055, -1.906],
-						[30.079, -1.929],
-						[30.105, -1.948],
-						[30.13, -1.966],
-					]),
-					road([
-						[30.012, -1.94],
-						[30.045, -1.934],
-						[30.079, -1.925],
-						[30.118, -1.921],
-					]),
-					road([
-						[30.064, -2.017],
-						[30.071, -1.986],
-						[30.074, -1.955],
-						[30.071, -1.922],
-					]),
-				],
-			},
-		},
-		"kigali-districts": {
-			type: "geojson",
-			data: {
-				type: "FeatureCollection",
-				features: [
-					district([
-						[30.02, -1.99],
-						[30.05, -1.918],
-						[30.112, -1.91],
-						[30.154, -1.966],
-						[30.132, -2.02],
-						[30.02, -1.99],
-					]),
-				],
-			},
+		"osm-street-raster": {
+			type: "raster",
+			tiles: ["/api/map-tiles/osm/{z}/{x}/{y}"],
+			tileSize: 256,
+			attribution: "© OpenStreetMap contributors",
 		},
 	},
 	layers: [
 		{
-			id: "kigali-background",
+			id: "street-map-background",
 			type: "background",
 			paint: {
-				"background-color": "#eef1f7",
+				"background-color": "#eef0f6",
 			},
 		},
 		{
-			id: "kigali-district-fill",
-			type: "fill",
-			source: "kigali-districts",
+			id: "osm-street-raster",
+			type: "raster",
+			source: "osm-street-raster",
+			minzoom: 0,
+			maxzoom: 20,
 			paint: {
-				"fill-color": "#ffffff",
-				"fill-opacity": 0.72,
-			},
-		},
-		{
-			id: "kigali-district-line",
-			type: "line",
-			source: "kigali-districts",
-			paint: {
-				"line-color": "#d6dce8",
-				"line-width": 1.4,
-			},
-		},
-		{
-			id: "kigali-road-line",
-			type: "line",
-			source: "kigali-roads",
-			layout: {
-				"line-cap": "round",
-				"line-join": "round",
-			},
-			paint: {
-				"line-color": "#cfd6e4",
-				"line-width": ["interpolate", ["linear"], ["zoom"], 9, 0.8, 13, 2.2],
-				"line-opacity": 0.9,
+				"raster-opacity": 0.96,
+				"raster-saturation": -0.2,
+				"raster-contrast": 0.05,
 			},
 		},
 	],
@@ -185,8 +110,8 @@ export function ApartmentListingsMap({
 					className={styles.mapViewport}
 					center={kigaliCenter}
 					zoom={11.3}
-					pitch={0}
-					bearing={0}
+					pitch={28}
+					bearing={-6}
 					theme="light"
 					styles={{
 						light: apartmentMapStyle,
@@ -405,28 +330,6 @@ function maxZoomForMarkerCount(count: number) {
 	if (count <= 8) return 12.7;
 
 	return 12.1;
-}
-
-function road(coordinates: Array<[number, number]>) {
-	return {
-		type: "Feature" as const,
-		properties: {},
-		geometry: {
-			type: "LineString" as const,
-			coordinates,
-		},
-	};
-}
-
-function district(coordinates: Array<[number, number]>) {
-	return {
-		type: "Feature" as const,
-		properties: {},
-		geometry: {
-			type: "Polygon" as const,
-			coordinates: [coordinates],
-		},
-	};
 }
 
 function toListingMarker(
