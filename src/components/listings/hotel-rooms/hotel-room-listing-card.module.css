@@ -11,7 +11,7 @@
 
 .media {
 	position: relative;
-	min-height: 13.4rem;
+	min-height: 16.25rem;
 	overflow: hidden;
 	background: rgba(2, 0, 108, 0.06);
 }
@@ -426,6 +426,10 @@
 }
 
 @media (max-width: 520px) {
+	.media {
+		min-height: 14.75rem;
+	}
+
 	.heading,
 	.footer {
 		grid-template-columns: 1fr;
