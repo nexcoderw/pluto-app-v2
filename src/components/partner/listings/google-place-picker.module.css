@@ -4,21 +4,38 @@
 }
 
 .searchField {
+	position: relative;
 	display: grid;
 	gap: 0.35rem;
 	min-width: 0;
 }
 
-.searchField span {
+.searchField label {
 	color: rgba(23, 23, 31, 0.72);
 	font-size: 0.76rem;
 	font-weight: 760;
 }
 
-.searchField input {
+.searchInputWrap {
+	position: relative;
+	display: grid;
+	align-items: center;
+}
+
+.searchInputWrap > svg:first-child {
+	position: absolute;
+	left: 1rem;
+	z-index: 1;
+	width: 1rem;
+	height: 1rem;
+	color: #02006c;
+	pointer-events: none;
+}
+
+.searchInputWrap input {
 	width: 100%;
 	min-height: var(--pluto-button-height);
-	padding: 0 1rem;
+	padding: 0 3rem 0 2.65rem;
 	border: 1px solid rgba(2, 0, 108, 0.14);
 	border-radius: 999px;
 	outline: none;
@@ -34,16 +51,104 @@
 		background 180ms ease;
 }
 
-.searchField input::placeholder {
+.searchInputWrap input::placeholder {
 	color: rgba(23, 23, 31, 0.42);
 }
 
-.searchField input:focus {
+.searchInputWrap input:focus {
 	border-color: rgba(2, 0, 108, 0.42);
 	background: #ffffff;
 	box-shadow:
 		0 0 0 4px rgba(2, 0, 108, 0.08),
 		inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.loadingIcon {
+	position: absolute;
+	right: 1rem;
+	width: 1rem;
+	height: 1rem;
+	color: #02006c;
+	animation: spin 800ms linear infinite;
+}
+
+.suggestions {
+	position: absolute;
+	inset-inline: 0;
+	top: calc(100% + 0.45rem);
+	z-index: 30;
+	display: grid;
+	gap: 0.25rem;
+	max-height: 15rem;
+	overflow: auto;
+	padding: 0.45rem;
+	border: 1px solid rgba(2, 0, 108, 0.12);
+	border-radius: 1rem;
+	background: rgba(255, 255, 255, 0.96);
+	box-shadow: 0 1.4rem 3rem rgba(15, 23, 42, 0.16);
+	backdrop-filter: blur(16px);
+}
+
+.suggestions button {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	gap: 0.7rem;
+	align-items: center;
+	width: 100%;
+	min-height: 3.35rem;
+	padding: 0.62rem 0.7rem;
+	border: 0;
+	border-radius: 0.75rem;
+	background: transparent;
+	color: #17171f;
+	text-align: left;
+	cursor: pointer;
+	transition:
+		background 180ms ease,
+		color 180ms ease,
+		transform 180ms ease;
+}
+
+.suggestions button:hover,
+.suggestions button:focus-visible {
+	background: rgba(2, 0, 108, 0.07);
+	color: #02006c;
+	transform: translateY(-1px);
+}
+
+.suggestions button:disabled {
+	cursor: not-allowed;
+	opacity: 0.65;
+}
+
+.suggestions button > svg {
+	width: 1rem;
+	height: 1rem;
+	color: currentcolor;
+}
+
+.suggestions span {
+	display: grid;
+	gap: 0.12rem;
+	min-width: 0;
+}
+
+.suggestions strong,
+.suggestions small {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.suggestions strong {
+	font-size: 0.82rem;
+	font-weight: 780;
+}
+
+.suggestions small {
+	color: rgba(23, 23, 31, 0.56);
+	font-size: 0.74rem;
+	font-weight: 540;
 }
 
 .mapPreview {
@@ -55,8 +160,61 @@
 	background: #eef0f7;
 }
 
-.mapPreview :global(.gm-style) {
+.mapViewport {
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
 	border-radius: inherit;
+	background: #111827;
+	cursor: grab;
+}
+
+.mapViewport:active {
+	cursor: grabbing;
+}
+
+.mapPreview :global(.maplibregl-canvas),
+.mapPreview :global(.maplibregl-canvas-container),
+.mapPreview :global(.maplibregl-map) {
+	border-radius: inherit;
+}
+
+.mapControls {
+	right: 0.85rem;
+	top: 0.85rem;
+}
+
+.mapControls :global(button) {
+	color: #02006c;
+	cursor: pointer;
+}
+
+.mapMarker {
+	position: relative;
+	width: 2.15rem;
+	height: 2.15rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border: 0.22rem solid rgba(255, 255, 255, 0.96);
+	border-radius: 999px;
+	background: #02006c;
+	color: #ffffff;
+	box-shadow: 0 0.85rem 1.8rem rgba(2, 0, 108, 0.28);
+}
+
+.mapMarker::before {
+	position: absolute;
+	inset: -0.42rem;
+	z-index: -1;
+	border: 1px solid rgba(255, 255, 255, 0.36);
+	border-radius: inherit;
+	content: "";
+}
+
+.mapMarker svg {
+	width: 0.88rem;
+	height: 0.88rem;
 }
 
 .mapFallback {
@@ -131,4 +289,10 @@
 
 .picker[data-invalid="true"] .mapPreview {
 	border-color: rgba(190, 18, 60, 0.5);
+}
+
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
 }
