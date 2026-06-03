@@ -208,6 +208,7 @@ const pricingUnits: Array<{ label: string; value: PricingUnit }> = [
 	{ label: "Per week", value: "WEEK" },
 	{ label: "Per month", value: "MONTH" },
 ];
+const maxListingImages = 12;
 const maxImageSize = 8 * 1024 * 1024;
 const imageFileExtensions = [
 	".apng",
@@ -270,15 +271,17 @@ export function ListingForm({
 					? await updateListing(product.id, payload as UpdateListingRequest)
 					: await createListing(payload as CreateListingRequest);
 
-			for (const [index, file] of imageFiles.entries()) {
-				await uploadProductImage({
-					productId: response.product.id,
-					file,
-					isCover: index === 0 && existingImages.length === 0,
-					sortOrder: existingImages.length + index,
-					altText: `${values.title} image ${index + 1}`,
-				});
-			}
+			await Promise.all(
+				imageFiles.map((file, index) =>
+					uploadProductImage({
+						productId: response.product.id,
+						file,
+						isCover: index === 0 && existingImages.length === 0,
+						sortOrder: existingImages.length + index,
+						altText: `${values.title} image ${index + 1}`,
+					}),
+				),
+			);
 
 			return response;
 		},
@@ -375,6 +378,20 @@ export function ListingForm({
 
 	function handleFiles(event: ChangeEvent<HTMLInputElement>) {
 		const files = Array.from(event.target.files ?? []);
+		const remainingSlots = Math.max(
+			maxListingImages - existingImages.length - imageFiles.length,
+			0,
+		);
+
+		if (!remainingSlots) {
+			setErrors((current) => ({
+				...current,
+				images: "A listing can have a maximum of 12 images.",
+			}));
+			event.target.value = "";
+			return;
+		}
+
 		const imageFilesOnly = files.filter(
 			(file) => isImageFile(file) && file.size <= maxImageSize,
 		);
@@ -387,7 +404,19 @@ export function ListingForm({
 			}));
 		}
 
-		setImageFiles((current) => [...current, ...imageFilesOnly].slice(0, 8));
+		if (imageFilesOnly.length > remainingSlots) {
+			setErrors((current) => ({
+				...current,
+				images: `Only ${remainingSlots} more image${
+					remainingSlots === 1 ? "" : "s"
+				} can be added to this listing.`,
+			}));
+		}
+
+		setImageFiles((current) => [
+			...current,
+			...imageFilesOnly.slice(0, remainingSlots),
+		]);
 		event.target.value = "";
 	}
 
