@@ -4,9 +4,10 @@
 	min-width: 0;
 	height: calc(100vh - 10.35rem);
 	overflow: hidden;
-	border: 1px solid rgba(2, 0, 108, 0.16);
+	border: 1px solid rgba(2, 0, 108, 0.14);
 	border-radius: 1.35rem;
-	background: #111827;
+	background: #eef0f6;
+	box-shadow: 0 1.5rem 4rem rgba(15, 23, 42, 0.12);
 }
 
 .mapCanvas {
@@ -15,7 +16,7 @@
 	height: 100%;
 	overflow: hidden;
 	border-radius: inherit;
-	background: #111827;
+	background: #eef0f6;
 }
 
 .mapViewport {
@@ -23,7 +24,7 @@
 	height: 100%;
 	overflow: hidden;
 	border-radius: inherit;
-	background: #111827;
+	background: #eef0f6;
 	cursor: grab;
 }
 
@@ -47,32 +48,251 @@
 	cursor: pointer;
 }
 
-.mapMarker {
+.markerPortal {
+	pointer-events: auto;
+}
+
+.priceMarker {
 	position: relative;
-	width: 2rem;
-	height: 2rem;
+	min-width: 3.4rem;
+	min-height: 2rem;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	border: 0.22rem solid #ffffff;
+	padding: 0 0.82rem;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	border-radius: 999px;
+	background: #ffffff;
+	color: #17171f;
+	font-size: 0.76rem;
+	font-weight: 840;
+	line-height: 1;
+	letter-spacing: 0;
+	white-space: nowrap;
+	box-shadow:
+		0 0.55rem 1.4rem rgba(15, 23, 42, 0.18),
+		0 0 0 1px rgba(255, 255, 255, 0.7) inset;
+	cursor: pointer;
+	transition:
+		background 180ms ease,
+		color 180ms ease,
+		border-color 180ms ease,
+		box-shadow 180ms ease,
+		transform 180ms ease;
+}
+
+.priceMarker::after {
+	position: absolute;
+	left: 50%;
+	bottom: -0.22rem;
+	width: 0.5rem;
+	height: 0.5rem;
+	background: inherit;
+	border-right: 1px solid rgba(2, 0, 108, 0.1);
+	border-bottom: 1px solid rgba(2, 0, 108, 0.1);
+	content: "";
+	transform: translateX(-50%) rotate(45deg);
+}
+
+.priceMarker:hover,
+.priceMarker:focus-visible,
+.priceMarker[data-selected="true"] {
+	border-color: #02006c;
+	background: #02006c;
+	color: #ffffff;
+	box-shadow:
+		0 0.8rem 1.8rem rgba(2, 0, 108, 0.28),
+		0 0 0 3px rgba(255, 255, 255, 0.8);
+	transform: translateY(-2px) scale(1.04);
+}
+
+.priceMarker:focus-visible {
+	outline: none;
+}
+
+.mapSummary {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	z-index: 2;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.45rem;
+	padding: 0.46rem 0.66rem;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.94);
+	color: #17171f;
+	box-shadow: 0 0.8rem 1.8rem rgba(15, 23, 42, 0.12);
+	backdrop-filter: blur(16px);
+}
+
+.mapSummary span {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.28rem;
+	color: #02006c;
+	font-size: 0.8rem;
+	font-weight: 860;
+}
+
+.mapSummary svg {
+	width: 0.92rem;
+	height: 0.92rem;
+}
+
+.mapSummary small {
+	color: rgba(23, 23, 31, 0.64);
+	font-size: 0.72rem;
+	font-weight: 650;
+}
+
+.selectedCard {
+	position: absolute;
+	right: 1rem;
+	bottom: 1rem;
+	left: 1rem;
+	z-index: 3;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	gap: 1rem;
+	align-items: center;
+	padding: 0.9rem;
+	border: 1px solid rgba(255, 255, 255, 0.74);
+	border-radius: 1rem;
+	background: rgba(255, 255, 255, 0.95);
+	box-shadow: 0 1rem 2.5rem rgba(15, 23, 42, 0.18);
+	backdrop-filter: blur(16px);
+	animation: cardIn 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.selectedCard div {
+	display: grid;
+	gap: 0.22rem;
+	min-width: 0;
+}
+
+.selectedCard span {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.32rem;
+	color: rgba(2, 0, 108, 0.72);
+	font-size: 0.72rem;
+	font-weight: 760;
+}
+
+.selectedCard span svg {
+	width: 0.86rem;
+	height: 0.86rem;
+}
+
+.selectedCard strong {
+	overflow: hidden;
+	color: #17171f;
+	font-size: 0.94rem;
+	font-weight: 840;
+	line-height: 1.2;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.selectedCard p {
+	margin: 0;
+	color: rgba(23, 23, 31, 0.62);
+	font-size: 0.78rem;
+	font-weight: 620;
+}
+
+.selectedCard a {
+	min-height: 2.55rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.4rem;
+	padding: 0 0.85rem;
 	border-radius: 999px;
 	background: #02006c;
 	color: #ffffff;
-	box-shadow: 0 0.7rem 1.55rem rgba(2, 0, 108, 0.24);
+	font-size: 0.76rem;
+	font-weight: 820;
+	text-decoration: none;
+	box-shadow: 0 0.8rem 1.6rem rgba(2, 0, 108, 0.22);
+	transition:
+		background 180ms ease,
+		transform 180ms ease;
 }
 
-.mapMarker::before {
+.selectedCard a:hover {
+	background: #050292;
+	transform: translateY(-1px);
+}
+
+.selectedCard a svg {
+	width: 0.86rem;
+	height: 0.86rem;
+}
+
+.mapLoading,
+.mapEmpty {
 	position: absolute;
-	inset: -0.34rem;
-	z-index: -1;
-	border: 1px solid rgba(2, 0, 108, 0.18);
-	border-radius: inherit;
-	content: "";
+	z-index: 4;
+	display: grid;
+	place-items: center;
+	text-align: center;
 }
 
-.mapMarker svg {
-	width: 0.82rem;
-	height: 0.82rem;
+.mapLoading {
+	inset: 0;
+	gap: 0.5rem;
+	background: rgba(255, 255, 255, 0.38);
+	color: #02006c;
+	font-size: 0.8rem;
+	font-weight: 760;
+	backdrop-filter: blur(2px);
+	pointer-events: none;
+}
+
+.mapLoading span {
+	width: 2rem;
+	height: 2rem;
+	border: 0.18rem solid rgba(2, 0, 108, 0.14);
+	border-top-color: #02006c;
+	border-radius: 999px;
+	animation: spin 800ms linear infinite;
+}
+
+.mapLoading p {
+	margin: 0;
+}
+
+.mapEmpty {
+	inset: 1rem;
+	align-content: center;
+	gap: 0.36rem;
+	padding: 1rem;
+	border-radius: 1rem;
+	background: rgba(255, 255, 255, 0.86);
+	color: #17171f;
+	backdrop-filter: blur(14px);
+}
+
+.mapEmpty svg {
+	width: 1.5rem;
+	height: 1.5rem;
+	color: #02006c;
+}
+
+.mapEmpty strong {
+	font-size: 0.95rem;
+	font-weight: 840;
+}
+
+.mapEmpty span {
+	max-width: 18rem;
+	color: rgba(23, 23, 31, 0.62);
+	font-size: 0.8rem;
+	font-weight: 560;
+	line-height: 1.45;
 }
 
 @media (max-width: 1180px) {
@@ -84,7 +304,40 @@
 
 @media (max-width: 640px) {
 	.panel {
-		height: 22rem;
+		height: 24rem;
 		border-radius: 1.1rem;
+	}
+
+	.mapSummary {
+		top: 0.75rem;
+		left: 0.75rem;
+	}
+
+	.selectedCard {
+		right: 0.75rem;
+		bottom: 0.75rem;
+		left: 0.75rem;
+		grid-template-columns: 1fr;
+	}
+
+	.selectedCard a {
+		width: 100%;
+	}
+}
+
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@keyframes cardIn {
+	from {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
 	}
 }
