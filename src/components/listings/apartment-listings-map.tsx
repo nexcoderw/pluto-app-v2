@@ -29,9 +29,25 @@ type ListingMapMarker = {
 	detailHref: string;
 	longitude: number;
 	latitude: number;
+	isApproximate: boolean;
 };
 
 const kigaliCenter: [number, number] = [30.0619, -1.9441];
+const kigaliNeighborhoods: Array<{
+	keywords: string[];
+	position: [number, number];
+}> = [
+	{ keywords: ["kimihurura"], position: [30.0894, -1.9507] },
+	{ keywords: ["nyarutarama"], position: [30.1037, -1.9336] },
+	{ keywords: ["kacyiru"], position: [30.0706, -1.9367] },
+	{ keywords: ["kiyovu"], position: [30.0619, -1.9548] },
+	{ keywords: ["kibagabaga"], position: [30.113, -1.937] },
+	{ keywords: ["gacuriro"], position: [30.092, -1.925] },
+	{ keywords: ["remera"], position: [30.102, -1.959] },
+	{ keywords: ["kanombe"], position: [30.137, -1.972] },
+	{ keywords: ["kicukiro"], position: [30.103, -2.001] },
+	{ keywords: ["kagugu"], position: [30.083, -1.911] },
+];
 
 export function ApartmentListingsMap({
 	listings,
@@ -48,6 +64,7 @@ export function ApartmentListingsMap({
 	const [selectedId, setSelectedId] = useState<string | null>(null);
 	const selectedMarker =
 		markers.find((marker) => marker.id === selectedId) ?? null;
+	const exactCount = markers.filter((marker) => !marker.isApproximate).length;
 
 	return (
 		<aside
@@ -82,6 +99,7 @@ export function ApartmentListingsMap({
 									type="button"
 									className={styles.priceMarker}
 									data-selected={marker.id === selectedMarker?.id}
+									data-approximate={marker.isApproximate}
 									aria-label={`View ${marker.title} on map`}
 									onClick={() => setSelectedId(marker.id)}
 								>
@@ -97,9 +115,7 @@ export function ApartmentListingsMap({
 						<Home aria-hidden="true" />
 						{markers.length}
 					</span>
-					<small>
-						{markers.length === 1 ? "mapped apartment" : "mapped apartments"}
-					</small>
+					<small>{summaryLabel(markers.length, exactCount)}</small>
 				</div>
 
 				{isLoading ? (
@@ -122,7 +138,10 @@ export function ApartmentListingsMap({
 						<div>
 							<span>
 								<MapPin aria-hidden="true" />
-								{selectedMarker.city}, {selectedMarker.country}
+								{selectedMarker.isApproximate
+									? "Approximate area"
+									: "Exact location"}{" "}
+								- {selectedMarker.city}, {selectedMarker.country}
 							</span>
 							<strong>{selectedMarker.title}</strong>
 							<p>{selectedMarker.priceMeta}</p>
@@ -213,18 +232,16 @@ function toListingMarker(
 ): ListingMapMarker | null {
 	const latitude = Number(listing.location?.latitude);
 	const longitude = Number(listing.location?.longitude);
+	const fallbackPosition = getFallbackPosition(listing);
+	const hasExactPosition = isValidCoordinatePair(longitude, latitude);
 
-	if (
-		!Number.isFinite(latitude) ||
-		!Number.isFinite(longitude) ||
-		latitude < -90 ||
-		latitude > 90 ||
-		longitude < -180 ||
-		longitude > 180
-	) {
+	if (!hasExactPosition && !fallbackPosition) {
 		return null;
 	}
 
+	const [nextLongitude, nextLatitude] = hasExactPosition
+		? [longitude, latitude]
+		: fallbackPosition!;
 	const price = formatMoney(listing.basePrice, listing.currency);
 
 	return {
@@ -235,9 +252,83 @@ function toListingMarker(
 		priceLabel: price,
 		priceMeta: `${price} / ${listing.pricingUnit.toLowerCase()}`,
 		detailHref: `${detailBaseHref}/${listing.id}`,
-		longitude,
-		latitude,
+		longitude: nextLongitude,
+		latitude: nextLatitude,
+		isApproximate: !hasExactPosition,
 	};
+}
+
+function getFallbackPosition(listing: PublicListing): [number, number] | null {
+	const searchableText = [
+		listing.title,
+		listing.shortDescription,
+		listing.description,
+		listing.location?.name,
+		listing.location?.addressLine,
+		listing.location?.city,
+		listing.city,
+	]
+		.filter(Boolean)
+		.join(" ")
+		.toLowerCase();
+	const neighborhood = kigaliNeighborhoods.find((item) =>
+		item.keywords.some((keyword) => searchableText.includes(keyword)),
+	);
+
+	if (neighborhood) {
+		return neighborhood.position;
+	}
+
+	if (
+		[
+			listing.location?.city,
+			listing.city,
+			listing.location?.country,
+			listing.country,
+		]
+			.filter(Boolean)
+			.join(" ")
+			.toLowerCase()
+			.includes("kigali")
+	) {
+		return deterministicKigaliOffset(listing.id);
+	}
+
+	return null;
+}
+
+function deterministicKigaliOffset(listingId: string): [number, number] {
+	const hash = Array.from(listingId).reduce(
+		(total, char) => total + char.charCodeAt(0),
+		0,
+	);
+	const angle = (hash % 360) * (Math.PI / 180);
+	const radius = 0.012 + (hash % 9) * 0.002;
+
+	return [
+		Number((kigaliCenter[0] + Math.cos(angle) * radius).toFixed(6)),
+		Number((kigaliCenter[1] + Math.sin(angle) * radius).toFixed(6)),
+	];
+}
+
+function isValidCoordinatePair(longitude: number, latitude: number) {
+	return (
+		Number.isFinite(latitude) &&
+		Number.isFinite(longitude) &&
+		latitude >= -90 &&
+		latitude <= 90 &&
+		longitude >= -180 &&
+		longitude <= 180
+	);
+}
+
+function summaryLabel(total: number, exactCount: number) {
+	if (total === 0) return "shown on map";
+	if (total === exactCount) {
+		return total === 1 ? "mapped apartment" : "mapped apartments";
+	}
+
+	return `${exactCount} exact · ${total - exactCount} approximate`;
 }
 
 function formatMoney(value: string, currency: string) {
