@@ -61,7 +61,7 @@ export function ApartmentListingCard({
 	const guestCount = details?.maxGuests ?? details?.guests;
 	const ratingLabel =
 		listing.ratingAverage === null || listing.ratingAverage === undefined
-			? "New"
+			? "0.00 (0)"
 			: `${listing.ratingAverage.toFixed(2)} (${listing.ratingCount ?? 0})`;
 
 	function showPreviousImage() {
@@ -148,8 +148,7 @@ export function ApartmentListingCard({
 				</Link>
 
 				<p className={styles.summary}>
-					{listing.shortDescription ??
-						`${details?.bedrooms ?? "-"} bedrooms close to ${listing.city}`}
+					{listing.shortDescription}
 				</p>
 
 				<p className={styles.location}>
@@ -173,13 +172,13 @@ export function ApartmentListingCard({
 				</ul>
 
 				<div className={styles.footer}>
-					<span className={styles.price}>
-						<strong>{formatMoney(listing.basePrice, listing.currency)}</strong>
-						<small>/{listing.pricingUnit.toLowerCase()}</small>
-					</span>
 					<span className={styles.rating}>
 						<Star aria-hidden="true" />
 						{ratingLabel}
+					</span>
+					<span className={styles.price}>
+						<strong>{formatMoney(listing.basePrice, listing.currency)}</strong>
+						<small>/{listing.pricingUnit.toLowerCase()}</small>
 					</span>
 				</div>
 			</div>

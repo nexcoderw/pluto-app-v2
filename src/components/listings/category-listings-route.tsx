@@ -78,7 +78,7 @@ const airbnbFilters: ListingSidebarFilter[] = [
 const categoryConfigs = {
 	cars: {
 		categoryLabel: "Cars",
-		title: "Choose road-ready cars from approved Pluto partners.",
+		title: "Cars",
 		detailBaseHref: "/listings/cars",
 		filters: carFilters,
 		listListings: listCarListings,
@@ -93,7 +93,7 @@ const categoryConfigs = {
 	},
 	apartments: {
 		categoryLabel: "Apartments",
-		title: "Find comfortable apartments with the details already checked.",
+		title: "Apartments",
 		detailBaseHref: "/listings/apartments",
 		filters: apartmentFilters,
 		listListings: listApartmentListings,
@@ -112,7 +112,7 @@ const categoryConfigs = {
 	},
 	"hotel-rooms": {
 		categoryLabel: "Hotel rooms",
-		title: "Book hotel rooms with room details visible upfront.",
+		title: "Hotel Rooms",
 		detailBaseHref: "/listings/hotel-rooms",
 		filters: hotelRoomFilters,
 		listListings: listHotelRoomListings,
@@ -128,7 +128,7 @@ const categoryConfigs = {
 		),
 	},
 	airbnb: {
-		categoryLabel: "AirBnB homes",
+		categoryLabel: "AirBnB",
 		title: "Discover AirBnB-style homes built for secure stays.",
 		detailBaseHref: "/listings/airbnb",
 		filters: airbnbFilters,
