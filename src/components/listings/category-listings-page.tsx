@@ -206,6 +206,8 @@ export function CategoryListingsPage({
 				{meta ? (
 					<CategoryPagination
 						page={meta.page}
+						limit={meta.limit}
+						total={meta.total}
 						totalPages={meta.totalPages}
 						hasNextPage={meta.hasNextPage}
 						hasPreviousPage={meta.hasPreviousPage}
@@ -536,11 +538,6 @@ function CategoryListingsSkeleton() {
 					</article>
 				))}
 			</section>
-			<div className={styles.pagination} aria-hidden="true">
-				<Skeleton className={styles.skeletonPaginationButton} />
-				<Skeleton className={styles.skeletonPaginationText} />
-				<Skeleton className={styles.skeletonPaginationButton} />
-			</div>
 		</>
 	);
 }
@@ -571,17 +568,28 @@ function CategoryListingsState({
 
 function CategoryPagination({
 	page,
+	limit,
+	total,
 	totalPages,
 	hasNextPage,
 	hasPreviousPage,
 	onPageChange,
 }: {
 	page: number;
+	limit: number;
+	total: number;
 	totalPages: number;
 	hasNextPage: boolean;
 	hasPreviousPage: boolean;
 	onPageChange: (page: number) => void;
 }) {
+	const normalizedTotalPages = Math.max(totalPages, 1);
+	const pages = getPaginationItems(page, normalizedTotalPages);
+
+	if (total <= limit || normalizedTotalPages <= 1) {
+		return null;
+	}
+
 	return (
 		<nav className={styles.pagination} aria-label="Listings pagination">
 			<Button
@@ -593,9 +601,28 @@ function CategoryPagination({
 				<ArrowLeft aria-hidden="true" />
 				Previous
 			</Button>
-			<span>
-				Page {page} of {Math.max(totalPages, 1)}
-			</span>
+			<ol className={styles.paginationList}>
+				{pages.map((item, index) => (
+					<li key={`${item}-${index}`}>
+						{item === "ellipsis" ? (
+							<span className={styles.paginationEllipsis} aria-hidden="true">
+								...
+							</span>
+						) : (
+							<button
+								type="button"
+								className={styles.paginationPage}
+								data-active={item === page}
+								aria-current={item === page ? "page" : undefined}
+								aria-label={`Go to page ${item}`}
+								onClick={() => onPageChange(item)}
+							>
+								{item}
+							</button>
+						)}
+					</li>
+				))}
+			</ol>
 			<Button
 				type="button"
 				variant="outline"
@@ -607,6 +634,29 @@ function CategoryPagination({
 			</Button>
 		</nav>
 	);
+}
+
+function getPaginationItems(currentPage: number, totalPages: number) {
+	const pages = new Set<number>([
+		1,
+		totalPages,
+		currentPage - 1,
+		currentPage,
+		currentPage + 1,
+	]);
+	const visiblePages = Array.from(pages)
+		.filter((item) => item >= 1 && item <= totalPages)
+		.sort((first, second) => first - second);
+
+	return visiblePages.flatMap((item, index) => {
+		const previous = visiblePages[index - 1];
+
+		if (previous && item - previous > 1) {
+			return ["ellipsis" as const, item];
+		}
+
+		return [item];
+	});
 }
 
 function cleanRequest(input: ListingListRequest): ListingListRequest {
