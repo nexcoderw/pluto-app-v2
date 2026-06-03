@@ -1,19 +1,14 @@
 "use client";
 
-import type { ReactNode } from "react";
 import {
 	BedDouble,
 	CircleDollarSign,
-	Coffee,
 	DoorOpen,
 	Hotel,
 	MapPin,
 	RefreshCcw,
 	Search,
-	ShieldCheck,
-	ShowerHead,
 	SlidersHorizontal,
-	Snowflake,
 	Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -25,7 +20,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import type { ListingListRequest } from "@/services/api/listings";
 import type { ListingSidebarRenderProps } from "../category-listings-page";
 import styles from "./hotel-room-listings-sidebar.module.css";
@@ -74,30 +68,32 @@ export function HotelRoomListingsSidebar({
 					<MapPin aria-hidden="true" />
 					<span>Location</span>
 				</div>
-				<Input
-					type="text"
-					value={textValue(draftFilters.city)}
-					placeholder="City"
-					onChange={(event) => setDraftFilter("city", event.target.value)}
-				/>
-				<Select
-					value={selectValue(draftFilters.country)}
-					onValueChange={(value) =>
-						setDraftFilter("country", optionalText(value))
-					}
-				>
-					<SelectTrigger className={styles.selectTrigger}>
-						<SelectValue>Country</SelectValue>
-					</SelectTrigger>
-					<SelectContent align="start" alignItemWithTrigger={false}>
-						<SelectItem value="ANY">Any country</SelectItem>
-						{countries.map((country) => (
-							<SelectItem key={country} value={country}>
-								{country}
-							</SelectItem>
-						))}
-					</SelectContent>
-				</Select>
+				<div className={styles.locationGrid}>
+					<Input
+						type="text"
+						value={textValue(draftFilters.city)}
+						placeholder="City"
+						onChange={(event) => setDraftFilter("city", event.target.value)}
+					/>
+					<Select
+						value={selectValue(draftFilters.country)}
+						onValueChange={(value) =>
+							setDraftFilter("country", optionalText(value))
+						}
+					>
+						<SelectTrigger className={styles.selectTrigger}>
+							<SelectValue>Country</SelectValue>
+						</SelectTrigger>
+						<SelectContent align="start" alignItemWithTrigger={false}>
+							<SelectItem value="ANY">Any country</SelectItem>
+							{countries.map((country) => (
+								<SelectItem key={country} value={country}>
+									{country}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+				</div>
 			</div>
 
 			<div className={styles.section}>
@@ -105,60 +101,62 @@ export function HotelRoomListingsSidebar({
 					<Search aria-hidden="true" />
 					<span>Room setup</span>
 				</div>
-				<Select
-					value={selectValue(draftFilters.roomType)}
-					onValueChange={(value) =>
-						setDraftFilter("roomType", optionalText(value))
-					}
-				>
-					<SelectTrigger className={styles.selectTrigger}>
-						<SelectValue>Room type</SelectValue>
-					</SelectTrigger>
-					<SelectContent align="start" alignItemWithTrigger={false}>
-						<SelectItem value="ANY">Any room type</SelectItem>
-						{roomTypes.map((roomType) => (
-							<SelectItem key={roomType} value={roomType}>
-								{roomType}
-							</SelectItem>
-						))}
-					</SelectContent>
-				</Select>
-				<Select
-					value={selectValue(draftFilters.bedType)}
-					onValueChange={(value) =>
-						setDraftFilter("bedType", optionalText(value))
-					}
-				>
-					<SelectTrigger className={styles.selectTrigger}>
-						<SelectValue>Bed type</SelectValue>
-					</SelectTrigger>
-					<SelectContent align="start" alignItemWithTrigger={false}>
-						<SelectItem value="ANY">Any bed type</SelectItem>
-						{bedTypes.map((bedType) => (
-							<SelectItem key={bedType} value={bedType}>
-								{bedType}
-							</SelectItem>
-						))}
-					</SelectContent>
-				</Select>
-				<Select
-					value={selectValue(draftFilters.guests)}
-					onValueChange={(value) =>
-						setDraftFilter("guests", optionalNumber(value))
-					}
-				>
-					<SelectTrigger className={styles.selectTrigger}>
-						<SelectValue>Guests</SelectValue>
-					</SelectTrigger>
-					<SelectContent align="start" alignItemWithTrigger={false}>
-						<SelectItem value="ANY">Any guests</SelectItem>
-						{guestOptions.map((guests) => (
-							<SelectItem key={guests} value={String(guests)}>
-								{guests}+ guests
-							</SelectItem>
-						))}
-					</SelectContent>
-				</Select>
+				<div className={styles.roomSetupGrid}>
+					<Select
+						value={selectValue(draftFilters.roomType)}
+						onValueChange={(value) =>
+							setDraftFilter("roomType", optionalText(value))
+						}
+					>
+						<SelectTrigger className={styles.selectTrigger}>
+							<SelectValue>Room type</SelectValue>
+						</SelectTrigger>
+						<SelectContent align="start" alignItemWithTrigger={false}>
+							<SelectItem value="ANY">Any room type</SelectItem>
+							{roomTypes.map((roomType) => (
+								<SelectItem key={roomType} value={roomType}>
+									{roomType}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+					<Select
+						value={selectValue(draftFilters.bedType)}
+						onValueChange={(value) =>
+							setDraftFilter("bedType", optionalText(value))
+						}
+					>
+						<SelectTrigger className={styles.selectTrigger}>
+							<SelectValue>Bed type</SelectValue>
+						</SelectTrigger>
+						<SelectContent align="start" alignItemWithTrigger={false}>
+							<SelectItem value="ANY">Any bed type</SelectItem>
+							{bedTypes.map((bedType) => (
+								<SelectItem key={bedType} value={bedType}>
+									{bedType}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+					<Select
+						value={selectValue(draftFilters.guests)}
+						onValueChange={(value) =>
+							setDraftFilter("guests", optionalNumber(value))
+						}
+					>
+						<SelectTrigger className={styles.selectTrigger}>
+							<SelectValue>Guests</SelectValue>
+						</SelectTrigger>
+						<SelectContent align="start" alignItemWithTrigger={false}>
+							<SelectItem value="ANY">Any guests</SelectItem>
+							{guestOptions.map((guests) => (
+								<SelectItem key={guests} value={String(guests)}>
+									{guests}+ guests
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+				</div>
 			</div>
 
 			<div className={styles.section}>
@@ -195,40 +193,6 @@ export function HotelRoomListingsSidebar({
 				</div>
 			</div>
 
-			<div className={styles.section}>
-				<div className={styles.sectionTitle}>
-					<ShieldCheck aria-hidden="true" />
-					<span>Room comforts</span>
-				</div>
-				<SwitchRow
-					icon={<Coffee aria-hidden="true" />}
-					label="Breakfast included"
-					description="Only show rooms where breakfast is listed."
-					checked={draftFilters.breakfastIncluded === true}
-					onCheckedChange={(checked) =>
-						setDraftFilter("breakfastIncluded", checked ? true : undefined)
-					}
-				/>
-				<SwitchRow
-					icon={<Snowflake aria-hidden="true" />}
-					label="Air conditioning"
-					description="Show rooms with cooling available."
-					checked={draftFilters.hasAirConditioning === true}
-					onCheckedChange={(checked) =>
-						setDraftFilter("hasAirConditioning", checked ? true : undefined)
-					}
-				/>
-				<SwitchRow
-					icon={<ShowerHead aria-hidden="true" />}
-					label="Private bathroom"
-					description="Only include rooms with private bathrooms."
-					checked={draftFilters.hasPrivateBathroom === true}
-					onCheckedChange={(checked) =>
-						setDraftFilter("hasPrivateBathroom", checked ? true : undefined)
-					}
-				/>
-			</div>
-
 			<div className={styles.summary}>
 				<span>
 					<DoorOpen aria-hidden="true" />
@@ -255,35 +219,6 @@ export function HotelRoomListingsSidebar({
 				</Button>
 			</div>
 		</aside>
-	);
-}
-
-function SwitchRow({
-	icon,
-	label,
-	description,
-	checked,
-	onCheckedChange,
-}: {
-	icon: ReactNode;
-	label: string;
-	description: string;
-	checked: boolean;
-	onCheckedChange: (checked: boolean) => void;
-}) {
-	return (
-		<label className={styles.switchRow}>
-			<span className={styles.switchIcon}>{icon}</span>
-			<span>
-				<strong>{label}</strong>
-				<small>{description}</small>
-			</span>
-			<Switch
-				checked={checked}
-				onCheckedChange={onCheckedChange}
-				className={styles.switch}
-			/>
-		</label>
 	);
 }
 
