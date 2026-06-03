@@ -11,7 +11,10 @@ import {
 	type ListingListResponse,
 	type PublicListing,
 } from "@/services/api/listings";
-import { AirbnbListingCard } from "./airbnb/airbnb-listing-card";
+import {
+	AirbnbListingCard,
+	AirbnbListingCardSkeleton,
+} from "./airbnb/airbnb-listing-card";
 import { AirbnbListingsSidebar } from "./airbnb/airbnb-listings-sidebar";
 import { airbnbFilters } from "./airbnb/filters";
 import { ApartmentListingCard } from "./apartments/apartment-listing-card";
@@ -117,11 +120,13 @@ const categoryConfigs = {
 		renderSidebar: (sidebarProps) => (
 			<AirbnbListingsSidebar {...sidebarProps} variant="dialog" />
 		),
-		renderCard: (listing, detailHref) => (
+		renderSkeletonCard: (index) => <AirbnbListingCardSkeleton key={index} />,
+		renderCard: (listing, detailHref, index) => (
 			<AirbnbListingCard
 				key={listing.id}
 				listing={listing}
 				detailHref={detailHref}
+				priorityImage={index === 0}
 			/>
 		),
 	},
