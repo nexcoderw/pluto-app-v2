@@ -5,15 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 import {
 	ArrowRight,
-	BedDouble,
 	ChevronLeft,
 	ChevronRight,
-	DoorOpen,
 	Heart,
 	MapPin,
 	ShieldCheck,
 	Star,
-	Users,
 } from "lucide-react";
 import type { PublicListing } from "@/services/api/listings";
 import { formatMoney, formatPricingUnit } from "../listing-formatters";
@@ -155,24 +152,6 @@ export function HotelRoomListingCard({
 					{hotelName} · {listing.city}, {listing.country}
 				</p>
 
-				<ul className={styles.specs} aria-label="Hotel room highlights">
-					<li>
-						<BedDouble aria-hidden="true" />
-						<strong>{details?.bedType ?? "Listed"}</strong>
-						<span>Bed</span>
-					</li>
-					<li>
-						<Users aria-hidden="true" />
-						<strong>{details?.maxGuests ?? "-"}</strong>
-						<span>Guests</span>
-					</li>
-					<li>
-						<DoorOpen aria-hidden="true" />
-						<strong>{details?.checkInTime ?? "--"}</strong>
-						<span>Check-in</span>
-					</li>
-				</ul>
-
 				<div className={styles.footer}>
 					<span className={styles.price}>
 						<strong>{formatMoney(listing.basePrice, listing.currency)}</strong>
@@ -220,16 +199,6 @@ export function HotelRoomListingCardSkeleton() {
 				</div>
 
 				<span className={styles.skeletonLocation} />
-
-				<ul className={styles.specs}>
-					{Array.from({ length: 3 }).map((_, index) => (
-						<li key={index} className={styles.skeletonSpec}>
-							<span />
-							<strong />
-							<small />
-						</li>
-					))}
-				</ul>
 
 				<div className={styles.footer}>
 					<span className={styles.skeletonPrice} />
