@@ -22,7 +22,10 @@ import {
 	type ListingSidebarFilter,
 	type ListingSidebarRenderProps,
 } from "./category-listings-page";
-import { CarListingCard } from "./cars/car-listing-card";
+import {
+	CarListingCard,
+	CarListingCardSkeleton,
+} from "./cars/car-listing-card";
 import { CarListingsSidebar } from "./cars/car-listings-sidebar";
 import { carFilters } from "./cars/filters";
 import { hotelRoomFilters } from "./hotel-rooms/filters";
@@ -40,6 +43,7 @@ type CategoryConfig = {
 		detailHref: string,
 		index: number,
 	) => ReactNode;
+	renderSkeletonCard?: (index: number) => ReactNode;
 	renderSidebar?: (props: ListingSidebarRenderProps) => ReactNode;
 	filterPresentation?: "sidebar" | "dialog";
 };
@@ -51,10 +55,8 @@ const categoryConfigs = {
 		detailBaseHref: "/listings/cars",
 		filters: carFilters,
 		listListings: listCarListings,
-		filterPresentation: "dialog",
-		renderSidebar: (sidebarProps) => (
-			<CarListingsSidebar {...sidebarProps} variant="dialog" />
-		),
+		renderSidebar: (sidebarProps) => <CarListingsSidebar {...sidebarProps} />,
+		renderSkeletonCard: (index) => <CarListingCardSkeleton key={index} />,
 		renderCard: (listing, detailHref) => (
 			<CarListingCard
 				key={listing.id}
