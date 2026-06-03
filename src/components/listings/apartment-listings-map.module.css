@@ -24,12 +24,27 @@
 	overflow: hidden;
 	border-radius: inherit;
 	background: #111827;
+	cursor: grab;
+}
+
+.mapViewport:active {
+	cursor: grabbing;
 }
 
 .mapViewport :global(.maplibregl-canvas),
 .mapViewport :global(.maplibregl-canvas-container),
 .mapViewport :global(.maplibregl-map) {
 	border-radius: inherit;
+}
+
+.mapControls {
+	right: 0.9rem;
+	top: 0.9rem;
+}
+
+.mapControls :global(button) {
+	color: #02006c;
+	cursor: pointer;
 }
 
 .mapMarker {
