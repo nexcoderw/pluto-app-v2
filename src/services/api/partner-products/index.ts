@@ -1,3 +1,5 @@
+export { completeProductImageUpload } from "./complete-product-image-upload";
+export { createProductImageUploadSignature } from "./create-product-image-upload-signature";
 export { createCarProduct } from "./create-car-product";
 export { createListing } from "./create-listing";
 export { deleteListing } from "./delete-listing";
@@ -14,11 +16,14 @@ export type {
 	CreateApartmentProductRequest,
 	CreateHotelRoomProductRequest,
 	CreateListingRequest,
+	CompleteProductImageUploadRequest,
 	DeleteListingRequest,
 	DeleteProductImageRequest,
 	PartnerProductListRequest,
 	PartnerProductListResponse,
 	PartnerProductResponse,
+	ProductImageUploadSignatureRequest,
+	ProductImageUploadSignatureResponse,
 	UpdateListingRequest,
 	UpdateProductImageRequest,
 	UploadProductImageRequest,
