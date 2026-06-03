@@ -193,21 +193,6 @@ export function HotelRoomListingsSidebar({
 				</div>
 			</div>
 
-			<div className={styles.summary}>
-				<span>
-					<DoorOpen aria-hidden="true" />
-					Room type
-				</span>
-				<span>
-					<BedDouble aria-hidden="true" />
-					Bed type
-				</span>
-				<span>
-					<Users aria-hidden="true" />
-					Guests
-				</span>
-			</div>
-
 			<div className={styles.actions}>
 				<Button type="button" onClick={applyFilters}>
 					<SlidersHorizontal aria-hidden="true" />
