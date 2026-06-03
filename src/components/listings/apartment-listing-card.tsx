@@ -19,6 +19,7 @@ import styles from "./apartment-listing-card.module.css";
 type ApartmentListingCardProps = {
 	listing: PublicListing;
 	detailHref: string;
+	priorityImage?: boolean;
 };
 
 type ApartmentDetailsWithGuestAlias = NonNullable<
@@ -32,6 +33,7 @@ const fallbackImage = "/hero/hero.jpg";
 export function ApartmentListingCard({
 	listing,
 	detailHref,
+	priorityImage = false,
 }: ApartmentListingCardProps) {
 	const details =
 		listing.apartmentDetails as ApartmentDetailsWithGuestAlias | null;
@@ -91,6 +93,8 @@ export function ApartmentListingCard({
 						alt={activeImage.alt}
 						fill
 						sizes="(max-width: 720px) 100vw, 22rem"
+						loading={priorityImage ? "eager" : "lazy"}
+						priority={priorityImage}
 						onError={() => markImageAsFailed(activeImage.id)}
 					/>
 				</Link>
