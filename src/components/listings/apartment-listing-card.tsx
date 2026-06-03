@@ -1,21 +1,19 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
 	Bath,
 	BedDouble,
-	Building2,
-	MapPin,
-	ShieldCheck,
+	ChevronLeft,
+	ChevronRight,
+	Heart,
+	Star,
 	Users,
 } from "lucide-react";
 import type { PublicListing } from "@/services/api/listings";
-import {
-	formatMoney,
-	formatPricingUnit,
-	getListingCoverImage,
-} from "./listing-formatters";
+import { formatMoney } from "./listing-formatters";
 import styles from "./apartment-listing-card.module.css";
 
 type ApartmentListingCardProps = {
@@ -29,71 +27,157 @@ type ApartmentDetailsWithGuestAlias = NonNullable<
 	guests?: number;
 };
 
+const fallbackImage = "/hero/hero.jpg";
+
 export function ApartmentListingCard({
 	listing,
 	detailHref,
 }: ApartmentListingCardProps) {
 	const details =
 		listing.apartmentDetails as ApartmentDetailsWithGuestAlias | null;
-	const coverImage = getListingCoverImage(listing);
-	const coverUrl = coverImage?.file.publicUrl;
+	const [activeImageIndex, setActiveImageIndex] = useState(0);
+	const [favorite, setFavorite] = useState(false);
+	const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+	const images = useMemo(
+		() =>
+			listing.images
+				.filter((image) => Boolean(image.file.publicUrl))
+				.map((image) => ({
+					id: image.id,
+					src: image.file.publicUrl ?? fallbackImage,
+					alt: image.altText ?? listing.title,
+				})),
+		[listing.images, listing.title],
+	);
+	const gallery = images.length
+		? images
+		: [{ id: "fallback", src: fallbackImage, alt: "Pluto Booking apartment" }];
+	const activeImage = gallery[activeImageIndex] ?? gallery[0];
+	const activeImageSrc = failedImages.has(activeImage.id)
+		? fallbackImage
+		: activeImage.src;
 	const guestCount = details?.maxGuests ?? details?.guests;
+	const ratingLabel =
+		listing.ratingAverage === null || listing.ratingAverage === undefined
+			? "New"
+			: `${listing.ratingAverage.toFixed(2)} (${listing.ratingCount ?? 0})`;
+
+	function showPreviousImage() {
+		setActiveImageIndex((current) =>
+			current === 0 ? gallery.length - 1 : current - 1,
+		);
+	}
+
+	function showNextImage() {
+		setActiveImageIndex((current) =>
+			current === gallery.length - 1 ? 0 : current + 1,
+		);
+	}
+
+	function markImageAsFailed(imageId: string) {
+		setFailedImages((current) => {
+			const next = new Set(current);
+			next.add(imageId);
+			return next;
+		});
+	}
 
 	return (
 		<article className={styles.card}>
-			<Link href={detailHref} className={styles.media}>
-				{coverUrl ? (
+			<div className={styles.media}>
+				<Link href={detailHref} className={styles.imageLink}>
 					<Image
-						src={coverUrl}
-						alt={coverImage.altText ?? listing.title}
+						src={activeImageSrc}
+						alt={activeImage.alt}
 						fill
-						sizes="(max-width: 720px) 100vw, (max-width: 1280px) 31vw, 22vw"
+						sizes="(max-width: 720px) 100vw, 22rem"
+						onError={() => markImageAsFailed(activeImage.id)}
 					/>
-				) : (
-					<span className={styles.emptyMedia}>
-						<Building2 aria-hidden="true" />
-						Apartment image pending
-					</span>
-				)}
-				<span className={styles.statusPill}>
-					<ShieldCheck aria-hidden="true" />
-					Verified stay
-				</span>
-			</Link>
+				</Link>
+
+				<span className={styles.statusPill}>Verified stay</span>
+
+				{gallery.length > 1 ? (
+					<>
+						<button
+							type="button"
+							className={styles.galleryButton}
+							data-position="left"
+							aria-label="Show previous apartment image"
+							onClick={showPreviousImage}
+						>
+							<ChevronLeft aria-hidden="true" />
+						</button>
+						<button
+							type="button"
+							className={styles.galleryButton}
+							data-position="right"
+							aria-label="Show next apartment image"
+							onClick={showNextImage}
+						>
+							<ChevronRight aria-hidden="true" />
+						</button>
+						<div className={styles.galleryDots} aria-hidden="true">
+							{gallery.map((image, index) => (
+								<span key={image.id} data-active={index === activeImageIndex} />
+							))}
+						</div>
+					</>
+				) : null}
+			</div>
 
 			<div className={styles.body}>
-				<div className={styles.heading}>
-					<div>
-						<h2>{listing.title}</h2>
-					</div>
-					<span className={styles.price}>
-						<strong>{formatMoney(listing.basePrice, listing.currency)}</strong>
-						<small>/{formatPricingUnit(listing.pricingUnit)}</small>
-					</span>
-				</div>
+				<button
+					type="button"
+					className={styles.favoriteButton}
+					aria-label={
+						favorite ? "Remove apartment from favorites" : "Save apartment"
+					}
+					aria-pressed={favorite}
+					onClick={() => setFavorite((current) => !current)}
+				>
+					<Heart aria-hidden="true" />
+				</button>
+
+				<Link href={detailHref} className={styles.titleLink}>
+					<h2>{listing.title}</h2>
+				</Link>
+
+				<p className={styles.summary}>
+					{listing.shortDescription ??
+						`${details?.bedrooms ?? "-"} bedrooms close to ${listing.city}`}
+				</p>
 
 				<p className={styles.location}>
-					<MapPin aria-hidden="true" />
-					{listing.city}, {listing.country}
+					{details?.bedrooms ?? "-"} bedrooms · {details?.bathrooms ?? "-"}{" "}
+					baths · {guestCount ?? "-"} guests
 				</p>
 
 				<ul className={styles.specs} aria-label="Apartment highlights">
 					<li>
 						<BedDouble aria-hidden="true" />
-						<strong>{details?.bedrooms ?? "-"}</strong>
-						<span>Bedrooms</span>
+						<span>{details?.bedrooms ?? "-"} beds</span>
 					</li>
 					<li>
 						<Bath aria-hidden="true" />
-						<strong>{details?.bathrooms ?? "-"}</strong>
-						<span>Bathrooms</span>
+						<span>{details?.bathrooms ?? "-"} baths</span>
 					</li>
 					<li>
 						<Users aria-hidden="true" />
-						<strong>{guestCount ?? "-"}</strong>
-						<span>Guests</span>
+						<span>{guestCount ?? "-"} guests</span>
 					</li>
 				</ul>
+
+				<div className={styles.footer}>
+					<span className={styles.price}>
+						<strong>{formatMoney(listing.basePrice, listing.currency)}</strong>
+						<small>/{listing.pricingUnit.toLowerCase()}</small>
+					</span>
+					<span className={styles.rating}>
+						<Star aria-hidden="true" />
+						{ratingLabel}
+					</span>
+				</div>
 			</div>
 		</article>
 	);
