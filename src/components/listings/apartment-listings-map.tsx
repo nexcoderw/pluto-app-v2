@@ -23,7 +23,7 @@ export function ApartmentListingsMap() {
 					zoom={11.3}
 					pitch={36}
 					bearing={-8}
-					theme="light"
+					theme="dark"
 					interactive={false}
 				>
 					{kigaliMarkers.map((marker) => (
