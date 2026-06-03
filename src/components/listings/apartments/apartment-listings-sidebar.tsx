@@ -27,6 +27,8 @@ const bathroomOptions = [1, 2, 3, 4];
 const guestOptions = [1, 2, 4, 6, 8, 10];
 const maxBudget = 1000000;
 const budgetStep = 10000;
+const usdToRwfSellRate = 1460;
+const rwfToUsdBuyRate = 1470;
 
 export function ApartmentListingsSidebar({
 	categoryLabel,
@@ -165,8 +167,18 @@ export function ApartmentListingsSidebar({
 					<div className={styles.priceHeader}>
 						<span>Max budget</span>
 						<strong>
-							{hasBudgetFilter ? formatBudget(selectedBudget) : "Any budget"}
+							{formatBudgetLabel(selectedBudget, hasBudgetFilter)}
 						</strong>
+					</div>
+					<div className={styles.exchangePanel}>
+						<span>
+							<small>USD sell</small>
+							<strong>$1 = RWF {formatPlainNumber(usdToRwfSellRate)}</strong>
+						</span>
+						<span>
+							<small>RWF buy</small>
+							<strong>RWF {formatPlainNumber(rwfToUsdBuyRate)} = $1</strong>
+						</span>
 					</div>
 					<input
 						type="range"
@@ -180,6 +192,11 @@ export function ApartmentListingsSidebar({
 						}
 						aria-label="Maximum apartment listing price"
 					/>
+					<p className={styles.budgetHint}>
+						{hasBudgetFilter
+							? `Budget equivalent: ${formatUsdEquivalent(selectedBudget)} using the RWF buy rate. USD listings are filtered with the USD sell rate.`
+							: "Set a RWF budget to filter both RWF and USD listings fairly."}
+					</p>
 					<button
 						type="button"
 						className={styles.clearBudget}
@@ -225,7 +242,23 @@ function optionalNumber(value: string | null) {
 	return Number.isFinite(numberValue) ? numberValue : undefined;
 }
 
-function formatBudget(value: number) {
+function formatBudgetLabel(value: number, hasBudgetFilter: boolean) {
+	if (!hasBudgetFilter) {
+		return "Any budget";
+	}
+
+	return `RWF ${formatPlainNumber(value)}`;
+}
+
+function formatUsdEquivalent(value: number) {
+	return new Intl.NumberFormat("en-US", {
+		style: "currency",
+		currency: "USD",
+		maximumFractionDigits: 0,
+	}).format(value / rwfToUsdBuyRate);
+}
+
+function formatPlainNumber(value: number) {
 	return new Intl.NumberFormat("en-US", {
 		maximumFractionDigits: 0,
 	}).format(value);
