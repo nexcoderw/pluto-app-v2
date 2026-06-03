@@ -1,80 +1,167 @@
 .card {
 	position: relative;
+	display: grid;
 	overflow: hidden;
-	border: 1px solid rgba(2, 0, 108, 0.18);
+	border: 1px solid rgba(2, 0, 108, 0.14);
 	border-radius: 1.35rem;
 	background: #ffffff;
-	box-shadow: 0 1rem 2.2rem rgba(16, 22, 33, 0.06);
+	box-shadow: 0 1rem 2.4rem rgba(16, 22, 33, 0.07);
 	animation: airbnbCardIn 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .media {
 	position: relative;
-	min-height: 12.5rem;
-	display: block;
+	min-height: 16.25rem;
 	overflow: hidden;
 	background: rgba(2, 0, 108, 0.06);
-	text-decoration: none;
 }
 
-.media::after {
+.imageLink,
+.skeletonImage {
+	position: absolute;
+	inset: 0;
+	display: block;
+}
+
+.imageLink::after {
 	position: absolute;
 	inset: auto 0 0;
-	height: 5.5rem;
+	height: 6.2rem;
 	content: "";
-	background: rgba(8, 10, 23, 0.28);
+	background: linear-gradient(180deg, rgba(8, 10, 23, 0), rgba(8, 10, 23, 0.4));
 	pointer-events: none;
 }
 
-.media img {
+.imageLink img {
 	object-fit: cover;
 	transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.card:hover .media img {
+.card:hover .imageLink img {
 	transform: scale(1.045);
 }
 
-.emptyMedia {
-	min-height: 12.5rem;
-	display: grid;
-	place-items: center;
-	gap: 0.45rem;
-	color: #02006c;
-	font-size: 0.78rem;
-	font-weight: 500;
-	text-align: center;
-}
-
-.emptyMedia svg {
-	width: 1.35rem;
-	height: 1.35rem;
+.statusPill,
+.skeletonStatusPill {
+	position: absolute;
+	left: 0.8rem;
+	top: 0.8rem;
+	z-index: 2;
+	min-height: 2rem;
+	border-radius: 999px;
 }
 
 .statusPill {
-	position: absolute;
-	right: 0.75rem;
-	bottom: 0.75rem;
-	z-index: 1;
 	display: inline-flex;
 	align-items: center;
 	gap: 0.34rem;
-	min-height: 2rem;
-	padding: 0 0.7rem;
+	padding: 0 0.72rem;
 	border: 1px solid rgba(255, 255, 255, 0.58);
-	border-radius: 999px;
 	background: rgba(255, 255, 255, 0.9);
 	color: #02006c;
-	font-size: 0.68rem;
-	font-weight: 500;
+	font-size: 0.66rem;
+	font-weight: 760;
+	letter-spacing: 0.05em;
 	text-transform: uppercase;
 	backdrop-filter: blur(16px);
+}
+
+.statusPill svg {
+	width: 0.82rem;
+	height: 0.82rem;
+}
+
+.galleryButton,
+.skeletonGalleryButton {
+	position: absolute;
+	top: 50%;
+	z-index: 2;
+	width: 2.25rem;
+	height: 2.25rem;
+	border-radius: 999px;
+	transform: translateY(-50%);
+}
+
+.galleryButton {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid rgba(255, 255, 255, 0.62);
+	background: rgba(255, 255, 255, 0.92);
+	color: #02006c;
+	box-shadow: 0 0.7rem 1.5rem rgba(15, 23, 42, 0.14);
+	backdrop-filter: blur(14px);
+	cursor: pointer;
+	transition:
+		background 180ms ease,
+		color 180ms ease,
+		transform 180ms ease;
+}
+
+.galleryButton:hover,
+.galleryButton:focus-visible {
+	background: #02006c;
+	color: #ffffff;
+	transform: translateY(-50%) scale(1.04);
+}
+
+.galleryButton:focus-visible {
+	outline: 2px solid rgba(2, 0, 108, 0.28);
+	outline-offset: 2px;
+}
+
+.galleryButton[data-position="left"],
+.skeletonGalleryButton[data-position="left"] {
+	left: 0.72rem;
+}
+
+.galleryButton[data-position="right"],
+.skeletonGalleryButton[data-position="right"] {
+	right: 0.72rem;
+}
+
+.galleryButton svg {
+	width: 1rem;
+	height: 1rem;
+}
+
+.galleryDots,
+.skeletonDots {
+	position: absolute;
+	right: 1rem;
+	bottom: 0.92rem;
+	left: 1rem;
+	z-index: 2;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.32rem;
+}
+
+.galleryDots span,
+.skeletonDots span {
+	width: 0.38rem;
+	height: 0.38rem;
+	border-radius: 999px;
+}
+
+.galleryDots span {
+	background: rgba(255, 255, 255, 0.64);
+	box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.12);
+	transition:
+		width 180ms ease,
+		background 180ms ease;
+}
+
+.galleryDots span[data-active="true"] {
+	width: 1.25rem;
+	background: #ffffff;
 }
 
 .body {
 	display: grid;
 	gap: 0.78rem;
-	padding: 0.9rem;
+	padding: 0.85rem;
 }
 
 .heading {
@@ -84,118 +171,305 @@
 	align-items: start;
 }
 
-.heading h2 {
+.homeType {
+	margin: 0 0 0.16rem;
+	overflow: hidden;
+	color: rgba(2, 0, 108, 0.72);
+	font-size: 0.68rem;
+	font-weight: 760;
+	letter-spacing: 0.06em;
+	text-overflow: ellipsis;
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+
+.titleLink {
+	color: inherit;
+	text-decoration: none;
+}
+
+.titleLink h2 {
 	margin: 0;
 	overflow: hidden;
 	color: #17171f;
-	font-size: 0.98rem;
-	font-weight: 880;
-	line-height: 1.2;
+	font-size: 1rem;
+	font-weight: 860;
+	line-height: 1.18;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 
-.price {
-	display: grid;
-	justify-items: end;
-	gap: 0.02rem;
+.titleLink:hover h2 {
 	color: #02006c;
-	font-size: 0.68rem;
-	font-weight: 500;
-	white-space: nowrap;
 }
 
-.price strong {
-	font-size: 0.88rem;
-	font-weight: 500;
+.favoriteButton,
+.skeletonFavoriteButton {
+	width: 2.45rem;
+	height: 2.45rem;
+	border-radius: 999px;
 }
 
-.price small {
-	color: rgba(23, 23, 31, 0.52);
-	font-weight: 500;
+.favoriteButton {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	background: rgba(247, 248, 251, 0.9);
+	color: #02006c;
+	cursor: pointer;
+	transition:
+		background 180ms ease,
+		color 180ms ease,
+		transform 180ms ease;
+}
+
+.favoriteButton:hover,
+.favoriteButton:focus-visible,
+.favoriteButton[aria-pressed="true"] {
+	background: #02006c;
+	color: #ffffff;
+	transform: translateY(-1px);
+}
+
+.favoriteButton:focus-visible {
+	outline: 2px solid rgba(2, 0, 108, 0.24);
+	outline-offset: 2px;
+}
+
+.favoriteButton svg {
+	width: 0.98rem;
+	height: 0.98rem;
+}
+
+.favoriteButton[aria-pressed="true"] svg {
+	fill: currentColor;
 }
 
 .location {
-	display: inline-flex;
+	display: flex;
 	align-items: center;
-	gap: 0.36rem;
+	gap: 0.38rem;
+	min-width: 0;
 	margin: 0;
+	overflow: hidden;
 	color: rgba(23, 23, 31, 0.62);
 	font-size: 0.76rem;
-	font-weight: 500;
+	font-weight: 560;
+	line-height: 1.35;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .location svg,
 .specs svg,
+.rating svg,
 .detailsLink svg {
 	flex: 0 0 auto;
 	width: 0.88rem;
 	height: 0.88rem;
 }
 
+.location svg,
+.specs svg,
+.rating svg {
+	color: #02006c;
+}
+
 .specs {
-	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: 0.45rem;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.42rem;
 	margin: 0;
 	padding: 0;
 	list-style: none;
 }
 
 .specs li {
-	min-height: 4.2rem;
-	display: grid;
-	justify-items: center;
-	align-content: center;
-	gap: 0.18rem;
-	padding: 0.45rem 0.35rem;
+	min-height: 2.15rem;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.3rem;
+	padding: 0 0.6rem;
 	border: 1px solid rgba(2, 0, 108, 0.08);
-	border-radius: 1rem;
-	background: rgba(255, 255, 255, 0.72);
-	color: rgba(23, 23, 31, 0.62);
-	text-align: center;
+	border-radius: 999px;
+	background: rgba(247, 248, 251, 0.9);
+	color: rgba(23, 23, 31, 0.68);
+	font-size: 0.68rem;
+	font-weight: 580;
+	white-space: nowrap;
 }
 
-.specs svg {
-	width: 0.9rem;
-	height: 0.9rem;
+.footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+	min-height: 2.2rem;
+}
+
+.price {
+	display: inline-flex;
+	align-items: baseline;
+	gap: 0.18rem;
 	color: #02006c;
+	white-space: nowrap;
 }
 
-.specs strong {
+.price strong {
 	color: #17171f;
-	font-size: 0.78rem;
-	font-weight: 500;
+	font-size: 0.96rem;
+	font-weight: 760;
+	text-decoration: underline;
+	text-underline-offset: 0.15rem;
 }
 
-.specs span {
-	font-size: 0.64rem;
-	font-weight: 500;
+.price small {
+	color: rgba(23, 23, 31, 0.56);
+	font-size: 0.7rem;
+	font-weight: 540;
+}
+
+.rating {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.28rem;
+	color: #17171f;
+	font-size: 0.76rem;
+	font-weight: 620;
+	white-space: nowrap;
+}
+
+.actionRow {
+	display: grid;
+}
+
+.detailsLink,
+.skeletonDetailsLink {
+	min-height: var(--pluto-button-height);
+	width: 100%;
+	border-radius: 999px;
 }
 
 .detailsLink {
-	min-height: var(--pluto-button-height);
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 	gap: 0.42rem;
-	width: 100%;
-	border-radius: 999px;
 	background: #02006c;
 	color: #ffffff;
 	font-size: 0.76rem;
-	font-weight: 500;
+	font-weight: 780;
 	text-decoration: none;
 	box-shadow: 0 1rem 2rem rgba(2, 0, 108, 0.16);
+	transition:
+		background 180ms ease,
+		transform 180ms ease,
+		box-shadow 180ms ease;
+}
+
+.detailsLink:hover,
+.detailsLink:focus-visible {
+	background: #050292;
+	box-shadow: 0 1.1rem 2.2rem rgba(2, 0, 108, 0.22);
+	transform: translateY(-1px);
+}
+
+.detailsLink:focus-visible {
+	outline: 2px solid rgba(2, 0, 108, 0.24);
+	outline-offset: 2px;
+}
+
+.skeletonImage,
+.skeletonStatusPill,
+.skeletonGalleryButton,
+.skeletonDots span,
+.skeletonHomeType,
+.skeletonTitle,
+.skeletonFavoriteButton,
+.skeletonLocation,
+.skeletonSpec span,
+.skeletonPrice,
+.skeletonRating,
+.skeletonDetailsLink {
+	position: relative;
+	overflow: hidden;
+	background: linear-gradient(
+		90deg,
+		rgba(2, 0, 108, 0.06),
+		rgba(2, 0, 108, 0.14),
+		rgba(2, 0, 108, 0.06)
+	);
+	background-size: 220% 100%;
+	animation: skeletonSweep 1.15s ease-in-out infinite;
+}
+
+.skeletonStatusPill {
+	width: 7.4rem;
+}
+
+.skeletonGalleryButton {
+	background-color: rgba(255, 255, 255, 0.86);
+}
+
+.skeletonDots span {
+	background-color: rgba(255, 255, 255, 0.7);
+}
+
+.skeletonHomeType {
+	width: 7.2rem;
+	height: 0.72rem;
+	display: block;
+	margin-bottom: 0.45rem;
+	border-radius: 999px;
+}
+
+.skeletonTitle {
+	width: min(100%, 11rem);
+	height: 1.15rem;
+	display: block;
+	border-radius: 999px;
+}
+
+.skeletonLocation {
+	width: min(100%, 15rem);
+	height: 0.9rem;
+	display: block;
+	border-radius: 999px;
+}
+
+.skeletonSpec span {
+	width: 4.8rem;
+	height: 0.72rem;
+	border-radius: 999px;
+}
+
+.skeletonPrice,
+.skeletonRating {
+	height: 1rem;
+	border-radius: 999px;
+}
+
+.skeletonPrice {
+	width: 6.8rem;
+}
+
+.skeletonRating {
+	width: 4.4rem;
 }
 
 @media (max-width: 520px) {
-	.heading {
+	.media {
+		min-height: 14.75rem;
+	}
+
+	.heading,
+	.footer {
 		grid-template-columns: 1fr;
 	}
 
-	.price {
-		justify-items: start;
+	.footer {
+		display: grid;
 	}
 }
 
@@ -207,5 +481,14 @@
 	to {
 		opacity: 1;
 		transform: translateY(0);
+	}
+}
+
+@keyframes skeletonSweep {
+	from {
+		background-position: 120% 0;
+	}
+	to {
+		background-position: -120% 0;
 	}
 }
