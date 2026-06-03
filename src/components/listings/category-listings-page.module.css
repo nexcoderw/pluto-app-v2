@@ -346,28 +346,84 @@
 	border-radius: 999px;
 }
 
-.skeletonPaginationButton {
-	width: 7.8rem;
-	height: var(--pluto-button-height);
-	border-radius: 999px;
-}
-
-.skeletonPaginationText {
-	width: 6.5rem;
-	height: 1rem;
-	border-radius: 999px;
-}
-
 .pagination {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	gap: 1rem;
+	padding: 0.82rem;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.82);
+	box-shadow: 0 1rem 2.5rem rgba(16, 22, 33, 0.08);
+	backdrop-filter: blur(16px);
 }
 
-.pagination span {
+.pagination > button {
+	border-radius: 999px;
+}
+
+.paginationList {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.4rem;
+	margin: 0;
+	padding: 0.22rem;
+	border: 1px solid rgba(2, 0, 108, 0.08);
+	border-radius: 999px;
+	background: rgba(247, 248, 251, 0.92);
+	list-style: none;
+}
+
+.paginationPage,
+.paginationEllipsis {
+	width: 2.55rem;
+	height: 2.55rem;
+	display: inline-grid;
+	place-items: center;
+	border-radius: 999px;
+	font-size: 0.84rem;
+	line-height: 1;
+}
+
+.paginationPage {
+	border: 1px solid transparent;
+	background: transparent;
+	color: rgba(23, 23, 31, 0.72);
+	font-weight: 820;
+	cursor: pointer;
+	transition:
+		background 180ms ease,
+		border-color 180ms ease,
+		color 180ms ease,
+		box-shadow 180ms ease,
+		transform 180ms ease;
+}
+
+.paginationPage:hover,
+.paginationPage:focus-visible {
+	border-color: rgba(2, 0, 108, 0.2);
+	background: #ffffff;
+	color: #02006c;
+	box-shadow: 0 0.65rem 1.4rem rgba(2, 0, 108, 0.12);
+	transform: translateY(-1px);
+}
+
+.paginationPage[data-active="true"] {
+	border-color: #02006c;
+	background: #02006c;
+	color: #ffffff;
+	box-shadow: 0 0.75rem 1.5rem rgba(2, 0, 108, 0.24);
+}
+
+.paginationPage:focus-visible {
+	outline: none;
+}
+
+.paginationEllipsis {
 	color: rgba(23, 23, 31, 0.62);
-	font-size: 0.86rem;
+	font-size: 0.92rem;
 	font-weight: 780;
 }
 
@@ -456,7 +512,6 @@
 	.cardMeta,
 	.cardMeta a,
 	.pagination,
-	.pagination button,
 	.searchInput,
 	.filterButton {
 		width: 100%;
@@ -470,6 +525,15 @@
 
 	.cardMeta a {
 		justify-content: center;
+	}
+
+	.pagination > button,
+	.paginationList {
+		width: 100%;
+	}
+
+	.paginationList {
+		flex-wrap: wrap;
 	}
 
 	.page[data-category="apartments"] .apartmentMapLayout .grid {
