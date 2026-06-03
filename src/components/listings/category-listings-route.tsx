@@ -53,9 +53,6 @@ const apartmentFilters: ListingSidebarFilter[] = [
 	{ key: "bedrooms", label: "Bedrooms", kind: "number" },
 	{ key: "bathrooms", label: "Bathrooms", kind: "number" },
 	{ key: "guests", label: "Guests", kind: "number" },
-	{ key: "furnished", label: "Furnished", kind: "boolean" },
-	{ key: "wifi", label: "WiFi", kind: "boolean" },
-	{ key: "parking", label: "Parking", kind: "boolean" },
 ];
 
 const hotelRoomFilters: ListingSidebarFilter[] = [
