@@ -29,8 +29,7 @@
 	padding: 0.2rem 0.15rem 0.35rem;
 }
 
-.iconBadge,
-.switchIcon {
+.iconBadge {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -90,9 +89,16 @@
 	border-radius: 999px;
 }
 
-.compactGrid {
+.locationGrid,
+.identityGrid {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.5rem;
+}
+
+.specGrid {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
 	gap: 0.5rem;
 }
 
@@ -116,6 +122,36 @@
 	color: #17171f;
 	font-size: 0.9rem;
 	font-weight: 880;
+}
+
+.exchangePanel {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.5rem;
+}
+
+.exchangePanel span {
+	display: grid;
+	gap: 0.16rem;
+	padding: 0.62rem 0.7rem;
+	border: 1px solid rgba(2, 0, 108, 0.08);
+	border-radius: 0.9rem;
+	background: rgba(2, 0, 108, 0.045);
+}
+
+.exchangePanel small {
+	color: rgba(23, 23, 31, 0.58);
+	font-size: 0.66rem;
+	font-weight: 760;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+}
+
+.exchangePanel strong {
+	color: #02006c;
+	font-size: 0.78rem;
+	font-weight: 850;
+	line-height: 1.25;
 }
 
 .range {
@@ -148,6 +184,14 @@
 	cursor: pointer;
 }
 
+.budgetHint {
+	margin: -0.18rem 0 0;
+	color: rgba(23, 23, 31, 0.62);
+	font-size: 0.72rem;
+	font-weight: 650;
+	line-height: 1.45;
+}
+
 .clearBudget {
 	justify-self: start;
 	min-height: 2rem;
@@ -159,45 +203,6 @@
 	font-size: 0.68rem;
 	font-weight: 840;
 	cursor: pointer;
-}
-
-.switchRow {
-	display: grid;
-	grid-template-columns: auto minmax(0, 1fr) auto;
-	gap: 0.65rem;
-	align-items: center;
-	padding: 0.65rem;
-	border: 1px solid rgba(2, 0, 108, 0.08);
-	border-radius: 1rem;
-	background: rgba(255, 255, 255, 0.72);
-	cursor: pointer;
-}
-
-.switchIcon {
-	width: 2.1rem;
-	height: 2.1rem;
-	border-radius: 999px;
-	background: rgba(2, 0, 108, 0.06);
-}
-
-.switchRow strong {
-	display: block;
-	color: #17171f;
-	font-size: 0.78rem;
-	font-weight: 860;
-}
-
-.switchRow small {
-	display: block;
-	margin-top: 0.12rem;
-	color: rgba(23, 23, 31, 0.58);
-	font-size: 0.68rem;
-	font-weight: 700;
-	line-height: 1.35;
-}
-
-.switch {
-	border-radius: 999px;
 }
 
 .actions {
@@ -219,14 +224,12 @@
 }
 
 @media (max-width: 720px) {
-	.compactGrid,
-	.switchRow,
+	.locationGrid,
+	.identityGrid,
+	.specGrid,
+	.exchangePanel,
 	.actions {
 		grid-template-columns: 1fr;
-	}
-
-	.switchRow {
-		justify-items: start;
 	}
 
 	.actions button {
