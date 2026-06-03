@@ -29,7 +29,10 @@ import {
 import { CarListingsSidebar } from "./cars/car-listings-sidebar";
 import { carFilters } from "./cars/filters";
 import { hotelRoomFilters } from "./hotel-rooms/filters";
-import { HotelRoomListingCard } from "./hotel-rooms/hotel-room-listing-card";
+import {
+	HotelRoomListingCard,
+	HotelRoomListingCardSkeleton,
+} from "./hotel-rooms/hotel-room-listing-card";
 import { HotelRoomListingsSidebar } from "./hotel-rooms/hotel-room-listings-sidebar";
 
 type CategoryConfig = {
@@ -94,11 +97,13 @@ const categoryConfigs = {
 		renderSidebar: (sidebarProps) => (
 			<HotelRoomListingsSidebar {...sidebarProps} variant="dialog" />
 		),
-		renderCard: (listing, detailHref) => (
+		renderSkeletonCard: (index) => <HotelRoomListingCardSkeleton key={index} />,
+		renderCard: (listing, detailHref, index) => (
 			<HotelRoomListingCard
 				key={listing.id}
 				listing={listing}
 				detailHref={detailHref}
+				priorityImage={index === 0}
 			/>
 		),
 	},
