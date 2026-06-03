@@ -149,7 +149,7 @@ export function HotelRoomListingCard({
 
 				<p className={styles.location}>
 					<MapPin aria-hidden="true" />
-					{hotelName} · {listing.city}, {listing.country}
+					{hotelName}
 				</p>
 
 				<div className={styles.footer}>
