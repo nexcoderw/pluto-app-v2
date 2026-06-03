@@ -72,25 +72,32 @@ type GoogleMapsGlobal = {
 	};
 };
 
+type GoogleMapsWindow = Window & {
+	google?: GoogleMapsGlobal;
+	gm_authFailure?: () => void;
+};
+
 type GoogleMapsLibraries = {
 	Map: new (
 		element: HTMLElement,
-		options: {
-			center: { lat: number; lng: number };
-			zoom: number;
-			mapId: string;
-			disableDefaultUI?: boolean;
-			zoomControl?: boolean;
-			mapTypeControl?: boolean;
-			streetViewControl?: boolean;
-			fullscreenControl?: boolean;
-		},
+		options: GoogleMapOptions,
 	) => GoogleMap;
 	AdvancedMarkerElement: new (options: {
 		map: GoogleMap;
 		position: { lat: number; lng: number };
 	}) => GoogleAdvancedMarker;
 	PlaceAutocompleteElement: new () => PlaceAutocompleteElement;
+};
+
+type GoogleMapOptions = {
+			center: { lat: number; lng: number };
+			zoom: number;
+			mapId?: string;
+			disableDefaultUI?: boolean;
+			zoomControl?: boolean;
+			mapTypeControl?: boolean;
+			streetViewControl?: boolean;
+			fullscreenControl?: boolean;
 };
 
 let googleMapsPromise: Promise<GoogleMapsGlobal> | null = null;
@@ -109,7 +116,7 @@ export function GooglePlacePicker({
 	const onChangeRef = useRef(onChange);
 	const initialValueRef = useRef(value);
 	const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-	const mapId = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID || "DEMO_MAP_ID";
+	const mapId = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID?.trim();
 	const [isReady, setIsReady] = useState(false);
 	const [loadError, setLoadError] = useState<string | null>(() =>
 		apiKey
@@ -147,23 +154,26 @@ export function GooglePlacePicker({
 					lat: Number(initialValueRef.current.latitude) || -1.9441,
 					lng: Number(initialValueRef.current.longitude) || 30.0619,
 				};
-				const map = new Map(mapElement, {
+				const baseMapOptions: GoogleMapOptions = {
 					center: initialPosition,
 					zoom:
 						initialValueRef.current.latitude &&
 						initialValueRef.current.longitude
 							? 15
 							: 12,
-					mapId,
 					disableDefaultUI: true,
 					zoomControl: true,
 					mapTypeControl: false,
 					streetViewControl: false,
 					fullscreenControl: false,
-				});
-				const marker = new AdvancedMarkerElement({
-					map,
+				};
+				const { map, marker } = createMapWithMarker({
+					Map,
+					AdvancedMarkerElement,
+					element: mapElement,
+					options: baseMapOptions,
 					position: initialPosition,
+					mapId,
 				});
 				const autocomplete = new PlaceAutocompleteElement();
 
@@ -195,11 +205,9 @@ export function GooglePlacePicker({
 				markerRef.current = marker;
 				setIsReady(true);
 			})
-			.catch(() => {
+			.catch((reason: unknown) => {
 				if (active) {
-					setLoadError(
-						"Google Maps could not load. Check the API key, Maps JavaScript API, Places API, and map ID.",
-					);
+					setLoadError(formatGoogleMapsError(reason));
 				}
 			});
 
@@ -268,6 +276,57 @@ export function GooglePlacePicker({
 			) : null}
 		</div>
 	);
+}
+
+function createMapWithMarker({
+	Map,
+	AdvancedMarkerElement,
+	element,
+	options,
+	position,
+	mapId,
+}: {
+	Map: GoogleMapsLibraries["Map"];
+	AdvancedMarkerElement: GoogleMapsLibraries["AdvancedMarkerElement"];
+	element: HTMLElement;
+	options: GoogleMapOptions;
+	position: { lat: number; lng: number };
+	mapId?: string;
+}) {
+	const candidateMapIds = Array.from(
+		new Set([mapId, "DEMO_MAP_ID"].filter(Boolean)),
+	) as string[];
+	let lastError: unknown = null;
+
+	for (const candidateMapId of candidateMapIds) {
+		try {
+			const map = new Map(element, {
+				...options,
+				mapId: candidateMapId,
+			});
+			const marker = new AdvancedMarkerElement({
+				map,
+				position,
+			});
+
+			return { map, marker };
+		} catch (error) {
+			lastError = error;
+		}
+	}
+
+	throw lastError ?? new Error("Google Maps could not initialize a map ID.");
+}
+
+function formatGoogleMapsError(reason: unknown) {
+	const message =
+		reason instanceof Error
+			? reason.message
+			: typeof reason === "string"
+				? reason
+				: "Unknown Google Maps error.";
+
+	return `Google Maps could not load: ${message}`;
 }
 
 async function handlePlaceSelect({
@@ -356,33 +415,55 @@ function loadGoogleMaps(apiKey: string): Promise<GoogleMapsGlobal> {
 		return googleMapsPromise;
 	}
 
-	googleMapsPromise = new Promise((resolve, reject) => {
+	googleMapsPromise = new Promise<GoogleMapsGlobal>((resolve, reject) => {
 		const script = document.createElement("script");
+		const googleWindow = window as GoogleMapsWindow;
+		const previousAuthFailure = googleWindow.gm_authFailure;
+		let settled = false;
+		const rejectOnce = (error: Error) => {
+			if (settled) return;
+			settled = true;
+			reject(error);
+		};
 
 		script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(
 			apiKey,
 		)}&v=weekly&loading=async`;
 		script.async = true;
 		script.defer = true;
+		googleWindow.gm_authFailure = () => {
+			previousAuthFailure?.();
+			rejectOnce(
+				new Error(
+					"Google rejected this API key. Check billing, HTTP referrer restrictions, and that this exact localhost origin is allowed.",
+				),
+			);
+		};
 		script.onload = () => {
 			const googleMaps = getGoogleMaps();
 
 			if (googleMaps?.maps.importLibrary) {
+				settled = true;
 				resolve(googleMaps);
 			} else {
-				reject(new Error("Google Maps importLibrary was not available."));
+				rejectOnce(
+					new Error("Google Maps importLibrary was not available."),
+				);
 			}
 		};
 		script.onerror = () =>
-			reject(new Error("Google Maps JavaScript API failed to load."));
+			rejectOnce(new Error("Google Maps JavaScript API failed to load."));
 		document.head.appendChild(script);
+	}).catch((error: unknown) => {
+		googleMapsPromise = null;
+		throw error;
 	});
 
 	return googleMapsPromise;
 }
 
 function getGoogleMaps() {
-	return (window as Window & { google?: GoogleMapsGlobal }).google;
+	return (window as GoogleMapsWindow).google;
 }
 
 function normalizeLatLng(location: GoogleLatLngLike | undefined) {
