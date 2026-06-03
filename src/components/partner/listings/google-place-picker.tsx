@@ -19,42 +19,24 @@ type GooglePlacePickerProps = {
 	onChange: (place: ListingPlaceValue) => void;
 };
 
-type GoogleLatLngLike =
-	| {
-			lat: () => number;
-			lng: () => number;
-	  }
-	| {
-			lat: number;
-			lng: number;
-	  };
+type GoogleLatLng = {
+	lat: () => number;
+	lng: () => number;
+};
 
-type ModernAddressComponent = {
-	longText?: string;
-	shortText?: string;
+type GoogleAddressComponent = {
+	long_name?: string;
+	short_name?: string;
 	types: string[];
 };
 
-type ModernGooglePlace = {
-	displayName?: string;
-	formattedAddress?: string;
-	location?: GoogleLatLngLike;
-	addressComponents?: ModernAddressComponent[];
-	fetchFields: (options: { fields: string[] }) => Promise<void>;
-};
-
-type PlacePrediction = {
-	toPlace: () => ModernGooglePlace;
-};
-
-type PlaceSelectEvent = Event & {
-	placePrediction?: PlacePrediction;
-};
-
-type PlaceAutocompleteElement = HTMLElement & {
-	placeholder?: string;
-	value?: string;
-	includedRegionCodes?: string[];
+type GooglePlaceResult = {
+	name?: string;
+	formatted_address?: string;
+	geometry?: {
+		location?: GoogleLatLng;
+	};
+	address_components?: GoogleAddressComponent[];
 };
 
 type GoogleMap = {
@@ -62,13 +44,51 @@ type GoogleMap = {
 	setZoom: (zoom: number) => void;
 };
 
-type GoogleAdvancedMarker = {
-	position?: { lat: number; lng: number };
+type GoogleMarker = {
+	setPosition: (position: { lat: number; lng: number }) => void;
+};
+
+type GoogleMapsEventListener = {
+	remove: () => void;
+};
+
+type GoogleAutocomplete = {
+	addListener: (
+		eventName: "place_changed",
+		handler: () => void,
+	) => GoogleMapsEventListener;
+	getPlace: () => GooglePlaceResult;
 };
 
 type GoogleMapsGlobal = {
 	maps: {
-		importLibrary: (library: string) => Promise<Record<string, unknown>>;
+		Map: new (
+			element: HTMLElement,
+			options: {
+				center: { lat: number; lng: number };
+				zoom: number;
+				disableDefaultUI?: boolean;
+				zoomControl?: boolean;
+				mapTypeControl?: boolean;
+				streetViewControl?: boolean;
+				fullscreenControl?: boolean;
+			},
+		) => GoogleMap;
+		Marker: new (options: {
+			map: GoogleMap;
+			position: { lat: number; lng: number };
+		}) => GoogleMarker;
+		places: {
+			Autocomplete: new (
+				input: HTMLInputElement,
+				options: {
+					fields: string[];
+					componentRestrictions?: {
+						country: string | string[];
+					};
+				},
+			) => GoogleAutocomplete;
+		};
 	};
 };
 
@@ -77,46 +97,20 @@ type GoogleMapsWindow = Window & {
 	gm_authFailure?: () => void;
 };
 
-type GoogleMapsLibraries = {
-	Map: new (
-		element: HTMLElement,
-		options: GoogleMapOptions,
-	) => GoogleMap;
-	AdvancedMarkerElement: new (options: {
-		map: GoogleMap;
-		position: { lat: number; lng: number };
-	}) => GoogleAdvancedMarker;
-	PlaceAutocompleteElement: new () => PlaceAutocompleteElement;
-};
-
-type GoogleMapOptions = {
-			center: { lat: number; lng: number };
-			zoom: number;
-			mapId?: string;
-			disableDefaultUI?: boolean;
-			zoomControl?: boolean;
-			mapTypeControl?: boolean;
-			streetViewControl?: boolean;
-			fullscreenControl?: boolean;
-};
-
 let googleMapsPromise: Promise<GoogleMapsGlobal> | null = null;
-let googleLibrariesPromise: Promise<GoogleMapsLibraries> | null = null;
 
 export function GooglePlacePicker({
 	value,
 	error,
 	onChange,
 }: GooglePlacePickerProps) {
-	const autocompleteHostRef = useRef<HTMLDivElement | null>(null);
+	const inputRef = useRef<HTMLInputElement | null>(null);
 	const mapRef = useRef<HTMLDivElement | null>(null);
 	const mapInstanceRef = useRef<GoogleMap | null>(null);
-	const markerRef = useRef<GoogleAdvancedMarker | null>(null);
-	const autocompleteRef = useRef<PlaceAutocompleteElement | null>(null);
+	const markerRef = useRef<GoogleMarker | null>(null);
 	const onChangeRef = useRef(onChange);
 	const initialValueRef = useRef(value);
 	const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-	const mapId = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID?.trim();
 	const [isReady, setIsReady] = useState(false);
 	const [loadError, setLoadError] = useState<string | null>(() =>
 		apiKey
@@ -132,29 +126,17 @@ export function GooglePlacePicker({
 		if (!apiKey) return;
 
 		let active = true;
-		let removeSelectListener: (() => void) | null = null;
-		let appendedHost: HTMLDivElement | null = null;
+		let placeListener: GoogleMapsEventListener | null = null;
 
-		loadGoogleLibraries(apiKey)
-			.then(({ Map, AdvancedMarkerElement, PlaceAutocompleteElement }) => {
-				if (
-					!active ||
-					!autocompleteHostRef.current ||
-					!mapRef.current ||
-					autocompleteRef.current
-				) {
-					return;
-				}
-				const autocompleteHost = autocompleteHostRef.current;
-				const mapElement = mapRef.current;
-
-				if (!autocompleteHost || !mapElement) return;
+		loadGoogleMaps(apiKey)
+			.then((googleMaps) => {
+				if (!active || !inputRef.current || !mapRef.current) return;
 
 				const initialPosition = {
 					lat: Number(initialValueRef.current.latitude) || -1.9441,
 					lng: Number(initialValueRef.current.longitude) || 30.0619,
 				};
-				const baseMapOptions: GoogleMapOptions = {
+				const map = new googleMaps.maps.Map(mapRef.current, {
 					center: initialPosition,
 					zoom:
 						initialValueRef.current.latitude &&
@@ -166,41 +148,36 @@ export function GooglePlacePicker({
 					mapTypeControl: false,
 					streetViewControl: false,
 					fullscreenControl: false,
-				};
-				const { map, marker } = createMapWithMarker({
-					Map,
-					AdvancedMarkerElement,
-					element: mapElement,
-					options: baseMapOptions,
-					position: initialPosition,
-					mapId,
 				});
-				const autocomplete = new PlaceAutocompleteElement();
+				const marker = new googleMaps.maps.Marker({
+					map,
+					position: initialPosition,
+				});
+				const autocomplete = new googleMaps.maps.places.Autocomplete(
+					inputRef.current,
+					{
+						fields: [
+							"name",
+							"formatted_address",
+							"geometry",
+							"address_components",
+						],
+						componentRestrictions: { country: "rw" },
+					},
+				);
 
-				autocomplete.placeholder = "Search the listing address on Google Maps";
-				autocomplete.includedRegionCodes = ["rw"];
-				if (initialValueRef.current.address || initialValueRef.current.name) {
-					autocomplete.value =
-						initialValueRef.current.address || initialValueRef.current.name;
-				}
-
-				const handleSelect = (event: Event) => {
-					void handlePlaceSelect({
-						event: event as PlaceSelectEvent,
+				// Google writes suggestions into the input, so the listener only stores
+				// the final selected place in our listing form state.
+				placeListener = autocomplete.addListener("place_changed", () => {
+					handlePlaceSelect({
+						autocomplete,
 						map,
 						marker,
 						onChange: onChangeRef.current,
 						onError: setLoadError,
 					});
-				};
+				});
 
-				autocomplete.addEventListener("gmp-select", handleSelect);
-				removeSelectListener = () =>
-					autocomplete.removeEventListener("gmp-select", handleSelect);
-				autocompleteHost.appendChild(autocomplete);
-				appendedHost = autocompleteHost;
-
-				autocompleteRef.current = autocomplete;
 				mapInstanceRef.current = map;
 				markerRef.current = marker;
 				setIsReady(true);
@@ -213,15 +190,9 @@ export function GooglePlacePicker({
 
 		return () => {
 			active = false;
-			removeSelectListener?.();
-			const autocomplete = autocompleteRef.current;
-
-			if (appendedHost && autocomplete && appendedHost.contains(autocomplete)) {
-				appendedHost.removeChild(autocomplete);
-			}
-			autocompleteRef.current = null;
+			placeListener?.remove();
 		};
-	}, [apiKey, mapId]);
+	}, [apiKey]);
 
 	useEffect(() => {
 		const latitude = Number(value.latitude);
@@ -240,16 +211,21 @@ export function GooglePlacePicker({
 
 		mapInstanceRef.current.setCenter(position);
 		mapInstanceRef.current.setZoom(16);
-		markerRef.current.position = position;
+		markerRef.current.setPosition(position);
 	}, [value.latitude, value.longitude]);
 
 	return (
 		<div className={styles.picker} data-invalid={Boolean(error)}>
-			<div
-				ref={autocompleteHostRef}
-				className={styles.autocompleteHost}
-				aria-label="Google place search"
-			/>
+			<label className={styles.searchField}>
+				<span>Search location</span>
+				<input
+					ref={inputRef}
+					type="search"
+					defaultValue={value.address || value.name}
+					placeholder="Search the listing address on Google Maps"
+					autoComplete="off"
+				/>
+			</label>
 			<div className={styles.mapPreview} ref={mapRef}>
 				{isReady ? null : (
 					<div className={styles.mapFallback}>
@@ -278,44 +254,34 @@ export function GooglePlacePicker({
 	);
 }
 
-function createMapWithMarker({
-	Map,
-	AdvancedMarkerElement,
-	element,
-	options,
-	position,
-	mapId,
+function handlePlaceSelect({
+	autocomplete,
+	map,
+	marker,
+	onChange,
+	onError,
 }: {
-	Map: GoogleMapsLibraries["Map"];
-	AdvancedMarkerElement: GoogleMapsLibraries["AdvancedMarkerElement"];
-	element: HTMLElement;
-	options: GoogleMapOptions;
-	position: { lat: number; lng: number };
-	mapId?: string;
+	autocomplete: GoogleAutocomplete;
+	map: GoogleMap;
+	marker: GoogleMarker;
+	onChange: (place: ListingPlaceValue) => void;
+	onError: (message: string | null) => void;
 }) {
-	const candidateMapIds = Array.from(
-		new Set([mapId, "DEMO_MAP_ID"].filter(Boolean)),
-	) as string[];
-	let lastError: unknown = null;
+	const place = autocomplete.getPlace();
+	const position = normalizeLatLng(place.geometry?.location);
 
-	for (const candidateMapId of candidateMapIds) {
-		try {
-			const map = new Map(element, {
-				...options,
-				mapId: candidateMapId,
-			});
-			const marker = new AdvancedMarkerElement({
-				map,
-				position,
-			});
-
-			return { map, marker };
-		} catch (error) {
-			lastError = error;
-		}
+	if (!position) {
+		onError("Select a place from the Google suggestions list.");
+		return;
 	}
 
-	throw lastError ?? new Error("Google Maps could not initialize a map ID.");
+	const nextPlace = buildPlaceValue(place, position);
+
+	map.setCenter(position);
+	map.setZoom(16);
+	marker.setPosition(position);
+	onError(null);
+	onChange(nextPlace);
 }
 
 function formatGoogleMapsError(reason: unknown) {
@@ -329,75 +295,6 @@ function formatGoogleMapsError(reason: unknown) {
 	return `Google Maps could not load: ${message}`;
 }
 
-async function handlePlaceSelect({
-	event,
-	map,
-	marker,
-	onChange,
-	onError,
-}: {
-	event: PlaceSelectEvent;
-	map: GoogleMap;
-	marker: GoogleAdvancedMarker;
-	onChange: (place: ListingPlaceValue) => void;
-	onError: (message: string | null) => void;
-}) {
-	const place = event.placePrediction?.toPlace();
-
-	if (!place) {
-		onError("Select a place from the Google suggestions list.");
-		return;
-	}
-
-	await place.fetchFields({
-		fields: [
-			"displayName",
-			"formattedAddress",
-			"location",
-			"addressComponents",
-		],
-	});
-
-	const nextPosition = normalizeLatLng(place.location);
-
-	if (!nextPosition) {
-		onError("Select a place with a valid Google Maps location.");
-		return;
-	}
-
-	const nextPlace = buildPlaceValue(place, nextPosition);
-
-	map.setCenter(nextPosition);
-	map.setZoom(16);
-	marker.position = nextPosition;
-	onError(null);
-	onChange(nextPlace);
-}
-
-async function loadGoogleLibraries(
-	apiKey: string,
-): Promise<GoogleMapsLibraries> {
-	if (googleLibrariesPromise) return googleLibrariesPromise;
-
-	googleLibrariesPromise = loadGoogleMaps(apiKey).then(async (googleMaps) => {
-		const [mapsLibrary, markerLibrary, placesLibrary] = await Promise.all([
-			googleMaps.maps.importLibrary("maps"),
-			googleMaps.maps.importLibrary("marker"),
-			googleMaps.maps.importLibrary("places"),
-		]);
-
-		return {
-			Map: mapsLibrary.Map as GoogleMapsLibraries["Map"],
-			AdvancedMarkerElement:
-				markerLibrary.AdvancedMarkerElement as GoogleMapsLibraries["AdvancedMarkerElement"],
-			PlaceAutocompleteElement:
-				placesLibrary.PlaceAutocompleteElement as GoogleMapsLibraries["PlaceAutocompleteElement"],
-		};
-	});
-
-	return googleLibrariesPromise;
-}
-
 function loadGoogleMaps(apiKey: string): Promise<GoogleMapsGlobal> {
 	if (typeof window === "undefined") {
 		return Promise.reject(
@@ -407,7 +304,7 @@ function loadGoogleMaps(apiKey: string): Promise<GoogleMapsGlobal> {
 
 	const existingGoogle = getGoogleMaps();
 
-	if (existingGoogle?.maps.importLibrary) {
+	if (existingGoogle?.maps.places?.Autocomplete) {
 		return Promise.resolve(existingGoogle);
 	}
 
@@ -428,7 +325,7 @@ function loadGoogleMaps(apiKey: string): Promise<GoogleMapsGlobal> {
 
 		script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(
 			apiKey,
-		)}&v=weekly&loading=async`;
+		)}&libraries=places&v=weekly&loading=async`;
 		script.async = true;
 		script.defer = true;
 		googleWindow.gm_authFailure = () => {
@@ -442,13 +339,11 @@ function loadGoogleMaps(apiKey: string): Promise<GoogleMapsGlobal> {
 		script.onload = () => {
 			const googleMaps = getGoogleMaps();
 
-			if (googleMaps?.maps.importLibrary) {
+			if (googleMaps?.maps.places?.Autocomplete) {
 				settled = true;
 				resolve(googleMaps);
 			} else {
-				rejectOnce(
-					new Error("Google Maps importLibrary was not available."),
-				);
+				rejectOnce(new Error("Google Places Autocomplete was not available."));
 			}
 		};
 		script.onerror = () =>
@@ -466,13 +361,11 @@ function getGoogleMaps() {
 	return (window as GoogleMapsWindow).google;
 }
 
-function normalizeLatLng(location: GoogleLatLngLike | undefined) {
+function normalizeLatLng(location: GoogleLatLng | undefined) {
 	if (!location) return null;
 
-	const lat =
-		typeof location.lat === "function" ? location.lat() : location.lat;
-	const lng =
-		typeof location.lng === "function" ? location.lng() : location.lng;
+	const lat = location.lat();
+	const lng = location.lng();
 
 	if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
 
@@ -480,12 +373,12 @@ function normalizeLatLng(location: GoogleLatLngLike | undefined) {
 }
 
 function buildPlaceValue(
-	place: ModernGooglePlace,
+	place: GooglePlaceResult,
 	position: { lat: number; lng: number },
 ): ListingPlaceValue {
 	return {
-		name: place.displayName ?? "",
-		address: place.formattedAddress ?? place.displayName ?? "",
+		name: place.name ?? "",
+		address: place.formatted_address ?? place.name ?? "",
 		latitude: String(position.lat),
 		longitude: String(position.lng),
 		city: findAddressComponent(place, [
@@ -497,10 +390,10 @@ function buildPlaceValue(
 	};
 }
 
-function findAddressComponent(place: ModernGooglePlace, types: string[]) {
-	const component = place.addressComponents?.find((item) =>
+function findAddressComponent(place: GooglePlaceResult, types: string[]) {
+	const component = place.address_components?.find((item) =>
 		types.some((type) => item.types.includes(type)),
 	);
 
-	return component?.longText ?? component?.shortText ?? "";
+	return component?.long_name ?? component?.short_name ?? "";
 }
