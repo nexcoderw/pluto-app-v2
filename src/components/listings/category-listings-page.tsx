@@ -392,7 +392,11 @@ export function CategoryListingsPage({
 							<div className={styles.apartmentCardsColumn}>
 								{renderListingResults()}
 							</div>
-							<ApartmentListingsMap />
+							<ApartmentListingsMap
+								listings={listings}
+								detailBaseHref={detailBaseHref}
+								isLoading={listingsQuery.isFetching}
+							/>
 						</div>
 					) : (
 						renderListingResults()
