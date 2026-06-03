@@ -4,7 +4,9 @@
 	min-width: 0;
 	height: calc(100vh - 10.35rem);
 	overflow: hidden;
+	border: 1px solid rgba(2, 0, 108, 0.16);
 	border-radius: 1.35rem;
+	background: #111827;
 }
 
 .mapCanvas {
@@ -12,13 +14,22 @@
 	width: 100%;
 	height: 100%;
 	overflow: hidden;
-	background: #f8f9fc;
+	border-radius: inherit;
+	background: #111827;
 }
 
 .mapViewport {
 	width: 100%;
 	height: 100%;
-	background: #f8f9fc;
+	overflow: hidden;
+	border-radius: inherit;
+	background: #111827;
+}
+
+.mapViewport :global(.maplibregl-canvas),
+.mapViewport :global(.maplibregl-canvas-container),
+.mapViewport :global(.maplibregl-map) {
+	border-radius: inherit;
 }
 
 .mapMarker {
