@@ -34,47 +34,57 @@ export type CreateCarProductRequest = {
 	depositAmount?: string;
 };
 
-export type CreateApartmentProductRequest = ProductBaseRequest & {
-	bedrooms: number;
-	bathrooms: number;
-	kitchens?: number;
-	livingRooms?: number;
-	furnished?: boolean;
-	wifi?: boolean;
-	parking?: boolean;
-	floorNumber?: number;
-	maxGuests: number;
-	hasBalcony?: boolean;
-	hasSecurity?: boolean;
+export type ListingLocationRequest = {
+	locationName?: string;
+	locationAddress?: string;
+	locationLatitude: number;
+	locationLongitude: number;
 };
 
-export type CreateHotelRoomProductRequest = ProductBaseRequest & {
-	hotelName: string;
-	roomType: string;
-	bedType: string;
-	roomSizeSqm?: number;
-	breakfastIncluded?: boolean;
-	checkInTime: string;
-	checkOutTime: string;
-	maxGuests: number;
-	roomNumber?: string;
-	hasAirConditioning?: boolean;
-	hasPrivateBathroom?: boolean;
-};
+export type CreateApartmentProductRequest =
+	ProductBaseRequest & {} & ListingLocationRequest & {
+			bedrooms: number;
+			bathrooms: number;
+			kitchens?: number;
+			livingRooms?: number;
+			furnished?: boolean;
+			wifi?: boolean;
+			parking?: boolean;
+			floorNumber?: number;
+			maxGuests: number;
+			hasBalcony?: boolean;
+			hasSecurity?: boolean;
+		};
 
-export type CreateAirbnbHouseProductRequest = ProductBaseRequest & {
-	houseType: string;
-	entirePlace?: boolean;
-	selfCheckIn?: boolean;
-	houseRules?: string;
-	cleaningFee?: string;
-	bedrooms: number;
-	bathrooms: number;
-	maxGuests: number;
-	allowPets?: boolean;
-	allowSmoking?: boolean;
-	allowParties?: boolean;
-};
+export type CreateHotelRoomProductRequest =
+	ProductBaseRequest & {} & ListingLocationRequest & {
+			hotelName: string;
+			roomType: string;
+			bedType: string;
+			roomSizeSqm?: number;
+			breakfastIncluded?: boolean;
+			checkInTime: string;
+			checkOutTime: string;
+			maxGuests: number;
+			roomNumber?: string;
+			hasAirConditioning?: boolean;
+			hasPrivateBathroom?: boolean;
+		};
+
+export type CreateAirbnbHouseProductRequest =
+	ProductBaseRequest & {} & ListingLocationRequest & {
+			houseType: string;
+			entirePlace?: boolean;
+			selfCheckIn?: boolean;
+			houseRules?: string;
+			cleaningFee?: string;
+			bedrooms: number;
+			bathrooms: number;
+			maxGuests: number;
+			allowPets?: boolean;
+			allowSmoking?: boolean;
+			allowParties?: boolean;
+		};
 
 export type ProductBaseRequest = {
 	title: string;
