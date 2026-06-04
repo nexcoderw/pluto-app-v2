@@ -600,6 +600,7 @@
 	height: 3rem;
 	display: grid;
 	place-items: center;
+	overflow: hidden;
 	border-radius: 999px;
 	background:
 		var(--partner-avatar-image, none) center / cover no-repeat,
@@ -607,6 +608,10 @@
 	color: #ffffff;
 	font-size: 0.82rem;
 	font-weight: 880;
+	line-height: 1;
+	text-align: center;
+	text-transform: uppercase;
+	white-space: nowrap;
 }
 
 .partnerPanel strong {
