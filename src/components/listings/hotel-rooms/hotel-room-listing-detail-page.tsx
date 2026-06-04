@@ -1,14 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Image from "next/image";
 import {
 	BedDouble,
 	CheckCircle2,
 	Clock3,
 	DoorOpen,
 	Hotel,
-	MapPin,
 	Users,
 } from "lucide-react";
 import {
@@ -18,9 +16,6 @@ import {
 	startOfDay,
 } from "date-fns";
 import type { DateRange } from "react-day-picker";
-import type { Swiper as SwiperInstance } from "swiper";
-import { Autoplay, Navigation, Pagination } from "swiper/modules";
-import { Swiper, SwiperSlide } from "swiper/react";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -45,6 +40,14 @@ import {
 	ListingLocationMap,
 	ListingLocationMapSkeleton,
 } from "../listing-location-map";
+import {
+	ListingStayDetailShell,
+	ListingStayDetailShellSkeleton,
+} from "../listing-stay-detail-shell";
+import {
+	ListingStayGallery,
+	ListingStayGallerySkeleton,
+} from "../listing-stay-gallery";
 import { HotelRoomReviewSection } from "./hotel-room-review-section";
 import styles from "./hotel-room-listing-detail-page.module.css";
 
@@ -90,12 +93,6 @@ function HotelRoomListingDetail({ listing }: { listing: PublicListing }) {
 	const gallery = useMemo(
 		() => buildListingGallery(listing, "Pluto Booking hotel room"),
 		[listing],
-	);
-	const [activeImageId, setActiveImageId] = useState(
-		gallery[0]?.id ?? "fallback",
-	);
-	const [gallerySwiper, setGallerySwiper] = useState<SwiperInstance | null>(
-		null,
 	);
 	const today = useMemo(() => startOfDay(new Date()), []);
 	const [dateRange, setDateRange] = useState<DateRange | undefined>(() => ({
@@ -172,179 +169,16 @@ function HotelRoomListingDetail({ listing }: { listing: PublicListing }) {
 	];
 
 	return (
-		<main className={styles.page}>
-			<header className={styles.hero}>
-				<div className={styles.heroCopy}>
-					<h1>{listing.title}</h1>
-					<p>
-						<MapPin aria-hidden="true" />
-						{locationLabel}
-					</p>
-				</div>
-				<div className={styles.heroMetrics} aria-label="Hotel room highlights">
-					<span>{details?.maxGuests ?? "..."} Guests</span>
-					<span>{details?.bedType ? "1" : "..."} Bed setup</span>
-					<span>
-						{listing.ratingAverage ? listing.ratingAverage.toFixed(1) : "New"}{" "}
-						Rating
-					</span>
-				</div>
-			</header>
-
-			<section className={styles.layout}>
-				<div className={styles.mainColumn}>
-					<section className={styles.galleryPanel}>
-						<Swiper
-							className={styles.swiper}
-							modules={[Autoplay, Navigation, Pagination]}
-							loop={gallery.length > 1}
-							navigation={gallery.length > 1}
-							pagination={{ clickable: true }}
-							autoplay={
-								gallery.length > 1
-									? { delay: 4300, disableOnInteraction: false }
-									: false
-							}
-							onSwiper={setGallerySwiper}
-							onSlideChange={(swiper) => {
-								const nextImage = gallery[swiper.realIndex];
-
-								if (nextImage) {
-									setActiveImageId(nextImage.id);
-								}
-							}}
-						>
-							{gallery.map((image, index) => (
-								<SwiperSlide key={image.id}>
-									<div className={styles.primaryImage}>
-										<Image
-											src={image.src}
-											alt={image.alt}
-											fill
-											sizes="(max-width: 900px) 100vw, 64vw"
-											priority={index === 0}
-										/>
-									</div>
-								</SwiperSlide>
-							))}
-						</Swiper>
-						<div className={styles.galleryRail}>
-							{gallery.slice(0, 5).map((image, index) => (
-								<button
-									key={image.id}
-									type="button"
-									data-active={image.id === activeImageId}
-									onClick={() => {
-										setActiveImageId(image.id);
-										gallerySwiper?.slideToLoop(index);
-									}}
-								>
-									<Image src={image.src} alt={image.alt} fill sizes="8rem" />
-								</button>
-							))}
-						</div>
-					</section>
-
-					<section className={styles.storyPanel}>
-						<div
-							className={styles.tabs}
-							role="tablist"
-							aria-label="Hotel room details"
-						>
-							{detailTabs.map((tab) => (
-								<button
-									key={tab.value}
-									type="button"
-									role="tab"
-									aria-selected={activeTab === tab.value}
-									data-active={activeTab === tab.value}
-									onClick={() => setActiveTab(tab.value)}
-								>
-									{tab.label}
-								</button>
-							))}
-						</div>
-
-						{activeTab === "overview" ? (
-							<section className={styles.tabPanel}>
-								<div className={styles.sectionHeader}>
-									<span>Hotel room overview</span>
-								</div>
-								<p>
-									{listing.description ??
-										listing.shortDescription ??
-										"This approved Pluto Booking hotel room is ready for customer review."}
-								</p>
-								<div className={styles.factGrid}>
-									{facts.map((fact) => (
-										<div key={fact.label} className={styles.factItem}>
-											<fact.icon aria-hidden="true" />
-											<span>{fact.label}</span>
-											<strong>{fact.value}</strong>
-										</div>
-									))}
-								</div>
-							</section>
-						) : null}
-
-						{activeTab === "room" ? (
-							<section className={styles.tabPanel}>
-								<div className={styles.sectionHeader}>
-									<span>Room setup</span>
-								</div>
-								<div className={styles.amenityGrid}>
-									{roomSetup.map((amenity) => (
-										<div key={amenity.label}>
-											<CheckCircle2 aria-hidden="true" />
-											<span>{amenity.label}</span>
-											<strong>{amenity.value}</strong>
-										</div>
-									))}
-								</div>
-							</section>
-						) : null}
-
-						{activeTab === "policies" ? (
-							<section className={styles.tabPanel}>
-								<div className={styles.sectionHeader}>
-									<span>Stay rules</span>
-								</div>
-								<div className={styles.amenityGrid}>
-									{policies.map((policy) => (
-										<div key={policy.label}>
-											<Clock3 aria-hidden="true" />
-											<span>{policy.label}</span>
-											<strong>{policy.value}</strong>
-										</div>
-									))}
-								</div>
-							</section>
-						) : null}
-					</section>
-
-					<ListingDatePlanner
-						eyebrow="Stay dates"
-						fromLabel="Check-in"
-						toLabel="Checkout"
-						today={today}
-						dateRange={dateRange}
-						fromDate={fromDate}
-						toDate={toDate}
-						formattedRange={formattedRange}
-						resetRange={{ from: addDays(today, 1), to: addDays(today, 3) }}
-						onDateRangeChange={setDateRange}
-					/>
-
-					<HotelRoomReviewSection listing={listing} />
-
-					<ListingLocationMap
-						listing={listing}
-						locationLabel={locationLabel}
-						ariaLabel="Hotel room map location"
-						unavailableDescription="The partner has not attached exact coordinates to this hotel room yet. Confirm arrival details before check-in."
-					/>
-				</div>
-
+		<ListingStayDetailShell
+			title={listing.title}
+			locationLabel={locationLabel}
+			metricsLabel="Hotel room highlights"
+			metrics={[
+				`${details?.maxGuests ?? "..."} Guests`,
+				`${details?.bedType ? "1" : "..."} Bed setup`,
+				`${listing.ratingAverage ? listing.ratingAverage.toFixed(1) : "New"} Rating`,
+			]}
+			sidebar={
 				<ListingBookingSidebar
 					listing={listing}
 					fromDate={fromDate}
@@ -362,87 +196,156 @@ function HotelRoomListingDetail({ listing }: { listing: PublicListing }) {
 					footerNote="You will review the final booking details before paying."
 					ctaIcon="door"
 				/>
+			}
+		>
+			<ListingStayGallery images={gallery} autoplayDelay={4300} />
+
+			<section className={styles.storyPanel}>
+				<div
+					className={styles.tabs}
+					role="tablist"
+					aria-label="Hotel room details"
+				>
+					{detailTabs.map((tab) => (
+						<button
+							key={tab.value}
+							type="button"
+							role="tab"
+							aria-selected={activeTab === tab.value}
+							data-active={activeTab === tab.value}
+							onClick={() => setActiveTab(tab.value)}
+						>
+							{tab.label}
+						</button>
+					))}
+				</div>
+
+				{activeTab === "overview" ? (
+					<section className={styles.tabPanel}>
+						<div className={styles.sectionHeader}>
+							<span>Hotel room overview</span>
+						</div>
+						<p>
+							{listing.description ??
+								listing.shortDescription ??
+								"This approved Pluto Booking hotel room is ready for customer review."}
+						</p>
+						<div className={styles.factGrid}>
+							{facts.map((fact) => (
+								<div key={fact.label} className={styles.factItem}>
+									<fact.icon aria-hidden="true" />
+									<span>{fact.label}</span>
+									<strong>{fact.value}</strong>
+								</div>
+							))}
+						</div>
+					</section>
+				) : null}
+
+				{activeTab === "room" ? (
+					<section className={styles.tabPanel}>
+						<div className={styles.sectionHeader}>
+							<span>Room setup</span>
+						</div>
+						<div className={styles.amenityGrid}>
+							{roomSetup.map((amenity) => (
+								<div key={amenity.label}>
+									<CheckCircle2 aria-hidden="true" />
+									<span>{amenity.label}</span>
+									<strong>{amenity.value}</strong>
+								</div>
+							))}
+						</div>
+					</section>
+				) : null}
+
+				{activeTab === "policies" ? (
+					<section className={styles.tabPanel}>
+						<div className={styles.sectionHeader}>
+							<span>Stay rules</span>
+						</div>
+						<div className={styles.amenityGrid}>
+							{policies.map((policy) => (
+								<div key={policy.label}>
+									<Clock3 aria-hidden="true" />
+									<span>{policy.label}</span>
+									<strong>{policy.value}</strong>
+								</div>
+							))}
+						</div>
+					</section>
+				) : null}
 			</section>
-		</main>
+
+			<ListingDatePlanner
+				eyebrow="Stay dates"
+				fromLabel="Check-in"
+				toLabel="Checkout"
+				today={today}
+				dateRange={dateRange}
+				fromDate={fromDate}
+				toDate={toDate}
+				formattedRange={formattedRange}
+				resetRange={{ from: addDays(today, 1), to: addDays(today, 3) }}
+				onDateRangeChange={setDateRange}
+			/>
+
+			<HotelRoomReviewSection listing={listing} />
+
+			<ListingLocationMap
+				listing={listing}
+				locationLabel={locationLabel}
+				ariaLabel="Hotel room map location"
+				unavailableDescription="The partner has not attached exact coordinates to this hotel room yet. Confirm arrival details before check-in."
+			/>
+		</ListingStayDetailShell>
 	);
 }
 
 function HotelRoomListingDetailSkeleton() {
 	return (
-		<main className={styles.page} aria-busy="true">
-			<header className={styles.hero}>
-				<div className={styles.heroCopy}>
-					<Skeleton className={styles.skeletonTitle} />
-					<Skeleton className={styles.skeletonLocation} />
+		<ListingStayDetailShellSkeleton sidebar={<ListingBookingSidebarSkeleton />}>
+			<ListingStayGallerySkeleton />
+			<section className={styles.storyPanel}>
+				<div className={styles.tabs}>
+					<Skeleton className={styles.skeletonTab} />
+					<Skeleton className={styles.skeletonTab} />
+					<Skeleton className={styles.skeletonTab} />
 				</div>
-				<div className={styles.heroMetrics}>
-					<Skeleton className={styles.skeletonMetric} />
-					<Skeleton className={styles.skeletonMetric} />
-					<Skeleton className={styles.skeletonMetric} />
-				</div>
-			</header>
-			<section className={styles.layout}>
-				<div className={styles.mainColumn}>
-					<section className={styles.galleryPanel}>
-						<div className={styles.skeletonSwiperFrame}>
-							<Skeleton className={styles.skeletonHeroImage} />
-							<Skeleton className={styles.skeletonGalleryButtonLeft} />
-							<Skeleton className={styles.skeletonGalleryButtonRight} />
-							<div className={styles.skeletonDots}>
-								<Skeleton />
-								<Skeleton />
-								<Skeleton />
+				<section className={styles.tabPanel}>
+					<Skeleton className={styles.skeletonSectionLabel} />
+					<Skeleton className={styles.skeletonParagraph} />
+					<Skeleton className={styles.skeletonParagraphShort} />
+					<div className={styles.factGrid}>
+						{Array.from({ length: 4 }).map((_, index) => (
+							<div key={index} className={styles.skeletonFeatureCard}>
+								<Skeleton className={styles.skeletonIcon} />
+								<Skeleton className={styles.skeletonMiniLine} />
+								<Skeleton className={styles.skeletonFeatureTitle} />
 							</div>
-						</div>
-						<div className={styles.galleryRail}>
-							{Array.from({ length: 5 }).map((_, index) => (
-								<Skeleton key={index} className={styles.skeletonThumb} />
-							))}
-						</div>
-					</section>
-					<section className={styles.storyPanel}>
-						<div className={styles.tabs}>
-							<Skeleton className={styles.skeletonTab} />
-							<Skeleton className={styles.skeletonTab} />
-							<Skeleton className={styles.skeletonTab} />
-						</div>
-						<section className={styles.tabPanel}>
-							<Skeleton className={styles.skeletonSectionLabel} />
-							<Skeleton className={styles.skeletonParagraph} />
-							<Skeleton className={styles.skeletonParagraphShort} />
-							<div className={styles.factGrid}>
-								{Array.from({ length: 4 }).map((_, index) => (
-									<div key={index} className={styles.skeletonFeatureCard}>
-										<Skeleton className={styles.skeletonIcon} />
-										<Skeleton className={styles.skeletonMiniLine} />
-										<Skeleton className={styles.skeletonFeatureTitle} />
-									</div>
-								))}
-							</div>
-						</section>
-					</section>
-					<ListingDatePlannerSkeleton />
-					<section className={styles.skeletonReviewPanel}>
-						<Skeleton className={styles.skeletonReviewScore} />
-						<div className={styles.skeletonReviewMetrics}>
-							{Array.from({ length: 6 }).map((_, index) => (
-								<Skeleton key={index} />
-							))}
-						</div>
-						<div className={styles.skeletonReviewList}>
-							{Array.from({ length: 4 }).map((_, index) => (
-								<div key={index}>
-									<Skeleton className={styles.skeletonReviewer} />
-									<Skeleton className={styles.skeletonReviewLine} />
-									<Skeleton className={styles.skeletonReviewLineShort} />
-								</div>
-							))}
-						</div>
-					</section>
-					<ListingLocationMapSkeleton />
-				</div>
-				<ListingBookingSidebarSkeleton />
+						))}
+					</div>
+				</section>
 			</section>
-		</main>
+			<ListingDatePlannerSkeleton />
+			<section className={styles.skeletonReviewPanel}>
+				<Skeleton className={styles.skeletonReviewScore} />
+				<div className={styles.skeletonReviewMetrics}>
+					{Array.from({ length: 6 }).map((_, index) => (
+						<Skeleton key={index} />
+					))}
+				</div>
+				<div className={styles.skeletonReviewList}>
+					{Array.from({ length: 4 }).map((_, index) => (
+						<div key={index}>
+							<Skeleton className={styles.skeletonReviewer} />
+							<Skeleton className={styles.skeletonReviewLine} />
+							<Skeleton className={styles.skeletonReviewLineShort} />
+						</div>
+					))}
+				</div>
+			</section>
+			<ListingLocationMapSkeleton />
+		</ListingStayDetailShellSkeleton>
 	);
 }
