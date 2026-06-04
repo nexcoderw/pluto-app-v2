@@ -1,0 +1,235 @@
+.planner {
+	display: grid;
+	gap: 1rem;
+	padding: clamp(0.9rem, 2.4vw, 1.15rem);
+	border: 1px solid rgba(255, 255, 255, 0.74);
+	border-radius: 1.6rem;
+	background: rgba(255, 255, 255, 0.82);
+	box-shadow: 0 1.6rem 4.5rem rgba(16, 22, 33, 0.1);
+	backdrop-filter: blur(18px);
+}
+
+.header {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(18rem, 24rem);
+	gap: clamp(0.9rem, 2vw, 1.15rem);
+	align-items: end;
+}
+
+.header > div:first-child {
+	display: grid;
+	gap: 0.35rem;
+}
+
+.header span {
+	width: fit-content;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.42rem;
+	color: #02006c;
+	font-size: 0.72rem;
+	font-weight: 850;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.header p {
+	margin: 0;
+	color: rgba(23, 23, 31, 0.62);
+	font-size: 0.84rem;
+	line-height: 1.65;
+}
+
+.preview {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	overflow: hidden;
+	border: 1px solid rgba(23, 23, 31, 0.78);
+	border-radius: 1rem;
+	background: #ffffff;
+	box-shadow: 0 1rem 2rem rgba(16, 22, 33, 0.06);
+}
+
+.preview div {
+	display: grid;
+	gap: 0.18rem;
+	padding: 0.78rem 0.9rem;
+}
+
+.preview div + div {
+	border-left: 1px solid rgba(23, 23, 31, 0.18);
+}
+
+.preview span {
+	color: #02006c;
+	font-size: 0.66rem;
+	font-weight: 850;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+}
+
+.preview strong {
+	color: #17171f;
+	font-size: 0.86rem;
+	font-weight: 700;
+}
+
+.calendarShell {
+	overflow-x: auto;
+	padding: 0.75rem;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	border-radius: 1.25rem;
+	background: #ffffff;
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+}
+
+.calendar {
+	width: 100%;
+	min-width: 42rem;
+	--cell-size: 2.25rem;
+	--cell-radius: 999px;
+}
+
+.calendar :global(.rdp-months) {
+	width: 100%;
+	justify-content: space-between;
+	gap: 0.9rem;
+}
+
+.calendar :global(.rdp-month) {
+	flex: 1;
+}
+
+.calendar button {
+	cursor: pointer;
+}
+
+.clearDatesButton {
+	width: fit-content;
+	margin-left: auto;
+	min-height: 2.4rem;
+	padding: 0 0.9rem;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	border-radius: 999px;
+	background: rgba(2, 0, 108, 0.04);
+	color: #02006c;
+	font-family: inherit;
+	font-size: 0.76rem;
+	font-weight: 820;
+	cursor: pointer;
+	transition:
+		background 180ms ease,
+		border-color 180ms ease;
+}
+
+.clearDatesButton:hover {
+	border-color: rgba(2, 0, 108, 0.2);
+	background: rgba(2, 0, 108, 0.08);
+}
+
+.skeletonSectionLabel,
+.skeletonDateText,
+.skeletonDateValue,
+.skeletonMiniLine,
+.skeletonClearDates,
+.skeletonMonthTitle {
+	border-radius: 999px;
+}
+
+.skeletonSectionLabel {
+	width: 7.5rem;
+	height: 0.85rem;
+}
+
+.skeletonDateText {
+	width: min(20rem, 100%);
+	height: 1rem;
+}
+
+.skeletonMiniLine {
+	width: 4.6rem;
+	height: 0.72rem;
+}
+
+.skeletonDateValue {
+	width: 6.2rem;
+	height: 0.9rem;
+}
+
+.skeletonCalendar {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 1rem;
+}
+
+.skeletonMonth {
+	display: grid;
+	gap: 0.85rem;
+}
+
+.skeletonMonthTitle {
+	width: 8rem;
+	height: 1rem;
+	margin-inline: auto;
+}
+
+.skeletonWeekdays,
+.skeletonDays {
+	display: grid;
+	grid-template-columns: repeat(7, minmax(0, 1fr));
+	gap: 0.42rem;
+}
+
+.skeletonWeekdays div {
+	height: 0.55rem;
+}
+
+.skeletonDays div {
+	aspect-ratio: 1;
+	border-radius: 999px;
+}
+
+.skeletonClearDates {
+	width: 7rem;
+	height: 2.4rem;
+	margin-left: auto;
+}
+
+@media (max-width: 820px) {
+	.header,
+	.skeletonCalendar {
+		grid-template-columns: 1fr;
+	}
+
+	.calendar :global(.rdp-months) {
+		flex-direction: column;
+	}
+
+	.calendar {
+		min-width: 0;
+	}
+}
+
+@media (max-width: 640px) {
+	.planner {
+		border-radius: 1.2rem;
+	}
+
+	.preview {
+		grid-template-columns: 1fr;
+	}
+
+	.preview div + div {
+		border-top: 1px solid rgba(23, 23, 31, 0.18);
+		border-left: 0;
+	}
+
+	.calendarShell {
+		padding: 0.5rem;
+	}
+
+	.skeletonWeekdays,
+	.skeletonDays {
+		gap: 0.3rem;
+	}
+}
