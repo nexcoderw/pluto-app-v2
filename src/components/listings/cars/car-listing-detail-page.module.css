@@ -578,9 +578,22 @@
 }
 
 .loginPrompt {
+	width: 100%;
 	border: 1px solid rgba(2, 0, 108, 0.14);
 	background: rgba(2, 0, 108, 0.06);
 	color: #02006c;
+	font-family: inherit;
+	cursor: pointer;
+	transition:
+		background 180ms ease,
+		border-color 180ms ease,
+		transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.loginPrompt:hover {
+	border-color: rgba(2, 0, 108, 0.26);
+	background: rgba(2, 0, 108, 0.1);
+	transform: translateY(-1px);
 }
 
 .chargeNote {
