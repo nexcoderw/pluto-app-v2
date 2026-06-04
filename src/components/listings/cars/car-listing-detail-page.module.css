@@ -21,8 +21,7 @@
 
 .backLink,
 .eyebrow,
-.heroCopy p,
-.bookingPanel span {
+.heroCopy p {
 	display: inline-flex;
 	align-items: center;
 	gap: 0.42rem;
@@ -102,22 +101,13 @@
 	align-items: start;
 }
 
-.mainColumn,
-.sidebar {
+.mainColumn {
 	display: grid;
 	gap: 1rem;
 }
 
-.sidebar {
-	position: sticky;
-	top: 5.2rem;
-}
-
 .gallerySection,
-.contentPanel,
-.bookingPanel,
-.priceNotice,
-.statePanel {
+.contentPanel {
 	border: 1px solid rgba(255, 255, 255, 0.74);
 	border-radius: 1.6rem;
 	background: rgba(255, 255, 255, 0.82);
@@ -257,9 +247,7 @@
 	box-shadow: 0 0.9rem 1.8rem rgba(2, 0, 108, 0.18);
 }
 
-.tabPanel,
-.bookingPanel,
-.priceNotice {
+.tabPanel {
 	display: grid;
 	gap: 1rem;
 }
@@ -273,16 +261,14 @@
 	gap: 0.25rem;
 }
 
-.sectionHeader span,
-.bookingPanel span {
+.sectionHeader span {
 	color: #02006c;
 	font-size: 0.72rem;
 	font-weight: 850;
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
 }
-.tabPanel p,
-.bookingPanel pHeader p {
+.tabPanel p {
 	margin: 0;
 	color: rgba(23, 23, 31, 0.62);
 	line-height: 1.65;
@@ -336,185 +322,6 @@
 	font-weight: 700;
 }
 
-.priceNotice {
-	grid-template-columns: auto minmax(0, 1fr);
-	align-items: center;
-	padding: 0.9rem 1rem;
-	border-radius: 1.25rem;
-}
-
-.priceNotice svg {
-	width: 1.2rem;
-	height: 1.2rem;
-	color: #168a49;
-}
-
-.priceNotice span {
-	color: #17171f;
-	font-size: 0.81rem;
-	font-weight: 600;
-	line-height: 1.35;
-}
-
-.bookingPanel {
-	padding: 1rem;
-}
-
-.priceLine {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: baseline;
-	gap: 0.35rem;
-}
-
-.priceLine strong {
-	color: #17171f;
-	font-size: 1.45rem;
-	font-weight: 850;
-	text-decoration: underline;
-	text-underline-offset: 0.16rem;
-}
-
-.priceLine span {
-	color: rgba(23, 23, 31, 0.72);
-	font-size: 0.92rem;
-	font-weight: 650;
-	text-transform: none;
-	letter-spacing: 0;
-}
-
-.dateSummary h2 {
-	margin: 0;
-	color: #17171f;
-	font-size: 1.12rem;
-	font-weight: 850;
-}
-
-.dateSummary p {
-	margin-top: 0.25rem;
-	font-size: 0.82rem;
-}
-
-.dateFields {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	overflow: hidden;
-	border: 1px solid rgba(23, 23, 31, 0.78);
-	border-radius: 1rem;
-	background: #ffffff;
-}
-
-.dateFields div {
-	display: grid;
-	gap: 0.18rem;
-	padding: 0.75rem 0.85rem;
-}
-
-.dateFields div + div {
-	border-left: 1px solid rgba(23, 23, 31, 0.18);
-}
-
-.dateFields span {
-	color: #17171f;
-	font-size: 0.66rem;
-	font-weight: 850;
-	letter-spacing: 0.06em;
-	text-transform: uppercase;
-}
-
-.dateFields strong {
-	color: #17171f;
-	font-size: 0.84rem;
-	font-weight: 650;
-}
-
-.bookButton,
-.loginPrompt {
-	min-height: var(--pluto-button-height);
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	gap: 0.45rem;
-	border-radius: 999px;
-	font-size: 0.75rem;
-	font-weight: 700;
-	text-decoration: none;
-}
-
-.bookButton {
-	width: 100%;
-	background: #02006c;
-	color: #ffffff;
-	box-shadow: 0 1rem 2.2rem rgba(2, 0, 108, 0.22);
-}
-
-.loginPrompt {
-	width: 100%;
-	border: 1px solid rgba(2, 0, 108, 0.14);
-	background: rgba(2, 0, 108, 0.06);
-	color: #02006c;
-	font-family: inherit;
-	cursor: pointer;
-	transition:
-		background 180ms ease,
-		border-color 180ms ease,
-		transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.loginPrompt:hover {
-	border-color: rgba(2, 0, 108, 0.26);
-	background: rgba(2, 0, 108, 0.1);
-	transform: translateY(-1px);
-}
-
-.chargeNote {
-	text-align: center;
-	font-size: 0.81rem;
-	font-weight: 500;
-}
-
-.statePanel {
-	justify-items: center;
-	gap: 0.8rem;
-	padding: 3rem 1rem;
-	text-align: center;
-}
-
-.statePanel h1 {
-	margin: 0;
-	font-size: 2rem;
-}
-
-.statePanel p {
-	max-width: 28rem;
-	margin: 0;
-	color: rgba(23, 23, 31, 0.62);
-	line-height: 1.6;
-}
-
-.statePanel div {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: center;
-	gap: 0.65rem;
-}
-
-.statePanel a {
-	min-height: var(--pluto-button-height);
-	display: inline-flex;
-	align-items: center;
-	gap: 0.45rem;
-	padding: 0 1rem;
-	border: 1px solid rgba(2, 0, 108, 0.12);
-	border-radius: 999px;
-	color: #02006c;
-	font-size: 0.84rem;
-	font-weight: 850;
-	text-decoration: none;
-}
-
-.skeletonBackLink,
-.skeletonEyebrow,
 .skeletonLocation,
 .skeletonStatPill,
 .skeletonTab,
@@ -523,27 +330,10 @@
 .skeletonParagraphShort,
 .skeletonMiniLine,
 .skeletonFeatureTitle,
-.skeletonDateText,
-.skeletonDateValue,
-.skeletonNoticeText,
-.skeletonPrice,
-.skeletonBookButton,
-.skeletonChargeNote,
 .skeletonReviewScore,
 .skeletonReviewLine,
 .skeletonReviewLineShort {
 	border-radius: 999px;
-}
-
-.skeletonBackLink {
-	width: 7.8rem;
-	height: 2.4rem;
-}
-
-.skeletonEyebrow {
-	width: 11rem;
-	height: 2.25rem;
-	margin-top: 1rem;
 }
 
 .skeletonTitle {
@@ -651,16 +441,6 @@
 	height: 0.9rem;
 }
 
-.skeletonDateText {
-	width: min(20rem, 100%);
-	height: 1rem;
-}
-
-.skeletonDateValue {
-	width: 6.2rem;
-	height: 0.9rem;
-}
-
 .skeletonReviews {
 	display: grid;
 	gap: 1.1rem;
@@ -717,34 +497,9 @@
 	border-radius: 999px;
 }
 
-.skeletonNoticeText {
-	width: 100%;
-	height: 1rem;
-}
-
-.skeletonPrice {
-	width: 11rem;
-	height: 2rem;
-}
-
-.skeletonBookButton {
-	width: 100%;
-	height: var(--pluto-button-height);
-}
-
-.skeletonChargeNote {
-	width: 55%;
-	height: 0.85rem;
-	margin-inline: auto;
-}
-
 @media (max-width: 1120px) {
 	.layout {
 		grid-template-columns: 1fr;
-	}
-
-	.sidebar {
-		position: static;
 	}
 }
 
@@ -790,8 +545,6 @@
 
 	.gallerySection,
 	.contentPanel,
-	.bookingPanel,
-	.priceNotice,
 	.skeletonReviews {
 		border-radius: 1.2rem;
 	}
@@ -813,21 +566,9 @@
 	.factGrid,
 	.policyGrid,
 	.reviewGrid,
-	.dateFields,
 	.skeletonReviewMetrics,
 	.skeletonReviewList {
 		grid-template-columns: 1fr;
-	}
-
-	.dateFields div + div {
-		border-top: 1px solid rgba(23, 23, 31, 0.18);
-		border-left: 0;
-	}
-
-	.statePanel div,
-	.statePanel button,
-	.statePanel a {
-		width: 100%;
 	}
 
 	.skeletonTitle {
