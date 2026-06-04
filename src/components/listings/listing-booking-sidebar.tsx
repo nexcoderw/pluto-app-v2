@@ -1,17 +1,12 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useState } from "react";
 import { CalendarCheck, CalendarDays, DoorOpen, Tag } from "lucide-react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { UserAuthProfile } from "@/services/api/auth";
+import { useUserSession } from "@/hooks/use-user-session";
 import type { PublicListing } from "@/services/api/listings";
-import {
-	getCachedUserProfile,
-	hasKnownUserSession,
-	subscribeToUserSession,
-} from "@/services/api/token-store";
 import { formatMoney } from "./listing-formatters";
 import { ListingLoginDialog } from "./listing-login-dialog";
 import {
@@ -58,11 +53,7 @@ export function ListingBookingSidebar({
 	notice,
 }: ListingBookingSidebarProps) {
 	const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
-	const currentUser = useSyncExternalStore(
-		(onStoreChange) => subscribeToUserSession(() => onStoreChange()),
-		getUserSessionSnapshot,
-		() => null,
-	);
+	const currentUser = useUserSession();
 	const ActionIcon = ctaIcon === "calendar" ? CalendarDays : DoorOpen;
 
 	return (
@@ -169,8 +160,4 @@ export function ListingBookingSidebarSkeleton({
 			<ListingVerifiedPartnerCardSkeleton />
 		</aside>
 	);
-}
-
-function getUserSessionSnapshot(): UserAuthProfile | null {
-	return hasKnownUserSession() ? getCachedUserProfile() : null;
 }
