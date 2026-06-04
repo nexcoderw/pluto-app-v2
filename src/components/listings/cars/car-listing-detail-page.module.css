@@ -23,7 +23,7 @@
 .eyebrow,
 .heroCopy p,
 .bookingPanel span,
-.partnerPanel span {
+.partnerPanel > span {
 	display: inline-flex;
 	align-items: center;
 	gap: 0.42rem;
@@ -278,7 +278,8 @@
 }
 
 .sectionHeader span,
-.bookingPanel span {
+.bookingPanel span,
+.partnerPanel > span {
 	color: #02006c;
 	font-size: 0.72rem;
 	font-weight: 850;
@@ -287,6 +288,7 @@
 }
 .tabPanel p,
 .bookingPanel p,
+.partnerPanel p,
 .datePlannerHeader p {
 	margin: 0;
 	color: rgba(23, 23, 31, 0.62);
@@ -603,9 +605,14 @@
 }
 
 .partnerPanel {
+	padding: 1rem;
+}
+
+.partnerIdentity {
+	display: grid;
 	grid-template-columns: auto minmax(0, 1fr);
+	gap: 0.7rem;
 	align-items: center;
-	padding: 0.9rem 1rem;
 }
 
 .partnerAvatar {
@@ -620,6 +627,7 @@
 		#02006c;
 	color: #ffffff;
 	font-size: 0.82rem;
+	font-style: normal;
 	font-weight: 880;
 	line-height: 1;
 	text-align: center;
@@ -627,12 +635,12 @@
 	white-space: nowrap;
 }
 
-.partnerPanel strong {
+.partnerIdentity strong {
 	min-width: 0;
 	overflow: hidden;
 	color: #17171f;
 	font-size: 0.92rem;
-	font-weight: 850;
+	font-weight: 860;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
@@ -694,7 +702,9 @@
 .skeletonPrice,
 .skeletonBookButton,
 .skeletonChargeNote,
+.skeletonPartnerBadge,
 .skeletonPartnerName,
+.skeletonPartnerCopy,
 .skeletonMonthTitle,
 .skeletonReviewScore,
 .skeletonReviewLine,
@@ -944,6 +954,11 @@
 	margin-inline: auto;
 }
 
+.skeletonPartnerBadge {
+	width: 8.4rem;
+	height: 1rem;
+}
+
 .skeletonAvatar {
 	width: 3rem;
 	height: 3rem;
@@ -953,6 +968,11 @@
 .skeletonPartnerName {
 	width: 70%;
 	height: 1rem;
+}
+
+.skeletonPartnerCopy {
+	width: 88%;
+	height: 0.9rem;
 }
 
 @media (max-width: 1120px) {
