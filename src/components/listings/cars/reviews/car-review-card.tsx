@@ -4,7 +4,17 @@ import type { CSSProperties } from "react";
 import type { ListingReview } from "@/services/api/listing-reviews";
 import styles from "./car-review-section.module.css";
 
-export function CarReviewCard({ review }: { review: ListingReview }) {
+const REVIEW_PREVIEW_LIMIT = 190;
+
+export function CarReviewCard({
+	review,
+	fullMessage = false,
+	onShowMore,
+}: {
+	review: ListingReview;
+	fullMessage?: boolean;
+	onShowMore?: (review: ListingReview) => void;
+}) {
 	const authorInitials = getInitials(review.author.fullName);
 	const avatarStyle =
 		review.author.imageKey && review.author.imageKey.startsWith("http")
@@ -12,6 +22,13 @@ export function CarReviewCard({ review }: { review: ListingReview }) {
 					"--reviewer-avatar-image": `url("${review.author.imageKey}")`,
 				} as CSSProperties)
 			: undefined;
+	const message =
+		review.message?.trim() ||
+		"This customer submitted category ratings without a written message.";
+	const shouldTruncate = !fullMessage && message.length > REVIEW_PREVIEW_LIMIT;
+	const displayMessage = shouldTruncate
+		? `${message.slice(0, REVIEW_PREVIEW_LIMIT).trim()}...`
+		: message;
 
 	return (
 		<article className={styles.reviewCard}>
@@ -46,10 +63,16 @@ export function CarReviewCard({ review }: { review: ListingReview }) {
 				))}
 				<span>{review.overallRating.toFixed(1)}</span>
 			</div>
-			<p>
-				{review.message?.trim() ||
-					"This customer submitted category ratings without a written message."}
-			</p>
+			<p>{displayMessage}</p>
+			{shouldTruncate && onShowMore ? (
+				<button
+					type="button"
+					className={styles.showMoreButton}
+					onClick={() => onShowMore(review)}
+				>
+					Show more
+				</button>
+			) : null}
 		</article>
 	);
 }
