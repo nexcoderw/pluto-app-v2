@@ -1,18 +1,14 @@
 "use client";
 
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import {
-	ArrowLeft,
 	BriefcaseBusiness,
 	CalendarCheck,
-	CalendarDays,
 	CarFront,
 	CheckCircle2,
 	Fuel,
 	MapPin,
-	RefreshCcw,
 	ShieldCheck,
 	Sparkles,
 	Tag,
@@ -28,30 +24,23 @@ import type { DateRange } from "react-day-picker";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useQuery } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { UserAuthProfile } from "@/services/api/auth";
 import { getCarListing, type PublicListing } from "@/services/api/listings";
 import {
-	getCachedUserProfile,
-	hasKnownUserSession,
-	subscribeToUserSession,
-} from "@/services/api/token-store";
-import {
+	buildListingGallery,
 	formatBoolean,
 	formatMoney,
 	formatOptional,
-	getListingCoverImage,
 } from "../listing-formatters";
+import {
+	ListingBookingSidebar,
+	ListingBookingSidebarSkeleton,
+} from "../listing-booking-sidebar";
 import {
 	ListingDatePlanner,
 	ListingDatePlannerSkeleton,
 } from "../listing-date-planner";
-import { ListingLoginDialog } from "../listing-login-dialog";
-import {
-	ListingVerifiedPartnerCard,
-	ListingVerifiedPartnerCardSkeleton,
-} from "../listing-verified-partner-card";
+import { ListingDetailErrorState } from "../listing-detail-error-state";
 import { CarReviewSection } from "./reviews/car-review-section";
 import styles from "./car-listing-detail-page.module.css";
 
@@ -74,7 +63,15 @@ export function CarListingDetailPage({ listingId }: { listingId: string }) {
 	}
 
 	if (listingQuery.isError || !listingQuery.data?.product) {
-		return <CarListingDetailError onRetry={() => listingQuery.refetch()} />;
+		return (
+			<ListingDetailErrorState
+				title="Car listing unavailable"
+				description="This car may have been removed, paused, or moved to another category."
+				backHref="/listings/cars"
+				backLabel="Back to cars"
+				onRetry={() => listingQuery.refetch()}
+			/>
+		);
 	}
 
 	return <CarListingDetail listing={listingQuery.data.product} />;
@@ -83,7 +80,10 @@ export function CarListingDetailPage({ listingId }: { listingId: string }) {
 function CarListingDetail({ listing }: { listing: PublicListing }) {
 	const [activeTab, setActiveTab] = useState<CarDetailTab>("overview");
 	const details = listing.carDetails;
-	const gallery = useMemo(() => buildGallery(listing), [listing]);
+	const gallery = useMemo(
+		() => buildListingGallery(listing, "Pluto Booking car"),
+		[listing],
+	);
 	const today = useMemo(() => startOfDay(new Date()), []);
 	const [dateRange, setDateRange] = useState<DateRange | undefined>(() => ({
 		from: addDays(today, 1),
@@ -321,104 +321,25 @@ function CarListingDetail({ listing }: { listing: PublicListing }) {
 					<CarReviewSection listing={listing} />
 				</div>
 
-				<CarBookingSidebar
+				<ListingBookingSidebar
 					listing={listing}
 					fromDate={fromDate}
 					toDate={toDate}
-					rentalDays={rentalDays}
+					durationCount={rentalDays}
+					durationSingular="day"
+					durationPlural="days"
 					totalPrice={totalPrice}
 					formattedRange={formattedRange}
+					fromLabel="Pickup"
+					toLabel="Return"
+					ctaLabel="Book this car"
+					loginLabel="Sign in to unlock booking"
+					footerNote="You will not be charged yet."
+					ctaIcon="calendar"
+					notice="Your price is calculated from the selected dates."
 				/>
 			</section>
 		</main>
-	);
-}
-
-function CarBookingSidebar({
-	listing,
-	fromDate,
-	toDate,
-	rentalDays,
-	totalPrice,
-	formattedRange,
-}: {
-	listing: PublicListing;
-	fromDate?: Date;
-	toDate?: Date;
-	rentalDays: number;
-	totalPrice: number;
-	formattedRange: string;
-}) {
-	const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
-	const currentUser = useSyncExternalStore(
-		(onStoreChange) => subscribeToUserSession(() => onStoreChange()),
-		getUserSessionSnapshot,
-		() => null,
-	);
-
-	return (
-		<aside className={styles.sidebar}>
-			<section className={styles.priceNotice}>
-				<Tag aria-hidden="true" />
-				<span>Your price is calculated from the selected dates.</span>
-			</section>
-
-			<section className={styles.bookingPanel}>
-				<div className={styles.priceLine}>
-					<strong>
-						{formatMoney(
-							Number.isFinite(totalPrice)
-								? String(totalPrice)
-								: listing.basePrice,
-							listing.currency,
-						)}
-					</strong>
-					<span>
-						for {rentalDays} {rentalDays === 1 ? "day" : "days"}
-					</span>
-				</div>
-
-				<div className={styles.dateSummary}>
-					<p>{formattedRange}</p>
-				</div>
-
-				<div className={styles.dateFields}>
-					<div>
-						<span>Pickup</span>
-						<strong>
-							{fromDate ? format(fromDate, "M/d/yyyy") : "Add date"}
-						</strong>
-					</div>
-					<div>
-						<span>Return</span>
-						<strong>{toDate ? format(toDate, "M/d/yyyy") : "Add date"}</strong>
-					</div>
-				</div>
-
-				{currentUser ? (
-					<Button type="button" className={styles.bookButton}>
-						<CalendarDays aria-hidden="true" />
-						Book this car
-					</Button>
-				) : (
-					<button
-						type="button"
-						className={styles.loginPrompt}
-						onClick={() => setIsLoginDialogOpen(true)}
-					>
-						Sign in to unlock booking
-					</button>
-				)}
-				<p className={styles.chargeNote}>You will not be charged yet.</p>
-			</section>
-
-			<ListingVerifiedPartnerCard owner={listing.owner} />
-			<ListingLoginDialog
-				open={isLoginDialogOpen}
-				onOpenChange={setIsLoginDialogOpen}
-				listingTitle={listing.title}
-			/>
-		</aside>
 	);
 }
 
@@ -497,85 +418,8 @@ function CarListingDetailSkeleton() {
 					</section>
 				</div>
 
-				<aside className={styles.sidebar}>
-					<section className={styles.priceNotice}>
-						<Skeleton className={styles.skeletonIcon} />
-						<Skeleton className={styles.skeletonNoticeText} />
-					</section>
-					<section className={styles.bookingPanel}>
-						<Skeleton className={styles.skeletonPrice} />
-						<Skeleton className={styles.skeletonDateText} />
-						<div className={styles.dateFields}>
-							<div>
-								<Skeleton className={styles.skeletonMiniLine} />
-								<Skeleton className={styles.skeletonDateValue} />
-							</div>
-							<div>
-								<Skeleton className={styles.skeletonMiniLine} />
-								<Skeleton className={styles.skeletonDateValue} />
-							</div>
-						</div>
-						<Skeleton className={styles.skeletonBookButton} />
-						<Skeleton className={styles.skeletonChargeNote} />
-					</section>
-					<ListingVerifiedPartnerCardSkeleton />
-				</aside>
+				<ListingBookingSidebarSkeleton hasNotice />
 			</section>
 		</main>
 	);
-}
-
-function CarListingDetailError({ onRetry }: { onRetry: () => void }) {
-	return (
-		<main className={styles.page}>
-			<section className={styles.statePanel}>
-				<RefreshCcw aria-hidden="true" />
-				<h1>Car listing unavailable</h1>
-				<p>
-					This car may have been removed, paused, or moved to another category.
-				</p>
-				<div>
-					<Button type="button" onClick={onRetry} className="rounded-full">
-						<RefreshCcw aria-hidden="true" />
-						Retry
-					</Button>
-					<Link href="/listings/cars">
-						<ArrowLeft aria-hidden="true" />
-						Back to cars
-					</Link>
-				</div>
-			</section>
-		</main>
-	);
-}
-
-function buildGallery(listing: PublicListing) {
-	const images = listing.images
-		.filter((image) => Boolean(image.file.publicUrl))
-		.map((image) => ({
-			id: image.id,
-			src: image.file.publicUrl ?? "/hero/hero.jpg",
-			alt: image.altText ?? listing.title,
-		}));
-	const coverImage = getListingCoverImage(listing);
-
-	if (!images.length) {
-		return [
-			{
-				id: "fallback",
-				src: "/hero/hero.jpg",
-				alt: "Pluto Booking car",
-			},
-		];
-	}
-
-	return images.sort((first, second) => {
-		if (first.id === coverImage?.id) return -1;
-		if (second.id === coverImage?.id) return 1;
-		return 0;
-	});
-}
-
-function getUserSessionSnapshot(): UserAuthProfile | null {
-	return hasKnownUserSession() ? getCachedUserProfile() : null;
 }
