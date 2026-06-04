@@ -118,6 +118,7 @@
 
 .gallerySection,
 .contentPanel,
+.datePlanner,
 .bookingPanel,
 .partnerPanel,
 .priceNotice,
@@ -296,7 +297,8 @@
 }
 
 .tabPanel p,
-.bookingPanel p {
+.bookingPanel p,
+.datePlannerHeader p {
 	margin: 0;
 	color: rgba(23, 23, 31, 0.62);
 	line-height: 1.65;
@@ -441,17 +443,91 @@
 	font-weight: 650;
 }
 
-.calendarShell {
+.datePlanner {
+	display: grid;
+	gap: 1rem;
+	padding: clamp(0.9rem, 2.4vw, 1.15rem);
+}
+
+.datePlannerHeader {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(18rem, 24rem);
+	gap: clamp(0.9rem, 2vw, 1.15rem);
+	align-items: end;
+}
+
+.datePlannerHeader > div:first-child {
+	display: grid;
+	gap: 0.35rem;
+}
+
+.datePlannerHeader span {
+	width: fit-content;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.42rem;
+	color: #02006c;
+	font-size: 0.72rem;
+	font-weight: 850;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.datePlannerHeader h2 {
+	margin: 0;
+	color: #17171f;
+	font-size: clamp(1.35rem, 2.8vw, 2.05rem);
+	font-weight: 880;
+	line-height: 1.05;
+}
+
+.datePreview {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
 	overflow: hidden;
-	padding: 0.65rem;
-	border: 1px solid rgba(2, 0, 108, 0.08);
-	border-radius: 1.2rem;
+	border: 1px solid rgba(23, 23, 31, 0.78);
+	border-radius: 1rem;
 	background: #ffffff;
+	box-shadow: 0 1rem 2rem rgba(16, 22, 33, 0.06);
+}
+
+.datePreview div {
+	display: grid;
+	gap: 0.18rem;
+	padding: 0.78rem 0.9rem;
+}
+
+.datePreview div + div {
+	border-left: 1px solid rgba(23, 23, 31, 0.18);
+}
+
+.datePreview span {
+	color: #17171f;
+	font-size: 0.66rem;
+	font-weight: 850;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+}
+
+.datePreview strong {
+	color: #17171f;
+	font-size: 0.86rem;
+	font-weight: 700;
+}
+
+.calendarShell {
+	overflow-x: auto;
+	padding: 0.75rem;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	border-radius: 1.25rem;
+	background: #ffffff;
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
 }
 
 .calendar {
 	width: 100%;
-	--cell-size: 2rem;
+	min-width: 42rem;
+	--cell-size: 2.25rem;
 	--cell-radius: 999px;
 }
 
@@ -472,14 +548,23 @@
 .clearDatesButton {
 	width: fit-content;
 	margin-left: auto;
-	border: 0;
-	background: transparent;
-	color: rgba(23, 23, 31, 0.78);
+	min-height: 2.4rem;
+	padding: 0 0.9rem;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	border-radius: 999px;
+	background: rgba(2, 0, 108, 0.04);
+	color: #02006c;
 	font-size: 0.76rem;
-	font-weight: 760;
+	font-weight: 820;
 	cursor: pointer;
-	text-decoration: underline;
-	text-underline-offset: 0.18rem;
+	transition:
+		background 180ms ease,
+		border-color 180ms ease;
+}
+
+.clearDatesButton:hover {
+	border-color: rgba(2, 0, 108, 0.2);
+	background: rgba(2, 0, 108, 0.08);
 }
 
 .bookButton,
@@ -634,6 +719,14 @@
 	.calendar :global(.rdp-months) {
 		flex-direction: column;
 	}
+
+	.datePlannerHeader {
+		grid-template-columns: 1fr;
+	}
+
+	.calendar {
+		min-width: 0;
+	}
 }
 
 @media (max-width: 640px) {
@@ -654,8 +747,14 @@
 	.factGrid,
 	.policyGrid,
 	.reviewGrid,
+	.datePreview,
 	.dateFields {
 		grid-template-columns: 1fr;
+	}
+
+	.datePreview div + div {
+		border-top: 1px solid rgba(23, 23, 31, 0.18);
+		border-left: 0;
 	}
 
 	.dateFields div + div {
