@@ -21,41 +21,10 @@
 	min-width: 0;
 }
 
-.backLink,
-.eyebrow,
-.heroCopy p,
-.bookingPanel > span {
+.heroCopy p {
 	display: inline-flex;
 	align-items: center;
 	gap: 0.42rem;
-}
-
-.backLink {
-	width: fit-content;
-	min-height: 2.4rem;
-	padding: 0 0.85rem;
-	border: 1px solid rgba(2, 0, 108, 0.12);
-	border-radius: 999px;
-	background: rgba(255, 255, 255, 0.86);
-	color: #02006c;
-	font-size: 0.76rem;
-	font-weight: 840;
-	text-decoration: none;
-	box-shadow: 0 0.7rem 1.6rem rgba(16, 22, 33, 0.06);
-}
-
-.eyebrow {
-	width: fit-content;
-	min-height: 2.25rem;
-	margin-top: 1rem;
-	padding: 0 0.9rem;
-	border-radius: 999px;
-	background: rgba(2, 0, 108, 0.07);
-	color: #02006c;
-	font-size: 0.74rem;
-	font-weight: 850;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
 }
 
 .heroCopy h1 {
@@ -104,22 +73,13 @@
 	align-items: start;
 }
 
-.mainColumn,
-.sidebar {
+.mainColumn {
 	display: grid;
 	gap: 1rem;
 }
 
-.sidebar {
-	position: sticky;
-	top: 5.2rem;
-}
-
 .galleryPanel,
 .storyPanel,
-.mapSection,
-.bookingPanel,
-.statePanel,
 .skeletonReviewPanel {
 	border: 1px solid rgba(255, 255, 255, 0.74);
 	border-radius: 1.6rem;
@@ -293,8 +253,7 @@
 	box-shadow: 0 0.9rem 1.8rem rgba(2, 0, 108, 0.18);
 }
 
-.tabPanel,
-.bookingPanel {
+.tabPanel {
 	display: grid;
 	gap: 1rem;
 }
@@ -308,8 +267,7 @@
 	gap: 0.25rem;
 }
 
-.sectionHeader span,
-.bookingPanel > span {
+.sectionHeader span {
 	color: #02006c;
 	font-size: 0.72rem;
 	font-weight: 850;
@@ -326,7 +284,6 @@
 }
 
 .tabPanel p,
-.bookingPanel p,
 .ruleCopy {
 	margin: 0;
 	color: rgba(23, 23, 31, 0.62);
@@ -379,363 +336,6 @@
 	font-weight: 820;
 }
 
-.bookingPanel {
-	padding: 1rem;
-}
-
-.mapSection {
-	display: grid;
-	gap: 1rem;
-	padding: clamp(0.8rem, 2vw, 1rem);
-}
-
-.mapHeader {
-	display: flex;
-	align-items: flex-start;
-	justify-content: space-between;
-	gap: 1rem;
-}
-
-.mapHeader > div {
-	min-width: 0;
-	display: grid;
-	gap: 0.28rem;
-}
-
-.mapHeader span,
-.mapHeader a {
-	display: inline-flex;
-	align-items: center;
-	gap: 0.42rem;
-}
-
-.mapHeader span {
-	width: fit-content;
-	color: #02006c;
-	font-size: 0.72rem;
-	font-weight: 850;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
-}
-
-.mapHeader h2 {
-	margin: 0;
-	color: #17171f;
-	font-size: clamp(0.9rem, 4.5vw, 1.25rem);
-	font-weight: 880;
-	line-height: 1.08;
-	letter-spacing: 0;
-}
-
-.mapHeader a {
-	flex: 0 0 auto;
-	min-height: 2.65rem;
-	padding: 0 0.9rem;
-	border: 1px solid rgba(2, 0, 108, 0.12);
-	border-radius: 999px;
-	background: rgba(2, 0, 108, 0.06);
-	color: #02006c;
-	font-size: 0.76rem;
-	font-weight: 820;
-	text-decoration: none;
-	transition:
-		background 180ms ease,
-		border-color 180ms ease,
-		transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.mapHeader a:hover {
-	border-color: rgba(2, 0, 108, 0.24);
-	background: rgba(2, 0, 108, 0.1);
-	transform: translateY(-1px);
-}
-
-.mapCanvas {
-	position: relative;
-	min-height: clamp(22rem, 42vw, 31rem);
-	overflow: hidden;
-	border: 1px solid rgba(2, 0, 108, 0.1);
-	border-radius: 1.25rem;
-	background: #eef0f6;
-}
-
-.mapViewport {
-	width: 100%;
-	height: 100%;
-	min-height: inherit;
-	overflow: hidden;
-	border-radius: inherit;
-	background: #eef0f6;
-	cursor: grab;
-}
-
-.mapViewport:active {
-	cursor: grabbing;
-}
-
-.mapViewport :global(.maplibregl-canvas),
-.mapViewport :global(.maplibregl-canvas-container),
-.mapViewport :global(.maplibregl-map) {
-	border-radius: inherit;
-}
-
-.mapControls {
-	top: 0.9rem;
-	right: 0.9rem;
-	z-index: 5;
-}
-
-.mapControls :global(button) {
-	color: #02006c;
-	cursor: pointer;
-}
-
-.markerPortal {
-	pointer-events: auto;
-}
-
-.locationMarker {
-	width: 3.15rem;
-	height: 3.15rem;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	border: 0.28rem solid rgba(255, 255, 255, 0.86);
-	border-radius: 999px;
-	background: #02006c;
-	color: #ffffff;
-	box-shadow:
-		0 0.85rem 1.8rem rgba(2, 0, 108, 0.34),
-		0 0 0 0.35rem rgba(2, 0, 108, 0.12);
-}
-
-.locationMarker[data-approximate="true"] {
-	border-style: dashed;
-	background: #ffffff;
-	color: #02006c;
-	box-shadow:
-		0 0.85rem 1.8rem rgba(2, 0, 108, 0.22),
-		0 0 0 0.45rem rgba(2, 0, 108, 0.1);
-}
-
-.locationMarker svg {
-	width: 1.25rem;
-	height: 1.25rem;
-}
-
-.mapApproximateNote {
-	position: absolute;
-	right: 1rem;
-	bottom: 1rem;
-	left: 1rem;
-	z-index: 5;
-	max-width: 32rem;
-	display: inline-flex;
-	align-items: center;
-	gap: 0.52rem;
-	padding: 0.72rem 0.85rem;
-	border: 1px solid rgba(2, 0, 108, 0.12);
-	border-radius: 1rem;
-	background: rgba(255, 255, 255, 0.92);
-	color: rgba(23, 23, 31, 0.68);
-	font-size: 0.78rem;
-	font-weight: 680;
-	line-height: 1.35;
-	box-shadow: 0 0.9rem 2rem rgba(16, 22, 33, 0.12);
-	backdrop-filter: blur(16px);
-}
-
-.mapApproximateNote svg {
-	width: 1.05rem;
-	height: 1.05rem;
-	flex: 0 0 auto;
-	color: #02006c;
-}
-
-.mapUnavailable {
-	height: 100%;
-	min-height: inherit;
-	display: grid;
-	place-items: center;
-	align-content: center;
-	gap: 0.75rem;
-	padding: 2rem;
-	text-align: center;
-	background:
-		radial-gradient(
-			circle at 50% 30%,
-			rgba(2, 0, 108, 0.08),
-			transparent 14rem
-		),
-		linear-gradient(
-			135deg,
-			rgba(255, 255, 255, 0.92),
-			rgba(238, 240, 246, 0.86)
-		);
-}
-
-.mapUnavailable svg {
-	width: 2.4rem;
-	height: 2.4rem;
-	color: #02006c;
-}
-
-.mapUnavailable strong {
-	color: #17171f;
-	font-size: 1rem;
-	font-weight: 860;
-}
-
-.mapUnavailable p {
-	max-width: 28rem;
-	margin: 0;
-	color: rgba(23, 23, 31, 0.62);
-	font-size: 0.84rem;
-	line-height: 1.55;
-}
-
-.priceLine {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: baseline;
-	gap: 0.35rem;
-}
-
-.priceLine strong {
-	color: #17171f;
-	font-size: 1.55rem;
-	font-weight: 880;
-	text-decoration: underline;
-	text-underline-offset: 0.16rem;
-}
-
-.priceLine small {
-	color: rgba(23, 23, 31, 0.62);
-	font-size: 0.9rem;
-	font-weight: 650;
-}
-
-.datePreview {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	overflow: hidden;
-	border: 1px solid rgba(23, 23, 31, 0.78);
-	border-radius: 1rem;
-	background: #ffffff;
-}
-
-.datePreview div {
-	display: grid;
-	gap: 0.18rem;
-	padding: 0.75rem 0.85rem;
-}
-
-.datePreview div + div {
-	border-left: 1px solid rgba(23, 23, 31, 0.18);
-}
-
-.datePreview span {
-	color: #17171f;
-	font-size: 0.66rem;
-	font-weight: 850;
-	letter-spacing: 0.06em;
-	text-transform: uppercase;
-}
-
-.datePreview strong {
-	color: #17171f;
-	font-size: 0.84rem;
-	font-weight: 650;
-}
-
-.rangeSummary {
-	margin: 0;
-	color: rgba(23, 23, 31, 0.62);
-	font-size: 0.82rem;
-	line-height: 1.55;
-}
-
-.reserveButton,
-.loginPrompt {
-	min-height: var(--pluto-button-height);
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	gap: 0.45rem;
-	border-radius: 999px;
-	font-size: 0.75rem;
-	font-weight: 740;
-	text-decoration: none;
-}
-
-.reserveButton {
-	width: 100%;
-	background: #02006c;
-	color: #ffffff;
-	box-shadow: 0 1rem 2.2rem rgba(2, 0, 108, 0.22);
-}
-
-.loginPrompt {
-	width: 100%;
-	border: 1px solid rgba(2, 0, 108, 0.14);
-	background: rgba(2, 0, 108, 0.06);
-	color: #02006c;
-	font-family: inherit;
-	cursor: pointer;
-	transition:
-		background 180ms ease,
-		border-color 180ms ease,
-		transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.loginPrompt:hover {
-	border-color: rgba(2, 0, 108, 0.26);
-	background: rgba(2, 0, 108, 0.1);
-	transform: translateY(-1px);
-}
-
-.statePanel {
-	justify-items: center;
-	gap: 0.8rem;
-	padding: 3rem 1rem;
-	text-align: center;
-}
-
-.statePanel h1 {
-	margin: 0;
-	font-size: 2rem;
-}
-
-.statePanel p {
-	max-width: 28rem;
-	margin: 0;
-	color: rgba(23, 23, 31, 0.62);
-	line-height: 1.6;
-}
-
-.statePanel div {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: center;
-	gap: 0.65rem;
-}
-
-.statePanel a {
-	min-height: var(--pluto-button-height);
-	display: inline-flex;
-	align-items: center;
-	gap: 0.45rem;
-	padding: 0 1rem;
-	border: 1px solid rgba(2, 0, 108, 0.12);
-	border-radius: 999px;
-	color: #02006c;
-	font-size: 0.84rem;
-	font-weight: 850;
-	text-decoration: none;
-}
-
-.skeletonBackLink,
-.skeletonEyebrow,
 .skeletonTitle,
 .skeletonLocation,
 .skeletonMetric,
@@ -748,27 +348,10 @@
 .skeletonIcon,
 .skeletonMiniLine,
 .skeletonFeatureTitle,
-.skeletonDateText,
-.skeletonDateValue,
-.skeletonPrice,
-.skeletonReserveButton,
-.skeletonChargeNote,
 .skeletonReviewScore,
 .skeletonReviewLine,
-.skeletonReviewLineShort,
-.skeletonMap {
+.skeletonReviewLineShort {
 	border-radius: 999px;
-}
-
-.skeletonBackLink {
-	width: 8.4rem;
-	height: 2.4rem;
-}
-
-.skeletonEyebrow {
-	width: 12rem;
-	height: 2.25rem;
-	margin-top: 1rem;
 }
 
 .skeletonTitle {
@@ -888,16 +471,6 @@
 	height: 0.9rem;
 }
 
-.skeletonDateText {
-	width: min(20rem, 100%);
-	height: 1rem;
-}
-
-.skeletonDateValue {
-	width: 6.2rem;
-	height: 0.9rem;
-}
-
 .skeletonReviewPanel {
 	display: grid;
 	gap: 1.1rem;
@@ -946,34 +519,10 @@
 	height: 0.8rem;
 }
 
-.skeletonMap {
-	min-height: clamp(22rem, 42vw, 31rem);
-	border-radius: 1.25rem;
-}
-
-.skeletonPrice {
-	width: 11rem;
-	height: 2rem;
-}
-
-.skeletonReserveButton {
-	width: 100%;
-	height: var(--pluto-button-height);
-}
-
-.skeletonChargeNote {
-	width: 72%;
-	height: 0.85rem;
-}
-
 @media (max-width: 1120px) {
 	.hero,
 	.layout {
 		grid-template-columns: 1fr;
-	}
-
-	.sidebar {
-		position: static;
 	}
 }
 
@@ -1011,7 +560,6 @@
 	.tabs,
 	.factGrid,
 	.amenityGrid,
-	.datePreview,
 	.skeletonReviewMetrics,
 	.skeletonReviewList {
 		grid-template-columns: 1fr;
@@ -1028,8 +576,6 @@
 
 	.galleryPanel,
 	.storyPanel,
-	.mapSection,
-	.bookingPanel,
 	.skeletonReviewPanel {
 		border-radius: 1.2rem;
 	}
@@ -1038,36 +584,9 @@
 		border-radius: 1.25rem;
 	}
 
-	.datePreview div + div {
-		border-top: 1px solid rgba(23, 23, 31, 0.18);
-		border-left: 0;
-	}
-
-	.mapHeader {
-		display: grid;
-	}
-
-	.mapHeader a {
-		width: 100%;
-		justify-content: center;
-	}
-
-	.mapApproximateNote {
-		right: 0.7rem;
-		bottom: 0.7rem;
-		left: 0.7rem;
-		max-width: none;
-	}
-
 	.skeletonGalleryButtonLeft,
 	.skeletonGalleryButtonRight {
 		width: 2.35rem;
 		height: 2.35rem;
-	}
-
-	.statePanel div,
-	.statePanel button,
-	.statePanel a {
-		width: 100%;
 	}
 }
