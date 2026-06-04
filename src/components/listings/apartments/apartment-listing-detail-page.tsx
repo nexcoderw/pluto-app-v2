@@ -825,7 +825,7 @@ function ApartmentListingDetailError({ onRetry }: { onRetry: () => void }) {
 				</p>
 				<div>
 					<Button type="button" onClick={onRetry}>
-						<RefreshCcw aria-hidden="true" />
+						<RefreshCcw aria-hidden="true" className="rounded-full" />
 						Retry
 					</Button>
 					<Link href="/listings/apartments">
