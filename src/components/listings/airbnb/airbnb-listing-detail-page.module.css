@@ -117,7 +117,6 @@
 
 .galleryPanel,
 .storyPanel,
-.datePlanner,
 .mapSection,
 .bookingPanel,
 .statePanel,
@@ -649,94 +648,11 @@
 	font-weight: 650;
 }
 
-.datePlanner {
-	display: grid;
-	gap: 1rem;
-	padding: clamp(0.9rem, 2.4vw, 1.15rem);
-}
-
-.datePlannerHeader {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) minmax(18rem, 24rem);
-	gap: clamp(0.9rem, 2vw, 1.15rem);
-	align-items: end;
-}
-
-.datePlannerHeader > div:first-child {
-	display: grid;
-	gap: 0.35rem;
-}
-
-.datePlannerHeader span {
-	width: fit-content;
-	display: inline-flex;
-	align-items: center;
-	gap: 0.42rem;
-	color: #02006c;
-	font-size: 0.72rem;
-	font-weight: 850;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
-}
-
-.datePlannerHeader p,
 .rangeSummary {
 	margin: 0;
 	color: rgba(23, 23, 31, 0.62);
 	font-size: 0.82rem;
 	line-height: 1.55;
-}
-
-.calendarShell {
-	overflow-x: auto;
-	padding: 0.75rem;
-	border: 1px solid rgba(2, 0, 108, 0.1);
-	border-radius: 1.25rem;
-	background: #ffffff;
-	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
-}
-
-.calendar {
-	width: 100%;
-	min-width: 42rem;
-	--cell-size: 2.25rem;
-	--cell-radius: 999px;
-}
-
-.calendar :global(.rdp-months) {
-	width: 100%;
-	justify-content: space-between;
-	gap: 0.9rem;
-}
-
-.calendar :global(.rdp-month) {
-	flex: 1;
-}
-
-.calendar button {
-	cursor: pointer;
-}
-
-.clearDatesButton {
-	width: fit-content;
-	min-height: 2.4rem;
-	margin-left: auto;
-	padding: 0 0.9rem;
-	border: 1px solid rgba(2, 0, 108, 0.1);
-	border-radius: 999px;
-	background: rgba(2, 0, 108, 0.04);
-	color: #02006c;
-	font-size: 0.76rem;
-	font-weight: 820;
-	cursor: pointer;
-	transition:
-		background 180ms ease,
-		border-color 180ms ease;
-}
-
-.clearDatesButton:hover {
-	border-color: rgba(2, 0, 108, 0.2);
-	background: rgba(2, 0, 108, 0.08);
 }
 
 .reserveButton,
@@ -834,11 +750,9 @@
 .skeletonFeatureTitle,
 .skeletonDateText,
 .skeletonDateValue,
-.skeletonClearDates,
 .skeletonPrice,
 .skeletonReserveButton,
 .skeletonChargeNote,
-.skeletonMonthTitle,
 .skeletonReviewScore,
 .skeletonReviewLine,
 .skeletonReviewLineShort,
@@ -984,45 +898,6 @@
 	height: 0.9rem;
 }
 
-.skeletonCalendar {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 1rem;
-}
-
-.skeletonMonth {
-	display: grid;
-	gap: 0.85rem;
-}
-
-.skeletonMonthTitle {
-	width: 8rem;
-	height: 1rem;
-	margin-inline: auto;
-}
-
-.skeletonWeekdays,
-.skeletonDays {
-	display: grid;
-	grid-template-columns: repeat(7, minmax(0, 1fr));
-	gap: 0.42rem;
-}
-
-.skeletonWeekdays div {
-	height: 0.55rem;
-}
-
-.skeletonDays div {
-	aspect-ratio: 1;
-	border-radius: 999px;
-}
-
-.skeletonClearDates {
-	width: 7rem;
-	height: 2.4rem;
-	margin-left: auto;
-}
-
 .skeletonReviewPanel {
 	display: grid;
 	gap: 1.1rem;
@@ -1118,19 +993,6 @@
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 
-	.calendar :global(.rdp-months) {
-		flex-direction: column;
-	}
-
-	.datePlannerHeader,
-	.skeletonCalendar {
-		grid-template-columns: 1fr;
-	}
-
-	.calendar {
-		min-width: 0;
-	}
-
 	.skeletonReviewMetrics {
 		grid-template-columns: repeat(3, minmax(0, 1fr));
 	}
@@ -1166,7 +1028,6 @@
 
 	.galleryPanel,
 	.storyPanel,
-	.datePlanner,
 	.mapSection,
 	.bookingPanel,
 	.skeletonReviewPanel {
@@ -1180,10 +1041,6 @@
 	.datePreview div + div {
 		border-top: 1px solid rgba(23, 23, 31, 0.18);
 		border-left: 0;
-	}
-
-	.calendarShell {
-		padding: 0.5rem;
 	}
 
 	.mapHeader {
@@ -1206,11 +1063,6 @@
 	.skeletonGalleryButtonRight {
 		width: 2.35rem;
 		height: 2.35rem;
-	}
-
-	.skeletonWeekdays,
-	.skeletonDays {
-		gap: 0.28rem;
 	}
 
 	.statePanel div,
