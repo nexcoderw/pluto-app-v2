@@ -52,7 +52,14 @@
 	text-align: center;
 }
 
-.scoreHero strong {
+.scoreMark {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: clamp(0.15rem, 1vw, 0.55rem);
+}
+
+.scoreMark strong {
 	display: inline-flex;
 	align-items: center;
 	gap: 0.4rem;
@@ -85,7 +92,6 @@
 .laurel {
 	width: clamp(2.05rem, 6vw, 3.55rem);
 	height: auto;
-	margin-inline: clamp(-0.7rem, -1.4vw, -0.25rem);
 	object-fit: contain;
 	filter: drop-shadow(0 0.55rem 0.9rem rgba(16, 22, 33, 0.12));
 	user-select: none;
