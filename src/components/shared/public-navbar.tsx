@@ -4,18 +4,14 @@ import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useState, useSyncExternalStore, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import { LogIn, Menu, Power, Search, UserPlus, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { useUserSession } from "@/hooks/use-user-session";
 import { getUserPortalPath } from "@/lib/user-portal";
 import { logoutUser, type UserAuthProfile } from "@/services/api/auth";
-import {
-	getCachedPartnerProfileStatus,
-	getCachedUserProfile,
-	hasKnownUserSession,
-	subscribeToUserSession,
-} from "@/services/api/token-store";
+import { getCachedPartnerProfileStatus } from "@/services/api/token-store";
 import styles from "./public-navbar.module.css";
 
 const navigationLinks = [
@@ -31,11 +27,7 @@ export function PublicNavbar() {
 	const [isOpen, setIsOpen] = useState(false);
 	const [search, setSearch] = useState("");
 	const [isLoggingOut, setIsLoggingOut] = useState(false);
-	const currentUser = useSyncExternalStore(
-		(onStoreChange) => subscribeToUserSession(() => onStoreChange()),
-		getUserSessionSnapshot,
-		() => null,
-	);
+	const currentUser = useUserSession();
 	const userPortalPath = currentUser
 		? getUserPortalPath(currentUser, getCachedPartnerProfileStatus())
 		: "/login";
@@ -249,8 +241,4 @@ function getUserInitials(value: string) {
 	const [first = "P", second = "B"] = value.trim().split(/\s+/).filter(Boolean);
 
 	return `${first.charAt(0)}${second.charAt(0)}`.toUpperCase();
-}
-
-function getUserSessionSnapshot() {
-	return hasKnownUserSession() ? getCachedUserProfile() : null;
 }
