@@ -1,6 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import {
+	useMemo,
+	useState,
+	useSyncExternalStore,
+	type CSSProperties,
+} from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -10,20 +15,26 @@ import {
 	Building2,
 	CalendarCheck,
 	CheckCircle2,
-	ImageIcon,
+	DoorOpen,
+	Home,
 	MapPin,
 	RefreshCcw,
 	ShieldCheck,
 	Users,
-	Wifi,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import type { UserAuthProfile } from "@/services/api/auth";
 import {
 	getApartmentListing,
 	type PublicListing,
 } from "@/services/api/listings";
+import {
+	getCachedUserProfile,
+	hasKnownUserSession,
+	subscribeToUserSession,
+} from "@/services/api/token-store";
 import {
 	formatBoolean,
 	formatMoney,
@@ -31,7 +42,16 @@ import {
 	formatPricingUnit,
 	getListingCoverImage,
 } from "../listing-formatters";
+import { ApartmentReviewSection } from "./apartment-review-section";
 import styles from "./apartment-listing-detail-page.module.css";
+
+type ApartmentDetailTab = "overview" | "amenities" | "location";
+
+const detailTabs: Array<{ value: ApartmentDetailTab; label: string }> = [
+	{ value: "overview", label: "Overview" },
+	{ value: "amenities", label: "Amenities" },
+	{ value: "location", label: "Location" },
+];
 
 export function ApartmentListingDetailPage({
 	listingId,
@@ -57,12 +77,16 @@ export function ApartmentListingDetailPage({
 }
 
 function ApartmentListingDetail({ listing }: { listing: PublicListing }) {
-	const coverImage = getListingCoverImage(listing);
-	const [activeImage, setActiveImage] = useState(
-		coverImage?.file.publicUrl ?? null,
+	const [activeTab, setActiveTab] = useState<ApartmentDetailTab>("overview");
+	const gallery = useMemo(() => buildGallery(listing), [listing]);
+	const [activeImageId, setActiveImageId] = useState(
+		gallery[0]?.id ?? "fallback",
 	);
-	const heroImage = activeImage ?? coverImage?.file.publicUrl ?? null;
+	const activeImage =
+		gallery.find((image) => image.id === activeImageId) ?? gallery[0];
 	const details = listing.apartmentDetails;
+	const locationLabel =
+		listing.location?.addressLine ?? `${listing.city}, ${listing.country}`;
 	const facts = useMemo(
 		() => [
 			{
@@ -81,205 +105,278 @@ function ApartmentListingDetail({ listing }: { listing: PublicListing }) {
 				icon: Users,
 			},
 			{
-				label: "Kitchens",
-				value: details ? String(details.kitchens) : "Not listed",
-				icon: Building2,
-			},
-			{
-				label: "WiFi",
-				value: details ? formatBoolean(details.wifi) : "Not listed",
-				icon: Wifi,
-			},
-			{
-				label: "Furnished",
-				value: details ? formatBoolean(details.furnished) : "Not listed",
-				icon: CheckCircle2,
+				label: "Living rooms",
+				value: details ? String(details.livingRooms) : "Not listed",
+				icon: Home,
 			},
 		],
 		[details],
 	);
-	const comforts = [
-		{
-			label: "Parking",
-			value: details ? formatBoolean(details.parking) : "Not listed",
-		},
-		{
-			label: "Balcony",
-			value: details ? formatBoolean(details.hasBalcony) : "Not listed",
-		},
-		{
-			label: "Security",
-			value: details ? formatBoolean(details.hasSecurity) : "Not listed",
-		},
+	const amenities = [
+		{ label: "Furnished", value: formatBoolean(Boolean(details?.furnished)) },
+		{ label: "WiFi", value: formatBoolean(Boolean(details?.wifi)) },
+		{ label: "Parking", value: formatBoolean(Boolean(details?.parking)) },
+		{ label: "Balcony", value: formatBoolean(Boolean(details?.hasBalcony)) },
+		{ label: "Security", value: formatBoolean(Boolean(details?.hasSecurity)) },
 		{ label: "Floor", value: formatOptional(details?.floorNumber) },
 	];
 
 	return (
 		<main className={styles.page}>
-			<header className={styles.header}>
-				<div>
+			<header className={styles.hero}>
+				<div className={styles.heroCopy}>
 					<Link href="/listings/apartments" className={styles.backLink}>
 						<ArrowLeft aria-hidden="true" />
 						Back to apartments
 					</Link>
 					<span className={styles.eyebrow}>
 						<Building2 aria-hidden="true" />
-						Verified apartment
+						Verified apartment stay
 					</span>
 					<h1>{listing.title}</h1>
 					<p>
 						<MapPin aria-hidden="true" />
-						{listing.location?.addressLine ??
-							`${listing.city}, ${listing.country}`}
+						{locationLabel}
 					</p>
 				</div>
-				<div className={styles.pricePanel}>
-					<span>Starting from</span>
-					<strong>{formatMoney(listing.basePrice, listing.currency)}</strong>
-					<small>per {formatPricingUnit(listing.pricingUnit)}</small>
+				<div className={styles.heroMetrics} aria-label="Apartment highlights">
+					<span>
+						<strong>{details?.bedrooms ?? "..."}</strong>
+						Bedrooms
+					</span>
+					<span>
+						<strong>{details?.maxGuests ?? "..."}</strong>
+						Guests
+					</span>
+					<span>
+						<strong>
+							{listing.ratingAverage ? listing.ratingAverage.toFixed(1) : "New"}
+						</strong>
+						Rating
+					</span>
 				</div>
 			</header>
 
 			<section className={styles.layout}>
 				<div className={styles.mainColumn}>
-					<section className={styles.gallery}>
-						<div className={styles.heroImage}>
-							{heroImage ? (
-								<Image
-									src={heroImage}
-									alt={coverImage?.altText ?? listing.title}
-									fill
-									sizes="(max-width: 900px) 100vw, 62vw"
-									priority
-								/>
-							) : (
-								<span>
-									<ImageIcon aria-hidden="true" />
-									Image coming soon
-								</span>
-							)}
+					<section className={styles.galleryPanel}>
+						<div className={styles.primaryImage}>
+							<Image
+								src={activeImage.src}
+								alt={activeImage.alt}
+								fill
+								sizes="(max-width: 900px) 100vw, 64vw"
+								priority
+							/>
 						</div>
-						{listing.images.length > 1 ? (
-							<div className={styles.thumbnails}>
-								{listing.images.map((image) => {
-									const imageUrl = image.file.publicUrl;
+						<div className={styles.galleryRail}>
+							{gallery.slice(0, 5).map((image) => (
+								<button
+									key={image.id}
+									type="button"
+									data-active={image.id === activeImage.id}
+									onClick={() => setActiveImageId(image.id)}
+								>
+									<Image src={image.src} alt={image.alt} fill sizes="8rem" />
+								</button>
+							))}
+						</div>
+					</section>
 
-									return (
-										<button
-											key={image.id}
-											type="button"
-											disabled={!imageUrl}
-											data-active={imageUrl === heroImage}
-											onClick={() => imageUrl && setActiveImage(imageUrl)}
-										>
-											{imageUrl ? (
-												<Image
-													src={imageUrl}
-													alt={image.altText ?? listing.title}
-													fill
-													sizes="8rem"
-												/>
-											) : (
-												<ImageIcon aria-hidden="true" />
-											)}
-										</button>
-									);
-								})}
-							</div>
+					<section className={styles.storyPanel}>
+						<div
+							className={styles.tabs}
+							role="tablist"
+							aria-label="Apartment details"
+						>
+							{detailTabs.map((tab) => (
+								<button
+									key={tab.value}
+									type="button"
+									role="tab"
+									aria-selected={activeTab === tab.value}
+									data-active={activeTab === tab.value}
+									onClick={() => setActiveTab(tab.value)}
+								>
+									{tab.label}
+								</button>
+							))}
+						</div>
+
+						{activeTab === "overview" ? (
+							<section className={styles.tabPanel}>
+								<div className={styles.sectionHeader}>
+									<span>Apartment overview</span>
+									<h2>Designed for comfortable stays in {listing.city}</h2>
+								</div>
+								<p>
+									{listing.description ??
+										listing.shortDescription ??
+										"This approved Pluto Booking apartment is ready for customer review."}
+								</p>
+								<div className={styles.factGrid}>
+									{facts.map((fact) => (
+										<div key={fact.label} className={styles.factItem}>
+											<fact.icon aria-hidden="true" />
+											<span>{fact.label}</span>
+											<strong>{fact.value}</strong>
+										</div>
+									))}
+								</div>
+							</section>
+						) : null}
+
+						{activeTab === "amenities" ? (
+							<section className={styles.tabPanel}>
+								<div className={styles.sectionHeader}>
+									<span>Apartment setup</span>
+									<h2>Useful details before you reserve</h2>
+								</div>
+								<div className={styles.amenityGrid}>
+									{amenities.map((amenity) => (
+										<div key={amenity.label}>
+											<CheckCircle2 aria-hidden="true" />
+											<span>{amenity.label}</span>
+											<strong>{amenity.value}</strong>
+										</div>
+									))}
+								</div>
+							</section>
+						) : null}
+
+						{activeTab === "location" ? (
+							<section className={styles.tabPanel}>
+								<div className={styles.sectionHeader}>
+									<span>Location</span>
+									<h2>{locationLabel}</h2>
+								</div>
+								<div className={styles.locationPanel}>
+									<div>
+										<MapPin aria-hidden="true" />
+										<strong>{listing.city}</strong>
+										<span>{listing.country}</span>
+									</div>
+									<p>
+										The exact apartment address and arrival instructions should
+										be confirmed through Pluto Booking before check-in.
+									</p>
+								</div>
+							</section>
 						) : null}
 					</section>
 
-					<section className={styles.descriptionPanel}>
-						<div className={styles.sectionHeader}>
-							<span>Overview</span>
-							<h2>Apartment experience</h2>
-						</div>
-						<p>
-							{listing.description ??
-								listing.shortDescription ??
-								"This approved Pluto Booking apartment is ready for customer review."}
-						</p>
-					</section>
-
-					<section className={styles.factsPanel}>
-						<div className={styles.sectionHeader}>
-							<span>Apartment details</span>
-							<h2>Space and amenities</h2>
-						</div>
-						<div className={styles.factGrid}>
-							{facts.map((fact) => (
-								<div key={fact.label} className={styles.factItem}>
-									<fact.icon aria-hidden="true" />
-									<span>{fact.label}</span>
-									<strong>{fact.value}</strong>
-								</div>
-							))}
-						</div>
-					</section>
-
-					<section className={styles.policyPanel}>
-						<div className={styles.sectionHeader}>
-							<span>Comfort</span>
-							<h2>Included setup</h2>
-						</div>
-						<div className={styles.policyGrid}>
-							{comforts.map((comfort) => (
-								<div key={comfort.label}>
-									<span>{comfort.label}</span>
-									<strong>{comfort.value}</strong>
-								</div>
-							))}
-						</div>
-					</section>
+					<ApartmentReviewSection listing={listing} />
 				</div>
 
-				<aside className={styles.sidebar}>
-					<section className={styles.bookingPanel}>
-						<span>
-							<CalendarCheck aria-hidden="true" />
-							Ready for booking
-						</span>
-						<h2>{formatMoney(listing.basePrice, listing.currency)}</h2>
-						<p>per {formatPricingUnit(listing.pricingUnit)}</p>
-						<Link href="/login">
-							Sign in to book
-							<CalendarCheck aria-hidden="true" />
-						</Link>
-					</section>
-
-					<section className={styles.partnerPanel}>
-						<span>
-							<ShieldCheck aria-hidden="true" />
-							Verified partner
-						</span>
-						<strong>{listing.owner.fullName}</strong>
-						<p>
-							This partner completed Pluto Booking review before publishing this
-							apartment.
-						</p>
-					</section>
-				</aside>
+				<ApartmentBookingSidebar listing={listing} />
 			</section>
 		</main>
 	);
 }
 
+function ApartmentBookingSidebar({ listing }: { listing: PublicListing }) {
+	const currentUser = useSyncExternalStore(
+		(onStoreChange) => subscribeToUserSession(() => onStoreChange()),
+		getUserSessionSnapshot,
+		() => null,
+	);
+	const partnerInitials = getInitials(listing.owner.fullName);
+	const partnerImageStyle =
+		listing.owner.imageKey && listing.owner.imageKey.startsWith("http")
+			? ({
+					"--partner-avatar-image": `url("${listing.owner.imageKey}")`,
+				} as CSSProperties)
+			: undefined;
+
+	return (
+		<aside className={styles.sidebar}>
+			<section className={styles.bookingPanel}>
+				<span>
+					<CalendarCheck aria-hidden="true" />
+					Apartment booking
+				</span>
+				<div className={styles.priceLine}>
+					<strong>{formatMoney(listing.basePrice, listing.currency)}</strong>
+					<small>per {formatPricingUnit(listing.pricingUnit)}</small>
+				</div>
+				<div className={styles.datePreview}>
+					<div>
+						<span>Check-in</span>
+						<strong>Add date</strong>
+					</div>
+					<div>
+						<span>Checkout</span>
+						<strong>Add date</strong>
+					</div>
+				</div>
+				{currentUser ? (
+					<Button type="button" className={styles.reserveButton}>
+						<DoorOpen aria-hidden="true" />
+						Reserve apartment
+					</Button>
+				) : (
+					<Link href="/login" className={styles.loginPrompt}>
+						Sign in to reserve
+						<DoorOpen aria-hidden="true" />
+					</Link>
+				)}
+				<p>You will review the final booking details before paying.</p>
+			</section>
+
+			<section className={styles.partnerPanel}>
+				<span>
+					<ShieldCheck aria-hidden="true" />
+					Verified partner
+				</span>
+				<div className={styles.partnerIdentity}>
+					<i
+						className={styles.partnerAvatar}
+						data-has-image={Boolean(partnerImageStyle)}
+						style={partnerImageStyle}
+						aria-hidden="true"
+					>
+						{partnerImageStyle ? null : partnerInitials}
+					</i>
+					<strong>{listing.owner.fullName}</strong>
+				</div>
+				<p>This partner completed Pluto Booking review before publishing.</p>
+			</section>
+		</aside>
+	);
+}
+
 function ApartmentListingDetailSkeleton() {
 	return (
-		<main className={styles.page}>
-			<Link href="/listings/apartments" className={styles.backLink}>
-				<ArrowLeft aria-hidden="true" />
-				Back to apartments
-			</Link>
+		<main className={styles.page} aria-busy="true">
+			<header className={styles.hero}>
+				<div className={styles.heroCopy}>
+					<Skeleton className={styles.skeletonBackLink} />
+					<Skeleton className={styles.skeletonEyebrow} />
+					<Skeleton className={styles.skeletonTitle} />
+					<Skeleton className={styles.skeletonLocation} />
+				</div>
+				<div className={styles.heroMetrics}>
+					<Skeleton className={styles.skeletonMetric} />
+					<Skeleton className={styles.skeletonMetric} />
+					<Skeleton className={styles.skeletonMetric} />
+				</div>
+			</header>
 			<section className={styles.layout}>
 				<div className={styles.mainColumn}>
-					<Skeleton className={styles.skeletonHero} />
-					<Skeleton className={styles.skeletonLine} />
-					<Skeleton className={styles.skeletonText} />
-					<Skeleton className={styles.skeletonText} />
+					<section className={styles.galleryPanel}>
+						<Skeleton className={styles.skeletonHeroImage} />
+						<div className={styles.galleryRail}>
+							{Array.from({ length: 5 }).map((_, index) => (
+								<Skeleton key={index} className={styles.skeletonThumb} />
+							))}
+						</div>
+					</section>
+					<Skeleton className={styles.skeletonPanel} />
+					<Skeleton className={styles.skeletonPanelLarge} />
 				</div>
 				<aside className={styles.sidebar}>
-					<Skeleton className={styles.skeletonPanel} />
+					<Skeleton className={styles.skeletonBooking} />
+					<Skeleton className={styles.skeletonPartner} />
 				</aside>
 			</section>
 		</main>
@@ -309,4 +406,41 @@ function ApartmentListingDetailError({ onRetry }: { onRetry: () => void }) {
 			</section>
 		</main>
 	);
+}
+
+function buildGallery(listing: PublicListing) {
+	const coverImage = getListingCoverImage(listing);
+	const images = listing.images
+		.filter((image) => Boolean(image.file.publicUrl))
+		.map((image) => ({
+			id: image.id,
+			src: image.file.publicUrl ?? "/hero/hero.jpg",
+			alt: image.altText ?? listing.title,
+		}));
+
+	if (!images.length) {
+		return [
+			{
+				id: "fallback",
+				src: "/hero/hero.jpg",
+				alt: "Pluto Booking apartment",
+			},
+		];
+	}
+
+	return images.sort((first, second) => {
+		if (first.id === coverImage?.id) return -1;
+		if (second.id === coverImage?.id) return 1;
+		return 0;
+	});
+}
+
+function getUserSessionSnapshot(): UserAuthProfile | null {
+	return hasKnownUserSession() ? getCachedUserProfile() : null;
+}
+
+function getInitials(value: string) {
+	const [first = "P", second = "B"] = value.trim().split(/\s+/).filter(Boolean);
+
+	return `${first.charAt(0)}${second.charAt(0)}`.toUpperCase();
 }
