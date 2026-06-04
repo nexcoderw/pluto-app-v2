@@ -21,6 +21,7 @@ import styles from "./account-profile-page.module.css";
 type ProfileImagePanelProps = {
   user: UserAuthProfile;
   onUserUpdated: (user: UserAuthProfile) => void;
+  variant?: "panel" | "sidebar";
 };
 
 const maxProfileImageSize = 5_000_000;
@@ -28,6 +29,7 @@ const maxProfileImageSize = 5_000_000;
 export function ProfileImagePanel({
   user,
   onUserUpdated,
+  variant = "panel",
 }: ProfileImagePanelProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -93,7 +95,7 @@ export function ProfileImagePanel({
   }
 
   return (
-    <section className={styles.imagePanel}>
+    <section className={styles.imagePanel} data-variant={variant}>
       <div className={styles.avatarStage}>
         <span
           className={styles.profileAvatar}
@@ -124,10 +126,7 @@ export function ProfileImagePanel({
           Profile image
         </span>
         <h2>{user.fullName}</h2>
-        <p>
-          Use a clear image so partners can recognize the customer attached to a
-          booking request.
-        </p>
+        <p>Keep a clear photo attached to your booking identity.</p>
       </div>
 
       <input
