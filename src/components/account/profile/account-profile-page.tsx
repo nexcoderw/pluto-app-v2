@@ -1,7 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import type { CSSProperties } from "react";
 import {
+  Camera,
+  ChevronRight,
+  KeyRound,
   MailCheck,
   Phone,
   ShieldCheck,
@@ -17,7 +21,36 @@ import { getCustomerPortalNavigation } from "@/components/account/account-portal
 import type { UserAuthProfile } from "@/services/api/auth";
 import { ProfileDetailsForm } from "./profile-details-form";
 import { ProfileImagePanel } from "./profile-image-panel";
+import { ProfilePasswordForm } from "./profile-password-form";
 import styles from "./account-profile-page.module.css";
+
+type ProfileTab = "details" | "image" | "security";
+
+const profileTabs: Array<{
+  id: ProfileTab;
+  label: string;
+  description: string;
+  icon: LucideIcon;
+}> = [
+  {
+    id: "details",
+    label: "Profile details",
+    description: "Name, email, and phone",
+    icon: UserRound,
+  },
+  {
+    id: "image",
+    label: "Profile image",
+    description: "Customer identity photo",
+    icon: Camera,
+  },
+  {
+    id: "security",
+    label: "Password",
+    description: "Secure account access",
+    icon: KeyRound,
+  },
+];
 
 export function AccountProfilePage() {
   return (
@@ -29,6 +62,7 @@ export function AccountProfilePage() {
 
 function AccountProfileWorkspace({ user }: { user: UserAuthProfile }) {
   const [profile, setProfile] = useState(user);
+  const [activeTab, setActiveTab] = useState<ProfileTab>("details");
   const metrics = buildProfileMetrics(profile);
 
   return (
@@ -44,8 +78,71 @@ function AccountProfileWorkspace({ user }: { user: UserAuthProfile }) {
       metrics={metrics}
     >
       <section className={styles.profileLayout}>
-        <ProfileImagePanel user={profile} onUserUpdated={setProfile} />
-        <ProfileDetailsForm user={profile} onUserUpdated={setProfile} />
+        <aside
+          className={styles.tabsSidebar}
+          aria-label="Profile settings tabs"
+        >
+          <div className={styles.tabsHeader}>
+            <span
+              className={styles.tabsAvatar}
+              data-has-image={Boolean(profile.imageUrl)}
+              style={
+                profile.imageUrl
+                  ? ({
+                      "--account-avatar-image": `url("${profile.imageUrl}")`,
+                    } as CSSProperties)
+                  : undefined
+              }
+              aria-hidden="true"
+            >
+              {profile.imageUrl ? null : initialsFromName(profile.fullName)}
+            </span>
+            <div>
+              <strong>{profile.fullName}</strong>
+              <small>{profile.email}</small>
+            </div>
+          </div>
+
+          <div
+            className={styles.tabsList}
+            role="tablist"
+            aria-orientation="vertical"
+          >
+            {profileTabs.map((tab) => {
+              const Icon = tab.icon;
+              const selected = activeTab === tab.id;
+
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={selected}
+                  className={styles.tabButton}
+                  data-active={selected}
+                  onClick={() => setActiveTab(tab.id)}
+                >
+                  <Icon aria-hidden="true" />
+                  <span>
+                    <strong>{tab.label}</strong>
+                    <small>{tab.description}</small>
+                  </span>
+                  <ChevronRight aria-hidden="true" />
+                </button>
+              );
+            })}
+          </div>
+        </aside>
+
+        <div className={styles.tabContent} role="tabpanel">
+          {activeTab === "details" ? (
+            <ProfileDetailsForm user={profile} onUserUpdated={setProfile} />
+          ) : null}
+          {activeTab === "image" ? (
+            <ProfileImagePanel user={profile} onUserUpdated={setProfile} />
+          ) : null}
+          {activeTab === "security" ? <ProfilePasswordForm /> : null}
+        </div>
       </section>
     </PortalShell>
   );
