@@ -34,8 +34,15 @@ import type { Swiper as SwiperInstance } from "swiper";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useQuery } from "@tanstack/react-query";
+import type { StyleSpecification } from "maplibre-gl";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import {
+	Map,
+	MapControls,
+	MapMarker,
+	MarkerContent,
+} from "@/components/ui/map";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { UserAuthProfile } from "@/services/api/auth";
 import {
@@ -57,13 +64,46 @@ import { ListingLoginDialog } from "../listing-login-dialog";
 import { ApartmentReviewSection } from "./apartment-review-section";
 import styles from "./apartment-listing-detail-page.module.css";
 
-type ApartmentDetailTab = "overview" | "amenities" | "location";
+type ApartmentDetailTab = "overview" | "amenities";
 
 const detailTabs: Array<{ value: ApartmentDetailTab; label: string }> = [
 	{ value: "overview", label: "Overview" },
 	{ value: "amenities", label: "Amenities" },
-	{ value: "location", label: "Location" },
 ];
+
+const kigaliCenter: [number, number] = [30.0619, -1.9441];
+const apartmentDetailMapStyle: StyleSpecification = {
+	version: 8,
+	sources: {
+		"osm-street-raster": {
+			type: "raster",
+			tiles: ["/api/map-tiles/osm/{z}/{x}/{y}"],
+			tileSize: 256,
+			attribution: "© OpenStreetMap contributors",
+		},
+	},
+	layers: [
+		{
+			id: "street-map-background",
+			type: "background",
+			paint: {
+				"background-color": "#eef0f6",
+			},
+		},
+		{
+			id: "osm-street-raster",
+			type: "raster",
+			source: "osm-street-raster",
+			minzoom: 0,
+			maxzoom: 20,
+			paint: {
+				"raster-opacity": 0.96,
+				"raster-saturation": -0.18,
+				"raster-contrast": 0.06,
+			},
+		},
+	],
+};
 
 export function ApartmentListingDetailPage({
 	listingId,
@@ -301,25 +341,6 @@ function ApartmentListingDetail({ listing }: { listing: PublicListing }) {
 							</section>
 						) : null}
 
-						{activeTab === "location" ? (
-							<section className={styles.tabPanel}>
-								<div className={styles.sectionHeader}>
-									<span>Location</span>
-									<h2>{locationLabel}</h2>
-								</div>
-								<div className={styles.locationPanel}>
-									<div>
-										<MapPin aria-hidden="true" />
-										<strong>{listing.city}</strong>
-										<span>{listing.country}</span>
-									</div>
-									<p>
-										The exact apartment address and arrival instructions should
-										be confirmed through Pluto Booking before check-in.
-									</p>
-								</div>
-							</section>
-						) : null}
 					</section>
 
 					<ApartmentDatePlanner
@@ -332,6 +353,11 @@ function ApartmentListingDetail({ listing }: { listing: PublicListing }) {
 					/>
 
 					<ApartmentReviewSection listing={listing} />
+
+					<ApartmentLocationMap
+						listing={listing}
+						locationLabel={locationLabel}
+					/>
 				</div>
 
 				<ApartmentBookingSidebar
@@ -344,6 +370,84 @@ function ApartmentListingDetail({ listing }: { listing: PublicListing }) {
 				/>
 			</section>
 		</main>
+	);
+}
+
+function ApartmentLocationMap({
+	listing,
+	locationLabel,
+}: {
+	listing: PublicListing;
+	locationLabel: string;
+}) {
+	const latitude = Number(listing.location?.latitude);
+	const longitude = Number(listing.location?.longitude);
+	const hasExactPosition = isValidCoordinatePair(longitude, latitude);
+	const mapCenter: [number, number] = hasExactPosition
+		? [longitude, latitude]
+		: kigaliCenter;
+	const directionsUrl = hasExactPosition
+		? `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`
+		: null;
+
+	return (
+		<section className={styles.mapSection} aria-label="Apartment map location">
+			<div className={styles.mapHeader}>
+				<div>
+					<span>
+						<MapPin aria-hidden="true" />
+						Map location
+					</span>
+					<h2>{locationLabel}</h2>
+				</div>
+				{directionsUrl ? (
+					<a href={directionsUrl} target="_blank" rel="noreferrer">
+						<MapPin aria-hidden="true" />
+						Open directions
+					</a>
+				) : null}
+			</div>
+
+			<div className={styles.mapCanvas} data-exact={hasExactPosition}>
+				{hasExactPosition ? (
+					<Map
+						className={styles.mapViewport}
+						center={mapCenter}
+						zoom={14.2}
+						pitch={22}
+						bearing={-4}
+						theme="light"
+						styles={{
+							light: apartmentDetailMapStyle,
+							dark: apartmentDetailMapStyle,
+						}}
+					>
+						<MapControls
+							position="top-right"
+							showCompass
+							showFullscreen
+							className={styles.mapControls}
+						/>
+						<MapMarker longitude={longitude} latitude={latitude}>
+							<MarkerContent className={styles.markerPortal}>
+								<span className={styles.locationMarker}>
+									<MapPin aria-hidden="true" />
+								</span>
+							</MarkerContent>
+						</MapMarker>
+					</Map>
+				) : (
+					<div className={styles.mapUnavailable}>
+						<MapPin aria-hidden="true" />
+						<strong>Map coordinates unavailable</strong>
+						<p>
+							The partner has not attached exact coordinates to this apartment
+							yet. Confirm arrival details before check-in.
+						</p>
+					</div>
+				)}
+			</div>
+		</section>
 	);
 }
 
@@ -719,6 +823,17 @@ function buildGallery(listing: PublicListing) {
 
 function getUserSessionSnapshot(): UserAuthProfile | null {
 	return hasKnownUserSession() ? getCachedUserProfile() : null;
+}
+
+function isValidCoordinatePair(longitude: number, latitude: number) {
+	return (
+		Number.isFinite(latitude) &&
+		Number.isFinite(longitude) &&
+		latitude >= -90 &&
+		latitude <= 90 &&
+		longitude >= -180 &&
+		longitude <= 180
+	);
 }
 
 function getInitials(value: string) {
