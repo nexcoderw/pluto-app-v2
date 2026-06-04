@@ -344,10 +344,6 @@
   gap: 0.45rem;
 }
 
-.field:first-child {
-  grid-column: 1 / -1;
-}
-
 .field > span {
   color: rgba(23, 23, 31, 0.72);
   font-size: 0.78rem;
@@ -381,6 +377,16 @@
   background: rgba(254, 242, 242, 0.9);
 }
 
+.readonlyField {
+  border-color: rgba(2, 0, 108, 0.08) !important;
+  background: rgba(2, 0, 108, 0.055) !important;
+}
+
+.readonlyField input {
+  color: rgba(23, 23, 31, 0.72);
+  cursor: default;
+}
+
 .field svg {
   width: 1rem;
   height: 1rem;
@@ -407,6 +413,88 @@
   color: #b91c1c;
   font-size: 0.74rem;
   font-weight: 760;
+}
+
+.phoneInputShell {
+  grid-template-columns: auto auto auto minmax(0, 1fr) !important;
+  gap: 0.55rem !important;
+  padding-left: 0.55rem !important;
+}
+
+.countryCodeTrigger {
+  width: auto;
+  min-width: 6.85rem;
+  height: 2.52rem;
+  padding: 0 0.72rem;
+  border: 1px solid rgba(2, 0, 108, 0.1);
+  border-radius: 999px;
+  background: rgba(2, 0, 108, 0.06);
+  color: #02006c;
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.countryCodeTrigger:hover {
+  background: rgba(2, 0, 108, 0.09);
+}
+
+.countryCodeTrigger span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.36rem;
+  min-width: 0;
+}
+
+.countryCodeTrigger span span {
+  color: rgba(2, 0, 108, 0.58);
+  font-size: 0.68rem;
+  font-weight: 850;
+}
+
+.countryCodeTrigger strong {
+  color: #02006c;
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.phoneDivider {
+  width: 1px;
+  height: 1.55rem;
+  background: rgba(2, 0, 108, 0.14);
+}
+
+.countryCodeMenu {
+  max-height: 18rem;
+  min-width: 17rem;
+  border: 1px solid rgba(2, 0, 108, 0.1);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 1.3rem 3rem rgba(16, 22, 33, 0.16);
+  backdrop-filter: blur(20px);
+}
+
+.countryOption {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 4rem 1fr auto;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.countryOption strong {
+  color: #02006c;
+  font-size: 0.78rem;
+}
+
+.countryOption span {
+  color: #17171f;
+  font-size: 0.78rem;
+}
+
+.countryOption small {
+  color: rgba(23, 23, 31, 0.46);
+  font-size: 0.68rem;
+  font-weight: 800;
 }
 
 .formFooter {
@@ -519,5 +607,27 @@
 
   .saveButton {
     width: 100%;
+  }
+
+  .phoneInputShell {
+    grid-template-columns: 1fr auto !important;
+    gap: 0.45rem !important;
+    padding: 0.45rem !important;
+    border-radius: 1.35rem !important;
+  }
+
+  .phoneInputShell > svg,
+  .phoneDivider {
+    display: none;
+  }
+
+  .countryCodeTrigger {
+    width: 100%;
+  }
+
+  .phoneInputShell input {
+    grid-column: 1 / -1;
+    width: 100%;
+    padding: 0 0.65rem;
   }
 }
