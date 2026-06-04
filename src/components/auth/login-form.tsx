@@ -50,7 +50,19 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
-export function LoginForm() {
+type LoginFormProps = {
+	title?: string;
+	description?: string;
+	successDescription?: string;
+	onSuccess?: (response: Awaited<ReturnType<typeof loginUser>>) => void;
+};
+
+export function LoginForm({
+	title = 'Welcome back',
+	description = 'Sign in to manage bookings, favorites, partner listings, and account details.',
+	successDescription = 'Your Pluto Booking session is ready.',
+	onSuccess,
+}: LoginFormProps = {}) {
 	const router = useRouter();
 	const [showPassword, setShowPassword] = useState(false);
 	const [modalError, setModalError] = useState<string | null>(null);
@@ -79,11 +91,15 @@ export function LoginForm() {
 			loginUser({
 				...values,
 				deviceName,
-			}),
+		}),
 		onSuccess: (response) => {
 			toast.success(response.message, {
-				description: 'Your Pluto Booking session is ready.',
+				description: successDescription,
 			});
+			if (onSuccess) {
+				onSuccess(response);
+				return;
+			}
 			router.replace(
 				response.user.requiresPhoneNumber ? '/complete-phone' : '/',
 			);
@@ -145,11 +161,8 @@ export function LoginForm() {
 				noValidate
 			>
 				<div className={styles.headingBlock}>
-					<h1>Welcome back</h1>
-					<p>
-						Sign in to manage bookings, favorites, partner listings, and account
-						details.
-					</p>
+					<h1>{title}</h1>
+					<p>{description}</p>
 				</div>
 
 				<div className={styles.fieldGroup}>
