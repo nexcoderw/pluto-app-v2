@@ -290,6 +290,22 @@
 	background-color: rgba(2, 0, 108, 0.12);
 }
 
+@media (max-width: 720px) {
+	.card {
+		border-radius: 1.2rem;
+	}
+
+	.media,
+	.emptyMedia {
+		min-height: clamp(13.5rem, 58vw, 18rem);
+	}
+
+	.body {
+		gap: 0.85rem;
+		padding: 0.95rem;
+	}
+}
+
 @media (max-width: 520px) {
 	.heading {
 		grid-template-columns: 1fr;
