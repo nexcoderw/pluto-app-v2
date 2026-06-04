@@ -17,7 +17,10 @@ import {
 } from "./airbnb/airbnb-listing-card";
 import { AirbnbListingsSidebar } from "./airbnb/airbnb-listings-sidebar";
 import { airbnbFilters } from "./airbnb/filters";
-import { ApartmentListingCard } from "./apartments/apartment-listing-card";
+import {
+	ApartmentListingCard,
+	ApartmentListingCardSkeleton,
+} from "./apartments/apartment-listing-card";
 import { ApartmentListingsSidebar } from "./apartments/apartment-listings-sidebar";
 import { apartmentFilters } from "./apartments/filters";
 import {
@@ -80,6 +83,9 @@ const categoryConfigs = {
 		filterPresentation: "dialog",
 		renderSidebar: (sidebarProps) => (
 			<ApartmentListingsSidebar {...sidebarProps} variant="dialog" />
+		),
+		renderSkeletonCard: (index) => (
+			<ApartmentListingCardSkeleton key={index} />
 		),
 		renderCard: (listing, detailHref, index) => (
 			<ApartmentListingCard
