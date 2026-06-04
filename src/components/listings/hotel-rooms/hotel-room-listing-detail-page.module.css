@@ -24,8 +24,7 @@
 .backLink,
 .eyebrow,
 .heroCopy p,
-.bookingPanel > span,
-.partnerPanel > span {
+.bookingPanel > span {
 	display: inline-flex;
 	align-items: center;
 	gap: 0.42rem;
@@ -121,7 +120,6 @@
 .datePlanner,
 .mapSection,
 .bookingPanel,
-.partnerPanel,
 .statePanel,
 .skeletonReviewPanel {
 	border: 1px solid rgba(255, 255, 255, 0.74);
@@ -297,8 +295,7 @@
 }
 
 .tabPanel,
-.bookingPanel,
-.partnerPanel {
+.bookingPanel {
 	display: grid;
 	gap: 1rem;
 }
@@ -313,8 +310,7 @@
 }
 
 .sectionHeader span,
-.bookingPanel > span,
-.partnerPanel > span {
+.bookingPanel > span {
 	color: #02006c;
 	font-size: 0.72rem;
 	font-weight: 850;
@@ -331,8 +327,7 @@
 }
 
 .tabPanel p,
-.bookingPanel p,
-.partnerPanel p {
+.bookingPanel p {
 	margin: 0;
 	color: rgba(23, 23, 31, 0.62);
 	font-size: 0.84rem;
@@ -377,8 +372,7 @@
 	font-weight: 820;
 }
 
-.bookingPanel,
-.partnerPanel {
+.bookingPanel {
 	padding: 1rem;
 }
 
@@ -420,7 +414,7 @@
 .mapHeader h2 {
 	margin: 0;
 	color: #17171f;
-	font-size: clamp(1.2rem, 3vw, 1.75rem);
+	font-size: clamp(0.9rem, 4.5vw, 1.25rem);
 	font-weight: 880;
 	line-height: 1.08;
 	letter-spacing: 0;
@@ -776,43 +770,6 @@
 	transform: translateY(-1px);
 }
 
-.partnerIdentity {
-	display: grid;
-	grid-template-columns: auto minmax(0, 1fr);
-	gap: 0.7rem;
-	align-items: center;
-}
-
-.partnerAvatar {
-	width: 3rem;
-	height: 3rem;
-	display: grid;
-	place-items: center;
-	overflow: hidden;
-	border-radius: 999px;
-	background:
-		var(--partner-avatar-image, none) center / cover no-repeat,
-		#02006c;
-	color: #ffffff;
-	font-size: 0.82rem;
-	font-style: normal;
-	font-weight: 880;
-	line-height: 1;
-	text-align: center;
-	text-transform: uppercase;
-	white-space: nowrap;
-}
-
-.partnerIdentity strong {
-	min-width: 0;
-	overflow: hidden;
-	color: #17171f;
-	font-size: 0.92rem;
-	font-weight: 860;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
 .statePanel {
 	justify-items: center;
 	gap: 0.8rem;
@@ -873,7 +830,6 @@
 .skeletonPrice,
 .skeletonReserveButton,
 .skeletonChargeNote,
-.skeletonPartnerName,
 .skeletonMonthTitle,
 .skeletonReviewScore,
 .skeletonReviewLine,
@@ -1127,17 +1083,6 @@
 	height: 0.85rem;
 }
 
-.skeletonAvatar {
-	width: 3rem;
-	height: 3rem;
-	border-radius: 999px;
-}
-
-.skeletonPartnerName {
-	width: 70%;
-	height: 1rem;
-}
-
 @media (max-width: 1120px) {
 	.hero,
 	.layout {
@@ -1216,7 +1161,6 @@
 	.datePlanner,
 	.mapSection,
 	.bookingPanel,
-	.partnerPanel,
 	.skeletonReviewPanel {
 		border-radius: 1.2rem;
 	}
