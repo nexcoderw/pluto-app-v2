@@ -1,22 +1,29 @@
 .page {
 	min-height: calc(100vh - 8rem);
 	display: grid;
-	gap: clamp(1.2rem, 3vw, 2rem);
-	padding: clamp(1.5rem, 4vw, 3.5rem) max(1rem, calc((100vw - 80rem) / 2));
-	background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), #f6f7fb);
+	gap: clamp(1.1rem, 3vw, 2rem);
+	padding: clamp(1.2rem, 3vw, 2.5rem) max(1rem, calc((100vw - 82rem) / 2))
+		clamp(2.5rem, 5vw, 4rem);
+	background:
+		radial-gradient(circle at 9% 4%, rgba(2, 0, 108, 0.08), transparent 28rem),
+		linear-gradient(180deg, #ffffff, #f6f7fb 62%, #f8f9fc);
 	color: #17171f;
 }
 
-.header {
+.hero {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) auto;
 	gap: 1rem;
 	align-items: end;
 }
 
+.heroCopy {
+	min-width: 0;
+}
+
 .backLink,
 .eyebrow,
-.header p,
+.heroCopy p,
 .bookingPanel span,
 .partnerPanel span {
 	display: inline-flex;
@@ -27,14 +34,15 @@
 .backLink {
 	width: fit-content;
 	min-height: 2.4rem;
-	padding: 0 0.8rem;
+	padding: 0 0.85rem;
 	border: 1px solid rgba(2, 0, 108, 0.12);
 	border-radius: 999px;
-	background: rgba(255, 255, 255, 0.82);
+	background: rgba(255, 255, 255, 0.86);
 	color: #02006c;
 	font-size: 0.76rem;
 	font-weight: 840;
 	text-decoration: none;
+	box-shadow: 0 0.7rem 1.6rem rgba(16, 22, 33, 0.06);
 }
 
 .eyebrow {
@@ -43,7 +51,7 @@
 	margin-top: 1rem;
 	padding: 0 0.9rem;
 	border-radius: 999px;
-	background: rgba(2, 0, 108, 0.08);
+	background: rgba(2, 0, 108, 0.07);
 	color: #02006c;
 	font-size: 0.74rem;
 	font-weight: 850;
@@ -51,62 +59,49 @@
 	text-transform: uppercase;
 }
 
-.header h1 {
-	max-width: 54rem;
-	margin: 0.8rem 0 0.45rem;
+.heroCopy h1 {
+	max-width: 58rem;
+	margin: 0.85rem 0 0.45rem;
 	color: #17171f;
-	font-size: clamp(2rem, 5vw, 4rem);
-	font-weight: 840;
-	line-height: 1;
+	font-size: clamp(2.05rem, 5vw, 4.35rem);
+	font-weight: 880;
+	line-height: 0.98;
 	letter-spacing: 0;
 }
 
-.header p {
+.heroCopy p {
 	margin: 0;
 	color: rgba(23, 23, 31, 0.62);
 	font-size: 0.95rem;
 	font-weight: 760;
 }
 
-.pricePanel,
-.descriptionPanel,
-.factsPanel,
-.policyPanel,
-.bookingPanel,
-.partnerPanel,
-.statePanel {
-	border: 1px solid rgba(255, 255, 255, 0.74);
-	border-radius: 1.45rem;
-	background: rgba(255, 255, 255, 0.76);
-	box-shadow: 0 1.5rem 4rem rgba(16, 22, 33, 0.08);
-	backdrop-filter: blur(18px);
+.heroStats {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: 0.45rem;
+	max-width: 22rem;
 }
 
-.pricePanel {
-	min-width: 14rem;
-	display: grid;
-	gap: 0.15rem;
-	padding: 1rem 1.1rem;
-	text-align: right;
-}
-
-.pricePanel span,
-.pricePanel small {
-	color: rgba(23, 23, 31, 0.56);
+.heroStats span {
+	min-height: 2.25rem;
+	display: inline-flex;
+	align-items: center;
+	padding: 0 0.82rem;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.82);
+	color: #17171f;
 	font-size: 0.76rem;
-	font-weight: 760;
-}
-
-.pricePanel strong {
-	color: #02006c;
-	font-size: 1.5rem;
-	line-height: 1;
+	font-weight: 780;
+	box-shadow: 0 0.7rem 1.6rem rgba(16, 22, 33, 0.05);
 }
 
 .layout {
 	display: grid;
-	grid-template-columns: minmax(0, 1fr) minmax(17rem, 22rem);
-	gap: 1rem;
+	grid-template-columns: minmax(0, 1fr) minmax(22rem, 27rem);
+	gap: clamp(1rem, 2vw, 1.35rem);
 	align-items: start;
 }
 
@@ -121,62 +116,161 @@
 	top: 5.2rem;
 }
 
-.gallery {
-	display: grid;
-	gap: 0.7rem;
+.gallerySection,
+.contentPanel,
+.bookingPanel,
+.partnerPanel,
+.priceNotice,
+.statePanel {
+	border: 1px solid rgba(255, 255, 255, 0.74);
+	border-radius: 1.6rem;
+	background: rgba(255, 255, 255, 0.82);
+	box-shadow: 0 1.6rem 4.5rem rgba(16, 22, 33, 0.1);
+	backdrop-filter: blur(18px);
 }
 
-.heroImage {
-	position: relative;
-	min-height: clamp(22rem, 56vw, 34rem);
+.gallerySection {
 	overflow: hidden;
-	border-radius: 1.65rem;
-	background: rgba(2, 0, 108, 0.08);
-	box-shadow: 0 1.8rem 5rem rgba(16, 22, 33, 0.12);
+	padding: 0.55rem;
 }
 
-.heroImage img,
-.thumbnails img {
+.swiper {
+	position: relative;
+	overflow: hidden;
+	border-radius: 1.25rem;
+}
+
+.swiper :global(.swiper-wrapper) {
+	display: flex;
+}
+
+.swiper :global(.swiper-slide) {
+	position: relative;
+	flex-shrink: 0;
+	width: 100%;
+}
+
+.slideImage {
+	position: relative;
+	min-height: clamp(24rem, 56vw, 37rem);
+	overflow: hidden;
+	background: rgba(2, 0, 108, 0.08);
+}
+
+.slideImage img {
 	object-fit: cover;
 }
 
-.heroImage > span {
-	min-height: clamp(22rem, 56vw, 34rem);
+.swiper :global(.swiper-button-prev),
+.swiper :global(.swiper-button-next) {
+	position: absolute;
+	top: 50%;
+	z-index: 3;
+	width: 2.7rem;
+	height: 2.7rem;
 	display: grid;
 	place-items: center;
-	gap: 0.5rem;
+	border: 1px solid rgba(255, 255, 255, 0.78);
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.9);
 	color: #02006c;
-	font-weight: 850;
-}
-
-.thumbnails {
-	display: grid;
-	grid-template-columns: repeat(5, minmax(0, 1fr));
-	gap: 0.55rem;
-}
-
-.thumbnails button {
-	position: relative;
-	min-height: 5.5rem;
-	overflow: hidden;
-	border: 2px solid transparent;
-	border-radius: 1rem;
-	background: rgba(2, 0, 108, 0.08);
+	box-shadow: 0 0.8rem 1.8rem rgba(16, 22, 33, 0.14);
 	cursor: pointer;
+	transform: translateY(-50%);
 }
 
-.thumbnails button[data-active="true"] {
-	border-color: #02006c;
+.swiper :global(.swiper-button-prev) {
+	left: 0.85rem;
 }
 
-.descriptionPanel,
-.factsPanel,
-.policyPanel,
-.bookingPanel,
-.partnerPanel {
+.swiper :global(.swiper-button-next) {
+	right: 0.85rem;
+}
+
+.swiper :global(.swiper-button-prev)::after,
+.swiper :global(.swiper-button-next)::after {
+	font-size: 0.8rem;
+	font-weight: 900;
+}
+
+.swiper :global(.swiper-pagination) {
+	position: absolute;
+	left: 50%;
+	bottom: 0.95rem;
+	z-index: 3;
+	display: inline-flex;
+	gap: 0.35rem;
+	padding: 0.4rem 0.55rem;
+	border-radius: 999px;
+	background: rgba(23, 23, 31, 0.36);
+	backdrop-filter: blur(14px);
+	transform: translateX(-50%);
+}
+
+.swiper :global(.swiper-pagination-bullet) {
+	width: 0.42rem;
+	height: 0.42rem;
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.62);
+	opacity: 1;
+	cursor: pointer;
+	transition:
+		width 180ms ease,
+		background 180ms ease;
+}
+
+.swiper :global(.swiper-pagination-bullet-active) {
+	width: 1.1rem;
+	background: #ffffff;
+}
+
+.contentPanel {
 	display: grid;
 	gap: 1rem;
-	padding: 1rem;
+	padding: clamp(0.85rem, 2vw, 1rem);
+}
+
+.tabs {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 0.45rem;
+	padding: 0.35rem;
+	border: 1px solid rgba(2, 0, 108, 0.08);
+	border-radius: 999px;
+	background: rgba(2, 0, 108, 0.04);
+}
+
+.tabs button {
+	min-height: 2.65rem;
+	border: 0;
+	border-radius: 999px;
+	background: transparent;
+	color: rgba(23, 23, 31, 0.62);
+	font-size: 0.82rem;
+	font-weight: 820;
+	cursor: pointer;
+	transition:
+		background 180ms ease,
+		color 180ms ease,
+		box-shadow 180ms ease;
+}
+
+.tabs button[data-active="true"] {
+	background: #02006c;
+	color: #ffffff;
+	box-shadow: 0 0.9rem 1.8rem rgba(2, 0, 108, 0.18);
+}
+
+.tabPanel,
+.bookingPanel,
+.partnerPanel,
+.priceNotice {
+	display: grid;
+	gap: 1rem;
+}
+
+.tabPanel {
+	padding: 0.35rem;
 }
 
 .sectionHeader {
@@ -185,8 +279,7 @@
 }
 
 .sectionHeader span,
-.bookingPanel span,
-.partnerPanel span {
+.bookingPanel span {
 	color: #02006c;
 	font-size: 0.72rem;
 	font-weight: 850;
@@ -194,77 +287,261 @@
 	text-transform: uppercase;
 }
 
-.sectionHeader h2,
-.bookingPanel h2,
-.partnerPanel strong {
+.sectionHeader h2 {
 	margin: 0;
 	color: #17171f;
-	font-size: 1.2rem;
-	font-weight: 860;
+	font-size: clamp(1.35rem, 2.5vw, 1.8rem);
+	font-weight: 880;
+	line-height: 1.05;
 }
 
-.descriptionPanel p,
-.partnerPanel p,
+.tabPanel p,
 .bookingPanel p {
 	margin: 0;
 	color: rgba(23, 23, 31, 0.62);
-	line-height: 1.6;
+	line-height: 1.65;
 }
 
+.quickGrid,
 .factGrid,
-.policyGrid {
+.policyGrid,
+.reviewGrid {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
 	gap: 0.7rem;
 }
 
+.quickGrid div,
 .factItem,
-.policyGrid div {
-	min-height: 7rem;
+.policyGrid div,
+.reviewGrid div {
+	min-height: 7.1rem;
 	display: grid;
 	align-content: space-between;
 	gap: 0.55rem;
-	padding: 0.85rem;
+	padding: 0.88rem;
 	border: 1px solid rgba(2, 0, 108, 0.08);
 	border-radius: 1.1rem;
-	background: rgba(255, 255, 255, 0.7);
+	background: rgba(255, 255, 255, 0.74);
 }
 
-.factItem svg {
+.quickGrid svg,
+.factItem svg,
+.reviewGrid svg {
 	color: #02006c;
 }
 
+.quickGrid span,
 .factItem span,
-.policyGrid span {
+.policyGrid span,
+.reviewGrid span {
 	color: rgba(23, 23, 31, 0.54);
 	font-size: 0.72rem;
 	font-weight: 760;
 }
 
+.quickGrid strong,
 .factItem strong,
-.policyGrid strong {
+.policyGrid strong,
+.reviewGrid strong {
 	color: #17171f;
 	font-size: 0.92rem;
 	font-weight: 850;
 }
 
-.bookingPanel h2 {
-	color: #02006c;
-	font-size: 1.65rem;
+.priceNotice {
+	grid-template-columns: auto minmax(0, 1fr);
+	align-items: center;
+	padding: 0.9rem 1rem;
+	border-radius: 1.25rem;
 }
 
-.bookingPanel a {
+.priceNotice svg {
+	width: 1.2rem;
+	height: 1.2rem;
+	color: #168a49;
+}
+
+.priceNotice span {
+	color: #17171f;
+	font-size: 0.84rem;
+	font-weight: 700;
+	line-height: 1.35;
+}
+
+.bookingPanel {
+	padding: 1rem;
+}
+
+.priceLine {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 0.35rem;
+}
+
+.priceLine strong {
+	color: #17171f;
+	font-size: 1.45rem;
+	font-weight: 850;
+	text-decoration: underline;
+	text-underline-offset: 0.16rem;
+}
+
+.priceLine span {
+	color: rgba(23, 23, 31, 0.72);
+	font-size: 0.92rem;
+	font-weight: 650;
+	text-transform: none;
+	letter-spacing: 0;
+}
+
+.dateSummary h2 {
+	margin: 0;
+	color: #17171f;
+	font-size: 1.12rem;
+	font-weight: 850;
+}
+
+.dateSummary p {
+	margin-top: 0.25rem;
+	font-size: 0.82rem;
+}
+
+.dateFields {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	overflow: hidden;
+	border: 1px solid rgba(23, 23, 31, 0.78);
+	border-radius: 1rem;
+	background: #ffffff;
+}
+
+.dateFields div {
+	display: grid;
+	gap: 0.18rem;
+	padding: 0.75rem 0.85rem;
+}
+
+.dateFields div + div {
+	border-left: 1px solid rgba(23, 23, 31, 0.18);
+}
+
+.dateFields span {
+	color: #17171f;
+	font-size: 0.66rem;
+	font-weight: 850;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+}
+
+.dateFields strong {
+	color: #17171f;
+	font-size: 0.84rem;
+	font-weight: 650;
+}
+
+.calendarShell {
+	overflow: hidden;
+	padding: 0.65rem;
+	border: 1px solid rgba(2, 0, 108, 0.08);
+	border-radius: 1.2rem;
+	background: #ffffff;
+}
+
+.calendar {
+	width: 100%;
+	--cell-size: 2rem;
+	--cell-radius: 999px;
+}
+
+.calendar :global(.rdp-months) {
+	width: 100%;
+	justify-content: space-between;
+	gap: 0.9rem;
+}
+
+.calendar :global(.rdp-month) {
+	flex: 1;
+}
+
+.calendar button {
+	cursor: pointer;
+}
+
+.clearDatesButton {
+	width: fit-content;
+	margin-left: auto;
+	border: 0;
+	background: transparent;
+	color: rgba(23, 23, 31, 0.78);
+	font-size: 0.76rem;
+	font-weight: 760;
+	cursor: pointer;
+	text-decoration: underline;
+	text-underline-offset: 0.18rem;
+}
+
+.bookButton,
+.loginPrompt {
 	min-height: var(--pluto-button-height);
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 	gap: 0.45rem;
 	border-radius: 999px;
-	background: #02006c;
-	color: white;
-	font-size: 0.84rem;
+	font-size: 0.86rem;
 	font-weight: 850;
 	text-decoration: none;
+}
+
+.bookButton {
+	width: 100%;
+	background: #02006c;
+	color: #ffffff;
+	box-shadow: 0 1rem 2.2rem rgba(2, 0, 108, 0.22);
+}
+
+.loginPrompt {
+	border: 1px solid rgba(2, 0, 108, 0.14);
+	background: rgba(2, 0, 108, 0.06);
+	color: #02006c;
+}
+
+.chargeNote {
+	text-align: center;
+	font-size: 0.8rem;
+	font-weight: 650;
+}
+
+.partnerPanel {
+	grid-template-columns: auto minmax(0, 1fr);
+	align-items: center;
+	padding: 0.9rem 1rem;
+}
+
+.partnerAvatar {
+	width: 3rem;
+	height: 3rem;
+	display: grid;
+	place-items: center;
+	border-radius: 999px;
+	background:
+		var(--partner-avatar-image, none) center / cover no-repeat,
+		#02006c;
+	color: #ffffff;
+	font-size: 0.82rem;
+	font-weight: 880;
+}
+
+.partnerPanel strong {
+	min-width: 0;
+	overflow: hidden;
+	color: #17171f;
+	font-size: 0.92rem;
+	font-weight: 850;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .statePanel {
@@ -324,24 +601,38 @@
 }
 
 .skeletonPanel {
-	min-height: 18rem;
+	min-height: 24rem;
 	border-radius: 1.45rem;
 }
 
-@media (max-width: 980px) {
-	.header,
-	.layout,
-	.factGrid,
-	.policyGrid {
+@media (max-width: 1120px) {
+	.layout {
 		grid-template-columns: 1fr;
-	}
-
-	.pricePanel {
-		text-align: left;
 	}
 
 	.sidebar {
 		position: static;
+	}
+}
+
+@media (max-width: 820px) {
+	.hero {
+		grid-template-columns: 1fr;
+	}
+
+	.heroStats {
+		justify-content: flex-start;
+	}
+
+	.quickGrid,
+	.factGrid,
+	.policyGrid,
+	.reviewGrid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.calendar :global(.rdp-months) {
+		flex-direction: column;
 	}
 }
 
@@ -350,8 +641,26 @@
 		padding-inline: 0.7rem;
 	}
 
-	.thumbnails {
-		grid-template-columns: repeat(3, minmax(0, 1fr));
+	.slideImage {
+		min-height: 20rem;
+	}
+
+	.tabs {
+		grid-template-columns: 1fr;
+		border-radius: 1.25rem;
+	}
+
+	.quickGrid,
+	.factGrid,
+	.policyGrid,
+	.reviewGrid,
+	.dateFields {
+		grid-template-columns: 1fr;
+	}
+
+	.dateFields div + div {
+		border-top: 1px solid rgba(23, 23, 31, 0.18);
+		border-left: 0;
 	}
 
 	.statePanel div,
