@@ -53,6 +53,7 @@ import {
 	formatOptional,
 	getListingCoverImage,
 } from "../listing-formatters";
+import { ListingLoginDialog } from "../listing-login-dialog";
 import { ApartmentReviewSection } from "./apartment-review-section";
 import styles from "./apartment-listing-detail-page.module.css";
 
@@ -428,6 +429,7 @@ function ApartmentBookingSidebar({
 	totalPrice: number;
 	formattedRange: string;
 }) {
+	const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
 	const currentUser = useSyncExternalStore(
 		(onStoreChange) => subscribeToUserSession(() => onStoreChange()),
 		getUserSessionSnapshot,
@@ -480,10 +482,14 @@ function ApartmentBookingSidebar({
 						Reserve apartment
 					</Button>
 				) : (
-					<Link href="/login" className={styles.loginPrompt}>
+					<button
+						type="button"
+						className={styles.loginPrompt}
+						onClick={() => setIsLoginDialogOpen(true)}
+					>
 						Sign in to reserve
 						<DoorOpen aria-hidden="true" />
-					</Link>
+					</button>
 				)}
 				<p>You will review the final booking details before paying.</p>
 			</section>
@@ -506,6 +512,11 @@ function ApartmentBookingSidebar({
 				</div>
 				<p>This partner completed Pluto Booking review before publishing.</p>
 			</section>
+			<ListingLoginDialog
+				open={isLoginDialogOpen}
+				onOpenChange={setIsLoginDialogOpen}
+				listingTitle={listing.title}
+			/>
 		</aside>
 	);
 }
