@@ -1,4 +1,4 @@
-import { useMemo, useSyncExternalStore } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { MessageCircle, RefreshCcw, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,7 @@ import type { PublicListing } from "@/services/api/listings";
 import { CarReviewCard } from "./car-review-card";
 import { CarReviewForm } from "./car-review-form";
 import { CarReviewSummary } from "./car-review-summary";
+import { CarReviewsDialog } from "./car-reviews-dialog";
 import styles from "./car-review-section.module.css";
 
 const reviewsQueryKey = (listingId: string) =>
@@ -27,6 +28,9 @@ const summaryQueryKey = (listingId: string) =>
 
 export function CarReviewSection({ listing }: { listing: PublicListing }) {
 	const queryClient = useQueryClient();
+	const [focusedReviewId, setFocusedReviewId] = useState<string>();
+	const [isReviewsDialogOpen, setIsReviewsDialogOpen] = useState(false);
+	const [reviewsDialogKey, setReviewsDialogKey] = useState(0);
 	const currentUser = useSyncExternalStore(
 		(onStoreChange) => subscribeToUserSession(() => onStoreChange()),
 		getUserSessionSnapshot,
@@ -113,7 +117,15 @@ export function CarReviewSection({ listing }: { listing: PublicListing }) {
 			) : reviews.length > 0 ? (
 				<div className={styles.reviewList}>
 					{reviews.map((review: ListingReview) => (
-						<CarReviewCard key={review.id} review={review} />
+						<CarReviewCard
+							key={review.id}
+							review={review}
+							onShowMore={(selectedReview) => {
+								setFocusedReviewId(selectedReview.id);
+								setReviewsDialogKey((current) => current + 1);
+								setIsReviewsDialogOpen(true);
+							}}
+						/>
 					))}
 				</div>
 			) : (
@@ -126,6 +138,14 @@ export function CarReviewSection({ listing }: { listing: PublicListing }) {
 					</p>
 				</div>
 			)}
+
+			<CarReviewsDialog
+				key={reviewsDialogKey}
+				listingId={listing.id}
+				focusedReviewId={focusedReviewId}
+				open={isReviewsDialogOpen}
+				onOpenChange={setIsReviewsDialogOpen}
+			/>
 		</section>
 	);
 }
