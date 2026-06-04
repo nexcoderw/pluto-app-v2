@@ -81,6 +81,11 @@ function CarListingDetail({ listing }: { listing: PublicListing }) {
 	const [activeTab, setActiveTab] = useState<CarDetailTab>("overview");
 	const details = listing.carDetails;
 	const gallery = useMemo(() => buildGallery(listing), [listing]);
+	const today = useMemo(() => startOfDay(new Date()), []);
+	const [dateRange, setDateRange] = useState<DateRange | undefined>(() => ({
+		from: addDays(today, 1),
+		to: addDays(today, 4),
+	}));
 	const facts = useMemo(
 		() => [
 			{
@@ -140,6 +145,17 @@ function CarListingDetail({ listing }: { listing: PublicListing }) {
 				: "No deposit listed",
 		},
 	];
+	const fromDate = dateRange?.from;
+	const toDate = dateRange?.to;
+	const rentalDays =
+		fromDate && toDate
+			? Math.max(1, differenceInCalendarDays(toDate, fromDate))
+			: 1;
+	const totalPrice = Number(listing.basePrice) * rentalDays;
+	const formattedRange =
+		fromDate && toDate
+			? `${format(fromDate, "MMM d, yyyy")} - ${format(toDate, "MMM d, yyyy")}`
+			: "Select your pickup and return dates";
 
 	return (
 		<main className={styles.page}>
@@ -296,36 +312,126 @@ function CarListingDetail({ listing }: { listing: PublicListing }) {
 							</section>
 						) : null}
 					</section>
+
+					<CarDatePlanner
+						listing={listing}
+						today={today}
+						dateRange={dateRange}
+						fromDate={fromDate}
+						toDate={toDate}
+						rentalDays={rentalDays}
+						formattedRange={formattedRange}
+						onDateRangeChange={setDateRange}
+					/>
 				</div>
 
-				<CarBookingSidebar listing={listing} />
+				<CarBookingSidebar
+					listing={listing}
+					fromDate={fromDate}
+					toDate={toDate}
+					rentalDays={rentalDays}
+					totalPrice={totalPrice}
+					formattedRange={formattedRange}
+				/>
 			</section>
 		</main>
 	);
 }
 
-function CarBookingSidebar({ listing }: { listing: PublicListing }) {
+function CarDatePlanner({
+	listing,
+	today,
+	dateRange,
+	fromDate,
+	toDate,
+	rentalDays,
+	formattedRange,
+	onDateRangeChange,
+}: {
+	listing: PublicListing;
+	today: Date;
+	dateRange: DateRange | undefined;
+	fromDate?: Date;
+	toDate?: Date;
+	rentalDays: number;
+	formattedRange: string;
+	onDateRangeChange: (range: DateRange | undefined) => void;
+}) {
+	return (
+		<section className={styles.datePlanner}>
+			<div className={styles.datePlannerHeader}>
+				<div>
+					<span>
+						<CalendarDays aria-hidden="true" />
+						Trip dates
+					</span>
+					<h2>
+						{rentalDays} {rentalDays === 1 ? "day" : "days"} in {listing.city}
+					</h2>
+					<p>{formattedRange}</p>
+				</div>
+				<div className={styles.datePreview}>
+					<div>
+						<span>Pickup</span>
+						<strong>
+							{fromDate ? format(fromDate, "M/d/yyyy") : "Add date"}
+						</strong>
+					</div>
+					<div>
+						<span>Return</span>
+						<strong>{toDate ? format(toDate, "M/d/yyyy") : "Add date"}</strong>
+					</div>
+				</div>
+			</div>
+
+			<div className={styles.calendarShell}>
+				<Calendar
+					mode="range"
+					numberOfMonths={2}
+					selected={dateRange}
+					onSelect={onDateRangeChange}
+					disabled={{ before: today }}
+					className={styles.calendar}
+					showOutsideDays={false}
+				/>
+			</div>
+
+			<button
+				type="button"
+				className={styles.clearDatesButton}
+				onClick={() =>
+					onDateRangeChange({
+						from: addDays(today, 1),
+						to: addDays(today, 4),
+					})
+				}
+			>
+				Clear dates
+			</button>
+		</section>
+	);
+}
+
+function CarBookingSidebar({
+	listing,
+	fromDate,
+	toDate,
+	rentalDays,
+	totalPrice,
+	formattedRange,
+}: {
+	listing: PublicListing;
+	fromDate?: Date;
+	toDate?: Date;
+	rentalDays: number;
+	totalPrice: number;
+	formattedRange: string;
+}) {
 	const currentUser = useSyncExternalStore(
 		(onStoreChange) => subscribeToUserSession(() => onStoreChange()),
 		getUserSessionSnapshot,
 		() => null,
 	);
-	const today = startOfDay(new Date());
-	const [dateRange, setDateRange] = useState<DateRange | undefined>({
-		from: addDays(today, 1),
-		to: addDays(today, 4),
-	});
-	const fromDate = dateRange?.from;
-	const toDate = dateRange?.to;
-	const rentalDays =
-		fromDate && toDate
-			? Math.max(1, differenceInCalendarDays(toDate, fromDate))
-			: 1;
-	const totalPrice = Number(listing.basePrice) * rentalDays;
-	const formattedRange =
-		fromDate && toDate
-			? `${format(fromDate, "MMM d, yyyy")} - ${format(toDate, "MMM d, yyyy")}`
-			: "Select your pickup and return dates";
 	const partnerInitials = getInitials(listing.owner.fullName);
 	const partnerImageStyle =
 		listing.owner.imageKey && listing.owner.imageKey.startsWith("http")
@@ -375,28 +481,6 @@ function CarBookingSidebar({ listing }: { listing: PublicListing }) {
 						<strong>{toDate ? format(toDate, "M/d/yyyy") : "Add date"}</strong>
 					</div>
 				</div>
-
-				<div className={styles.calendarShell}>
-					<Calendar
-						mode="range"
-						numberOfMonths={2}
-						selected={dateRange}
-						onSelect={setDateRange}
-						disabled={{ before: today }}
-						className={styles.calendar}
-						showOutsideDays={false}
-					/>
-				</div>
-
-				<button
-					type="button"
-					className={styles.clearDatesButton}
-					onClick={() =>
-						setDateRange({ from: addDays(today, 1), to: addDays(today, 4) })
-					}
-				>
-					Clear dates
-				</button>
 
 				{currentUser ? (
 					<Button type="button" className={styles.bookButton}>
