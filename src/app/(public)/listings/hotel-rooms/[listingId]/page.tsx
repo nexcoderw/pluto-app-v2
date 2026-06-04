@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PublicListingDetailPage } from "@/components/listings/public-listing-detail-page";
+import { HotelRoomListingDetailPage } from "@/components/listings/hotel-rooms/hotel-room-listing-detail-page";
 
 export const metadata: Metadata = {
 	title: "Hotel Room Listing Details",
@@ -14,7 +14,5 @@ export default async function HotelRoomListingDetailRoute({
 }) {
 	const { listingId } = await params;
 
-	return (
-		<PublicListingDetailPage categorySlug="hotel-rooms" listingId={listingId} />
-	);
+	return <HotelRoomListingDetailPage listingId={listingId} />;
 }
