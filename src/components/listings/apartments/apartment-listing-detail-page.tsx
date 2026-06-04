@@ -8,7 +8,6 @@ import {
 	Bath,
 	BedDouble,
 	CalendarCheck,
-	CalendarDays,
 	CheckCircle2,
 	DoorOpen,
 	Home,
@@ -29,7 +28,6 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { useQuery } from "@tanstack/react-query";
 import type { StyleSpecification } from "maplibre-gl";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import {
 	Map,
 	MapControls,
@@ -53,6 +51,10 @@ import {
 	formatOptional,
 	getListingCoverImage,
 } from "../listing-formatters";
+import {
+	ListingDatePlanner,
+	ListingDatePlannerSkeleton,
+} from "../listing-date-planner";
 import { ListingLoginDialog } from "../listing-login-dialog";
 import {
 	ListingVerifiedPartnerCard,
@@ -336,12 +338,16 @@ function ApartmentListingDetail({ listing }: { listing: PublicListing }) {
 						) : null}
 					</section>
 
-					<ApartmentDatePlanner
+					<ListingDatePlanner
+						eyebrow="Stay dates"
+						fromLabel="Check-in"
+						toLabel="Checkout"
 						today={today}
 						dateRange={dateRange}
 						fromDate={fromDate}
 						toDate={toDate}
 						formattedRange={formattedRange}
+						resetRange={{ from: addDays(today, 1), to: addDays(today, 4) }}
 						onDateRangeChange={setDateRange}
 					/>
 
@@ -469,73 +475,6 @@ function ApartmentLocationMap({
 					</div>
 				) : null}
 			</div>
-		</section>
-	);
-}
-
-function ApartmentDatePlanner({
-	today,
-	dateRange,
-	fromDate,
-	toDate,
-	formattedRange,
-	onDateRangeChange,
-}: {
-	today: Date;
-	dateRange: DateRange | undefined;
-	fromDate?: Date;
-	toDate?: Date;
-	formattedRange: string;
-	onDateRangeChange: (range: DateRange | undefined) => void;
-}) {
-	return (
-		<section className={styles.datePlanner}>
-			<div className={styles.datePlannerHeader}>
-				<div>
-					<span>
-						<CalendarDays aria-hidden="true" />
-						Stay dates
-					</span>
-					<p>{formattedRange}</p>
-				</div>
-				<div className={styles.datePreview}>
-					<div>
-						<span>Check-in</span>
-						<strong>
-							{fromDate ? format(fromDate, "M/d/yyyy") : "Add date"}
-						</strong>
-					</div>
-					<div>
-						<span>Checkout</span>
-						<strong>{toDate ? format(toDate, "M/d/yyyy") : "Add date"}</strong>
-					</div>
-				</div>
-			</div>
-
-			<div className={styles.calendarShell}>
-				<Calendar
-					mode="range"
-					numberOfMonths={2}
-					selected={dateRange}
-					onSelect={onDateRangeChange}
-					disabled={{ before: today }}
-					className={styles.calendar}
-					showOutsideDays={false}
-				/>
-			</div>
-
-			<button
-				type="button"
-				className={styles.clearDatesButton}
-				onClick={() =>
-					onDateRangeChange({
-						from: addDays(today, 1),
-						to: addDays(today, 4),
-					})
-				}
-			>
-				Clear dates
-			</button>
 		</section>
 	);
 }
@@ -677,44 +616,7 @@ function ApartmentListingDetailSkeleton() {
 							</div>
 						</section>
 					</section>
-					<section className={styles.datePlanner}>
-						<div className={styles.datePlannerHeader}>
-							<div>
-								<Skeleton className={styles.skeletonSectionLabel} />
-								<Skeleton className={styles.skeletonDateText} />
-							</div>
-							<div className={styles.datePreview}>
-								<div>
-									<Skeleton className={styles.skeletonMiniLine} />
-									<Skeleton className={styles.skeletonDateValue} />
-								</div>
-								<div>
-									<Skeleton className={styles.skeletonMiniLine} />
-									<Skeleton className={styles.skeletonDateValue} />
-								</div>
-							</div>
-						</div>
-						<div className={styles.calendarShell}>
-							<div className={styles.skeletonCalendar}>
-								{Array.from({ length: 2 }).map((_, monthIndex) => (
-									<div key={monthIndex} className={styles.skeletonMonth}>
-										<Skeleton className={styles.skeletonMonthTitle} />
-										<div className={styles.skeletonWeekdays}>
-											{Array.from({ length: 7 }).map((__, index) => (
-												<Skeleton key={index} />
-											))}
-										</div>
-										<div className={styles.skeletonDays}>
-											{Array.from({ length: 35 }).map((__, index) => (
-												<Skeleton key={index} />
-											))}
-										</div>
-									</div>
-								))}
-							</div>
-						</div>
-						<Skeleton className={styles.skeletonClearDates} />
-					</section>
+					<ListingDatePlannerSkeleton />
 					<section className={styles.skeletonReviewPanel}>
 						<Skeleton className={styles.skeletonReviewScore} />
 						<div className={styles.skeletonReviewMetrics}>
