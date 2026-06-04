@@ -48,6 +48,7 @@ export type ListingSidebarFilter = {
 export type ListingSidebarRenderProps = {
 	categoryLabel: string;
 	draftFilters: ListingListRequest;
+	variant: "sidebar" | "dialog";
 	setDraftFilter: <Key extends keyof ListingListRequest>(
 		key: Key,
 		value: ListingListRequest[Key] | undefined,
@@ -70,7 +71,7 @@ type CategoryListingsPageProps = {
 	) => ReactNode;
 	renderSkeletonCard?: (index: number) => ReactNode;
 	renderSidebar?: (props: ListingSidebarRenderProps) => ReactNode;
-	filterPresentation?: "sidebar" | "dialog";
+	filterPresentation?: "sidebar" | "dialog" | "responsive";
 };
 
 const sortOptions: Array<{ label: string; value: ListingOrderBy }> = [
@@ -99,6 +100,8 @@ export function CategoryListingsPage({
 	const [appliedFilters, setAppliedFilters] = useState<ListingListRequest>({});
 	const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
 	const usesFilterDialog = filterPresentation === "dialog";
+	const usesResponsiveFilterDialog = filterPresentation === "responsive";
+	const showsFilterButton = usesFilterDialog || usesResponsiveFilterDialog;
 	const request = useMemo(
 		() =>
 			cleanRequest({
@@ -233,6 +236,7 @@ export function CategoryListingsPage({
 					renderSidebar({
 						categoryLabel,
 						draftFilters,
+						variant: "sidebar",
 						setDraftFilter,
 						applyFilters,
 						resetFilters,
@@ -348,7 +352,7 @@ export function CategoryListingsPage({
 								setPage(1);
 							}}
 						/>
-						{usesFilterDialog ? (
+						{showsFilterButton ? (
 							<Button
 								type="button"
 								variant="outline"
@@ -415,7 +419,7 @@ export function CategoryListingsPage({
 					)}
 				</section>
 			</section>
-			{usesFilterDialog && renderSidebar ? (
+			{showsFilterButton && renderSidebar ? (
 				<ListingFilterDialog
 					categoryLabel={categoryLabel}
 					open={isFilterDialogOpen}
@@ -424,6 +428,7 @@ export function CategoryListingsPage({
 					{renderSidebar({
 						categoryLabel,
 						draftFilters,
+						variant: "dialog",
 						setDraftFilter,
 						applyFilters: applyDialogFilters,
 						resetFilters,
