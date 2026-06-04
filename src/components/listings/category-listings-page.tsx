@@ -233,14 +233,16 @@ export function CategoryListingsPage({
 				data-filter-presentation={filterPresentation}
 			>
 				{usesFilterDialog ? null : renderSidebar ? (
-					renderSidebar({
-						categoryLabel,
-						draftFilters,
-						variant: "sidebar",
-						setDraftFilter,
-						applyFilters,
-						resetFilters,
-					})
+					<div className={styles.customSidebarSlot}>
+						{renderSidebar({
+							categoryLabel,
+							draftFilters,
+							variant: "sidebar",
+							setDraftFilter,
+							applyFilters,
+							resetFilters,
+						})}
+					</div>
 				) : (
 					<aside
 						className={styles.sidebar}
