@@ -1,6 +1,6 @@
 import { useMemo, useState, type FormEvent } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { CheckCircle2, Loader2, Send, Star } from "lucide-react";
+import { Loader2, Send, Star } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -36,10 +36,12 @@ export function CarReviewForm({
 	listingId,
 	existingReview,
 	onSaved,
+	reviewPlaceholder = "Tell future guests what stood out about this car, pickup, communication, and value.",
 }: {
 	listingId: string;
 	existingReview?: ListingReview;
 	onSaved: () => Promise<void>;
+	reviewPlaceholder?: string;
 }) {
 	const [form, setForm] = useState<ListingReviewPayload>(() =>
 		initialForm(existingReview),
@@ -134,7 +136,7 @@ export function CarReviewForm({
 				<Textarea
 					value={form.message ?? ""}
 					maxLength={1500}
-					placeholder="Tell future guests what stood out about this car, pickup, communication, and value."
+					placeholder={reviewPlaceholder}
 					onChange={(event) =>
 						setForm((current) => ({
 							...current,
