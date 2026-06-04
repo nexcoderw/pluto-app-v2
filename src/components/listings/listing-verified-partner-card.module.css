@@ -1,0 +1,104 @@
+.panel {
+	display: grid;
+	gap: 1rem;
+	padding: 1rem;
+	border: 1px solid rgba(255, 255, 255, 0.74);
+	border-radius: 1.6rem;
+	background: rgba(255, 255, 255, 0.82);
+	box-shadow: 0 1.6rem 4.5rem rgba(16, 22, 33, 0.1);
+	backdrop-filter: blur(18px);
+}
+
+.badge {
+	width: fit-content;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.42rem;
+	color: #02006c;
+	font-size: 0.72rem;
+	font-weight: 850;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.badge svg {
+	width: 1rem;
+	height: 1rem;
+}
+
+.identity {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	gap: 0.7rem;
+	align-items: center;
+}
+
+.avatar {
+	width: 3rem;
+	height: 3rem;
+	display: grid;
+	place-items: center;
+	overflow: hidden;
+	border-radius: 999px;
+	background:
+		var(--partner-avatar-image, none) center / cover no-repeat,
+		#02006c;
+	color: #ffffff;
+	font-size: 0.82rem;
+	font-style: normal;
+	font-weight: 880;
+	line-height: 1;
+	text-align: center;
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+
+.identity strong {
+	min-width: 0;
+	overflow: hidden;
+	color: #17171f;
+	font-size: 0.92rem;
+	font-weight: 860;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.panel p {
+	margin: 0;
+	color: rgba(23, 23, 31, 0.62);
+	font-size: 0.84rem;
+	line-height: 1.65;
+}
+
+.skeletonBadge,
+.skeletonName,
+.skeletonCopy {
+	border-radius: 999px;
+}
+
+.skeletonBadge {
+	width: 8.4rem;
+	height: 1rem;
+}
+
+.skeletonAvatar {
+	width: 3rem;
+	height: 3rem;
+	border-radius: 999px;
+}
+
+.skeletonName {
+	width: min(12rem, 70%);
+	height: 1rem;
+}
+
+.skeletonCopy {
+	width: 88%;
+	height: 0.9rem;
+}
+
+@media (max-width: 640px) {
+	.panel {
+		border-radius: 1.2rem;
+	}
+}
