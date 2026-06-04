@@ -50,6 +50,7 @@ import {
 	formatOptional,
 	getListingCoverImage,
 } from "../listing-formatters";
+import { ListingLoginDialog } from "../listing-login-dialog";
 import { CarReviewSection } from "./reviews/car-review-section";
 import styles from "./car-listing-detail-page.module.css";
 
@@ -422,6 +423,7 @@ function CarBookingSidebar({
 	totalPrice: number;
 	formattedRange: string;
 }) {
+	const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
 	const currentUser = useSyncExternalStore(
 		(onStoreChange) => subscribeToUserSession(() => onStoreChange()),
 		getUserSessionSnapshot,
@@ -480,9 +482,13 @@ function CarBookingSidebar({
 						Book this car
 					</Button>
 				) : (
-					<Link href="/login" className={styles.loginPrompt}>
+					<button
+						type="button"
+						className={styles.loginPrompt}
+						onClick={() => setIsLoginDialogOpen(true)}
+					>
 						Sign in to unlock booking
-					</Link>
+					</button>
 				)}
 				<p className={styles.chargeNote}>You will not be charged yet.</p>
 			</section>
@@ -498,6 +504,11 @@ function CarBookingSidebar({
 				</span>
 				<strong>{listing.owner.fullName}</strong>
 			</section>
+			<ListingLoginDialog
+				open={isLoginDialogOpen}
+				onOpenChange={setIsLoginDialogOpen}
+				listingTitle={listing.title}
+			/>
 		</aside>
 	);
 }
