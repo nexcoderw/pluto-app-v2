@@ -54,7 +54,7 @@ type CategoryConfig = {
 	) => ReactNode;
 	renderSkeletonCard?: (index: number) => ReactNode;
 	renderSidebar?: (props: ListingSidebarRenderProps) => ReactNode;
-	filterPresentation?: "sidebar" | "dialog";
+	filterPresentation?: "sidebar" | "dialog" | "responsive";
 };
 
 const categoryConfigs = {
@@ -64,7 +64,10 @@ const categoryConfigs = {
 		detailBaseHref: "/listings/cars",
 		filters: carFilters,
 		listListings: listCarListings,
-		renderSidebar: (sidebarProps) => <CarListingsSidebar {...sidebarProps} />,
+		filterPresentation: "responsive",
+		renderSidebar: (sidebarProps) => (
+			<CarListingsSidebar {...sidebarProps} variant={sidebarProps.variant} />
+		),
 		renderSkeletonCard: (index) => <CarListingCardSkeleton key={index} />,
 		renderCard: (listing, detailHref) => (
 			<CarListingCard
@@ -82,11 +85,12 @@ const categoryConfigs = {
 		listListings: listApartmentListings,
 		filterPresentation: "dialog",
 		renderSidebar: (sidebarProps) => (
-			<ApartmentListingsSidebar {...sidebarProps} variant="dialog" />
+			<ApartmentListingsSidebar
+				{...sidebarProps}
+				variant={sidebarProps.variant}
+			/>
 		),
-		renderSkeletonCard: (index) => (
-			<ApartmentListingCardSkeleton key={index} />
-		),
+		renderSkeletonCard: (index) => <ApartmentListingCardSkeleton key={index} />,
 		renderCard: (listing, detailHref, index) => (
 			<ApartmentListingCard
 				key={listing.id}
@@ -104,7 +108,10 @@ const categoryConfigs = {
 		listListings: listHotelRoomListings,
 		filterPresentation: "dialog",
 		renderSidebar: (sidebarProps) => (
-			<HotelRoomListingsSidebar {...sidebarProps} variant="dialog" />
+			<HotelRoomListingsSidebar
+				{...sidebarProps}
+				variant={sidebarProps.variant}
+			/>
 		),
 		renderSkeletonCard: (index) => <HotelRoomListingCardSkeleton key={index} />,
 		renderCard: (listing, detailHref, index) => (
@@ -124,7 +131,7 @@ const categoryConfigs = {
 		listListings: listAirbnbListings,
 		filterPresentation: "dialog",
 		renderSidebar: (sidebarProps) => (
-			<AirbnbListingsSidebar {...sidebarProps} variant="dialog" />
+			<AirbnbListingsSidebar {...sidebarProps} variant={sidebarProps.variant} />
 		),
 		renderSkeletonCard: (index) => <AirbnbListingCardSkeleton key={index} />,
 		renderCard: (listing, detailHref, index) => (
