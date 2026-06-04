@@ -661,25 +661,282 @@
 	text-decoration: none;
 }
 
-.skeletonHero {
-	min-height: 32rem;
-	border-radius: 1.65rem;
-}
-
-.skeletonLine {
-	height: 2rem;
-	width: 60%;
+.skeletonBackLink,
+.skeletonEyebrow,
+.skeletonLocation,
+.skeletonStatPill,
+.skeletonTab,
+.skeletonSectionLabel,
+.skeletonParagraph,
+.skeletonParagraphShort,
+.skeletonMiniLine,
+.skeletonFeatureTitle,
+.skeletonDateText,
+.skeletonDateValue,
+.skeletonClearDates,
+.skeletonNoticeText,
+.skeletonPrice,
+.skeletonBookButton,
+.skeletonChargeNote,
+.skeletonPartnerName,
+.skeletonMonthTitle,
+.skeletonReviewScore,
+.skeletonReviewLine,
+.skeletonReviewLineShort {
 	border-radius: 999px;
 }
 
-.skeletonText {
+.skeletonBackLink {
+	width: 7.8rem;
+	height: 2.4rem;
+}
+
+.skeletonEyebrow {
+	width: 11rem;
+	height: 2.25rem;
+	margin-top: 1rem;
+}
+
+.skeletonTitle {
+	width: min(48rem, 88vw);
+	height: clamp(3.7rem, 8vw, 5rem);
+	margin-top: 0.85rem;
+	border-radius: 1.15rem;
+}
+
+.skeletonLocation {
+	width: min(18rem, 76vw);
+	height: 1.25rem;
+	margin-top: 0.7rem;
+}
+
+.skeletonStatPill {
+	width: 6.8rem;
+	height: 2.25rem;
+}
+
+.skeletonGalleryFrame {
+	position: relative;
+	overflow: hidden;
+	border-radius: 1.25rem;
+}
+
+.skeletonGallery {
+	min-height: clamp(24rem, 56vw, 37rem);
+	border-radius: 1.25rem;
+}
+
+.skeletonGalleryButtonLeft,
+.skeletonGalleryButtonRight {
+	position: absolute;
+	top: 50%;
+	width: 2.7rem;
+	height: 2.7rem;
+	border-radius: 999px;
+	transform: translateY(-50%);
+}
+
+.skeletonGalleryButtonLeft {
+	left: 0.85rem;
+}
+
+.skeletonGalleryButtonRight {
+	right: 0.85rem;
+}
+
+.skeletonDots {
+	position: absolute;
+	left: 50%;
+	bottom: 0.95rem;
+	display: inline-flex;
+	gap: 0.35rem;
+	padding: 0.4rem 0.55rem;
+	border-radius: 999px;
+	background: rgba(23, 23, 31, 0.2);
+	transform: translateX(-50%);
+}
+
+.skeletonDots div {
+	width: 0.55rem;
+	height: 0.55rem;
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.72);
+}
+
+.skeletonTab {
+	height: 2.65rem;
+}
+
+.skeletonSectionLabel {
+	width: 7.5rem;
+	height: 0.85rem;
+}
+
+.skeletonParagraph {
+	width: 100%;
+	height: 0.95rem;
+}
+
+.skeletonParagraphShort {
+	width: 72%;
+	height: 0.95rem;
+}
+
+.skeletonFeatureCard {
+	min-height: 7.1rem;
+}
+
+.skeletonIcon {
+	width: 1.35rem;
+	height: 1.35rem;
+	border-radius: 999px;
+}
+
+.skeletonMiniLine {
+	width: 4.6rem;
+	height: 0.72rem;
+}
+
+.skeletonFeatureTitle {
+	width: 74%;
+	height: 0.9rem;
+}
+
+.skeletonDateText {
+	width: min(20rem, 100%);
 	height: 1rem;
+}
+
+.skeletonDateValue {
+	width: 6.2rem;
+	height: 0.9rem;
+}
+
+.skeletonCalendar {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 1rem;
+}
+
+.skeletonMonth {
+	display: grid;
+	gap: 0.85rem;
+}
+
+.skeletonMonthTitle {
+	width: 8rem;
+	height: 1rem;
+	margin-inline: auto;
+}
+
+.skeletonWeekdays,
+.skeletonDays {
+	display: grid;
+	grid-template-columns: repeat(7, minmax(0, 1fr));
+	gap: 0.42rem;
+}
+
+.skeletonWeekdays div {
+	height: 0.55rem;
+}
+
+.skeletonDays div {
+	aspect-ratio: 1;
 	border-radius: 999px;
 }
 
-.skeletonPanel {
-	min-height: 24rem;
-	border-radius: 1.45rem;
+.skeletonClearDates {
+	width: 7rem;
+	height: 2.4rem;
+	margin-left: auto;
+}
+
+.skeletonReviews {
+	display: grid;
+	gap: 1.1rem;
+	padding: clamp(1rem, 2.6vw, 1.4rem);
+	border: 1px solid rgba(255, 255, 255, 0.74);
+	border-radius: 1.6rem;
+	background: rgba(255, 255, 255, 0.82);
+	box-shadow: 0 1.6rem 4.5rem rgba(16, 22, 33, 0.1);
+	backdrop-filter: blur(18px);
+}
+
+.skeletonReviewScore {
+	width: 9rem;
+	height: 3.8rem;
+	margin-inline: auto;
+}
+
+.skeletonReviewMetrics {
+	display: grid;
+	grid-template-columns: repeat(6, minmax(0, 1fr));
+	gap: 0.7rem;
+}
+
+.skeletonReviewMetrics div {
+	height: 4.6rem;
+	border-radius: 1rem;
+}
+
+.skeletonReviewList {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 1rem;
+}
+
+.skeletonReviewList > div {
+	display: grid;
+	gap: 0.55rem;
+}
+
+.skeletonReviewer {
+	width: 8rem;
+	height: 2.2rem;
+	border-radius: 999px;
+}
+
+.skeletonReviewLine {
+	height: 0.8rem;
+	border-radius: 999px;
+}
+
+.skeletonReviewLineShort {
+	width: 70%;
+	height: 0.8rem;
+	border-radius: 999px;
+}
+
+.skeletonNoticeText {
+	width: 100%;
+	height: 1rem;
+}
+
+.skeletonPrice {
+	width: 11rem;
+	height: 2rem;
+}
+
+.skeletonBookButton {
+	width: 100%;
+	height: var(--pluto-button-height);
+}
+
+.skeletonChargeNote {
+	width: 55%;
+	height: 0.85rem;
+	margin-inline: auto;
+}
+
+.skeletonAvatar {
+	width: 3rem;
+	height: 3rem;
+	border-radius: 999px;
+}
+
+.skeletonPartnerName {
+	width: 70%;
+	height: 1rem;
 }
 
 @media (max-width: 1120px) {
@@ -708,6 +965,10 @@
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 
+	.skeletonReviewMetrics {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
 	.calendar :global(.rdp-months) {
 		flex-direction: column;
 	}
@@ -719,6 +980,10 @@
 	.calendar {
 		min-width: 0;
 	}
+
+	.skeletonCalendar {
+		grid-template-columns: 1fr;
+	}
 }
 
 @media (max-width: 640px) {
@@ -726,7 +991,35 @@
 		padding-inline: 0.7rem;
 	}
 
+	.heroCopy h1 {
+		font-size: clamp(1.8rem, 11vw, 2.75rem);
+	}
+
+	.heroStats,
+	.heroStats span,
+	.skeletonStatPill {
+		width: 100%;
+	}
+
+	.heroStats span {
+		justify-content: center;
+	}
+
+	.gallerySection,
+	.contentPanel,
+	.datePlanner,
+	.bookingPanel,
+	.partnerPanel,
+	.priceNotice,
+	.skeletonReviews {
+		border-radius: 1.2rem;
+	}
+
 	.slideImage {
+		min-height: 20rem;
+	}
+
+	.skeletonGallery {
 		min-height: 20rem;
 	}
 
@@ -740,8 +1033,14 @@
 	.policyGrid,
 	.reviewGrid,
 	.datePreview,
-	.dateFields {
+	.dateFields,
+	.skeletonReviewMetrics,
+	.skeletonReviewList {
 		grid-template-columns: 1fr;
+	}
+
+	.calendarShell {
+		padding: 0.5rem;
 	}
 
 	.datePreview div + div {
@@ -758,5 +1057,21 @@
 	.statePanel button,
 	.statePanel a {
 		width: 100%;
+	}
+
+	.skeletonTitle {
+		width: 100%;
+		height: 3.4rem;
+	}
+
+	.skeletonGalleryButtonLeft,
+	.skeletonGalleryButtonRight {
+		width: 2.35rem;
+		height: 2.35rem;
+	}
+
+	.skeletonWeekdays,
+	.skeletonDays {
+		gap: 0.3rem;
 	}
 }
