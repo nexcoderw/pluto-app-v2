@@ -1,18 +1,12 @@
 "use client";
 
-import {
-	useMemo,
-	useState,
-	useSyncExternalStore,
-	type CSSProperties,
-} from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
 	ArrowLeft,
 	Bath,
 	BedDouble,
-	Building2,
 	CalendarCheck,
 	CalendarDays,
 	CheckCircle2,
@@ -20,7 +14,6 @@ import {
 	Home,
 	MapPin,
 	RefreshCcw,
-	ShieldCheck,
 	Users,
 } from "lucide-react";
 import {
@@ -61,6 +54,10 @@ import {
 	getListingCoverImage,
 } from "../listing-formatters";
 import { ListingLoginDialog } from "../listing-login-dialog";
+import {
+	ListingVerifiedPartnerCard,
+	ListingVerifiedPartnerCardSkeleton,
+} from "../listing-verified-partner-card";
 import { ApartmentReviewSection } from "./apartment-review-section";
 import styles from "./apartment-listing-detail-page.module.css";
 
@@ -218,7 +215,10 @@ function ApartmentListingDetail({ listing }: { listing: PublicListing }) {
 				<div className={styles.heroMetrics} aria-label="Apartment highlights">
 					<span>{details?.bedrooms ?? "..."} Bedrooms</span>
 					<span>{details?.maxGuests ?? "..."} Guests</span>
-					<span>{listing.ratingAverage ? listing.ratingAverage.toFixed(1) : "New"} Rating</span>
+					<span>
+						{listing.ratingAverage ? listing.ratingAverage.toFixed(1) : "New"}{" "}
+						Rating
+					</span>
 				</div>
 			</header>
 
@@ -300,7 +300,6 @@ function ApartmentListingDetail({ listing }: { listing: PublicListing }) {
 							<section className={styles.tabPanel}>
 								<div className={styles.sectionHeader}>
 									<span>Apartment overview</span>
-									<h2>Designed for comfortable stays in {listing.city}</h2>
 								</div>
 								<p>
 									{listing.description ??
@@ -323,7 +322,6 @@ function ApartmentListingDetail({ listing }: { listing: PublicListing }) {
 							<section className={styles.tabPanel}>
 								<div className={styles.sectionHeader}>
 									<span>Apartment setup</span>
-									<h2>Useful details before you reserve</h2>
 								</div>
 								<div className={styles.amenityGrid}>
 									{amenities.map((amenity) => (
@@ -336,7 +334,6 @@ function ApartmentListingDetail({ listing }: { listing: PublicListing }) {
 								</div>
 							</section>
 						) : null}
-
 					</section>
 
 					<ApartmentDatePlanner
@@ -564,13 +561,6 @@ function ApartmentBookingSidebar({
 		getUserSessionSnapshot,
 		() => null,
 	);
-	const partnerInitials = getInitials(listing.owner.fullName);
-	const partnerImageStyle =
-		listing.owner.imageKey && listing.owner.imageKey.startsWith("http")
-			? ({
-					"--partner-avatar-image": `url("${listing.owner.imageKey}")`,
-				} as CSSProperties)
-			: undefined;
 
 	return (
 		<aside className={styles.sidebar}>
@@ -623,24 +613,7 @@ function ApartmentBookingSidebar({
 				<p>You will review the final booking details before paying.</p>
 			</section>
 
-			<section className={styles.partnerPanel}>
-				<span>
-					<ShieldCheck aria-hidden="true" />
-					Verified partner
-				</span>
-				<div className={styles.partnerIdentity}>
-					<i
-						className={styles.partnerAvatar}
-						data-has-image={Boolean(partnerImageStyle)}
-						style={partnerImageStyle}
-						aria-hidden="true"
-					>
-						{partnerImageStyle ? null : partnerInitials}
-					</i>
-					<strong>{listing.owner.fullName}</strong>
-				</div>
-				<p>This partner completed Pluto Booking review before publishing.</p>
-			</section>
+			<ListingVerifiedPartnerCard owner={listing.owner} />
 			<ListingLoginDialog
 				open={isLoginDialogOpen}
 				onOpenChange={setIsLoginDialogOpen}
@@ -778,14 +751,7 @@ function ApartmentListingDetailSkeleton() {
 						<Skeleton className={styles.skeletonReserveButton} />
 						<Skeleton className={styles.skeletonChargeNote} />
 					</section>
-					<section className={styles.partnerPanel}>
-						<Skeleton className={styles.skeletonSectionLabel} />
-						<div className={styles.partnerIdentity}>
-							<Skeleton className={styles.skeletonAvatar} />
-							<Skeleton className={styles.skeletonPartnerName} />
-						</div>
-						<Skeleton className={styles.skeletonParagraphShort} />
-					</section>
+					<ListingVerifiedPartnerCardSkeleton />
 				</aside>
 			</section>
 		</main>
@@ -910,10 +876,4 @@ function deterministicKigaliOffset(listingId: string): [number, number] {
 		Number((kigaliCenter[0] + Math.cos(angle) * radius).toFixed(6)),
 		Number((kigaliCenter[1] + Math.sin(angle) * radius).toFixed(6)),
 	];
-}
-
-function getInitials(value: string) {
-	const [first = "P", second = "B"] = value.trim().split(/\s+/).filter(Boolean);
-
-	return `${first.charAt(0)}${second.charAt(0)}`.toUpperCase();
 }
