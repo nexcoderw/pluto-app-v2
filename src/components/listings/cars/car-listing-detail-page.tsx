@@ -10,7 +10,6 @@ import Image from "next/image";
 import Link from "next/link";
 import {
 	ArrowLeft,
-	BadgeCheck,
 	BriefcaseBusiness,
 	CalendarCheck,
 	CalendarDays,
@@ -486,15 +485,22 @@ function CarBookingSidebar({
 			</section>
 
 			<section className={styles.partnerPanel}>
-				<span
-					className={styles.partnerAvatar}
-					data-has-image={Boolean(partnerImageStyle)}
-					style={partnerImageStyle}
-					aria-hidden="true"
-				>
-					{partnerImageStyle ? null : partnerInitials}
+				<span>
+					<ShieldCheck aria-hidden="true" />
+					Verified partner
 				</span>
-				<strong>{listing.owner.fullName}</strong>
+				<div className={styles.partnerIdentity}>
+					<i
+						className={styles.partnerAvatar}
+						data-has-image={Boolean(partnerImageStyle)}
+						style={partnerImageStyle}
+						aria-hidden="true"
+					>
+						{partnerImageStyle ? null : partnerInitials}
+					</i>
+					<strong>{listing.owner.fullName}</strong>
+				</div>
+				<p>This partner completed Pluto Booking review before publishing.</p>
 			</section>
 			<ListingLoginDialog
 				open={isLoginDialogOpen}
@@ -639,8 +645,12 @@ function CarListingDetailSkeleton() {
 						<Skeleton className={styles.skeletonChargeNote} />
 					</section>
 					<section className={styles.partnerPanel}>
-						<Skeleton className={styles.skeletonAvatar} />
-						<Skeleton className={styles.skeletonPartnerName} />
+						<Skeleton className={styles.skeletonPartnerBadge} />
+						<div className={styles.partnerIdentity}>
+							<Skeleton className={styles.skeletonAvatar} />
+							<Skeleton className={styles.skeletonPartnerName} />
+						</div>
+						<Skeleton className={styles.skeletonPartnerCopy} />
 					</section>
 				</aside>
 			</section>
