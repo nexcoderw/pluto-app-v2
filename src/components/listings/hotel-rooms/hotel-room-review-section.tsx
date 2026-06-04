@@ -1,4 +1,4 @@
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { MessageCircle, RefreshCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,18 +7,13 @@ import { CarReviewCard } from "@/components/listings/cars/reviews/car-review-car
 import { CarReviewForm } from "@/components/listings/cars/reviews/car-review-form";
 import { CarReviewOverview } from "@/components/listings/cars/reviews/car-review-overview";
 import { CarReviewsDialog } from "@/components/listings/cars/reviews/car-reviews-dialog";
-import type { UserAuthProfile } from "@/services/api/auth";
+import { useUserSession } from "@/hooks/use-user-session";
 import {
 	getListingReviews,
 	getListingReviewSummary,
 	type ListingReview,
 } from "@/services/api/listing-reviews";
 import type { PublicListing } from "@/services/api/listings";
-import {
-	getCachedUserProfile,
-	hasKnownUserSession,
-	subscribeToUserSession,
-} from "@/services/api/token-store";
 import styles from "@/components/listings/cars/reviews/car-review-section.module.css";
 
 const reviewsQueryKey = (listingId: string) =>
@@ -35,11 +30,7 @@ export function HotelRoomReviewSection({
 	const [focusedReviewId, setFocusedReviewId] = useState<string>();
 	const [isReviewsDialogOpen, setIsReviewsDialogOpen] = useState(false);
 	const [reviewsDialogKey, setReviewsDialogKey] = useState(0);
-	const currentUser = useSyncExternalStore(
-		(onStoreChange) => subscribeToUserSession(() => onStoreChange()),
-		getUserSessionSnapshot,
-		() => null,
-	);
+	const currentUser = useUserSession();
 	const summaryQuery = useQuery({
 		queryKey: summaryQueryKey(listing.id),
 		queryFn: () => getListingReviewSummary(listing.id),
@@ -172,8 +163,4 @@ function HotelRoomReviewSkeleton() {
 			))}
 		</div>
 	);
-}
-
-function getUserSessionSnapshot(): UserAuthProfile | null {
-	return hasKnownUserSession() ? getCachedUserProfile() : null;
 }
