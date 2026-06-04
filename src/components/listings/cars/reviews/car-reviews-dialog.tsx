@@ -27,10 +27,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
 	getListingReviews,
 	type ListingReview,
+	type ListingReviewSummary,
 	type ProductReviewOrderBy,
 	type ProductReviewSortOrder,
 } from "@/services/api/listing-reviews";
 import { CarReviewCard } from "./car-review-card";
+import { CarReviewOverview } from "./car-review-overview";
 import styles from "./car-review-section.module.css";
 
 type ReviewSortValue = "newest" | "oldest" | "highest-rated" | "lowest-rated";
@@ -74,11 +76,19 @@ const reviewSortOptions: ReviewSortOption[] = [
 export function CarReviewsDialog({
 	listingId,
 	focusedReviewId,
+	summary,
+	isSummaryLoading,
+	fallbackRating,
+	fallbackCount,
 	open,
 	onOpenChange,
 }: {
 	listingId: string;
 	focusedReviewId?: string;
+	summary?: ListingReviewSummary;
+	isSummaryLoading: boolean;
+	fallbackRating?: number | null;
+	fallbackCount?: number;
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 }) {
@@ -132,13 +142,21 @@ export function CarReviewsDialog({
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent className={styles.reviewsDialog}>
+				<CarReviewOverview
+					summary={summary}
+					isLoading={isSummaryLoading}
+					fallbackRating={fallbackRating}
+					fallbackCount={fallbackCount}
+					titleId="car-reviews-dialog-overview"
+				/>
+
 				<DialogHeader className={styles.reviewsDialogHeader}>
 					<div>
 						<span>
 							<SlidersHorizontal aria-hidden="true" />
 							Review explorer
 						</span>
-						<DialogTitle>All customer reviews</DialogTitle>
+						<DialogTitle>Browse full reviews</DialogTitle>
 						<DialogDescription>
 							Read full customer messages and sort reviews by recency or star
 							rating.
