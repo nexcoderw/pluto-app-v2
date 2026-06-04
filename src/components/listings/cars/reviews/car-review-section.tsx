@@ -1,14 +1,9 @@
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { MessageCircle, RefreshCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { UserAuthProfile } from "@/services/api/auth";
-import {
-	getCachedUserProfile,
-	hasKnownUserSession,
-	subscribeToUserSession,
-} from "@/services/api/token-store";
+import { useUserSession } from "@/hooks/use-user-session";
 import {
 	getListingReviews,
 	getListingReviewSummary,
@@ -31,11 +26,7 @@ export function CarReviewSection({ listing }: { listing: PublicListing }) {
 	const [focusedReviewId, setFocusedReviewId] = useState<string>();
 	const [isReviewsDialogOpen, setIsReviewsDialogOpen] = useState(false);
 	const [reviewsDialogKey, setReviewsDialogKey] = useState(0);
-	const currentUser = useSyncExternalStore(
-		(onStoreChange) => subscribeToUserSession(() => onStoreChange()),
-		getUserSessionSnapshot,
-		() => null,
-	);
+	const currentUser = useUserSession();
 	const summaryQuery = useQuery({
 		queryKey: summaryQueryKey(listing.id),
 		queryFn: () => getListingReviewSummary(listing.id),
@@ -161,8 +152,4 @@ function CarReviewSkeleton() {
 			))}
 		</div>
 	);
-}
-
-function getUserSessionSnapshot(): UserAuthProfile | null {
-	return hasKnownUserSession() ? getCachedUserProfile() : null;
 }
