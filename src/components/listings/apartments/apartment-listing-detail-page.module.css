@@ -514,9 +514,46 @@
 		0 0 0 0.35rem rgba(2, 0, 108, 0.12);
 }
 
+.locationMarker[data-approximate="true"] {
+	border-style: dashed;
+	background: #ffffff;
+	color: #02006c;
+	box-shadow:
+		0 0.85rem 1.8rem rgba(2, 0, 108, 0.22),
+		0 0 0 0.45rem rgba(2, 0, 108, 0.1);
+}
+
 .locationMarker svg {
 	width: 1.25rem;
 	height: 1.25rem;
+}
+
+.mapApproximateNote {
+	position: absolute;
+	left: 1rem;
+	bottom: 1rem;
+	z-index: 5;
+	max-width: min(28rem, calc(100% - 2rem));
+	display: inline-flex;
+	align-items: center;
+	gap: 0.52rem;
+	padding: 0.72rem 0.85rem;
+	border: 1px solid rgba(2, 0, 108, 0.12);
+	border-radius: 1rem;
+	background: rgba(255, 255, 255, 0.92);
+	color: rgba(23, 23, 31, 0.68);
+	font-size: 0.78rem;
+	font-weight: 680;
+	line-height: 1.35;
+	box-shadow: 0 0.9rem 2rem rgba(16, 22, 33, 0.12);
+	backdrop-filter: blur(16px);
+}
+
+.mapApproximateNote svg {
+	width: 1.05rem;
+	height: 1.05rem;
+	flex: 0 0 auto;
+	color: #02006c;
 }
 
 .mapUnavailable {
@@ -1224,6 +1261,13 @@
 	.mapHeader a {
 		width: 100%;
 		justify-content: center;
+	}
+
+	.mapApproximateNote {
+		left: 0.7rem;
+		right: 0.7rem;
+		bottom: 0.7rem;
+		max-width: none;
 	}
 
 	.skeletonGalleryButtonLeft,
