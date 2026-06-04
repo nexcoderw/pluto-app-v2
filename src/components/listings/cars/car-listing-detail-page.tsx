@@ -1,11 +1,6 @@
 "use client";
 
-import {
-	useMemo,
-	useState,
-	useSyncExternalStore,
-	type CSSProperties,
-} from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -50,6 +45,10 @@ import {
 	getListingCoverImage,
 } from "../listing-formatters";
 import { ListingLoginDialog } from "../listing-login-dialog";
+import {
+	ListingVerifiedPartnerCard,
+	ListingVerifiedPartnerCardSkeleton,
+} from "../listing-verified-partner-card";
 import { CarReviewSection } from "./reviews/car-review-section";
 import styles from "./car-listing-detail-page.module.css";
 
@@ -420,13 +419,6 @@ function CarBookingSidebar({
 		getUserSessionSnapshot,
 		() => null,
 	);
-	const partnerInitials = getInitials(listing.owner.fullName);
-	const partnerImageStyle =
-		listing.owner.imageKey && listing.owner.imageKey.startsWith("http")
-			? ({
-					"--partner-avatar-image": `url("${listing.owner.imageKey}")`,
-				} as CSSProperties)
-			: undefined;
 
 	return (
 		<aside className={styles.sidebar}>
@@ -484,24 +476,7 @@ function CarBookingSidebar({
 				<p className={styles.chargeNote}>You will not be charged yet.</p>
 			</section>
 
-			<section className={styles.partnerPanel}>
-				<span>
-					<ShieldCheck aria-hidden="true" />
-					Verified partner
-				</span>
-				<div className={styles.partnerIdentity}>
-					<i
-						className={styles.partnerAvatar}
-						data-has-image={Boolean(partnerImageStyle)}
-						style={partnerImageStyle}
-						aria-hidden="true"
-					>
-						{partnerImageStyle ? null : partnerInitials}
-					</i>
-					<strong>{listing.owner.fullName}</strong>
-				</div>
-				<p>This partner completed Pluto Booking review before publishing.</p>
-			</section>
+			<ListingVerifiedPartnerCard owner={listing.owner} />
 			<ListingLoginDialog
 				open={isLoginDialogOpen}
 				onOpenChange={setIsLoginDialogOpen}
@@ -644,14 +619,7 @@ function CarListingDetailSkeleton() {
 						<Skeleton className={styles.skeletonBookButton} />
 						<Skeleton className={styles.skeletonChargeNote} />
 					</section>
-					<section className={styles.partnerPanel}>
-						<Skeleton className={styles.skeletonPartnerBadge} />
-						<div className={styles.partnerIdentity}>
-							<Skeleton className={styles.skeletonAvatar} />
-							<Skeleton className={styles.skeletonPartnerName} />
-						</div>
-						<Skeleton className={styles.skeletonPartnerCopy} />
-					</section>
+					<ListingVerifiedPartnerCardSkeleton />
 				</aside>
 			</section>
 		</main>
@@ -711,10 +679,4 @@ function buildGallery(listing: PublicListing) {
 
 function getUserSessionSnapshot(): UserAuthProfile | null {
 	return hasKnownUserSession() ? getCachedUserProfile() : null;
-}
-
-function getInitials(value: string) {
-	const [first = "P", second = "B"] = value.trim().split(/\s+/).filter(Boolean);
-
-	return `${first.charAt(0)}${second.charAt(0)}`.toUpperCase();
 }
