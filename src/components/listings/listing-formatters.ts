@@ -4,6 +4,37 @@ export function getListingCoverImage(listing: PublicListing) {
 	return listing.images.find((image) => image.isCover) ?? listing.images[0];
 }
 
+export function buildListingGallery(
+	listing: PublicListing,
+	fallbackAlt: string,
+	fallbackSrc = "/hero/hero.jpg",
+) {
+	const coverImage = getListingCoverImage(listing);
+	const images = listing.images
+		.filter((image) => Boolean(image.file.publicUrl))
+		.map((image) => ({
+			id: image.id,
+			src: image.file.publicUrl ?? fallbackSrc,
+			alt: image.altText ?? listing.title,
+		}));
+
+	if (!images.length) {
+		return [
+			{
+				id: "fallback",
+				src: fallbackSrc,
+				alt: fallbackAlt,
+			},
+		];
+	}
+
+	return images.sort((first, second) => {
+		if (first.id === coverImage?.id) return -1;
+		if (second.id === coverImage?.id) return 1;
+		return 0;
+	});
+}
+
 export function formatMoney(value: string, currency: string) {
 	const amount = Number(value);
 
