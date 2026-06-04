@@ -1,6 +1,6 @@
 import { useMemo, useState, useSyncExternalStore } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { MessageCircle, RefreshCcw, Star } from "lucide-react";
+import { MessageCircle, RefreshCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { UserAuthProfile } from "@/services/api/auth";
@@ -17,7 +17,7 @@ import {
 import type { PublicListing } from "@/services/api/listings";
 import { CarReviewCard } from "./car-review-card";
 import { CarReviewForm } from "./car-review-form";
-import { CarReviewSummary } from "./car-review-summary";
+import { CarReviewOverview } from "./car-review-overview";
 import { CarReviewsDialog } from "./car-reviews-dialog";
 import styles from "./car-review-section.module.css";
 
@@ -72,15 +72,8 @@ export function CarReviewSection({ listing }: { listing: PublicListing }) {
 
 	return (
 		<section className={styles.section} aria-labelledby="car-reviews-title">
-			<div className={styles.sectionHeader}>
-				<div>
-					<span>
-						<Star aria-hidden="true" />
-						Customer reviews
-					</span>
-					<h2 id="car-reviews-title">What guests say about this car</h2>
-				</div>
-				{reviewsQuery.isError || summaryQuery.isError ? (
+			{reviewsQuery.isError || summaryQuery.isError ? (
+				<div className={styles.sectionHeader}>
 					<Button
 						type="button"
 						variant="outline"
@@ -93,14 +86,15 @@ export function CarReviewSection({ listing }: { listing: PublicListing }) {
 						<RefreshCcw aria-hidden="true" />
 						Retry
 					</Button>
-				) : null}
-			</div>
+				</div>
+			) : null}
 
-			<CarReviewSummary
+			<CarReviewOverview
 				summary={summaryQuery.data}
 				isLoading={summaryQuery.isPending}
 				fallbackRating={listing.ratingAverage}
 				fallbackCount={listing.ratingCount}
+				titleId="car-reviews-title"
 			/>
 
 			{canReview ? (
@@ -143,6 +137,10 @@ export function CarReviewSection({ listing }: { listing: PublicListing }) {
 				key={reviewsDialogKey}
 				listingId={listing.id}
 				focusedReviewId={focusedReviewId}
+				summary={summaryQuery.data}
+				isSummaryLoading={summaryQuery.isPending}
+				fallbackRating={listing.ratingAverage}
+				fallbackCount={listing.ratingCount}
 				open={isReviewsDialogOpen}
 				onOpenChange={setIsReviewsDialogOpen}
 			/>
