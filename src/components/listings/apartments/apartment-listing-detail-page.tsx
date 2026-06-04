@@ -1,18 +1,13 @@
 "use client";
 
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import {
-	ArrowLeft,
 	Bath,
 	BedDouble,
-	CalendarCheck,
 	CheckCircle2,
-	DoorOpen,
 	Home,
 	MapPin,
-	RefreshCcw,
 	Users,
 } from "lucide-react";
 import {
@@ -26,40 +21,29 @@ import type { Swiper as SwiperInstance } from "swiper";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useQuery } from "@tanstack/react-query";
-import type { StyleSpecification } from "maplibre-gl";
-import { Button } from "@/components/ui/button";
-import {
-	Map,
-	MapControls,
-	MapMarker,
-	MarkerContent,
-} from "@/components/ui/map";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { UserAuthProfile } from "@/services/api/auth";
 import {
 	getApartmentListing,
 	type PublicListing,
 } from "@/services/api/listings";
 import {
-	getCachedUserProfile,
-	hasKnownUserSession,
-	subscribeToUserSession,
-} from "@/services/api/token-store";
-import {
+	buildListingGallery,
 	formatBoolean,
-	formatMoney,
 	formatOptional,
-	getListingCoverImage,
 } from "../listing-formatters";
+import {
+	ListingBookingSidebar,
+	ListingBookingSidebarSkeleton,
+} from "../listing-booking-sidebar";
 import {
 	ListingDatePlanner,
 	ListingDatePlannerSkeleton,
 } from "../listing-date-planner";
-import { ListingLoginDialog } from "../listing-login-dialog";
+import { ListingDetailErrorState } from "../listing-detail-error-state";
 import {
-	ListingVerifiedPartnerCard,
-	ListingVerifiedPartnerCardSkeleton,
-} from "../listing-verified-partner-card";
+	ListingLocationMap,
+	ListingLocationMapSkeleton,
+} from "../listing-location-map";
 import { ApartmentReviewSection } from "./apartment-review-section";
 import styles from "./apartment-listing-detail-page.module.css";
 
@@ -69,55 +53,6 @@ const detailTabs: Array<{ value: ApartmentDetailTab; label: string }> = [
 	{ value: "overview", label: "Overview" },
 	{ value: "amenities", label: "Amenities" },
 ];
-
-const kigaliCenter: [number, number] = [30.0619, -1.9441];
-const kigaliNeighborhoods: Array<{
-	keywords: string[];
-	position: [number, number];
-}> = [
-	{ keywords: ["kimihurura"], position: [30.0894, -1.9507] },
-	{ keywords: ["nyarutarama"], position: [30.1037, -1.9336] },
-	{ keywords: ["kacyiru"], position: [30.0706, -1.9367] },
-	{ keywords: ["kiyovu"], position: [30.0619, -1.9548] },
-	{ keywords: ["kibagabaga"], position: [30.113, -1.937] },
-	{ keywords: ["gacuriro"], position: [30.092, -1.925] },
-	{ keywords: ["remera"], position: [30.102, -1.959] },
-	{ keywords: ["kanombe"], position: [30.137, -1.972] },
-	{ keywords: ["kicukiro"], position: [30.103, -2.001] },
-	{ keywords: ["kagugu"], position: [30.083, -1.911] },
-];
-const apartmentDetailMapStyle: StyleSpecification = {
-	version: 8,
-	sources: {
-		"osm-street-raster": {
-			type: "raster",
-			tiles: ["/api/map-tiles/osm/{z}/{x}/{y}"],
-			tileSize: 256,
-			attribution: "© OpenStreetMap contributors",
-		},
-	},
-	layers: [
-		{
-			id: "street-map-background",
-			type: "background",
-			paint: {
-				"background-color": "#eef0f6",
-			},
-		},
-		{
-			id: "osm-street-raster",
-			type: "raster",
-			source: "osm-street-raster",
-			minzoom: 0,
-			maxzoom: 20,
-			paint: {
-				"raster-opacity": 0.96,
-				"raster-saturation": -0.18,
-				"raster-contrast": 0.06,
-			},
-		},
-	],
-};
 
 export function ApartmentListingDetailPage({
 	listingId,
@@ -135,7 +70,13 @@ export function ApartmentListingDetailPage({
 
 	if (listingQuery.isError || !listingQuery.data?.product) {
 		return (
-			<ApartmentListingDetailError onRetry={() => listingQuery.refetch()} />
+			<ListingDetailErrorState
+				title="Apartment unavailable"
+				description="This apartment may have been removed, paused, or moved to another category."
+				backHref="/listings/apartments"
+				backLabel="Back to apartments"
+				onRetry={() => listingQuery.refetch()}
+			/>
 		);
 	}
 
@@ -144,7 +85,10 @@ export function ApartmentListingDetailPage({
 
 function ApartmentListingDetail({ listing }: { listing: PublicListing }) {
 	const [activeTab, setActiveTab] = useState<ApartmentDetailTab>("overview");
-	const gallery = useMemo(() => buildGallery(listing), [listing]);
+	const gallery = useMemo(
+		() => buildListingGallery(listing, "Pluto Booking apartment"),
+		[listing],
+	);
 	const [activeImageId, setActiveImageId] = useState(
 		gallery[0]?.id ?? "fallback",
 	);
@@ -353,212 +297,33 @@ function ApartmentListingDetail({ listing }: { listing: PublicListing }) {
 
 					<ApartmentReviewSection listing={listing} />
 
-					<ApartmentLocationMap
+					<ListingLocationMap
 						listing={listing}
 						locationLabel={locationLabel}
+						ariaLabel="Apartment map location"
+						unavailableDescription="The partner has not attached exact coordinates to this apartment yet. Confirm arrival details before check-in."
 					/>
 				</div>
 
-				<ApartmentBookingSidebar
+				<ListingBookingSidebar
 					listing={listing}
 					fromDate={fromDate}
 					toDate={toDate}
-					stayNights={stayNights}
+					durationCount={stayNights}
+					durationSingular="night"
+					durationPlural="nights"
 					totalPrice={totalPrice}
 					formattedRange={formattedRange}
+					fromLabel="Check-in"
+					toLabel="Checkout"
+					eyebrow="Apartment booking"
+					ctaLabel="Reserve apartment"
+					loginLabel="Sign in to reserve"
+					footerNote="You will review the final booking details before paying."
+					ctaIcon="door"
 				/>
 			</section>
 		</main>
-	);
-}
-
-function ApartmentLocationMap({
-	listing,
-	locationLabel,
-}: {
-	listing: PublicListing;
-	locationLabel: string;
-}) {
-	const latitude = Number(listing.location?.latitude);
-	const longitude = Number(listing.location?.longitude);
-	const hasExactPosition = isValidCoordinatePair(longitude, latitude);
-	const fallbackPosition = getFallbackPosition(listing);
-	const mapPosition = hasExactPosition
-		? { longitude, latitude, isApproximate: false }
-		: fallbackPosition
-			? {
-					longitude: fallbackPosition[0],
-					latitude: fallbackPosition[1],
-					isApproximate: true,
-				}
-			: null;
-	const mapCenter: [number, number] = mapPosition
-		? [mapPosition.longitude, mapPosition.latitude]
-		: kigaliCenter;
-	const directionsUrl = hasExactPosition
-		? `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`
-		: null;
-
-	return (
-		<section className={styles.mapSection} aria-label="Apartment map location">
-			<div className={styles.mapHeader}>
-				<div>
-					<span>
-						<MapPin aria-hidden="true" />
-						Map location
-					</span>
-					<h2>{locationLabel}</h2>
-				</div>
-				{directionsUrl ? (
-					<a href={directionsUrl} target="_blank" rel="noreferrer">
-						<MapPin aria-hidden="true" />
-						Open directions
-					</a>
-				) : null}
-			</div>
-
-			<div
-				className={styles.mapCanvas}
-				data-exact={hasExactPosition}
-				data-approximate={Boolean(mapPosition?.isApproximate)}
-			>
-				{mapPosition ? (
-					<Map
-						className={styles.mapViewport}
-						center={mapCenter}
-						zoom={mapPosition.isApproximate ? 12.3 : 14.2}
-						pitch={22}
-						bearing={-4}
-						theme="light"
-						styles={{
-							light: apartmentDetailMapStyle,
-							dark: apartmentDetailMapStyle,
-						}}
-					>
-						<MapControls
-							position="top-right"
-							showCompass
-							showFullscreen
-							className={styles.mapControls}
-						/>
-						<MapMarker
-							longitude={mapPosition.longitude}
-							latitude={mapPosition.latitude}
-						>
-							<MarkerContent className={styles.markerPortal}>
-								<span
-									className={styles.locationMarker}
-									data-approximate={mapPosition.isApproximate}
-								>
-									<MapPin aria-hidden="true" />
-								</span>
-							</MarkerContent>
-						</MapMarker>
-					</Map>
-				) : (
-					<div className={styles.mapUnavailable}>
-						<MapPin aria-hidden="true" />
-						<strong>Map coordinates unavailable</strong>
-						<p>
-							The partner has not attached exact coordinates to this apartment
-							yet. Confirm arrival details before check-in.
-						</p>
-					</div>
-				)}
-				{mapPosition?.isApproximate ? (
-					<div className={styles.mapApproximateNote}>
-						<MapPin aria-hidden="true" />
-						<span>
-							Approximate area based on the listing location. Confirm the exact
-							address before check-in.
-						</span>
-					</div>
-				) : null}
-			</div>
-		</section>
-	);
-}
-
-function ApartmentBookingSidebar({
-	listing,
-	fromDate,
-	toDate,
-	stayNights,
-	totalPrice,
-	formattedRange,
-}: {
-	listing: PublicListing;
-	fromDate?: Date;
-	toDate?: Date;
-	stayNights: number;
-	totalPrice: number;
-	formattedRange: string;
-}) {
-	const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
-	const currentUser = useSyncExternalStore(
-		(onStoreChange) => subscribeToUserSession(() => onStoreChange()),
-		getUserSessionSnapshot,
-		() => null,
-	);
-
-	return (
-		<aside className={styles.sidebar}>
-			<section className={styles.bookingPanel}>
-				<span>
-					<CalendarCheck aria-hidden="true" />
-					Apartment booking
-				</span>
-				<div className={styles.priceLine}>
-					<strong>
-						{formatMoney(
-							Number.isFinite(totalPrice)
-								? String(totalPrice)
-								: listing.basePrice,
-							listing.currency,
-						)}
-					</strong>
-					<small>
-						for {stayNights} {stayNights === 1 ? "night" : "nights"}
-					</small>
-				</div>
-				<p className={styles.rangeSummary}>{formattedRange}</p>
-				<div className={styles.datePreview}>
-					<div>
-						<span>Check-in</span>
-						<strong>
-							{fromDate ? format(fromDate, "M/d/yyyy") : "Add date"}
-						</strong>
-					</div>
-					<div>
-						<span>Checkout</span>
-						<strong>{toDate ? format(toDate, "M/d/yyyy") : "Add date"}</strong>
-					</div>
-				</div>
-				{currentUser ? (
-					<Button type="button" className={styles.reserveButton}>
-						<DoorOpen aria-hidden="true" />
-						Reserve apartment
-					</Button>
-				) : (
-					<button
-						type="button"
-						className={styles.loginPrompt}
-						onClick={() => setIsLoginDialogOpen(true)}
-					>
-						Sign in to reserve
-						<DoorOpen aria-hidden="true" />
-					</button>
-				)}
-				<p>You will review the final booking details before paying.</p>
-			</section>
-
-			<ListingVerifiedPartnerCard owner={listing.owner} />
-			<ListingLoginDialog
-				open={isLoginDialogOpen}
-				onOpenChange={setIsLoginDialogOpen}
-				listingTitle={listing.title}
-			/>
-		</aside>
 	);
 }
 
@@ -634,148 +399,10 @@ function ApartmentListingDetailSkeleton() {
 							))}
 						</div>
 					</section>
+					<ListingLocationMapSkeleton />
 				</div>
-				<aside className={styles.sidebar}>
-					<section className={styles.bookingPanel}>
-						<Skeleton className={styles.skeletonSectionLabel} />
-						<Skeleton className={styles.skeletonPrice} />
-						<Skeleton className={styles.skeletonDateText} />
-						<div className={styles.datePreview}>
-							<div>
-								<Skeleton className={styles.skeletonMiniLine} />
-								<Skeleton className={styles.skeletonDateValue} />
-							</div>
-							<div>
-								<Skeleton className={styles.skeletonMiniLine} />
-								<Skeleton className={styles.skeletonDateValue} />
-							</div>
-						</div>
-						<Skeleton className={styles.skeletonReserveButton} />
-						<Skeleton className={styles.skeletonChargeNote} />
-					</section>
-					<ListingVerifiedPartnerCardSkeleton />
-				</aside>
+				<ListingBookingSidebarSkeleton />
 			</section>
 		</main>
 	);
-}
-
-function ApartmentListingDetailError({ onRetry }: { onRetry: () => void }) {
-	return (
-		<main className={styles.page}>
-			<section className={styles.statePanel}>
-				<RefreshCcw aria-hidden="true" />
-				<h1>Apartment unavailable</h1>
-				<p>
-					This apartment may have been removed, paused, or moved to another
-					category.
-				</p>
-				<div>
-					<Button type="button" onClick={onRetry}>
-						<RefreshCcw aria-hidden="true" className="rounded-full" />
-						Retry
-					</Button>
-					<Link href="/listings/apartments">
-						<ArrowLeft aria-hidden="true" />
-						Back to apartments
-					</Link>
-				</div>
-			</section>
-		</main>
-	);
-}
-
-function buildGallery(listing: PublicListing) {
-	const coverImage = getListingCoverImage(listing);
-	const images = listing.images
-		.filter((image) => Boolean(image.file.publicUrl))
-		.map((image) => ({
-			id: image.id,
-			src: image.file.publicUrl ?? "/hero/hero.jpg",
-			alt: image.altText ?? listing.title,
-		}));
-
-	if (!images.length) {
-		return [
-			{
-				id: "fallback",
-				src: "/hero/hero.jpg",
-				alt: "Pluto Booking apartment",
-			},
-		];
-	}
-
-	return images.sort((first, second) => {
-		if (first.id === coverImage?.id) return -1;
-		if (second.id === coverImage?.id) return 1;
-		return 0;
-	});
-}
-
-function getUserSessionSnapshot(): UserAuthProfile | null {
-	return hasKnownUserSession() ? getCachedUserProfile() : null;
-}
-
-function isValidCoordinatePair(longitude: number, latitude: number) {
-	return (
-		Number.isFinite(latitude) &&
-		Number.isFinite(longitude) &&
-		latitude >= -90 &&
-		latitude <= 90 &&
-		longitude >= -180 &&
-		longitude <= 180
-	);
-}
-
-function getFallbackPosition(listing: PublicListing): [number, number] | null {
-	const searchableText = [
-		listing.title,
-		listing.shortDescription,
-		listing.description,
-		listing.location?.name,
-		listing.location?.addressLine,
-		listing.location?.city,
-		listing.city,
-	]
-		.filter(Boolean)
-		.join(" ")
-		.toLowerCase();
-	const neighborhood = kigaliNeighborhoods.find((item) =>
-		item.keywords.some((keyword) => searchableText.includes(keyword)),
-	);
-
-	if (neighborhood) {
-		return neighborhood.position;
-	}
-
-	if (
-		[
-			listing.location?.city,
-			listing.city,
-			listing.location?.country,
-			listing.country,
-		]
-			.filter(Boolean)
-			.join(" ")
-			.toLowerCase()
-			.includes("kigali")
-	) {
-		return deterministicKigaliOffset(listing.id);
-	}
-
-	return null;
-}
-
-function deterministicKigaliOffset(listingId: string): [number, number] {
-	const hash = Array.from(listingId).reduce(
-		(total, char) => total + char.charCodeAt(0),
-		0,
-	);
-	const angle = (hash % 360) * (Math.PI / 180);
-	const radius = 0.012 + (hash % 9) * 0.002;
-
-	return [
-		Number((kigaliCenter[0] + Math.cos(angle) * radius).toFixed(6)),
-		Number((kigaliCenter[1] + Math.sin(angle) * radius).toFixed(6)),
-	];
 }
