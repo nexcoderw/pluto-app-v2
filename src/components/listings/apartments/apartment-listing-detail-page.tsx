@@ -72,6 +72,21 @@ const detailTabs: Array<{ value: ApartmentDetailTab; label: string }> = [
 ];
 
 const kigaliCenter: [number, number] = [30.0619, -1.9441];
+const kigaliNeighborhoods: Array<{
+	keywords: string[];
+	position: [number, number];
+}> = [
+	{ keywords: ["kimihurura"], position: [30.0894, -1.9507] },
+	{ keywords: ["nyarutarama"], position: [30.1037, -1.9336] },
+	{ keywords: ["kacyiru"], position: [30.0706, -1.9367] },
+	{ keywords: ["kiyovu"], position: [30.0619, -1.9548] },
+	{ keywords: ["kibagabaga"], position: [30.113, -1.937] },
+	{ keywords: ["gacuriro"], position: [30.092, -1.925] },
+	{ keywords: ["remera"], position: [30.102, -1.959] },
+	{ keywords: ["kanombe"], position: [30.137, -1.972] },
+	{ keywords: ["kicukiro"], position: [30.103, -2.001] },
+	{ keywords: ["kagugu"], position: [30.083, -1.911] },
+];
 const apartmentDetailMapStyle: StyleSpecification = {
 	version: 8,
 	sources: {
@@ -383,8 +398,18 @@ function ApartmentLocationMap({
 	const latitude = Number(listing.location?.latitude);
 	const longitude = Number(listing.location?.longitude);
 	const hasExactPosition = isValidCoordinatePair(longitude, latitude);
-	const mapCenter: [number, number] = hasExactPosition
-		? [longitude, latitude]
+	const fallbackPosition = getFallbackPosition(listing);
+	const mapPosition = hasExactPosition
+		? { longitude, latitude, isApproximate: false }
+		: fallbackPosition
+			? {
+					longitude: fallbackPosition[0],
+					latitude: fallbackPosition[1],
+					isApproximate: true,
+				}
+			: null;
+	const mapCenter: [number, number] = mapPosition
+		? [mapPosition.longitude, mapPosition.latitude]
 		: kigaliCenter;
 	const directionsUrl = hasExactPosition
 		? `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`
@@ -408,12 +433,16 @@ function ApartmentLocationMap({
 				) : null}
 			</div>
 
-			<div className={styles.mapCanvas} data-exact={hasExactPosition}>
-				{hasExactPosition ? (
+			<div
+				className={styles.mapCanvas}
+				data-exact={hasExactPosition}
+				data-approximate={Boolean(mapPosition?.isApproximate)}
+			>
+				{mapPosition ? (
 					<Map
 						className={styles.mapViewport}
 						center={mapCenter}
-						zoom={14.2}
+						zoom={mapPosition.isApproximate ? 12.3 : 14.2}
 						pitch={22}
 						bearing={-4}
 						theme="light"
@@ -428,9 +457,15 @@ function ApartmentLocationMap({
 							showFullscreen
 							className={styles.mapControls}
 						/>
-						<MapMarker longitude={longitude} latitude={latitude}>
+						<MapMarker
+							longitude={mapPosition.longitude}
+							latitude={mapPosition.latitude}
+						>
 							<MarkerContent className={styles.markerPortal}>
-								<span className={styles.locationMarker}>
+								<span
+									className={styles.locationMarker}
+									data-approximate={mapPosition.isApproximate}
+								>
 									<MapPin aria-hidden="true" />
 								</span>
 							</MarkerContent>
@@ -446,6 +481,15 @@ function ApartmentLocationMap({
 						</p>
 					</div>
 				)}
+				{mapPosition?.isApproximate ? (
+					<div className={styles.mapApproximateNote}>
+						<MapPin aria-hidden="true" />
+						<span>
+							Approximate area based on the listing location. Confirm the exact
+							address before check-in.
+						</span>
+					</div>
+				) : null}
 			</div>
 		</section>
 	);
@@ -834,6 +878,59 @@ function isValidCoordinatePair(longitude: number, latitude: number) {
 		longitude >= -180 &&
 		longitude <= 180
 	);
+}
+
+function getFallbackPosition(listing: PublicListing): [number, number] | null {
+	const searchableText = [
+		listing.title,
+		listing.shortDescription,
+		listing.description,
+		listing.location?.name,
+		listing.location?.addressLine,
+		listing.location?.city,
+		listing.city,
+	]
+		.filter(Boolean)
+		.join(" ")
+		.toLowerCase();
+	const neighborhood = kigaliNeighborhoods.find((item) =>
+		item.keywords.some((keyword) => searchableText.includes(keyword)),
+	);
+
+	if (neighborhood) {
+		return neighborhood.position;
+	}
+
+	if (
+		[
+			listing.location?.city,
+			listing.city,
+			listing.location?.country,
+			listing.country,
+		]
+			.filter(Boolean)
+			.join(" ")
+			.toLowerCase()
+			.includes("kigali")
+	) {
+		return deterministicKigaliOffset(listing.id);
+	}
+
+	return null;
+}
+
+function deterministicKigaliOffset(listingId: string): [number, number] {
+	const hash = Array.from(listingId).reduce(
+		(total, char) => total + char.charCodeAt(0),
+		0,
+	);
+	const angle = (hash % 360) * (Math.PI / 180);
+	const radius = 0.012 + (hash % 9) * 0.002;
+
+	return [
+		Number((kigaliCenter[0] + Math.cos(angle) * radius).toFixed(6)),
+		Number((kigaliCenter[1] + Math.sin(angle) * radius).toFixed(6)),
+	];
 }
 
 function getInitials(value: string) {
