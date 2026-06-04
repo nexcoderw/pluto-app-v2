@@ -27,7 +27,7 @@
 .tabButton strong {
   display: block;
   color: #17171f;
-  font-size: 0.9rem;
+  font-size: 0.81rem;
   font-weight: 900;
   line-height: 1.2;
 }
@@ -37,7 +37,7 @@
   overflow: hidden;
   color: rgba(23, 23, 31, 0.55);
   font-size: 0.75rem;
-  font-weight: 650;
+  font-weight: 600;
   line-height: 1.35;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -412,7 +412,7 @@
 .field small {
   color: #b91c1c;
   font-size: 0.74rem;
-  font-weight: 760;
+  font-weight: 600;
 }
 
 .phoneInputShell {
@@ -553,6 +553,165 @@
   animation: accountProfileSpin 720ms linear infinite;
 }
 
+.skeletonImagePanel {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  overflow: hidden;
+  padding: 1rem;
+  border: 1px solid rgba(2, 0, 108, 0.1);
+  border-radius: 1.25rem;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(2, 0, 108, 0.14), transparent 34%),
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.95),
+      rgba(244, 246, 252, 0.88)
+    );
+}
+
+.skeletonImagePanel::before {
+  position: absolute;
+  inset: auto 1rem 0;
+  height: 0.24rem;
+  border-radius: 999px 999px 0 0;
+  background: #02006c;
+  content: "";
+}
+
+.skeletonAvatarWrap {
+  position: relative;
+  width: min(9.2rem, 70%);
+  aspect-ratio: 1;
+}
+
+.skeletonProfileAvatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  box-shadow:
+    inset 0 0 0 0.5rem rgba(255, 255, 255, 0.8),
+    0 1rem 2rem rgba(2, 0, 108, 0.12);
+}
+
+.skeletonCameraBadge {
+  position: absolute;
+  right: 0.45rem;
+  bottom: 0.45rem;
+  width: 2.55rem;
+  height: 2.55rem;
+  border: 0.22rem solid #ffffff;
+  border-radius: 999px;
+}
+
+.skeletonEyebrow {
+  width: 7rem;
+  height: 0.85rem;
+  border-radius: 999px;
+}
+
+.skeletonName {
+  width: 72%;
+  height: 1.2rem;
+  border-radius: 999px;
+}
+
+.skeletonCopy {
+  width: 88%;
+  height: 0.85rem;
+  border-radius: 999px;
+}
+
+.skeletonUploadButton,
+.skeletonSaveButton {
+  height: var(--pluto-button-height);
+  border-radius: 999px;
+}
+
+.skeletonUploadButton {
+  width: 100%;
+}
+
+.skeletonRules {
+  width: 100%;
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.65rem 0.7rem;
+  border: 1px dashed rgba(2, 0, 108, 0.08);
+  border-radius: 0.9rem;
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.skeletonRules span,
+.skeletonRules div {
+  height: 0.68rem;
+  border-radius: 999px;
+}
+
+.skeletonTabs {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.skeletonTabs span,
+.skeletonTabs div {
+  height: var(--pluto-button-height);
+  border-radius: 999px;
+}
+
+.skeletonHeader {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.skeletonTitle {
+  width: min(24rem, 72%);
+  height: 2rem;
+  border-radius: 999px;
+}
+
+.skeletonDescription {
+  width: min(36rem, 92%);
+  height: 1rem;
+  border-radius: 999px;
+}
+
+.skeletonField {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.skeletonLabel {
+  width: 6.5rem;
+  height: 0.78rem;
+  border-radius: 999px;
+}
+
+.skeletonInput {
+  height: var(--pluto-button-height);
+  border-radius: 999px;
+}
+
+.skeletonFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 0.2rem;
+}
+
+.skeletonFooterCopy {
+  width: min(34rem, 58%);
+  height: 0.95rem;
+  border-radius: 999px;
+}
+
+.skeletonSaveButton {
+  width: 11rem;
+  flex: 0 0 auto;
+}
+
 @keyframes accountProfileSpin {
   to {
     transform: rotate(360deg);
@@ -606,6 +765,16 @@
   }
 
   .saveButton {
+    width: 100%;
+  }
+
+  .skeletonFooter {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .skeletonFooterCopy,
+  .skeletonSaveButton {
     width: 100%;
   }
 
