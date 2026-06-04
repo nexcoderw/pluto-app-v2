@@ -1,28 +1,28 @@
-export type UserRole = 'CUSTOMER' | 'PARTNER';
-export type PartnerType = 'INDIVIDUAL' | 'COMPANY';
+export type UserRole = "CUSTOMER" | "PARTNER";
+export type PartnerType = "INDIVIDUAL" | "COMPANY";
 
 export type UserAuthProfile = {
-	id: string;
-	fullName: string;
-	email: string;
-	phone: string | null;
-	imageUrl?: string | null;
-	role: UserRole;
-	emailVerified: boolean;
-	phoneVerified: boolean;
-	requiresPhoneNumber: boolean;
+  id: string;
+  fullName: string;
+  email: string;
+  phone: string | null;
+  imageUrl: string | null;
+  role: UserRole;
+  emailVerified: boolean;
+  phoneVerified: boolean;
+  requiresPhoneNumber: boolean;
 };
 
 export type UserAuthResponse = {
-	message: string;
-	accessToken: string;
-	user: UserAuthProfile;
+  message: string;
+  accessToken: string;
+  user: UserAuthProfile;
 };
 
 export type UserCurrentProfileResponse = {
-	user: UserAuthProfile;
+  user: UserAuthProfile;
 };
 
 export type ApiMessageResponse = {
-	message: string;
+  message: string;
 };
