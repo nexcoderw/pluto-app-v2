@@ -2,9 +2,36 @@
 
 import { FormEvent, useMemo, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { Loader2, Mail, Phone, Save, UserRound } from "lucide-react";
+import type { CountryCode } from "libphonenumber-js";
+import { parsePhoneNumberFromString } from "libphonenumber-js";
+import {
+  BadgeCheck,
+  Loader2,
+  Mail,
+  Phone,
+  Save,
+  UserRound,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  PHONE_COUNTRIES,
+  RWANDA_PHONE_COUNTRY,
+  getPhoneCountryOption,
+  isSupportedPhoneCountry,
+} from "@/constants/phone-countries";
+import {
+  getPhonePlaceholder,
+  isValidInternationalPhoneNumber,
+  normalizePhoneNumber,
+} from "@/lib/phone-number";
 import {
   updateUserProfile,
   type UpdateUserProfileRequest,
@@ -21,6 +48,7 @@ type ProfileDetailsFormProps = {
 type FormState = {
   fullName: string;
   email: string;
+  phoneCountry: CountryCode;
   phone: string;
 };
 
@@ -57,9 +85,21 @@ export function ProfileDetailsForm({
     },
   });
 
-  function updateField(field: keyof FormState, value: string) {
+  function updateField(
+    field: Exclude<keyof FormState, "phoneCountry">,
+    value: string,
+  ) {
     setForm((current) => ({ ...current, [field]: value }));
     setErrors((current) => ({ ...current, [field]: undefined }));
+  }
+
+  function updatePhoneCountry(value: CountryCode | null) {
+    if (!isSupportedPhoneCountry(value)) {
+      return;
+    }
+
+    setForm((current) => ({ ...current, phoneCountry: value }));
+    setErrors((current) => ({ ...current, phone: undefined }));
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -115,11 +155,26 @@ export function ProfileDetailsForm({
         </label>
 
         <label className={styles.field}>
+          <span>Role</span>
+          <div className={styles.readonlyField}>
+            <BadgeCheck aria-hidden="true" />
+            <input
+              type="text"
+              value={formatRole(user.role)}
+              readOnly
+              aria-readonly="true"
+            />
+          </div>
+        </label>
+
+        <label className={styles.field}>
           <span>Email address</span>
           <div data-invalid={Boolean(errors.email)}>
             <Mail aria-hidden="true" />
             <input
               type="email"
+              inputMode="email"
+              pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
               value={form.email}
               placeholder="name@example.com"
               autoComplete="email"
@@ -131,12 +186,47 @@ export function ProfileDetailsForm({
 
         <label className={styles.field}>
           <span>Phone number</span>
-          <div data-invalid={Boolean(errors.phone)}>
+          <div
+            className={styles.phoneInputShell}
+            data-invalid={Boolean(errors.phone)}
+          >
+            <Select
+              value={form.phoneCountry}
+              onValueChange={updatePhoneCountry}
+            >
+              <SelectTrigger
+                className={styles.countryCodeTrigger}
+                aria-label="Country code"
+              >
+                <SelectValue>
+                  <span>{getPhoneCountryOption(form.phoneCountry).code}</span>
+                  <strong>
+                    {getPhoneCountryOption(form.phoneCountry).callingCode}
+                  </strong>
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent
+                className={styles.countryCodeMenu}
+                align="start"
+                alignItemWithTrigger={false}
+              >
+                {PHONE_COUNTRIES.map((country) => (
+                  <SelectItem key={country.code} value={country.code}>
+                    <span className={styles.countryOption}>
+                      <strong>{country.callingCode}</strong>
+                      <span>{country.name}</span>
+                      <small>{country.code}</small>
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <span className={styles.phoneDivider} aria-hidden="true" />
             <Phone aria-hidden="true" />
             <input
               type="tel"
               value={form.phone}
-              placeholder="+250788123456"
+              placeholder={getPhonePlaceholder(form.phoneCountry)}
               autoComplete="tel"
               onChange={(event) => updateField("phone", event.target.value)}
             />
@@ -168,10 +258,13 @@ export function ProfileDetailsForm({
 }
 
 function toFormState(user: UserAuthProfile): FormState {
+  const phone = parseProfilePhone(user.phone);
+
   return {
     fullName: user.fullName,
     email: user.email,
-    phone: user.phone ?? "",
+    phoneCountry: phone.country,
+    phone: phone.number,
   };
 }
 
@@ -186,8 +279,8 @@ function validateForm(form: FormState): FormErrors {
     errors.email = "Enter a valid email address.";
   }
 
-  if (!/^\+?[1-9]\d{7,14}$/.test(form.phone.trim())) {
-    errors.phone = "Use international format, for example +250788123456.";
+  if (!isValidInternationalPhoneNumber(form.phoneCountry, form.phone)) {
+    errors.phone = "Use a valid phone number for the selected country code.";
   }
 
   return errors;
@@ -200,7 +293,11 @@ function buildChangedPayload(
   const payload: UpdateUserProfileRequest = {};
   const nextFullName = form.fullName.trim();
   const nextEmail = form.email.trim().toLowerCase();
-  const nextPhone = form.phone.trim();
+  const nextPhone = normalizePhoneNumber(form.phoneCountry, form.phone);
+  const initialPhone = normalizePhoneNumber(
+    initialForm.phoneCountry,
+    initialForm.phone,
+  );
 
   if (nextFullName !== initialForm.fullName.trim()) {
     payload.fullName = nextFullName;
@@ -210,9 +307,39 @@ function buildChangedPayload(
     payload.email = nextEmail;
   }
 
-  if (nextPhone !== initialForm.phone.trim()) {
+  if (nextPhone !== initialPhone) {
     payload.phone = nextPhone;
   }
 
   return payload;
+}
+
+function parseProfilePhone(phone: string | null): {
+  country: CountryCode;
+  number: string;
+} {
+  if (!phone) {
+    return {
+      country: RWANDA_PHONE_COUNTRY,
+      number: "",
+    };
+  }
+
+  const parsedPhone = parsePhoneNumberFromString(phone);
+  const country = isSupportedPhoneCountry(parsedPhone?.country)
+    ? parsedPhone.country
+    : RWANDA_PHONE_COUNTRY;
+
+  return {
+    country,
+    number: parsedPhone?.nationalNumber ?? phone,
+  };
+}
+
+function formatRole(role: UserAuthProfile["role"]) {
+  return role
+    .toLowerCase()
+    .split("_")
+    .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
+    .join(" ");
 }
