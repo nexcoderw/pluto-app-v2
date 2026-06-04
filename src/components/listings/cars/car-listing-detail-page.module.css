@@ -61,7 +61,7 @@
 	max-width: 58rem;
 	margin: 0.85rem 0 0.45rem;
 	color: #17171f;
-	font-size: clamp(2.05rem, 5vw, 4.35rem);
+	font-size: clamp(1.1rem, 5vw, 2.45rem);
 	font-weight: 880;
 	line-height: 0.98;
 	letter-spacing: 0;
@@ -74,7 +74,7 @@
 	font-weight: 760;
 }
 
-.heroStats {
+.heroMetrics {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: flex-end;
@@ -82,7 +82,7 @@
 	max-width: 22rem;
 }
 
-.heroStats span {
+.heroMetrics span {
 	min-height: 2.25rem;
 	display: inline-flex;
 	align-items: center;
@@ -970,7 +970,7 @@
 		grid-template-columns: 1fr;
 	}
 
-	.heroStats {
+	.heroMetrics {
 		justify-content: flex-start;
 	}
 
@@ -1011,13 +1011,13 @@
 		font-size: clamp(1.8rem, 11vw, 2.75rem);
 	}
 
-	.heroStats,
-	.heroStats span,
+	.heroMetrics,
+	.heroMetrics span,
 	.skeletonStatPill {
 		width: 100%;
 	}
 
-	.heroStats span {
+	.heroMetrics span {
 		justify-content: center;
 	}
 

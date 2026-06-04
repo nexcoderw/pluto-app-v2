@@ -63,7 +63,7 @@
 	max-width: 58rem;
 	margin: 0.85rem 0 0.45rem;
 	color: #17171f;
-	font-size: clamp(2.1rem, 5vw, 4.45rem);
+	font-size: clamp(1.1rem, 5vw, 2.45rem);
 	font-weight: 900;
 	line-height: 0.98;
 	letter-spacing: 0;
@@ -77,32 +77,25 @@
 }
 
 .heroMetrics {
-	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: 0.55rem;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: 0.45rem;
+	max-width: 22rem;
 }
 
 .heroMetrics span {
-	min-height: 5.4rem;
-	display: grid;
-	align-content: center;
-	gap: 0.2rem;
-	padding: 0.75rem;
+	min-height: 2.25rem;
+	display: inline-flex;
+	align-items: center;
+	padding: 0 0.82rem;
 	border: 1px solid rgba(2, 0, 108, 0.1);
-	border-radius: 1.2rem;
+	border-radius: 999px;
 	background: rgba(255, 255, 255, 0.82);
-	color: rgba(23, 23, 31, 0.58);
-	font-size: 0.72rem;
-	font-weight: 760;
-	text-align: center;
-	box-shadow: 0 0.9rem 2rem rgba(16, 22, 33, 0.06);
-}
-
-.heroMetrics strong {
-	color: #02006c;
-	font-size: 1.55rem;
-	font-weight: 900;
-	line-height: 1;
+	color: #17171f;
+	font-size: 0.76rem;
+	font-weight: 780;
+	box-shadow: 0 0.7rem 1.6rem rgba(16, 22, 33, 0.05);
 }
 
 .layout {

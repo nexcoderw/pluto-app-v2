@@ -163,21 +163,13 @@ function CarListingDetail({ listing }: { listing: PublicListing }) {
 		<main className={styles.page}>
 			<header className={styles.hero}>
 				<div className={styles.heroCopy}>
-					<Link href="/listings/cars" className={styles.backLink}>
-						<ArrowLeft aria-hidden="true" />
-						Back to cars
-					</Link>
-					<span className={styles.eyebrow}>
-						<BadgeCheck aria-hidden="true" />
-						Verified car rental
-					</span>
 					<h1>{listing.title}</h1>
 					<p>
 						<MapPin aria-hidden="true" />
 						{listing.city}, {listing.country}
 					</p>
 				</div>
-				<div className={styles.heroStats} aria-label="Listing highlights">
+				<div className={styles.heroMetrics} aria-label="Listing highlights">
 					<span>{details ? `${details.seats} seats` : "Seats listed"}</span>
 					<span>{formatOptional(details?.transmission)}</span>
 					<span>{formatOptional(details?.fuelType)}</span>
@@ -518,12 +510,10 @@ function CarListingDetailSkeleton() {
 		<main className={styles.page} aria-busy="true">
 			<header className={styles.hero}>
 				<div className={styles.heroCopy}>
-					<Skeleton className={styles.skeletonBackLink} />
-					<Skeleton className={styles.skeletonEyebrow} />
 					<Skeleton className={styles.skeletonTitle} />
 					<Skeleton className={styles.skeletonLocation} />
 				</div>
-				<div className={styles.heroStats} aria-label="Loading highlights">
+				<div className={styles.heroMetrics} aria-label="Loading highlights">
 					<Skeleton className={styles.skeletonStatPill} />
 					<Skeleton className={styles.skeletonStatPill} />
 					<Skeleton className={styles.skeletonStatPill} />

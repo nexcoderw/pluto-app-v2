@@ -231,14 +231,6 @@ function HotelRoomListingDetail({ listing }: { listing: PublicListing }) {
 		<main className={styles.page}>
 			<header className={styles.hero}>
 				<div className={styles.heroCopy}>
-					<Link href="/listings/hotel-rooms" className={styles.backLink}>
-						<ArrowLeft aria-hidden="true" />
-						Back to hotel rooms
-					</Link>
-					<span className={styles.eyebrow}>
-						<Hotel aria-hidden="true" />
-						Verified hotel room
-					</span>
 					<h1>{listing.title}</h1>
 					<p>
 						<MapPin aria-hidden="true" />
@@ -246,20 +238,9 @@ function HotelRoomListingDetail({ listing }: { listing: PublicListing }) {
 					</p>
 				</div>
 				<div className={styles.heroMetrics} aria-label="Hotel room highlights">
-					<span>
-						<strong>{details?.maxGuests ?? "..."}</strong>
-						Guests
-					</span>
-					<span>
-						<strong>{details?.bedType ? "1" : "..."}</strong>
-						Bed setup
-					</span>
-					<span>
-						<strong>
-							{listing.ratingAverage ? listing.ratingAverage.toFixed(1) : "New"}
-						</strong>
-						Rating
-					</span>
+					<span>{details?.maxGuests ?? "..."} Guests</span>
+					<span>{details?.bedType ? "1" : "..."} Bed setup</span>
+					<span>{listing.ratingAverage ? listing.ratingAverage.toFixed(1) : "New"} Rating</span>
 				</div>
 			</header>
 
@@ -713,8 +694,6 @@ function HotelRoomListingDetailSkeleton() {
 		<main className={styles.page} aria-busy="true">
 			<header className={styles.hero}>
 				<div className={styles.heroCopy}>
-					<Skeleton className={styles.skeletonBackLink} />
-					<Skeleton className={styles.skeletonEyebrow} />
 					<Skeleton className={styles.skeletonTitle} />
 					<Skeleton className={styles.skeletonLocation} />
 				</div>

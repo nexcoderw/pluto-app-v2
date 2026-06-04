@@ -240,14 +240,6 @@ function AirbnbListingDetail({ listing }: { listing: PublicListing }) {
 		<main className={styles.page}>
 			<header className={styles.hero}>
 				<div className={styles.heroCopy}>
-					<Link href="/listings/airbnb" className={styles.backLink}>
-						<ArrowLeft aria-hidden="true" />
-						Back to Airbnb homes
-					</Link>
-					<span className={styles.eyebrow}>
-						<House aria-hidden="true" />
-						Verified private stay
-					</span>
 					<h1>{listing.title}</h1>
 					<p>
 						<MapPin aria-hidden="true" />
@@ -255,20 +247,9 @@ function AirbnbListingDetail({ listing }: { listing: PublicListing }) {
 					</p>
 				</div>
 				<div className={styles.heroMetrics} aria-label="Airbnb highlights">
-					<span>
-						<strong>{details?.bedrooms ?? "..."}</strong>
-						Bedrooms
-					</span>
-					<span>
-						<strong>{details?.maxGuests ?? "..."}</strong>
-						Guests
-					</span>
-					<span>
-						<strong>
-							{listing.ratingAverage ? listing.ratingAverage.toFixed(1) : "New"}
-						</strong>
-						Rating
-					</span>
+					<span>{details?.bedrooms ?? "..."} Bedrooms</span>
+					<span>{details?.maxGuests ?? "..."} Guests</span>
+					<span>{listing.ratingAverage ? listing.ratingAverage.toFixed(1) : "New"} Rating</span>
 				</div>
 			</header>
 
@@ -722,8 +703,6 @@ function AirbnbListingDetailSkeleton() {
 		<main className={styles.page} aria-busy="true">
 			<header className={styles.hero}>
 				<div className={styles.heroCopy}>
-					<Skeleton className={styles.skeletonBackLink} />
-					<Skeleton className={styles.skeletonEyebrow} />
 					<Skeleton className={styles.skeletonTitle} />
 					<Skeleton className={styles.skeletonLocation} />
 				</div>

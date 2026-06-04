@@ -209,14 +209,6 @@ function ApartmentListingDetail({ listing }: { listing: PublicListing }) {
 		<main className={styles.page}>
 			<header className={styles.hero}>
 				<div className={styles.heroCopy}>
-					<Link href="/listings/apartments" className={styles.backLink}>
-						<ArrowLeft aria-hidden="true" />
-						Back to apartments
-					</Link>
-					<span className={styles.eyebrow}>
-						<Building2 aria-hidden="true" />
-						Verified apartment stay
-					</span>
 					<h1>{listing.title}</h1>
 					<p>
 						<MapPin aria-hidden="true" />
@@ -224,20 +216,9 @@ function ApartmentListingDetail({ listing }: { listing: PublicListing }) {
 					</p>
 				</div>
 				<div className={styles.heroMetrics} aria-label="Apartment highlights">
-					<span>
-						<strong>{details?.bedrooms ?? "..."}</strong>
-						Bedrooms
-					</span>
-					<span>
-						<strong>{details?.maxGuests ?? "..."}</strong>
-						Guests
-					</span>
-					<span>
-						<strong>
-							{listing.ratingAverage ? listing.ratingAverage.toFixed(1) : "New"}
-						</strong>
-						Rating
-					</span>
+					<span>{details?.bedrooms ?? "..."} Bedrooms</span>
+					<span>{details?.maxGuests ?? "..."} Guests</span>
+					<span>{listing.ratingAverage ? listing.ratingAverage.toFixed(1) : "New"} Rating</span>
 				</div>
 			</header>
 
@@ -674,8 +655,6 @@ function ApartmentListingDetailSkeleton() {
 		<main className={styles.page} aria-busy="true">
 			<header className={styles.hero}>
 				<div className={styles.heroCopy}>
-					<Skeleton className={styles.skeletonBackLink} />
-					<Skeleton className={styles.skeletonEyebrow} />
 					<Skeleton className={styles.skeletonTitle} />
 					<Skeleton className={styles.skeletonLocation} />
 				</div>
