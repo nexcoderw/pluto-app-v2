@@ -83,23 +83,12 @@
 }
 
 .laurel {
-	width: 2rem;
-	height: 4.1rem;
-	margin-inline: -0.2rem;
-	border-radius: 999px 0 999px 999px;
-	background:
-		linear-gradient(155deg, transparent 42%, rgba(23, 23, 31, 0.2) 43%),
-		linear-gradient(180deg, #20212a, #4e515b);
-	box-shadow:
-		0.52rem 0.28rem 0 -0.28rem #20212a,
-		0.82rem 0.98rem 0 -0.32rem #363844,
-		0.66rem 1.68rem 0 -0.36rem #5a5d66,
-		0.26rem 2.3rem 0 -0.42rem #747780;
-	transform: rotate(-22deg);
-}
-
-.laurel:last-of-type {
-	transform: scaleX(-1) rotate(-22deg);
+	width: clamp(2.05rem, 6vw, 3.55rem);
+	height: auto;
+	margin-inline: clamp(-0.7rem, -1.4vw, -0.25rem);
+	object-fit: contain;
+	filter: drop-shadow(0 0.55rem 0.9rem rgba(16, 22, 33, 0.12));
+	user-select: none;
 }
 
 .breakdown {
