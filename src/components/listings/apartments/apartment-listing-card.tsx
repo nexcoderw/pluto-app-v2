@@ -183,3 +183,43 @@ export function ApartmentListingCard({
 		</article>
 	);
 }
+
+export function ApartmentListingCardSkeleton() {
+	return (
+		<article className={styles.card} aria-hidden="true">
+			<div className={styles.media}>
+				<span className={styles.skeletonImage} />
+				<span className={styles.skeletonStatusPill} />
+				<span className={styles.skeletonGalleryButton} data-position="left" />
+				<span className={styles.skeletonGalleryButton} data-position="right" />
+				<div className={styles.skeletonGalleryDots}>
+					{Array.from({ length: 4 }).map((_, index) => (
+						<span key={index} data-active={index === 0} />
+					))}
+				</div>
+			</div>
+
+			<div className={styles.body}>
+				<span className={styles.skeletonFavoriteButton} />
+				<span className={styles.skeletonTitle} />
+				<span className={styles.skeletonSummary} />
+				<span className={styles.skeletonSummary} data-short="true" />
+				<span className={styles.skeletonLocation} />
+
+				<ul className={styles.specs}>
+					{Array.from({ length: 3 }).map((_, index) => (
+						<li key={index} className={styles.skeletonSpec}>
+							<span />
+							<strong />
+						</li>
+					))}
+				</ul>
+
+				<div className={styles.footer}>
+					<span className={styles.skeletonRating} />
+					<span className={styles.skeletonPrice} />
+				</div>
+			</div>
+		</article>
+	);
+}
