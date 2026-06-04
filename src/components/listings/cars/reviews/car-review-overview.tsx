@@ -74,23 +74,25 @@ export function CarReviewOverview({
 			</div>
 
 			<div className={styles.scoreHero}>
-				<Image
-					src="/icons/left-icon.avif"
-					alt=""
-					width={68}
-					height={132}
-					className={styles.laurel}
-					aria-hidden="true"
-				/>
-				<strong>{isLoading ? "..." : displayRating}</strong>
-				<Image
-					src="/icons/right-icon.avif"
-					alt=""
-					width={68}
-					height={132}
-					className={styles.laurel}
-					aria-hidden="true"
-				/>
+				<div className={styles.scoreMark}>
+					<Image
+						src="/icons/left-icon.avif"
+						alt=""
+						width={68}
+						height={132}
+						className={styles.laurel}
+						aria-hidden="true"
+					/>
+					<strong>{isLoading ? "..." : displayRating}</strong>
+					<Image
+						src="/icons/right-icon.avif"
+						alt=""
+						width={68}
+						height={132}
+						className={styles.laurel}
+						aria-hidden="true"
+					/>
+				</div>
 				<p>{reviewCount > 0 ? "Guest favorite" : "Awaiting first review"}</p>
 				<small>
 					{reviewCount > 0
