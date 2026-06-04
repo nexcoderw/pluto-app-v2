@@ -125,6 +125,7 @@
 
 .galleryPanel,
 .storyPanel,
+.datePlanner,
 .bookingPanel,
 .partnerPanel,
 .statePanel {
@@ -143,6 +144,23 @@
 	padding: 0.55rem;
 }
 
+.swiper {
+	position: relative;
+	min-width: 0;
+	overflow: hidden;
+	border-radius: 1.25rem;
+}
+
+.swiper :global(.swiper-wrapper) {
+	display: flex;
+}
+
+.swiper :global(.swiper-slide) {
+	position: relative;
+	flex-shrink: 0;
+	width: 100%;
+}
+
 .primaryImage {
 	position: relative;
 	min-height: clamp(24rem, 55vw, 38rem);
@@ -154,6 +172,69 @@
 .primaryImage img,
 .galleryRail img {
 	object-fit: cover;
+}
+
+.swiper :global(.swiper-button-prev),
+.swiper :global(.swiper-button-next) {
+	position: absolute;
+	top: 50%;
+	z-index: 3;
+	width: 2.7rem;
+	height: 2.7rem;
+	display: grid;
+	place-items: center;
+	border: 1px solid rgba(255, 255, 255, 0.78);
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.9);
+	color: #02006c;
+	box-shadow: 0 0.8rem 1.8rem rgba(16, 22, 33, 0.14);
+	cursor: pointer;
+	transform: translateY(-50%);
+}
+
+.swiper :global(.swiper-button-prev) {
+	left: 0.85rem;
+}
+
+.swiper :global(.swiper-button-next) {
+	right: 0.85rem;
+}
+
+.swiper :global(.swiper-button-prev)::after,
+.swiper :global(.swiper-button-next)::after {
+	font-size: 0.8rem;
+	font-weight: 900;
+}
+
+.swiper :global(.swiper-pagination) {
+	position: absolute;
+	left: 50%;
+	bottom: 0.95rem;
+	z-index: 3;
+	display: inline-flex;
+	gap: 0.35rem;
+	padding: 0.4rem 0.55rem;
+	border-radius: 999px;
+	background: rgba(23, 23, 31, 0.36);
+	backdrop-filter: blur(14px);
+	transform: translateX(-50%);
+}
+
+.swiper :global(.swiper-pagination-bullet) {
+	width: 0.42rem;
+	height: 0.42rem;
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.62);
+	opacity: 1;
+	cursor: pointer;
+	transition:
+		width 180ms ease,
+		background 180ms ease;
+}
+
+.swiper :global(.swiper-pagination-bullet-active) {
+	width: 1.1rem;
+	background: #ffffff;
 }
 
 .galleryRail {
@@ -381,6 +462,96 @@
 	font-weight: 650;
 }
 
+.datePlanner {
+	display: grid;
+	gap: 1rem;
+	padding: clamp(0.9rem, 2.4vw, 1.15rem);
+}
+
+.datePlannerHeader {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(18rem, 24rem);
+	gap: clamp(0.9rem, 2vw, 1.15rem);
+	align-items: end;
+}
+
+.datePlannerHeader > div:first-child {
+	display: grid;
+	gap: 0.35rem;
+}
+
+.datePlannerHeader span {
+	width: fit-content;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.42rem;
+	color: #02006c;
+	font-size: 0.72rem;
+	font-weight: 850;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.datePlannerHeader p,
+.rangeSummary {
+	margin: 0;
+	color: rgba(23, 23, 31, 0.62);
+	font-size: 0.82rem;
+	line-height: 1.55;
+}
+
+.calendarShell {
+	overflow-x: auto;
+	padding: 0.75rem;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	border-radius: 1.25rem;
+	background: #ffffff;
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+}
+
+.calendar {
+	width: 100%;
+	min-width: 42rem;
+	--cell-size: 2.25rem;
+	--cell-radius: 999px;
+}
+
+.calendar :global(.rdp-months) {
+	width: 100%;
+	justify-content: space-between;
+	gap: 0.9rem;
+}
+
+.calendar :global(.rdp-month) {
+	flex: 1;
+}
+
+.calendar button {
+	cursor: pointer;
+}
+
+.clearDatesButton {
+	width: fit-content;
+	margin-left: auto;
+	min-height: 2.4rem;
+	padding: 0 0.9rem;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	border-radius: 999px;
+	background: rgba(2, 0, 108, 0.04);
+	color: #02006c;
+	font-size: 0.76rem;
+	font-weight: 820;
+	cursor: pointer;
+	transition:
+		background 180ms ease,
+		border-color 180ms ease;
+}
+
+.clearDatesButton:hover {
+	border-color: rgba(2, 0, 108, 0.2);
+	background: rgba(2, 0, 108, 0.08);
+}
+
 .reserveButton,
 .loginPrompt {
 	min-height: var(--pluto-button-height);
@@ -491,6 +662,24 @@
 .skeletonMetric,
 .skeletonHeroImage,
 .skeletonThumb,
+.skeletonTab,
+.skeletonSectionLabel,
+.skeletonParagraph,
+.skeletonParagraphShort,
+.skeletonIcon,
+.skeletonMiniLine,
+.skeletonFeatureTitle,
+.skeletonDateText,
+.skeletonDateValue,
+.skeletonClearDates,
+.skeletonPrice,
+.skeletonReserveButton,
+.skeletonChargeNote,
+.skeletonPartnerName,
+.skeletonMonthTitle,
+.skeletonReviewScore,
+.skeletonReviewLine,
+.skeletonReviewLineShort,
 .skeletonPanel,
 .skeletonPanelLarge,
 .skeletonBooking,
@@ -537,6 +726,223 @@
 	border-radius: 1rem;
 }
 
+.skeletonSwiperFrame {
+	position: relative;
+	overflow: hidden;
+	border-radius: 1.25rem;
+}
+
+.skeletonGalleryButtonLeft,
+.skeletonGalleryButtonRight {
+	position: absolute;
+	top: 50%;
+	width: 2.7rem;
+	height: 2.7rem;
+	border-radius: 999px;
+	transform: translateY(-50%);
+}
+
+.skeletonGalleryButtonLeft {
+	left: 0.85rem;
+}
+
+.skeletonGalleryButtonRight {
+	right: 0.85rem;
+}
+
+.skeletonDots {
+	position: absolute;
+	left: 50%;
+	bottom: 0.95rem;
+	display: inline-flex;
+	gap: 0.35rem;
+	padding: 0.4rem 0.55rem;
+	border-radius: 999px;
+	background: rgba(23, 23, 31, 0.2);
+	transform: translateX(-50%);
+}
+
+.skeletonDots div {
+	width: 0.55rem;
+	height: 0.55rem;
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.72);
+}
+
+.skeletonTab {
+	height: 2.65rem;
+}
+
+.skeletonSectionLabel {
+	width: 7.5rem;
+	height: 0.85rem;
+}
+
+.skeletonParagraph {
+	width: 100%;
+	height: 0.95rem;
+}
+
+.skeletonParagraphShort {
+	width: 72%;
+	height: 0.95rem;
+}
+
+.skeletonFeatureCard {
+	min-height: 7.1rem;
+	display: grid;
+	align-content: space-between;
+	gap: 0.55rem;
+	padding: 0.88rem;
+	border: 1px solid rgba(2, 0, 108, 0.08);
+	border-radius: 1.1rem;
+	background: rgba(255, 255, 255, 0.74);
+}
+
+.skeletonIcon {
+	width: 1.35rem;
+	height: 1.35rem;
+	border-radius: 999px;
+}
+
+.skeletonMiniLine {
+	width: 4.6rem;
+	height: 0.72rem;
+}
+
+.skeletonFeatureTitle {
+	width: 74%;
+	height: 0.9rem;
+}
+
+.skeletonDateText {
+	width: min(20rem, 100%);
+	height: 1rem;
+}
+
+.skeletonDateValue {
+	width: 6.2rem;
+	height: 0.9rem;
+}
+
+.skeletonCalendar {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 1rem;
+}
+
+.skeletonMonth {
+	display: grid;
+	gap: 0.85rem;
+}
+
+.skeletonMonthTitle {
+	width: 8rem;
+	height: 1rem;
+	margin-inline: auto;
+}
+
+.skeletonWeekdays,
+.skeletonDays {
+	display: grid;
+	grid-template-columns: repeat(7, minmax(0, 1fr));
+	gap: 0.42rem;
+}
+
+.skeletonWeekdays div {
+	height: 0.55rem;
+}
+
+.skeletonDays div {
+	aspect-ratio: 1;
+	border-radius: 999px;
+}
+
+.skeletonClearDates {
+	width: 7rem;
+	height: 2.4rem;
+	margin-left: auto;
+}
+
+.skeletonReviewPanel {
+	display: grid;
+	gap: 1.1rem;
+	padding: clamp(1rem, 2.6vw, 1.4rem);
+	border: 1px solid rgba(255, 255, 255, 0.74);
+	border-radius: 1.6rem;
+	background: rgba(255, 255, 255, 0.82);
+	box-shadow: 0 1.6rem 4.5rem rgba(16, 22, 33, 0.1);
+	backdrop-filter: blur(18px);
+}
+
+.skeletonReviewScore {
+	width: 9rem;
+	height: 3.8rem;
+	margin-inline: auto;
+}
+
+.skeletonReviewMetrics {
+	display: grid;
+	grid-template-columns: repeat(6, minmax(0, 1fr));
+	gap: 0.7rem;
+}
+
+.skeletonReviewMetrics div {
+	height: 4.6rem;
+	border-radius: 1rem;
+}
+
+.skeletonReviewList {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 1rem;
+}
+
+.skeletonReviewList > div {
+	display: grid;
+	gap: 0.55rem;
+}
+
+.skeletonReviewer {
+	width: 8rem;
+	height: 2.2rem;
+}
+
+.skeletonReviewLine {
+	height: 0.8rem;
+}
+
+.skeletonReviewLineShort {
+	width: 70%;
+	height: 0.8rem;
+}
+
+.skeletonPrice {
+	width: 11rem;
+	height: 2rem;
+}
+
+.skeletonReserveButton {
+	width: 100%;
+	height: var(--pluto-button-height);
+}
+
+.skeletonChargeNote {
+	width: 72%;
+	height: 0.85rem;
+}
+
+.skeletonAvatar {
+	width: 3rem;
+	height: 3rem;
+	border-radius: 999px;
+}
+
+.skeletonPartnerName {
+	width: 70%;
+	height: 1rem;
+}
+
 .skeletonPanel {
 	min-height: 18rem;
 	border-radius: 1.45rem;
@@ -579,12 +985,30 @@
 	}
 
 	.factGrid,
-	.amenityGrid {
+	.amenityGrid,
+	.skeletonReviewList {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 
 	.locationPanel {
 		grid-template-columns: 1fr;
+	}
+
+	.calendar :global(.rdp-months) {
+		flex-direction: column;
+	}
+
+	.datePlannerHeader,
+	.skeletonCalendar {
+		grid-template-columns: 1fr;
+	}
+
+	.calendar {
+		min-width: 0;
+	}
+
+	.skeletonReviewMetrics {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
 	}
 }
 
@@ -601,7 +1025,9 @@
 	.tabs,
 	.factGrid,
 	.amenityGrid,
-	.datePreview {
+	.datePreview,
+	.skeletonReviewMetrics,
+	.skeletonReviewList {
 		grid-template-columns: 1fr;
 	}
 
@@ -616,8 +1042,10 @@
 
 	.galleryPanel,
 	.storyPanel,
+	.datePlanner,
 	.bookingPanel,
-	.partnerPanel {
+	.partnerPanel,
+	.skeletonReviewPanel {
 		border-radius: 1.2rem;
 	}
 
@@ -628,6 +1056,21 @@
 	.datePreview div + div {
 		border-top: 1px solid rgba(23, 23, 31, 0.18);
 		border-left: 0;
+	}
+
+	.calendarShell {
+		padding: 0.5rem;
+	}
+
+	.skeletonGalleryButtonLeft,
+	.skeletonGalleryButtonRight {
+		width: 2.35rem;
+		height: 2.35rem;
+	}
+
+	.skeletonWeekdays,
+	.skeletonDays {
+		gap: 0.3rem;
 	}
 
 	.statePanel div,
