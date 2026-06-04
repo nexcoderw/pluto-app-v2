@@ -38,7 +38,7 @@
 	max-width: 48rem;
 	margin: 0;
 	color: #17171f;
-	font-size: clamp(1.6rem, 4.5vw, 2.85rem);
+	font-size: clamp(0.90rem, 4.5vw, 1.85rem);
 	font-weight: 890;
 	line-height: 0.98;
 	letter-spacing: 0;
@@ -57,7 +57,7 @@
 	align-items: center;
 	gap: 0.4rem;
 	color: #17171f;
-	font-size: clamp(4.4rem, 11vw, 7.1rem);
+	font-size: clamp(3.4rem, 11vw, 5.1rem);
 	font-weight: 910;
 	line-height: 0.82;
 	letter-spacing: 0;

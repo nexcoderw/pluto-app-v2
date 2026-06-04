@@ -152,10 +152,6 @@ export function CarReviewsDialog({
 
 				<DialogHeader className={styles.reviewsDialogHeader}>
 					<div>
-						<span>
-							<SlidersHorizontal aria-hidden="true" />
-							Review explorer
-						</span>
 						<DialogTitle>Browse full reviews</DialogTitle>
 						<DialogDescription>
 							Read full customer messages and sort reviews by recency or star
