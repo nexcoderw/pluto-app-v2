@@ -4,19 +4,14 @@ import { useState } from "react";
 import {
   ChevronRight,
   KeyRound,
-  MailCheck,
-  Phone,
-  ShieldCheck,
   UserRound,
   type LucideIcon,
 } from "lucide-react";
 import { PortalAccessBoundary } from "@/components/portal/portal-access-boundary";
-import {
-  PortalShell,
-  type PortalMetric,
-} from "@/components/portal/portal-shell";
+import { PortalShell } from "@/components/portal/portal-shell";
 import { getCustomerPortalNavigation } from "@/components/account/account-portal-navigation";
 import type { UserAuthProfile } from "@/services/api/auth";
+import { AccountProfileSkeleton } from "./account-profile-skeleton";
 import { ProfileDetailsForm } from "./profile-details-form";
 import { ProfileImagePanel } from "./profile-image-panel";
 import { ProfilePasswordForm } from "./profile-password-form";
@@ -46,7 +41,10 @@ const profileTabs: Array<{
 
 export function AccountProfilePage() {
   return (
-    <PortalAccessBoundary allowedRole="CUSTOMER">
+    <PortalAccessBoundary
+      allowedRole="CUSTOMER"
+      loadingFallback={<AccountProfileSkeleton />}
+    >
       {(user) => <AccountProfileWorkspace user={user} />}
     </PortalAccessBoundary>
   );
@@ -55,7 +53,6 @@ export function AccountProfilePage() {
 function AccountProfileWorkspace({ user }: { user: UserAuthProfile }) {
   const [profile, setProfile] = useState(user);
   const [activeTab, setActiveTab] = useState<ProfileTab>("details");
-  const metrics = buildProfileMetrics(profile);
 
   return (
     <PortalShell
@@ -67,7 +64,7 @@ function AccountProfileWorkspace({ user }: { user: UserAuthProfile }) {
       homeHref="/account"
       homeLabel="Back to account"
       navigation={getCustomerPortalNavigation("/account/profile")}
-      metrics={metrics}
+      hideHero
     >
       <section className={styles.profileLayout}>
         <aside
@@ -120,43 +117,4 @@ function AccountProfileWorkspace({ user }: { user: UserAuthProfile }) {
       </section>
     </PortalShell>
   );
-}
-
-function buildProfileMetrics(user: UserAuthProfile): PortalMetric[] {
-  return [
-    {
-      label: "Profile name",
-      value: initialsFromName(user.fullName),
-      description: "Displayed across booking and review workflows.",
-      icon: UserRound as LucideIcon,
-    },
-    {
-      label: "Email status",
-      value: user.emailVerified ? "Verified" : "Review",
-      description: user.emailVerified
-        ? "Your email is verified."
-        : "Email verification will be required after changes.",
-      icon: MailCheck as LucideIcon,
-    },
-    {
-      label: "Phone status",
-      value: user.phoneVerified ? "Verified" : "Active",
-      description: user.phone
-        ? "This number is used for booking coordination."
-        : "Add a phone number before booking.",
-      icon: Phone as LucideIcon,
-    },
-    {
-      label: "Access",
-      value: "Secure",
-      description: "Only your logged-in session can update this profile.",
-      icon: ShieldCheck as LucideIcon,
-    },
-  ];
-}
-
-function initialsFromName(value: string) {
-  const [first = "P", second = "B"] = value.trim().split(/\s+/).filter(Boolean);
-
-  return `${first.charAt(0)}${second.charAt(0)}`.toUpperCase();
 }
