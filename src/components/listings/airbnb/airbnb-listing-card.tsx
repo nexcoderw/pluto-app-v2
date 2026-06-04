@@ -62,7 +62,7 @@ export function AirbnbListingCard({
 		: activeImage.src;
 	const ratingLabel =
 		listing.ratingAverage === null || listing.ratingAverage === undefined
-			? "0.00 (0)"
+			? "New"
 			: `${listing.ratingAverage.toFixed(2)} (${listing.ratingCount ?? 0})`;
 	const homeType = details?.houseType ?? "Curated stay";
 	const stayMode = details?.entirePlace ? "Entire place" : "Hosted stay";

@@ -84,7 +84,7 @@ export function PortalSessionUnavailable({ message }: { message: string }) {
 				<p>{message}</p>
 				<div className={styles.redirectNotice}>
 					<WifiOff aria-hidden="true" />
-					<span>Keep your backend API running at the configured API URL.</span>
+					<span>Keep your internet connection running.</span>
 				</div>
 				<div className={styles.sessionActions}>
 					<Button type="button" onClick={() => window.location.reload()}>

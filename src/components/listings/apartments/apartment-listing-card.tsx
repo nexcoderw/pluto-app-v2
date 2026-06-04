@@ -61,7 +61,7 @@ export function ApartmentListingCard({
 	const guestCount = details?.maxGuests ?? details?.guests;
 	const ratingLabel =
 		listing.ratingAverage === null || listing.ratingAverage === undefined
-			? "0.00 (0)"
+			? "New"
 			: `${listing.ratingAverage.toFixed(2)} (${listing.ratingCount ?? 0})`;
 
 	function showPreviousImage() {

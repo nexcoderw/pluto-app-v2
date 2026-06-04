@@ -573,7 +573,7 @@ function CategoryListingsState({
 			<RefreshCcw aria-hidden="true" />
 			<h2>{title}</h2>
 			<p>{message}</p>
-			<Button type="button" onClick={onAction}>
+			<Button type="button" onClick={onAction} className="rounded-full">
 				<RefreshCcw aria-hidden="true" />
 				{actionLabel}
 			</Button>

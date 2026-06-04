@@ -53,7 +53,7 @@ export function HotelRoomListingCard({
 		: activeImage.src;
 	const ratingLabel =
 		listing.ratingAverage === null || listing.ratingAverage === undefined
-			? "0.00 (0)"
+			? "New"
 			: `${listing.ratingAverage.toFixed(2)} (${listing.ratingCount ?? 0})`;
 	const hotelName = details?.hotelName ?? "Verified hotel";
 	const roomType = details?.roomType ?? "Curated room";

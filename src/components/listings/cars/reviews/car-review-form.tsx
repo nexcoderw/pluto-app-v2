@@ -96,10 +96,6 @@ export function CarReviewForm({
 		<form className={styles.reviewForm} onSubmit={submitReview}>
 			<div className={styles.reviewFormHeader}>
 				<div>
-					<span>
-						<CheckCircle2 aria-hidden="true" />
-						Customer review
-					</span>
 					<h3>{isEditing ? "Update your review" : "Share your experience"}</h3>
 					<p>
 						Rate the important parts of the booking. Pluto Booking calculates

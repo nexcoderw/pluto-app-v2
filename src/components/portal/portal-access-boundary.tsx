@@ -62,7 +62,7 @@ export function PortalAccessBoundary({
 						status: 'unavailable',
 						user: null,
 						message:
-							'The API server is not reachable, so your secure session cannot be verified right now.',
+							'The system is currently unreachable. Please check your connection and try again.',
 					});
 					return;
 				}

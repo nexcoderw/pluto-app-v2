@@ -4,9 +4,7 @@
 	gap: clamp(1.1rem, 3vw, 2rem);
 	padding: clamp(1.2rem, 3vw, 2.5rem) max(1rem, calc((100vw - 82rem) / 2))
 		clamp(2.5rem, 5vw, 4rem);
-	background:
-		radial-gradient(circle at 9% 4%, rgba(2, 0, 108, 0.08), transparent 28rem),
-		linear-gradient(180deg, #ffffff, #f6f7fb 62%, #f8f9fc);
+	background: #f8f9fc;
 	color: #17171f;
 }
 

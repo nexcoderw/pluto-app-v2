@@ -649,6 +649,7 @@
 	font-size: clamp(2rem, 5vw, 3rem);
 	line-height: 1;
 	letter-spacing: 0;
+	font-weight: 760;
 }
 
 .forbiddenPanel p {
@@ -686,15 +687,17 @@
 	height: var(--pluto-button-height);
 	min-height: var(--pluto-button-height);
 	border-radius: 999px;
-	background: #02006c;
-	color: white;
+	background: #fff;
+	border: 1px solid #02006c;
+	box-shadow: 0 1.2rem 2.8rem rgba(16, 22, 33, 0.08);
+	color: #02006c;
 	font-weight: 840;
 	cursor: pointer;
 }
 
 .sessionActions button:hover {
-	background: #09068f;
-	color: white;
+	background: transparent;
+	color: #02006c;
 }
 
 .skeletonBrand,
