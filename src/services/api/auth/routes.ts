@@ -6,6 +6,7 @@ export const USER_AUTH_ROUTES = {
   currentUser: "/auth/users/me",
   updateProfile: "/auth/users/profile",
   uploadProfileImage: "/auth/users/profile/image",
+  changePassword: "/auth/users/password",
   forgotPassword: "/auth/users/forgot-password",
   resetPassword: "/auth/users/reset-password",
   googleLogin: "/auth/users/google",
