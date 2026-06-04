@@ -1,0 +1,116 @@
+.page {
+	min-height: calc(100vh - 8rem);
+	display: grid;
+	gap: clamp(1.1rem, 3vw, 2rem);
+	padding: clamp(1.2rem, 3vw, 2.5rem) max(1rem, calc((100vw - 84rem) / 2))
+		clamp(2.5rem, 5vw, 4rem);
+	background:
+		radial-gradient(circle at 10% 0%, rgba(2, 0, 108, 0.08), transparent 26rem),
+		linear-gradient(180deg, #ffffff, #f6f7fb 62%, #f8f9fc);
+	color: #17171f;
+}
+
+.hero {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(17rem, 24rem);
+	gap: clamp(1rem, 3vw, 1.35rem);
+	align-items: end;
+}
+
+.heroCopy {
+	min-width: 0;
+}
+
+.heroCopy p {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.42rem;
+	margin: 0;
+	color: rgba(23, 23, 31, 0.62);
+	font-size: 0.95rem;
+	font-weight: 760;
+}
+
+.heroCopy h1 {
+	max-width: 58rem;
+	margin: 0.85rem 0 0.45rem;
+	color: #17171f;
+	font-size: clamp(1.1rem, 5vw, 2.45rem);
+	font-weight: 900;
+	line-height: 0.98;
+	letter-spacing: 0;
+}
+
+.heroMetrics {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: 0.45rem;
+	max-width: 22rem;
+}
+
+.heroMetrics span {
+	min-height: 2.25rem;
+	display: inline-flex;
+	align-items: center;
+	padding: 0 0.82rem;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.82);
+	color: #17171f;
+	font-size: 0.76rem;
+	font-weight: 780;
+	box-shadow: 0 0.7rem 1.6rem rgba(16, 22, 33, 0.05);
+}
+
+.layout {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(22rem, 27rem);
+	gap: clamp(1rem, 2vw, 1.35rem);
+	align-items: start;
+}
+
+.mainColumn {
+	display: grid;
+	gap: 1rem;
+}
+
+.skeletonTitle {
+	width: min(45rem, 88vw);
+	height: clamp(3.6rem, 8vw, 5rem);
+	margin-top: 0.85rem;
+	border-radius: 1.15rem;
+}
+
+.skeletonLocation {
+	width: min(20rem, 76vw);
+	height: 1.25rem;
+	margin-top: 0.7rem;
+	border-radius: 999px;
+}
+
+.skeletonMetric {
+	height: 5.4rem;
+	border-radius: 1.2rem;
+}
+
+@media (max-width: 1120px) {
+	.hero,
+	.layout {
+		grid-template-columns: 1fr;
+	}
+}
+
+@media (max-width: 640px) {
+	.page {
+		padding-inline: 0.7rem;
+	}
+
+	.heroCopy h1 {
+		font-size: clamp(1.8rem, 11vw, 2.75rem);
+	}
+
+	.heroMetrics {
+		grid-template-columns: 1fr;
+	}
+}
