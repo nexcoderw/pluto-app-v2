@@ -1,0 +1,71 @@
+.page {
+	min-height: calc(100vh - 8rem);
+	display: grid;
+	place-items: center;
+	padding: clamp(1.2rem, 3vw, 2.5rem) max(1rem, calc((100vw - 82rem) / 2))
+		clamp(2.5rem, 5vw, 4rem);
+	background: #f8f9fc;
+	color: #17171f;
+}
+
+.panel {
+	width: min(100%, 34rem);
+	display: grid;
+	justify-items: center;
+	gap: 0.8rem;
+	padding: 3rem 1rem;
+	border: 1px solid rgba(255, 255, 255, 0.74);
+	border-radius: 1.6rem;
+	background: rgba(255, 255, 255, 0.82);
+	text-align: center;
+	box-shadow: 0 1.6rem 4.5rem rgba(16, 22, 33, 0.1);
+	backdrop-filter: blur(18px);
+}
+
+.panel h1 {
+	margin: 0;
+	color: #17171f;
+	font-size: 2rem;
+	font-weight: 880;
+	line-height: 1.05;
+}
+
+.panel p {
+	max-width: 28rem;
+	margin: 0;
+	color: rgba(23, 23, 31, 0.62);
+	line-height: 1.6;
+}
+
+.panel div {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0.65rem;
+}
+
+.panel a {
+	min-height: var(--pluto-button-height);
+	display: inline-flex;
+	align-items: center;
+	gap: 0.45rem;
+	padding: 0 1rem;
+	border: 1px solid rgba(2, 0, 108, 0.12);
+	border-radius: 999px;
+	color: #02006c;
+	font-size: 0.84rem;
+	font-weight: 850;
+	text-decoration: none;
+}
+
+@media (max-width: 640px) {
+	.panel {
+		border-radius: 1.2rem;
+	}
+
+	.panel div,
+	.panel button,
+	.panel a {
+		width: 100%;
+	}
+}
