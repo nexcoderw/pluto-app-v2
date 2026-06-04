@@ -22,8 +22,7 @@
 .backLink,
 .eyebrow,
 .heroCopy p,
-.bookingPanel span,
-.partnerPanel > span {
+.bookingPanel span {
 	display: inline-flex;
 	align-items: center;
 	gap: 0.42rem;
@@ -118,7 +117,6 @@
 .contentPanel,
 .datePlanner,
 .bookingPanel,
-.partnerPanel,
 .priceNotice,
 .statePanel {
 	border: 1px solid rgba(255, 255, 255, 0.74);
@@ -262,7 +260,6 @@
 
 .tabPanel,
 .bookingPanel,
-.partnerPanel,
 .priceNotice {
 	display: grid;
 	gap: 1rem;
@@ -278,8 +275,7 @@
 }
 
 .sectionHeader span,
-.bookingPanel span,
-.partnerPanel > span {
+.bookingPanel span {
 	color: #02006c;
 	font-size: 0.72rem;
 	font-weight: 850;
@@ -288,7 +284,6 @@
 }
 .tabPanel p,
 .bookingPanel p,
-.partnerPanel p,
 .datePlannerHeader p {
 	margin: 0;
 	color: rgba(23, 23, 31, 0.62);
@@ -604,47 +599,6 @@
 	font-weight: 500;
 }
 
-.partnerPanel {
-	padding: 1rem;
-}
-
-.partnerIdentity {
-	display: grid;
-	grid-template-columns: auto minmax(0, 1fr);
-	gap: 0.7rem;
-	align-items: center;
-}
-
-.partnerAvatar {
-	width: 3rem;
-	height: 3rem;
-	display: grid;
-	place-items: center;
-	overflow: hidden;
-	border-radius: 999px;
-	background:
-		var(--partner-avatar-image, none) center / cover no-repeat,
-		#02006c;
-	color: #ffffff;
-	font-size: 0.82rem;
-	font-style: normal;
-	font-weight: 880;
-	line-height: 1;
-	text-align: center;
-	text-transform: uppercase;
-	white-space: nowrap;
-}
-
-.partnerIdentity strong {
-	min-width: 0;
-	overflow: hidden;
-	color: #17171f;
-	font-size: 0.92rem;
-	font-weight: 860;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
 .statePanel {
 	justify-items: center;
 	gap: 0.8rem;
@@ -702,9 +656,6 @@
 .skeletonPrice,
 .skeletonBookButton,
 .skeletonChargeNote,
-.skeletonPartnerBadge,
-.skeletonPartnerName,
-.skeletonPartnerCopy,
 .skeletonMonthTitle,
 .skeletonReviewScore,
 .skeletonReviewLine,
@@ -954,27 +905,6 @@
 	margin-inline: auto;
 }
 
-.skeletonPartnerBadge {
-	width: 8.4rem;
-	height: 1rem;
-}
-
-.skeletonAvatar {
-	width: 3rem;
-	height: 3rem;
-	border-radius: 999px;
-}
-
-.skeletonPartnerName {
-	width: 70%;
-	height: 1rem;
-}
-
-.skeletonPartnerCopy {
-	width: 88%;
-	height: 0.9rem;
-}
-
 @media (max-width: 1120px) {
 	.layout {
 		grid-template-columns: 1fr;
@@ -1045,7 +975,6 @@
 	.contentPanel,
 	.datePlanner,
 	.bookingPanel,
-	.partnerPanel,
 	.priceNotice,
 	.skeletonReviews {
 		border-radius: 1.2rem;
