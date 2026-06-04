@@ -237,7 +237,6 @@ function CarListingDetail({ listing }: { listing: PublicListing }) {
 							<section className={styles.tabPanel}>
 								<div className={styles.sectionHeader}>
 									<span>Overview</span>
-									<h2>Vehicle experience</h2>
 								</div>
 								<p>
 									{listing.description ??
@@ -260,7 +259,6 @@ function CarListingDetail({ listing }: { listing: PublicListing }) {
 							<section className={styles.tabPanel}>
 								<div className={styles.sectionHeader}>
 									<span>Details</span>
-									<h2>Specs and rental setup</h2>
 								</div>
 								<div className={styles.factGrid}>
 									{facts.map((fact) => (
@@ -286,7 +284,6 @@ function CarListingDetail({ listing }: { listing: PublicListing }) {
 							<section className={styles.tabPanel}>
 								<div className={styles.sectionHeader}>
 									<span>Listing review</span>
-									<h2>Published with Pluto Booking checks</h2>
 								</div>
 								<div className={styles.reviewGrid}>
 									<div>
@@ -339,12 +336,10 @@ function CarListingDetail({ listing }: { listing: PublicListing }) {
 }
 
 function CarDatePlanner({
-	listing,
 	today,
 	dateRange,
 	fromDate,
 	toDate,
-	rentalDays,
 	formattedRange,
 	onDateRangeChange,
 }: {
@@ -365,9 +360,6 @@ function CarDatePlanner({
 						<CalendarDays aria-hidden="true" />
 						Trip dates
 					</span>
-					<h2>
-						{rentalDays} {rentalDays === 1 ? "day" : "days"} in {listing.city}
-					</h2>
 					<p>{formattedRange}</p>
 				</div>
 				<div className={styles.datePreview}>
@@ -463,9 +455,6 @@ function CarBookingSidebar({
 				</div>
 
 				<div className={styles.dateSummary}>
-					<h2>
-						{rentalDays} {rentalDays === 1 ? "day" : "days"} in {listing.city}
-					</h2>
 					<p>{formattedRange}</p>
 				</div>
 
@@ -513,10 +502,6 @@ function CarBookingSidebar({
 function CarListingDetailSkeleton() {
 	return (
 		<main className={styles.page}>
-			<Link href="/listings/cars" className={styles.backLink}>
-				<ArrowLeft aria-hidden="true" />
-				Back to cars
-			</Link>
 			<section className={styles.layout}>
 				<div className={styles.mainColumn}>
 					<Skeleton className={styles.skeletonHero} />

@@ -287,21 +287,13 @@
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
 }
-
-.sectionHeader h2 {
-	margin: 0;
-	color: #17171f;
-	font-size: clamp(1.35rem, 2.5vw, 1.8rem);
-	font-weight: 880;
-	line-height: 1.05;
-}
-
 .tabPanel p,
 .bookingPanel p,
 .datePlannerHeader p {
 	margin: 0;
 	color: rgba(23, 23, 31, 0.62);
 	line-height: 1.65;
+	font-size: 0.81rem;
 }
 
 .quickGrid,
@@ -339,7 +331,7 @@
 .reviewGrid span {
 	color: rgba(23, 23, 31, 0.54);
 	font-size: 0.72rem;
-	font-weight: 760;
+	font-weight: 600;
 }
 
 .quickGrid strong,
@@ -347,8 +339,8 @@
 .policyGrid strong,
 .reviewGrid strong {
 	color: #17171f;
-	font-size: 0.92rem;
-	font-weight: 850;
+	font-size: 0.81rem;
+	font-weight: 700;
 }
 
 .priceNotice {
@@ -366,8 +358,8 @@
 
 .priceNotice span {
 	color: #17171f;
-	font-size: 0.84rem;
-	font-weight: 700;
+	font-size: 0.81rem;
+	font-weight: 600;
 	line-height: 1.35;
 }
 
@@ -476,7 +468,7 @@
 .datePlannerHeader h2 {
 	margin: 0;
 	color: #17171f;
-	font-size: clamp(1.35rem, 2.8vw, 2.05rem);
+	font-size: clamp(0.81rem, 2.8vw, 1.05rem);
 	font-weight: 880;
 	line-height: 1.05;
 }
@@ -575,8 +567,8 @@
 	justify-content: center;
 	gap: 0.45rem;
 	border-radius: 999px;
-	font-size: 0.86rem;
-	font-weight: 850;
+	font-size: 0.75rem;
+	font-weight: 700;
 	text-decoration: none;
 }
 
@@ -595,8 +587,8 @@
 
 .chargeNote {
 	text-align: center;
-	font-size: 0.8rem;
-	font-weight: 650;
+	font-size: 0.81rem;
+	font-weight: 500;
 }
 
 .partnerPanel {
