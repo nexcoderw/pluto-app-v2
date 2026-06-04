@@ -156,6 +156,10 @@
 	border-radius: 999px;
 }
 
+.toolbar[data-filter-presentation="responsive"] .filterButton {
+	display: none;
+}
+
 .grid {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -518,14 +522,27 @@
 		grid-template-columns: 1fr;
 	}
 
-	.toolbar[data-filter-presentation="dialog"] {
+	.workspace[data-filter-presentation="responsive"] > .sidebar {
+		display: none;
+	}
+
+	.toolbar[data-filter-presentation="responsive"] .filterButton {
+		display: inline-flex;
+	}
+
+	.toolbar[data-filter-presentation="dialog"],
+	.toolbar[data-filter-presentation="responsive"] {
 		grid-template-columns: 1fr;
 	}
 
 	.toolbar[data-filter-presentation="dialog"] .searchInput,
 	.toolbar[data-filter-presentation="dialog"] .filterButton,
 	.toolbar[data-filter-presentation="dialog"] .selectTrigger,
-	.toolbar[data-filter-presentation="dialog"] .sortButton {
+	.toolbar[data-filter-presentation="dialog"] .sortButton,
+	.toolbar[data-filter-presentation="responsive"] .searchInput,
+	.toolbar[data-filter-presentation="responsive"] .filterButton,
+	.toolbar[data-filter-presentation="responsive"] .selectTrigger,
+	.toolbar[data-filter-presentation="responsive"] .sortButton {
 		grid-column: auto;
 	}
 
