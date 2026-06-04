@@ -1,3 +1,4 @@
+import Image from "next/image";
 import {
 	CheckCircle2,
 	KeyRound,
@@ -73,9 +74,23 @@ export function CarReviewOverview({
 			</div>
 
 			<div className={styles.scoreHero}>
-				<span className={styles.laurel} aria-hidden="true" />
+				<Image
+					src="/icons/left-icon.avif"
+					alt=""
+					width={68}
+					height={132}
+					className={styles.laurel}
+					aria-hidden="true"
+				/>
 				<strong>{isLoading ? "..." : displayRating}</strong>
-				<span className={styles.laurel} aria-hidden="true" />
+				<Image
+					src="/icons/right-icon.avif"
+					alt=""
+					width={68}
+					height={132}
+					className={styles.laurel}
+					aria-hidden="true"
+				/>
 				<p>{reviewCount > 0 ? "Guest favorite" : "Awaiting first review"}</p>
 				<small>
 					{reviewCount > 0
