@@ -1,9 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { CSSProperties } from "react";
 import {
-  Camera,
   ChevronRight,
   KeyRound,
   MailCheck,
@@ -24,7 +22,7 @@ import { ProfileImagePanel } from "./profile-image-panel";
 import { ProfilePasswordForm } from "./profile-password-form";
 import styles from "./account-profile-page.module.css";
 
-type ProfileTab = "details" | "image" | "security";
+type ProfileTab = "details" | "security";
 
 const profileTabs: Array<{
   id: ProfileTab;
@@ -37,12 +35,6 @@ const profileTabs: Array<{
     label: "Profile details",
     description: "Name, email, and phone",
     icon: UserRound,
-  },
-  {
-    id: "image",
-    label: "Profile image",
-    description: "Customer identity photo",
-    icon: Camera,
   },
   {
     id: "security",
@@ -82,26 +74,11 @@ function AccountProfileWorkspace({ user }: { user: UserAuthProfile }) {
           className={styles.tabsSidebar}
           aria-label="Profile settings tabs"
         >
-          <div className={styles.tabsHeader}>
-            <span
-              className={styles.tabsAvatar}
-              data-has-image={Boolean(profile.imageUrl)}
-              style={
-                profile.imageUrl
-                  ? ({
-                      "--account-avatar-image": `url("${profile.imageUrl}")`,
-                    } as CSSProperties)
-                  : undefined
-              }
-              aria-hidden="true"
-            >
-              {profile.imageUrl ? null : initialsFromName(profile.fullName)}
-            </span>
-            <div>
-              <strong>{profile.fullName}</strong>
-              <small>{profile.email}</small>
-            </div>
-          </div>
+          <ProfileImagePanel
+            user={profile}
+            onUserUpdated={setProfile}
+            variant="sidebar"
+          />
 
           <div
             className={styles.tabsList}
@@ -137,9 +114,6 @@ function AccountProfileWorkspace({ user }: { user: UserAuthProfile }) {
         <div className={styles.tabContent} role="tabpanel">
           {activeTab === "details" ? (
             <ProfileDetailsForm user={profile} onUserUpdated={setProfile} />
-          ) : null}
-          {activeTab === "image" ? (
-            <ProfileImagePanel user={profile} onUserUpdated={setProfile} />
           ) : null}
           {activeTab === "security" ? <ProfilePasswordForm /> : null}
         </div>
