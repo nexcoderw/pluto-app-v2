@@ -14,6 +14,7 @@ import {
 	BedDouble,
 	Building2,
 	CalendarCheck,
+	CalendarDays,
 	CheckCircle2,
 	DoorOpen,
 	Home,
@@ -22,8 +23,19 @@ import {
 	ShieldCheck,
 	Users,
 } from "lucide-react";
+import {
+	addDays,
+	differenceInCalendarDays,
+	format,
+	startOfDay,
+} from "date-fns";
+import type { DateRange } from "react-day-picker";
+import type { Swiper as SwiperInstance } from "swiper";
+import { Autoplay, Navigation, Pagination } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { UserAuthProfile } from "@/services/api/auth";
 import {
@@ -39,7 +51,6 @@ import {
 	formatBoolean,
 	formatMoney,
 	formatOptional,
-	formatPricingUnit,
 	getListingCoverImage,
 } from "../listing-formatters";
 import { ApartmentReviewSection } from "./apartment-review-section";
@@ -82,11 +93,28 @@ function ApartmentListingDetail({ listing }: { listing: PublicListing }) {
 	const [activeImageId, setActiveImageId] = useState(
 		gallery[0]?.id ?? "fallback",
 	);
-	const activeImage =
-		gallery.find((image) => image.id === activeImageId) ?? gallery[0];
+	const [gallerySwiper, setGallerySwiper] = useState<SwiperInstance | null>(
+		null,
+	);
+	const today = useMemo(() => startOfDay(new Date()), []);
+	const [dateRange, setDateRange] = useState<DateRange | undefined>(() => ({
+		from: addDays(today, 1),
+		to: addDays(today, 4),
+	}));
 	const details = listing.apartmentDetails;
 	const locationLabel =
 		listing.location?.addressLine ?? `${listing.city}, ${listing.country}`;
+	const fromDate = dateRange?.from;
+	const toDate = dateRange?.to;
+	const stayNights =
+		fromDate && toDate
+			? Math.max(1, differenceInCalendarDays(toDate, fromDate))
+			: 1;
+	const totalPrice = Number(listing.basePrice) * stayNights;
+	const formattedRange =
+		fromDate && toDate
+			? `${format(fromDate, "MMM d, yyyy")} - ${format(toDate, "MMM d, yyyy")}`
+			: "Select your check-in and checkout dates";
 	const facts = useMemo(
 		() => [
 			{
@@ -160,22 +188,50 @@ function ApartmentListingDetail({ listing }: { listing: PublicListing }) {
 			<section className={styles.layout}>
 				<div className={styles.mainColumn}>
 					<section className={styles.galleryPanel}>
-						<div className={styles.primaryImage}>
-							<Image
-								src={activeImage.src}
-								alt={activeImage.alt}
-								fill
-								sizes="(max-width: 900px) 100vw, 64vw"
-								priority
-							/>
-						</div>
+						<Swiper
+							className={styles.swiper}
+							modules={[Autoplay, Navigation, Pagination]}
+							loop={gallery.length > 1}
+							navigation={gallery.length > 1}
+							pagination={{ clickable: true }}
+							autoplay={
+								gallery.length > 1
+									? { delay: 4500, disableOnInteraction: false }
+									: false
+							}
+							onSwiper={setGallerySwiper}
+							onSlideChange={(swiper) => {
+								const nextImage = gallery[swiper.realIndex];
+
+								if (nextImage) {
+									setActiveImageId(nextImage.id);
+								}
+							}}
+						>
+							{gallery.map((image, index) => (
+								<SwiperSlide key={image.id}>
+									<div className={styles.primaryImage}>
+										<Image
+											src={image.src}
+											alt={image.alt}
+											fill
+											sizes="(max-width: 900px) 100vw, 64vw"
+											priority={index === 0}
+										/>
+									</div>
+								</SwiperSlide>
+							))}
+						</Swiper>
 						<div className={styles.galleryRail}>
-							{gallery.slice(0, 5).map((image) => (
+							{gallery.slice(0, 5).map((image, index) => (
 								<button
 									key={image.id}
 									type="button"
-									data-active={image.id === activeImage.id}
-									onClick={() => setActiveImageId(image.id)}
+									data-active={image.id === activeImageId}
+									onClick={() => {
+										setActiveImageId(image.id);
+										gallerySwiper?.slideToLoop(index);
+									}}
 								>
 									<Image src={image.src} alt={image.alt} fill sizes="8rem" />
 								</button>
@@ -265,16 +321,113 @@ function ApartmentListingDetail({ listing }: { listing: PublicListing }) {
 						) : null}
 					</section>
 
+					<ApartmentDatePlanner
+						today={today}
+						dateRange={dateRange}
+						fromDate={fromDate}
+						toDate={toDate}
+						formattedRange={formattedRange}
+						onDateRangeChange={setDateRange}
+					/>
+
 					<ApartmentReviewSection listing={listing} />
 				</div>
 
-				<ApartmentBookingSidebar listing={listing} />
+				<ApartmentBookingSidebar
+					listing={listing}
+					fromDate={fromDate}
+					toDate={toDate}
+					stayNights={stayNights}
+					totalPrice={totalPrice}
+					formattedRange={formattedRange}
+				/>
 			</section>
 		</main>
 	);
 }
 
-function ApartmentBookingSidebar({ listing }: { listing: PublicListing }) {
+function ApartmentDatePlanner({
+	today,
+	dateRange,
+	fromDate,
+	toDate,
+	formattedRange,
+	onDateRangeChange,
+}: {
+	today: Date;
+	dateRange: DateRange | undefined;
+	fromDate?: Date;
+	toDate?: Date;
+	formattedRange: string;
+	onDateRangeChange: (range: DateRange | undefined) => void;
+}) {
+	return (
+		<section className={styles.datePlanner}>
+			<div className={styles.datePlannerHeader}>
+				<div>
+					<span>
+						<CalendarDays aria-hidden="true" />
+						Stay dates
+					</span>
+					<p>{formattedRange}</p>
+				</div>
+				<div className={styles.datePreview}>
+					<div>
+						<span>Check-in</span>
+						<strong>
+							{fromDate ? format(fromDate, "M/d/yyyy") : "Add date"}
+						</strong>
+					</div>
+					<div>
+						<span>Checkout</span>
+						<strong>{toDate ? format(toDate, "M/d/yyyy") : "Add date"}</strong>
+					</div>
+				</div>
+			</div>
+
+			<div className={styles.calendarShell}>
+				<Calendar
+					mode="range"
+					numberOfMonths={2}
+					selected={dateRange}
+					onSelect={onDateRangeChange}
+					disabled={{ before: today }}
+					className={styles.calendar}
+					showOutsideDays={false}
+				/>
+			</div>
+
+			<button
+				type="button"
+				className={styles.clearDatesButton}
+				onClick={() =>
+					onDateRangeChange({
+						from: addDays(today, 1),
+						to: addDays(today, 4),
+					})
+				}
+			>
+				Clear dates
+			</button>
+		</section>
+	);
+}
+
+function ApartmentBookingSidebar({
+	listing,
+	fromDate,
+	toDate,
+	stayNights,
+	totalPrice,
+	formattedRange,
+}: {
+	listing: PublicListing;
+	fromDate?: Date;
+	toDate?: Date;
+	stayNights: number;
+	totalPrice: number;
+	formattedRange: string;
+}) {
 	const currentUser = useSyncExternalStore(
 		(onStoreChange) => subscribeToUserSession(() => onStoreChange()),
 		getUserSessionSnapshot,
@@ -296,17 +449,29 @@ function ApartmentBookingSidebar({ listing }: { listing: PublicListing }) {
 					Apartment booking
 				</span>
 				<div className={styles.priceLine}>
-					<strong>{formatMoney(listing.basePrice, listing.currency)}</strong>
-					<small>per {formatPricingUnit(listing.pricingUnit)}</small>
+					<strong>
+						{formatMoney(
+							Number.isFinite(totalPrice)
+								? String(totalPrice)
+								: listing.basePrice,
+							listing.currency,
+						)}
+					</strong>
+					<small>
+						for {stayNights} {stayNights === 1 ? "night" : "nights"}
+					</small>
 				</div>
+				<p className={styles.rangeSummary}>{formattedRange}</p>
 				<div className={styles.datePreview}>
 					<div>
 						<span>Check-in</span>
-						<strong>Add date</strong>
+						<strong>
+							{fromDate ? format(fromDate, "M/d/yyyy") : "Add date"}
+						</strong>
 					</div>
 					<div>
 						<span>Checkout</span>
-						<strong>Add date</strong>
+						<strong>{toDate ? format(toDate, "M/d/yyyy") : "Add date"}</strong>
 					</div>
 				</div>
 				{currentUser ? (
@@ -364,19 +529,125 @@ function ApartmentListingDetailSkeleton() {
 			<section className={styles.layout}>
 				<div className={styles.mainColumn}>
 					<section className={styles.galleryPanel}>
-						<Skeleton className={styles.skeletonHeroImage} />
+						<div className={styles.skeletonSwiperFrame}>
+							<Skeleton className={styles.skeletonHeroImage} />
+							<Skeleton className={styles.skeletonGalleryButtonLeft} />
+							<Skeleton className={styles.skeletonGalleryButtonRight} />
+							<div className={styles.skeletonDots}>
+								<Skeleton />
+								<Skeleton />
+								<Skeleton />
+							</div>
+						</div>
 						<div className={styles.galleryRail}>
 							{Array.from({ length: 5 }).map((_, index) => (
 								<Skeleton key={index} className={styles.skeletonThumb} />
 							))}
 						</div>
 					</section>
-					<Skeleton className={styles.skeletonPanel} />
-					<Skeleton className={styles.skeletonPanelLarge} />
+					<section className={styles.storyPanel}>
+						<div className={styles.tabs}>
+							<Skeleton className={styles.skeletonTab} />
+							<Skeleton className={styles.skeletonTab} />
+							<Skeleton className={styles.skeletonTab} />
+						</div>
+						<section className={styles.tabPanel}>
+							<Skeleton className={styles.skeletonSectionLabel} />
+							<Skeleton className={styles.skeletonParagraph} />
+							<Skeleton className={styles.skeletonParagraphShort} />
+							<div className={styles.factGrid}>
+								{Array.from({ length: 4 }).map((_, index) => (
+									<div key={index} className={styles.skeletonFeatureCard}>
+										<Skeleton className={styles.skeletonIcon} />
+										<Skeleton className={styles.skeletonMiniLine} />
+										<Skeleton className={styles.skeletonFeatureTitle} />
+									</div>
+								))}
+							</div>
+						</section>
+					</section>
+					<section className={styles.datePlanner}>
+						<div className={styles.datePlannerHeader}>
+							<div>
+								<Skeleton className={styles.skeletonSectionLabel} />
+								<Skeleton className={styles.skeletonDateText} />
+							</div>
+							<div className={styles.datePreview}>
+								<div>
+									<Skeleton className={styles.skeletonMiniLine} />
+									<Skeleton className={styles.skeletonDateValue} />
+								</div>
+								<div>
+									<Skeleton className={styles.skeletonMiniLine} />
+									<Skeleton className={styles.skeletonDateValue} />
+								</div>
+							</div>
+						</div>
+						<div className={styles.calendarShell}>
+							<div className={styles.skeletonCalendar}>
+								{Array.from({ length: 2 }).map((_, monthIndex) => (
+									<div key={monthIndex} className={styles.skeletonMonth}>
+										<Skeleton className={styles.skeletonMonthTitle} />
+										<div className={styles.skeletonWeekdays}>
+											{Array.from({ length: 7 }).map((__, index) => (
+												<Skeleton key={index} />
+											))}
+										</div>
+										<div className={styles.skeletonDays}>
+											{Array.from({ length: 35 }).map((__, index) => (
+												<Skeleton key={index} />
+											))}
+										</div>
+									</div>
+								))}
+							</div>
+						</div>
+						<Skeleton className={styles.skeletonClearDates} />
+					</section>
+					<section className={styles.skeletonReviewPanel}>
+						<Skeleton className={styles.skeletonReviewScore} />
+						<div className={styles.skeletonReviewMetrics}>
+							{Array.from({ length: 6 }).map((_, index) => (
+								<Skeleton key={index} />
+							))}
+						</div>
+						<div className={styles.skeletonReviewList}>
+							{Array.from({ length: 4 }).map((_, index) => (
+								<div key={index}>
+									<Skeleton className={styles.skeletonReviewer} />
+									<Skeleton className={styles.skeletonReviewLine} />
+									<Skeleton className={styles.skeletonReviewLineShort} />
+								</div>
+							))}
+						</div>
+					</section>
 				</div>
 				<aside className={styles.sidebar}>
-					<Skeleton className={styles.skeletonBooking} />
-					<Skeleton className={styles.skeletonPartner} />
+					<section className={styles.bookingPanel}>
+						<Skeleton className={styles.skeletonSectionLabel} />
+						<Skeleton className={styles.skeletonPrice} />
+						<Skeleton className={styles.skeletonDateText} />
+						<div className={styles.datePreview}>
+							<div>
+								<Skeleton className={styles.skeletonMiniLine} />
+								<Skeleton className={styles.skeletonDateValue} />
+							</div>
+							<div>
+								<Skeleton className={styles.skeletonMiniLine} />
+								<Skeleton className={styles.skeletonDateValue} />
+							</div>
+						</div>
+						<Skeleton className={styles.skeletonReserveButton} />
+						<Skeleton className={styles.skeletonChargeNote} />
+					</section>
+					<section className={styles.partnerPanel}>
+						<Skeleton className={styles.skeletonSectionLabel} />
+						<div className={styles.partnerIdentity}>
+							<Skeleton className={styles.skeletonAvatar} />
+							<Skeleton className={styles.skeletonPartnerName} />
+						</div>
+						<Skeleton className={styles.skeletonParagraphShort} />
+					</section>
 				</aside>
 			</section>
 		</main>
