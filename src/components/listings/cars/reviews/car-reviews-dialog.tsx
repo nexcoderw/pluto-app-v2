@@ -1,12 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import {
-	ArrowLeft,
-	ArrowRight,
-	RefreshCcw,
-	SlidersHorizontal,
-} from "lucide-react";
+import { ArrowLeft, ArrowRight, RefreshCcw } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {
@@ -80,6 +75,8 @@ export function CarReviewsDialog({
 	isSummaryLoading,
 	fallbackRating,
 	fallbackCount,
+	overviewTitle,
+	overviewTitleId = "car-reviews-dialog-overview",
 	open,
 	onOpenChange,
 }: {
@@ -89,6 +86,8 @@ export function CarReviewsDialog({
 	isSummaryLoading: boolean;
 	fallbackRating?: number | null;
 	fallbackCount?: number;
+	overviewTitle?: string;
+	overviewTitleId?: string;
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 }) {
@@ -147,7 +146,8 @@ export function CarReviewsDialog({
 					isLoading={isSummaryLoading}
 					fallbackRating={fallbackRating}
 					fallbackCount={fallbackCount}
-					titleId="car-reviews-dialog-overview"
+					title={overviewTitle}
+					titleId={overviewTitleId}
 				/>
 
 				<DialogHeader className={styles.reviewsDialogHeader}>
