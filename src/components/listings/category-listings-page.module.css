@@ -40,6 +40,10 @@
 	grid-template-columns: minmax(0, 1fr);
 }
 
+.customSidebarSlot {
+	min-width: 0;
+}
+
 .page[data-category="cars"] .workspace {
 	grid-template-columns: minmax(25rem, 29rem) minmax(0, 1fr);
 }
@@ -499,6 +503,10 @@
 		order: 2;
 	}
 
+	.customSidebarSlot {
+		order: 2;
+	}
+
 	.results {
 		order: 1;
 	}
@@ -522,7 +530,8 @@
 		grid-template-columns: 1fr;
 	}
 
-	.workspace[data-filter-presentation="responsive"] > .sidebar {
+	.workspace[data-filter-presentation="responsive"] > .sidebar,
+	.workspace[data-filter-presentation="responsive"] > .customSidebarSlot {
 		display: none;
 	}
 
