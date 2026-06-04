@@ -504,16 +504,143 @@ function CarBookingSidebar({
 
 function CarListingDetailSkeleton() {
 	return (
-		<main className={styles.page}>
+		<main className={styles.page} aria-busy="true">
+			<header className={styles.hero}>
+				<div className={styles.heroCopy}>
+					<Skeleton className={styles.skeletonBackLink} />
+					<Skeleton className={styles.skeletonEyebrow} />
+					<Skeleton className={styles.skeletonTitle} />
+					<Skeleton className={styles.skeletonLocation} />
+				</div>
+				<div className={styles.heroStats} aria-label="Loading highlights">
+					<Skeleton className={styles.skeletonStatPill} />
+					<Skeleton className={styles.skeletonStatPill} />
+					<Skeleton className={styles.skeletonStatPill} />
+				</div>
+			</header>
+
 			<section className={styles.layout}>
 				<div className={styles.mainColumn}>
-					<Skeleton className={styles.skeletonHero} />
-					<Skeleton className={styles.skeletonLine} />
-					<Skeleton className={styles.skeletonText} />
-					<Skeleton className={styles.skeletonText} />
+					<section className={styles.gallerySection}>
+						<div className={styles.skeletonGalleryFrame}>
+							<Skeleton className={styles.skeletonGallery} />
+							<Skeleton className={styles.skeletonGalleryButtonLeft} />
+							<Skeleton className={styles.skeletonGalleryButtonRight} />
+							<div className={styles.skeletonDots}>
+								<Skeleton />
+								<Skeleton />
+								<Skeleton />
+							</div>
+						</div>
+					</section>
+
+					<section className={styles.contentPanel}>
+						<div className={styles.tabs}>
+							<Skeleton className={styles.skeletonTab} />
+							<Skeleton className={styles.skeletonTab} />
+							<Skeleton className={styles.skeletonTab} />
+						</div>
+						<section className={styles.tabPanel}>
+							<div className={styles.sectionHeader}>
+								<Skeleton className={styles.skeletonSectionLabel} />
+							</div>
+							<Skeleton className={styles.skeletonParagraph} />
+							<Skeleton className={styles.skeletonParagraphShort} />
+							<div className={styles.quickGrid}>
+								{Array.from({ length: 3 }).map((_, index) => (
+									<div key={index} className={styles.skeletonFeatureCard}>
+										<Skeleton className={styles.skeletonIcon} />
+										<Skeleton className={styles.skeletonMiniLine} />
+										<Skeleton className={styles.skeletonFeatureTitle} />
+									</div>
+								))}
+							</div>
+						</section>
+					</section>
+
+					<section className={styles.datePlanner}>
+						<div className={styles.datePlannerHeader}>
+							<div>
+								<Skeleton className={styles.skeletonSectionLabel} />
+								<Skeleton className={styles.skeletonDateText} />
+							</div>
+							<div className={styles.datePreview}>
+								<div>
+									<Skeleton className={styles.skeletonMiniLine} />
+									<Skeleton className={styles.skeletonDateValue} />
+								</div>
+								<div>
+									<Skeleton className={styles.skeletonMiniLine} />
+									<Skeleton className={styles.skeletonDateValue} />
+								</div>
+							</div>
+						</div>
+						<div className={styles.calendarShell}>
+							<div className={styles.skeletonCalendar}>
+								{Array.from({ length: 2 }).map((_, monthIndex) => (
+									<div key={monthIndex} className={styles.skeletonMonth}>
+										<Skeleton className={styles.skeletonMonthTitle} />
+										<div className={styles.skeletonWeekdays}>
+											{Array.from({ length: 7 }).map((__, index) => (
+												<Skeleton key={index} />
+											))}
+										</div>
+										<div className={styles.skeletonDays}>
+											{Array.from({ length: 35 }).map((__, index) => (
+												<Skeleton key={index} />
+											))}
+										</div>
+									</div>
+								))}
+							</div>
+						</div>
+						<Skeleton className={styles.skeletonClearDates} />
+					</section>
+
+					<section className={styles.skeletonReviews}>
+						<Skeleton className={styles.skeletonReviewScore} />
+						<div className={styles.skeletonReviewMetrics}>
+							{Array.from({ length: 6 }).map((_, index) => (
+								<Skeleton key={index} />
+							))}
+						</div>
+						<div className={styles.skeletonReviewList}>
+							{Array.from({ length: 4 }).map((_, index) => (
+								<div key={index}>
+									<Skeleton className={styles.skeletonReviewer} />
+									<Skeleton className={styles.skeletonReviewLine} />
+									<Skeleton className={styles.skeletonReviewLineShort} />
+								</div>
+							))}
+						</div>
+					</section>
 				</div>
+
 				<aside className={styles.sidebar}>
-					<Skeleton className={styles.skeletonPanel} />
+					<section className={styles.priceNotice}>
+						<Skeleton className={styles.skeletonIcon} />
+						<Skeleton className={styles.skeletonNoticeText} />
+					</section>
+					<section className={styles.bookingPanel}>
+						<Skeleton className={styles.skeletonPrice} />
+						<Skeleton className={styles.skeletonDateText} />
+						<div className={styles.dateFields}>
+							<div>
+								<Skeleton className={styles.skeletonMiniLine} />
+								<Skeleton className={styles.skeletonDateValue} />
+							</div>
+							<div>
+								<Skeleton className={styles.skeletonMiniLine} />
+								<Skeleton className={styles.skeletonDateValue} />
+							</div>
+						</div>
+						<Skeleton className={styles.skeletonBookButton} />
+						<Skeleton className={styles.skeletonChargeNote} />
+					</section>
+					<section className={styles.partnerPanel}>
+						<Skeleton className={styles.skeletonAvatar} />
+						<Skeleton className={styles.skeletonPartnerName} />
+					</section>
 				</aside>
 			</section>
 		</main>
