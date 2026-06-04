@@ -1,21 +1,18 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import portalStyles from "@/components/portal/portal-shell.module.css";
+import shellStyles from "@/components/account/customer-portal-shell.module.css";
 import styles from "./account-profile-page.module.css";
 
 export function AccountProfileSkeleton() {
   return (
-    <main className={portalStyles.portalPage} data-variant="customer">
-      <section
-        className={portalStyles.portalFrame}
-        aria-label="Loading profile"
-      >
-        <aside className={portalStyles.sidebar}>
-          <Skeleton className={portalStyles.skeletonBrand} />
-          <Skeleton className={portalStyles.skeletonNav} />
+    <main className={shellStyles.page}>
+      <section className={shellStyles.frame} aria-label="Loading profile">
+        <aside className={shellStyles.sidebar}>
+          <Skeleton className={styles.skeletonShellBrand} />
+          <Skeleton className={styles.skeletonShellNav} />
         </aside>
 
-        <div className={portalStyles.portalShell}>
-          <Skeleton className={portalStyles.skeletonTopbar} />
+        <div className={shellStyles.workspace}>
+          <Skeleton className={styles.skeletonShellTopbar} />
 
           <section className={styles.profileLayout}>
             <aside className={styles.tabsSidebar} aria-label="Loading settings">
