@@ -50,6 +50,7 @@ import {
 	formatOptional,
 	getListingCoverImage,
 } from "../listing-formatters";
+import { CarReviewSection } from "./reviews/car-review-section";
 import styles from "./car-listing-detail-page.module.css";
 
 type CarDetailTab = "overview" | "details" | "review";
@@ -320,6 +321,8 @@ function CarListingDetail({ listing }: { listing: PublicListing }) {
 						formattedRange={formattedRange}
 						onDateRangeChange={setDateRange}
 					/>
+
+					<CarReviewSection listing={listing} />
 				</div>
 
 				<CarBookingSidebar
@@ -527,7 +530,7 @@ function CarListingDetailError({ onRetry }: { onRetry: () => void }) {
 					This car may have been removed, paused, or moved to another category.
 				</p>
 				<div>
-					<Button type="button" onClick={onRetry}>
+					<Button type="button" onClick={onRetry} className="rounded-full">
 						<RefreshCcw aria-hidden="true" />
 						Retry
 					</Button>
