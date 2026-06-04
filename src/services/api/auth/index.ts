@@ -1,3 +1,8 @@
+export { changeUserPassword } from "./change-user-password";
+export type {
+  ChangeUserPasswordRequest,
+  ChangeUserPasswordResponse,
+} from "./change-user-password";
 export { completeGooglePhone } from "./complete-google-phone";
 export type {
   CompleteGooglePhoneRequest,
