@@ -7,9 +7,8 @@ import {
   UserRound,
   type LucideIcon,
 } from "lucide-react";
+import { CustomerPortalShell } from "@/components/account/customer-portal-shell";
 import { PortalAccessBoundary } from "@/components/portal/portal-access-boundary";
-import { PortalShell } from "@/components/portal/portal-shell";
-import { getCustomerPortalNavigation } from "@/components/account/account-portal-navigation";
 import type { UserAuthProfile } from "@/services/api/auth";
 import { AccountProfileSkeleton } from "./account-profile-skeleton";
 import { ProfileDetailsForm } from "./profile-details-form";
@@ -55,17 +54,7 @@ function AccountProfileWorkspace({ user }: { user: UserAuthProfile }) {
   const [activeTab, setActiveTab] = useState<ProfileTab>("details");
 
   return (
-    <PortalShell
-      variant="customer"
-      user={profile}
-      eyebrow="Profile settings"
-      title="Manage your customer identity"
-      description="Keep your booking profile accurate so partners can contact the right person before every confirmed reservation."
-      homeHref="/account"
-      homeLabel="Back to account"
-      navigation={getCustomerPortalNavigation("/account/profile")}
-      hideHero
-    >
+    <CustomerPortalShell user={profile}>
       <section className={styles.profileLayout}>
         <aside
           className={styles.tabsSidebar}
@@ -115,6 +104,6 @@ function AccountProfileWorkspace({ user }: { user: UserAuthProfile }) {
           {activeTab === "security" ? <ProfilePasswordForm /> : null}
         </div>
       </section>
-    </PortalShell>
+    </CustomerPortalShell>
   );
 }
