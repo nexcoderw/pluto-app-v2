@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PublicListingDetailPage } from "@/components/listings/public-listing-detail-page";
+import { ApartmentListingDetailPage } from "@/components/listings/apartments/apartment-listing-detail-page";
 
 export const metadata: Metadata = {
 	title: "Apartment Listing Details",
@@ -14,7 +14,5 @@ export default async function ApartmentListingDetailRoute({
 }) {
 	const { listingId } = await params;
 
-	return (
-		<PublicListingDetailPage categorySlug="apartments" listingId={listingId} />
-	);
+	return <ApartmentListingDetailPage listingId={listingId} />;
 }
