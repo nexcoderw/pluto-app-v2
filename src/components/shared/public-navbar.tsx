@@ -3,7 +3,7 @@
 import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useMemo, useState, type FormEvent } from "react";
 import { LogIn, Menu, Power, Search, UserPlus, X } from "lucide-react";
 import { toast } from "sonner";
@@ -23,6 +23,16 @@ const navigationLinks = [
 ] as const;
 
 export function PublicNavbar() {
+	const pathname = usePathname();
+
+	if (pathname === "/") {
+		return null;
+	}
+
+	return <PublicNavbarContent />;
+}
+
+function PublicNavbarContent() {
 	const router = useRouter();
 	const [isOpen, setIsOpen] = useState(false);
 	const [search, setSearch] = useState("");
