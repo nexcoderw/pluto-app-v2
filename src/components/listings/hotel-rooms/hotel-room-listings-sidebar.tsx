@@ -1,15 +1,12 @@
 "use client";
 
 import {
-	BedDouble,
 	CircleDollarSign,
-	DoorOpen,
 	Hotel,
 	MapPin,
 	RefreshCcw,
 	Search,
 	SlidersHorizontal,
-	Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +18,10 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import type { ListingListRequest } from "@/services/api/listings";
+import {
+	normalizeBedType,
+	normalizeHotelRoomType,
+} from "@/services/api/listing-options";
 import type { ListingSidebarRenderProps } from "../category-listings-page";
 import styles from "./hotel-room-listings-sidebar.module.css";
 
@@ -105,7 +106,12 @@ export function HotelRoomListingsSidebar({
 					<Select
 						value={selectValue(draftFilters.roomType)}
 						onValueChange={(value) =>
-							setDraftFilter("roomType", optionalText(value))
+							setDraftFilter(
+								"roomType",
+								!value || value === "ANY"
+									? undefined
+									: normalizeHotelRoomType(value),
+							)
 						}
 					>
 						<SelectTrigger className={styles.selectTrigger}>
@@ -123,7 +129,10 @@ export function HotelRoomListingsSidebar({
 					<Select
 						value={selectValue(draftFilters.bedType)}
 						onValueChange={(value) =>
-							setDraftFilter("bedType", optionalText(value))
+							setDraftFilter(
+								"bedType",
+								!value || value === "ANY" ? undefined : normalizeBedType(value),
+							)
 						}
 					>
 						<SelectTrigger className={styles.selectTrigger}>
