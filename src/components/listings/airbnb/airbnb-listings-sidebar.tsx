@@ -19,11 +19,18 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import type { ListingListRequest } from "@/services/api/listings";
+import { normalizeAirbnbPropertyType } from "@/services/api/listing-options";
 import type { ListingSidebarRenderProps } from "../category-listings-page";
 import styles from "./airbnb-listings-sidebar.module.css";
 
 const countries = ["Rwanda", "Kenya", "Uganda", "Tanzania", "Burundi"];
-const propertyTypes = ["House", "Villa", "Apartment", "Studio", "Guesthouse"];
+const propertyTypes = [
+	"Entire home",
+	"Apartment",
+	"Villa",
+	"Studio",
+	"Guest suite",
+];
 const bedroomOptions = [1, 2, 3, 4, 5];
 const bathroomOptions = [1, 2, 3, 4];
 const guestOptions = [1, 2, 4, 6, 8, 10, 12];
@@ -104,7 +111,12 @@ export function AirbnbListingsSidebar({
 					<Select
 						value={selectValue(draftFilters.propertyType)}
 						onValueChange={(value) =>
-							setDraftFilter("propertyType", optionalText(value))
+							setDraftFilter(
+								"propertyType",
+								!value || value === "ANY"
+									? undefined
+									: normalizeAirbnbPropertyType(value),
+							)
 						}
 					>
 						<SelectTrigger className={styles.selectTrigger}>
