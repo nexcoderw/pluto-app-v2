@@ -1,0 +1,608 @@
+.searchPanel {
+	position: relative;
+	z-index: 2;
+	width: min(100% - clamp(1.5rem, 6vw, 8rem), 84rem);
+	margin: clamp(3.2rem, 8vw, 6.5rem) auto clamp(1.5rem, 3vw, 2.5rem);
+	overflow: hidden;
+	border: 1px solid rgba(255, 255, 255, 0.74);
+	border-radius: 1.35rem;
+	background: rgba(255, 255, 255, 0.86);
+	box-shadow: 0 1.8rem 4.8rem rgba(16, 22, 33, 0.18);
+	backdrop-filter: blur(28px);
+}
+
+.categoryTabs {
+	display: grid;
+	grid-template-columns: repeat(5, minmax(0, 1fr));
+	gap: 0.35rem;
+	padding: 0.5rem;
+	border-bottom: 1px solid rgba(2, 0, 108, 0.08);
+	background: rgba(247, 248, 252, 0.76);
+}
+
+.categoryTab {
+	min-width: 0;
+	min-height: 3.15rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.45rem;
+	position: relative;
+	border: 1px solid transparent;
+	border-radius: 999px;
+	background: transparent;
+	color: #151823;
+	font-family: inherit;
+	font-size: 0.74rem;
+	font-weight: 850;
+	cursor: pointer;
+	transition:
+		background 160ms ease,
+		border-color 160ms ease,
+		color 160ms ease,
+		transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.categoryTab svg {
+	width: 0.95rem;
+	height: 0.95rem;
+	color: #02006c;
+}
+
+.categoryTab small {
+	position: absolute;
+	right: 0.8rem;
+	bottom: 0.2rem;
+	color: rgba(21, 24, 35, 0.45);
+	font-size: 0.5rem;
+	font-weight: 900;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+}
+
+.categoryTab:hover:not(:disabled) {
+	border-color: rgba(2, 0, 108, 0.1);
+	background: rgba(2, 0, 108, 0.06);
+	transform: translateY(-1px);
+}
+
+.categoryTab[data-active="true"] {
+	border-color: #02006c;
+	background: #02006c;
+	color: white;
+	box-shadow: 0 0.85rem 1.8rem rgba(2, 0, 108, 0.18);
+}
+
+.categoryTab[data-active="true"] svg {
+	color: white;
+}
+
+.categoryTab:disabled,
+.categoryTab[data-coming-soon="true"] {
+	cursor: not-allowed;
+	opacity: 0.5;
+	transform: none;
+}
+
+.primaryFields {
+	display: grid;
+	grid-template-columns:
+		minmax(18rem, 1.3fr) minmax(11rem, 0.72fr) minmax(9rem, 0.5fr)
+		auto;
+	gap: 0.6rem;
+	align-items: stretch;
+	padding: 0.85rem;
+}
+
+.searchField,
+.dateField,
+.guestField {
+	min-width: 0;
+	min-height: 4.55rem;
+	display: grid;
+	align-content: center;
+	gap: 0.16rem;
+	padding: 0.76rem 0.9rem;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	border-radius: 1rem;
+	background: rgba(255, 255, 255, 0.92);
+	color: #151823;
+	text-align: left;
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.72);
+}
+
+.searchField span,
+.dateField span,
+.guestField span {
+	color: #02006c;
+	font-size: 0.58rem;
+	font-weight: 900;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.searchField strong,
+.dateField strong {
+	color: #151823;
+	font-size: 0.78rem;
+	font-weight: 850;
+}
+
+.searchField input,
+.guestField select {
+	width: 100%;
+	min-width: 0;
+	border: 0;
+	background: transparent;
+	color: rgba(21, 24, 35, 0.76);
+	font: inherit;
+	font-size: 0.78rem;
+	font-weight: 640;
+	outline: none;
+}
+
+.searchField input::placeholder {
+	color: rgba(21, 24, 35, 0.48);
+	opacity: 1;
+}
+
+.dateField,
+.guestField {
+	cursor: pointer;
+}
+
+.dateField {
+	grid-template-columns: auto minmax(0, 1fr);
+	column-gap: 0.55rem;
+	border: 1px solid rgba(2, 0, 108, 0.12);
+	font-family: inherit;
+}
+
+.dateField svg,
+.guestField svg {
+	width: 0.95rem;
+	height: 0.95rem;
+	color: #02006c;
+}
+
+.dateField span,
+.dateField strong {
+	grid-column: 2;
+}
+
+.dateField svg {
+	grid-row: 1 / span 2;
+	align-self: center;
+}
+
+.guestField {
+	grid-template-columns: auto minmax(0, 1fr);
+	column-gap: 0.55rem;
+}
+
+.guestField svg {
+	grid-row: 1 / span 2;
+	align-self: center;
+}
+
+.guestField span,
+.guestField select {
+	grid-column: 2;
+}
+
+.searchButton {
+	min-width: 11rem;
+	height: 4.55rem;
+	min-height: 4.55rem;
+	align-self: stretch;
+	gap: 0.52rem;
+	border: 0;
+	border-radius: 999px;
+	background: #151823;
+	color: white;
+	font-size: 0.78rem;
+	font-weight: 900;
+	box-shadow: 0 1rem 2.4rem rgba(21, 24, 35, 0.24);
+}
+
+.searchButton:hover {
+	background: #02006c;
+}
+
+.searchButton svg {
+	width: 0.95rem;
+	height: 0.95rem;
+}
+
+.advancedPanel {
+	display: grid;
+	grid-template-columns: 11rem minmax(0, 1fr);
+	gap: 0.8rem;
+	margin: 0 0.85rem 0.85rem;
+	padding: 0.78rem;
+	border: 1px solid rgba(2, 0, 108, 0.09);
+	border-radius: 1rem;
+	background: rgba(247, 248, 252, 0.88);
+}
+
+.advancedHeader {
+	display: grid;
+	align-content: center;
+	gap: 0.28rem;
+	padding: 0.2rem 0.25rem;
+}
+
+.advancedHeader span {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	color: #02006c;
+	font-size: 0.62rem;
+	font-weight: 920;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.advancedHeader svg {
+	width: 0.86rem;
+	height: 0.86rem;
+}
+
+.advancedHeader p {
+	margin: 0;
+	color: rgba(21, 24, 35, 0.58);
+	font-size: 0.68rem;
+	font-weight: 620;
+	line-height: 1.45;
+}
+
+.advancedGrid {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr)) minmax(13rem, 1.1fr);
+	gap: 0.55rem;
+	align-items: stretch;
+}
+
+.advancedField {
+	min-width: 0;
+	display: grid;
+	align-content: center;
+	gap: 0.18rem;
+	padding: 0.65rem 0.72rem;
+	border: 1px solid rgba(2, 0, 108, 0.09);
+	border-radius: 0.85rem;
+	background: #ffffff;
+}
+
+.advancedField span {
+	color: #02006c;
+	font-size: 0.56rem;
+	font-weight: 900;
+	letter-spacing: 0.07em;
+	text-transform: uppercase;
+}
+
+.advancedField select {
+	width: 100%;
+	min-width: 0;
+	border: 0;
+	background: transparent;
+	color: rgba(21, 24, 35, 0.78);
+	font: inherit;
+	font-size: 0.74rem;
+	font-weight: 680;
+	outline: none;
+	cursor: pointer;
+}
+
+.priceField {
+	min-width: 0;
+	display: grid;
+	gap: 0.45rem;
+	padding: 0.65rem 0.72rem;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	border-radius: 0.85rem;
+	background: #ffffff;
+}
+
+.priceHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.6rem;
+}
+
+.priceHeader span {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.32rem;
+	color: #02006c;
+	font-size: 0.56rem;
+	font-weight: 900;
+	letter-spacing: 0.07em;
+	text-transform: uppercase;
+}
+
+.priceHeader svg {
+	width: 0.84rem;
+	height: 0.84rem;
+}
+
+.priceHeader strong {
+	color: #151823;
+	font-size: 0.72rem;
+	font-weight: 900;
+	white-space: nowrap;
+}
+
+.range {
+	width: 100%;
+	height: 0.34rem;
+	border-radius: 999px;
+	background: rgba(2, 0, 108, 0.15);
+	accent-color: #02006c;
+	cursor: pointer;
+}
+
+.range::-webkit-slider-thumb {
+	width: 1rem;
+	height: 1rem;
+	border: 0.22rem solid #ffffff;
+	border-radius: 999px;
+	background: #02006c;
+	box-shadow: 0 0.42rem 1rem rgba(2, 0, 108, 0.24);
+	cursor: pointer;
+	appearance: none;
+}
+
+.range::-moz-range-thumb {
+	width: 1rem;
+	height: 1rem;
+	border: 0.22rem solid #ffffff;
+	border-radius: 999px;
+	background: #02006c;
+	box-shadow: 0 0.42rem 1rem rgba(2, 0, 108, 0.24);
+	cursor: pointer;
+}
+
+.exchangePanel {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.42rem;
+}
+
+.exchangePanel span {
+	min-width: 0;
+	display: grid;
+	gap: 0.12rem;
+	padding: 0.48rem 0.55rem;
+	border: 1px solid rgba(2, 0, 108, 0.08);
+	border-radius: 0.7rem;
+	background: rgba(247, 248, 252, 0.86);
+}
+
+.exchangePanel small {
+	color: rgba(21, 24, 35, 0.58);
+	font-size: 0.52rem;
+	font-weight: 900;
+	letter-spacing: 0.07em;
+	text-transform: uppercase;
+}
+
+.exchangePanel strong {
+	color: #151823;
+	font-size: 0.64rem;
+	font-weight: 860;
+	white-space: nowrap;
+}
+
+.budgetHint {
+	margin: 0;
+	color: rgba(21, 24, 35, 0.58);
+	font-size: 0.64rem;
+	font-weight: 650;
+	line-height: 1.45;
+}
+
+.priceField button {
+	justify-self: start;
+	min-height: 1.85rem;
+	padding: 0 0.65rem;
+	border: 1px solid rgba(2, 0, 108, 0.12);
+	border-radius: 999px;
+	background: rgba(2, 0, 108, 0.05);
+	color: #02006c;
+	font-family: inherit;
+	font-size: 0.62rem;
+	font-weight: 900;
+	cursor: pointer;
+	transition:
+		background 160ms ease,
+		border-color 160ms ease,
+		color 160ms ease;
+}
+
+.priceField button:hover {
+	border-color: rgba(2, 0, 108, 0.2);
+	background: #02006c;
+	color: white;
+}
+
+.dateDialog {
+	width: min(100% - 1.5rem, 50rem);
+	max-width: min(100% - 1.5rem, 50rem);
+	border: 1px solid rgba(2, 0, 108, 0.12);
+	border-radius: 1.6rem;
+	background: #ffffff;
+	box-shadow: 0 2rem 5rem rgba(16, 22, 33, 0.2);
+}
+
+.datePreview {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	overflow: hidden;
+	border: 1px solid rgba(23, 23, 31, 0.72);
+	border-radius: 1rem;
+	background: #ffffff;
+}
+
+.datePreview div {
+	display: grid;
+	gap: 0.18rem;
+	padding: 0.8rem 1rem;
+}
+
+.datePreview div + div {
+	border-left: 1px solid rgba(23, 23, 31, 0.16);
+}
+
+.datePreview span {
+	color: #02006c;
+	font-size: 0.66rem;
+	font-weight: 860;
+	letter-spacing: 0.07em;
+	text-transform: uppercase;
+}
+
+.datePreview strong {
+	color: #11131c;
+	font-size: 0.95rem;
+	font-weight: 820;
+}
+
+.calendarShell {
+	overflow-x: auto;
+	padding: 0.8rem;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	border-radius: 1.25rem;
+	background: #f8f9fd;
+}
+
+.calendar {
+	width: 100%;
+	min-width: 42rem;
+	background: transparent;
+	--cell-size: 2.35rem;
+	--cell-radius: 999px;
+}
+
+.calendar :global(.rdp-months) {
+	width: 100%;
+	justify-content: space-between;
+	gap: 1rem;
+}
+
+.calendar :global(.rdp-month) {
+	flex: 1;
+}
+
+.calendar button {
+	cursor: pointer;
+}
+
+.dateDialogFooter {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.75rem;
+}
+
+.dateDialogFooter button {
+	width: 100%;
+	border-radius: 999px;
+}
+
+@media (max-width: 1180px) {
+	.primaryFields {
+		grid-template-columns: minmax(16rem, 1.2fr) minmax(12rem, 0.8fr) minmax(
+				9rem,
+				0.6fr
+			);
+	}
+
+	.searchButton {
+		grid-column: 1 / -1;
+		width: 100%;
+		height: var(--pluto-button-height);
+		min-height: var(--pluto-button-height);
+		border-radius: 999px;
+	}
+
+	.advancedPanel {
+		grid-template-columns: 1fr;
+	}
+
+	.advancedGrid {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
+	.priceField {
+		grid-column: 1 / -1;
+	}
+}
+
+@media (max-width: 940px) {
+	.searchPanel {
+		width: min(100% - 1rem, 44rem);
+	}
+
+	.categoryTabs {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.primaryFields {
+		grid-template-columns: 1fr;
+	}
+
+	.advancedGrid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 680px) {
+	.searchPanel {
+		border-radius: 1.25rem;
+	}
+
+	.categoryTabs,
+	.advancedGrid {
+		grid-template-columns: 1fr;
+	}
+
+	.categoryTab {
+		min-height: 3rem;
+	}
+
+	.searchField,
+	.dateField,
+	.guestField {
+		min-height: 4.35rem;
+	}
+
+	.exchangePanel {
+		display: grid;
+		grid-template-columns: 1fr;
+	}
+
+	.dateDialog {
+		border-radius: 1.2rem;
+	}
+
+	.datePreview,
+	.dateDialogFooter {
+		grid-template-columns: 1fr;
+	}
+
+	.datePreview div + div {
+		border-top: 1px solid rgba(23, 23, 31, 0.16);
+		border-left: 0;
+	}
+
+	.calendar {
+		min-width: 0;
+		--cell-size: 2.05rem;
+	}
+
+	.calendar :global(.rdp-months) {
+		flex-direction: column;
+	}
+}
