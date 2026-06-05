@@ -160,6 +160,7 @@ export function HomeSearch() {
 		defaultDateRange,
 	);
 	const [isDateDialogOpen, setIsDateDialogOpen] = useState(false);
+	const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
 	const activeSearchCategory = useMemo(
 		() =>
 			searchCategories.find((category) => category.id === activeCategory) ??
@@ -244,7 +245,7 @@ export function HomeSearch() {
 					})}
 				</div>
 
-				<div className={styles.primaryFields}>
+				<div className={styles.primaryFields} data-category={activeCategory}>
 					<label className={styles.searchField}>
 						<span>
 							{activeCategory === "cars" ? "Search" : "Location or address"}
@@ -285,37 +286,21 @@ export function HomeSearch() {
 						</label>
 					) : null}
 
-					<Button type="submit" className={styles.searchButton}>
-						<Search aria-hidden="true" />
-						<span>Search {activeSearchCategory.shortLabel}</span>
-						<ArrowRight aria-hidden="true" />
-					</Button>
-				</div>
-
-				<div className={styles.advancedPanel}>
-					<div className={styles.advancedHeader}>
-						<span>
+					<div className={styles.searchActions}>
+						<Button
+							type="button"
+							variant="outline"
+							className={styles.filterButton}
+							onClick={() => setIsFilterDialogOpen(true)}
+						>
 							<Filter aria-hidden="true" />
-							Refine
-						</span>
-						<p>Use precise filters before opening the listings page.</p>
-					</div>
-
-					<div className={styles.advancedGrid}>
-						<CategorySearchFilters
-							activeCategory={activeCategory}
-							filters={filters}
-							onFilterChange={updateFilter}
-						/>
-						<PriceSlider
-							maxBudget={activeSearchCategory.maxBudget}
-							selectedBudget={selectedBudget}
-							hasBudgetFilter={hasBudgetFilter}
-							onBudgetChange={(value) =>
-								updateFilter("maxPrice", String(value))
-							}
-							onClear={() => updateFilter("maxPrice", "")}
-						/>
+							<span>Filters</span>
+						</Button>
+						<Button type="submit" className={styles.searchButton}>
+							<Search aria-hidden="true" />
+							<span>Search {activeSearchCategory.shortLabel}</span>
+							<ArrowRight aria-hidden="true" />
+						</Button>
 					</div>
 				</div>
 			</form>
@@ -326,7 +311,100 @@ export function HomeSearch() {
 				onOpenChange={setIsDateDialogOpen}
 				onDateRangeChange={setDateRange}
 			/>
+			<SearchFilterDialog
+				open={isFilterDialogOpen}
+				category={activeSearchCategory}
+				activeCategory={activeCategory}
+				filters={filters}
+				selectedBudget={selectedBudget}
+				hasBudgetFilter={hasBudgetFilter}
+				onOpenChange={setIsFilterDialogOpen}
+				onFilterChange={updateFilter}
+				onBudgetChange={(value) => updateFilter("maxPrice", String(value))}
+				onClearBudget={() => updateFilter("maxPrice", "")}
+				onReset={() => setFilters(defaultSearchFilters)}
+			/>
 		</>
+	);
+}
+
+function SearchFilterDialog({
+	open,
+	category,
+	activeCategory,
+	filters,
+	selectedBudget,
+	hasBudgetFilter,
+	onOpenChange,
+	onFilterChange,
+	onBudgetChange,
+	onClearBudget,
+	onReset,
+}: {
+	open: boolean;
+	category: SearchCategory;
+	activeCategory: HomeSearchCategory;
+	filters: HomeSearchFilters;
+	selectedBudget: number;
+	hasBudgetFilter: boolean;
+	onOpenChange: (open: boolean) => void;
+	onFilterChange: <Key extends keyof HomeSearchFilters>(
+		key: Key,
+		value: HomeSearchFilters[Key],
+	) => void;
+	onBudgetChange: (value: number) => void;
+	onClearBudget: () => void;
+	onReset: () => void;
+}) {
+	const Icon = category.icon;
+
+	return (
+		<Dialog open={open} onOpenChange={onOpenChange}>
+			<DialogContent className={styles.filterDialog}>
+				<DialogHeader>
+					<div className={styles.filterDialogTitle}>
+						<span>
+							<Icon aria-hidden="true" />
+						</span>
+						<div>
+							<DialogTitle>{category.label} filters</DialogTitle>
+							<DialogDescription>
+								Choose the exact details you want before opening{" "}
+								{category.shortLabel.toLowerCase()} listings.
+							</DialogDescription>
+						</div>
+					</div>
+				</DialogHeader>
+
+				<div className={styles.filterDialogBody}>
+					<div className={styles.advancedGrid}>
+						<CategorySearchFilters
+							activeCategory={activeCategory}
+							filters={filters}
+							onFilterChange={onFilterChange}
+						/>
+						<PriceSlider
+							maxBudget={category.maxBudget}
+							selectedBudget={selectedBudget}
+							hasBudgetFilter={hasBudgetFilter}
+							onBudgetChange={onBudgetChange}
+							onClear={onClearBudget}
+						/>
+					</div>
+				</div>
+
+				<DialogFooter className={styles.filterDialogFooter}>
+					<Button type="button" variant="outline" onClick={onReset}>
+						<Filter aria-hidden="true" />
+						Reset filters
+					</Button>
+					<Button type="button" onClick={() => onOpenChange(false)}>
+						<ArrowRight aria-hidden="true" />
+						Apply filters
+					</Button>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
 	);
 }
 
