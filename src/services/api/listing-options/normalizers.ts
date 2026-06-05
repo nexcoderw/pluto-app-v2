@@ -7,76 +7,51 @@ import type {
 	HotelRoomType,
 	ListingOption,
 } from "./types";
-
-const currencyOptions = [
-	{ value: "RWF", label: "Rwandan franc" },
-	{ value: "USD", label: "US dollar" },
-] satisfies ListingOption<CurrencyCode>[];
-
-const carTransmissionOptions = [
-	{ value: "AUTOMATIC", label: "Automatic" },
-	{ value: "MANUAL", label: "Manual" },
-] satisfies ListingOption<CarTransmission>[];
-
-const carFuelTypeOptions = [
-	{ value: "PETROL", label: "Petrol" },
-	{ value: "DIESEL", label: "Diesel" },
-	{ value: "HYBRID", label: "Hybrid" },
-	{ value: "ELECTRIC", label: "Electric" },
-] satisfies ListingOption<CarFuelType>[];
-
-const hotelRoomTypeOptions = [
-	{ value: "STANDARD", label: "Standard" },
-	{ value: "DELUXE", label: "Deluxe" },
-	{ value: "SUITE", label: "Suite" },
-	{ value: "FAMILY", label: "Family" },
-	{ value: "EXECUTIVE", label: "Executive" },
-] satisfies ListingOption<HotelRoomType>[];
-
-const bedTypeOptions = [
-	{ value: "SINGLE", label: "Single" },
-	{ value: "DOUBLE", label: "Double" },
-	{ value: "QUEEN", label: "Queen" },
-	{ value: "KING", label: "King" },
-	{ value: "TWIN", label: "Twin" },
-] satisfies ListingOption<BedType>[];
-
-const airbnbPropertyTypeOptions = [
-	{ value: "ENTIRE_HOME", label: "Entire home" },
-	{ value: "APARTMENT", label: "Apartment" },
-	{ value: "VILLA", label: "Villa" },
-	{ value: "STUDIO", label: "Studio" },
-	{ value: "GUEST_SUITE", label: "Guest suite" },
-] satisfies ListingOption<AirbnbPropertyType>[];
+import {
+	fallbackAirbnbPropertyTypeOptions,
+	fallbackBedTypeOptions,
+	fallbackCarFuelTypeOptions,
+	fallbackCarTransmissionOptions,
+	fallbackCurrencyOptions,
+	fallbackHotelRoomTypeOptions,
+} from "./fallbacks";
 
 export function normalizeCurrencyCode(value: string): CurrencyCode {
-	return normalizeListingOptionValue(value, currencyOptions, "RWF");
+	return normalizeListingOptionValue(value, fallbackCurrencyOptions, "RWF");
 }
 
 export function normalizeCarTransmission(value: string): CarTransmission {
 	return normalizeListingOptionValue(
 		value,
-		carTransmissionOptions,
+		fallbackCarTransmissionOptions,
 		"AUTOMATIC",
 	);
 }
 
 export function normalizeCarFuelType(value: string): CarFuelType {
-	return normalizeListingOptionValue(value, carFuelTypeOptions, "PETROL");
+	return normalizeListingOptionValue(
+		value,
+		fallbackCarFuelTypeOptions,
+		"PETROL",
+	);
 }
 
 export function normalizeHotelRoomType(value: string): HotelRoomType {
-	return normalizeListingOptionValue(value, hotelRoomTypeOptions, "STANDARD");
+	return normalizeListingOptionValue(
+		value,
+		fallbackHotelRoomTypeOptions,
+		"STANDARD",
+	);
 }
 
 export function normalizeBedType(value: string): BedType {
-	return normalizeListingOptionValue(value, bedTypeOptions, "QUEEN");
+	return normalizeListingOptionValue(value, fallbackBedTypeOptions, "QUEEN");
 }
 
 export function normalizeAirbnbPropertyType(value: string): AirbnbPropertyType {
 	return normalizeListingOptionValue(
 		value,
-		airbnbPropertyTypeOptions,
+		fallbackAirbnbPropertyTypeOptions,
 		"ENTIRE_HOME",
 	);
 }
