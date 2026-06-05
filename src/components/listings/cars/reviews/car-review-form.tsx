@@ -67,7 +67,7 @@ export function CarReviewForm({
 		onError: (error) => {
 			const message =
 				error instanceof ApiRequestError
-					? error.message
+					? getReviewErrorMessage(error)
 					: "Your review could not be saved. Please try again.";
 
 			setInlineError(message);
@@ -210,4 +210,16 @@ function cleanPayload(input: ListingReviewPayload): ListingReviewPayload {
 		...input,
 		message: message || undefined,
 	};
+}
+
+function getReviewErrorMessage(error: ApiRequestError): string {
+	if (error.statusCode === 401) {
+		return "Your secure session needs attention. Please sign in again before submitting this review.";
+	}
+
+	if (error.statusCode === 403) {
+		return "Only customer accounts can submit listing reviews.";
+	}
+
+	return error.message;
 }
