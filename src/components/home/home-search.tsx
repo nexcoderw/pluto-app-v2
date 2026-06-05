@@ -27,6 +27,11 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
+import { useListingOptions } from "@/hooks/use-listing-options";
+import type {
+	ListingOption,
+	NumericListingOption,
+} from "@/services/api/listing-options";
 import styles from "./home-search.module.css";
 
 type HomeSearchCategory =
@@ -58,6 +63,11 @@ type HomeSearchFilters = {
 	bedType: string;
 	propertyType: string;
 	maxPrice: string;
+};
+
+type SearchSelectOption = {
+	value: string;
+	label: string;
 };
 
 const today = new Date();
@@ -132,24 +142,9 @@ const defaultSearchFilters: HomeSearchFilters = {
 	maxPrice: "",
 };
 
-const transmissionOptions = ["Automatic", "Manual"];
-const fuelTypeOptions = ["Petrol", "Diesel", "Hybrid", "Electric"];
-const seatOptions = ["2", "4", "5", "7", "8"];
-const yearOptions = ["2024", "2022", "2020", "2018", "2015", "2010"];
-const bedroomOptions = ["1", "2", "3", "4", "5"];
-const bathroomOptions = ["1", "2", "3", "4", "5"];
-const roomTypeOptions = ["Standard", "Deluxe", "Suite", "Family", "Executive"];
-const bedTypeOptions = ["Single", "Double", "Queen", "King", "Twin"];
-const propertyTypeOptions = [
-	"Entire home",
-	"Apartment",
-	"Villa",
-	"Studio",
-	"Guest suite",
-];
-
 export function HomeSearch() {
 	const router = useRouter();
+	const { options: listingOptions } = useListingOptions();
 	const [activeCategory, setActiveCategory] =
 		useState<HomeSearchCategory>("cars");
 	const [search, setSearch] = useState("");
@@ -172,6 +167,10 @@ export function HomeSearch() {
 		: activeSearchCategory.maxBudget;
 	const hasBudgetFilter = Boolean(filters.maxPrice);
 	const activeFilterCount = countActiveFilters(filters);
+	const optionSets = useMemo(
+		() => createOptionSets(listingOptions),
+		[listingOptions],
+	);
 
 	function selectCategory(category: SearchCategory) {
 		if (category.comingSoon) {
@@ -324,6 +323,7 @@ export function HomeSearch() {
 				category={activeSearchCategory}
 				activeCategory={activeCategory}
 				filters={filters}
+				options={optionSets}
 				selectedBudget={selectedBudget}
 				hasBudgetFilter={hasBudgetFilter}
 				onOpenChange={setIsFilterDialogOpen}
@@ -341,6 +341,7 @@ function SearchFilterDialog({
 	category,
 	activeCategory,
 	filters,
+	options,
 	selectedBudget,
 	hasBudgetFilter,
 	onOpenChange,
@@ -353,6 +354,7 @@ function SearchFilterDialog({
 	category: SearchCategory;
 	activeCategory: HomeSearchCategory;
 	filters: HomeSearchFilters;
+	options: ReturnType<typeof createOptionSets>;
 	selectedBudget: number;
 	hasBudgetFilter: boolean;
 	onOpenChange: (open: boolean) => void;
@@ -400,6 +402,7 @@ function SearchFilterDialog({
 						<CategorySearchFilters
 							activeCategory={activeCategory}
 							filters={filters}
+							options={options}
 							onFilterChange={onFilterChange}
 						/>
 						<PriceSlider
@@ -430,10 +433,12 @@ function SearchFilterDialog({
 function CategorySearchFilters({
 	activeCategory,
 	filters,
+	options,
 	onFilterChange,
 }: {
 	activeCategory: HomeSearchCategory;
 	filters: HomeSearchFilters;
+	options: ReturnType<typeof createOptionSets>;
 	onFilterChange: <Key extends keyof HomeSearchFilters>(
 		key: Key,
 		value: HomeSearchFilters[Key],
@@ -445,28 +450,28 @@ function CategorySearchFilters({
 				<SearchSelect
 					label="Transmission"
 					value={filters.transmission}
-					options={transmissionOptions}
+					options={options.transmissions}
 					placeholder="Any transmission"
 					onChange={(value) => onFilterChange("transmission", value)}
 				/>
 				<SearchSelect
 					label="Fuel type"
 					value={filters.fuelType}
-					options={fuelTypeOptions}
+					options={options.fuelTypes}
 					placeholder="Any fuel"
 					onChange={(value) => onFilterChange("fuelType", value)}
 				/>
 				<SearchSelect
 					label="Seats"
 					value={filters.seats}
-					options={seatOptions}
+					options={options.seats}
 					placeholder="Any seats"
 					onChange={(value) => onFilterChange("seats", value)}
 				/>
 				<SearchSelect
 					label="Year from"
 					value={filters.minYear}
-					options={yearOptions}
+					options={options.years}
 					placeholder="Any year"
 					onChange={(value) => onFilterChange("minYear", value)}
 				/>
@@ -480,14 +485,14 @@ function CategorySearchFilters({
 				<SearchSelect
 					label="Bedrooms"
 					value={filters.bedrooms}
-					options={bedroomOptions}
+					options={options.bedrooms}
 					placeholder="Any bedrooms"
 					onChange={(value) => onFilterChange("bedrooms", value)}
 				/>
 				<SearchSelect
 					label="Bathrooms"
 					value={filters.bathrooms}
-					options={bathroomOptions}
+					options={options.bathrooms}
 					placeholder="Any bathrooms"
 					onChange={(value) => onFilterChange("bathrooms", value)}
 				/>
@@ -501,14 +506,14 @@ function CategorySearchFilters({
 				<SearchSelect
 					label="Room type"
 					value={filters.roomType}
-					options={roomTypeOptions}
+					options={options.roomTypes}
 					placeholder="Any room"
 					onChange={(value) => onFilterChange("roomType", value)}
 				/>
 				<SearchSelect
 					label="Bed type"
 					value={filters.bedType}
-					options={bedTypeOptions}
+					options={options.bedTypes}
 					placeholder="Any bed"
 					onChange={(value) => onFilterChange("bedType", value)}
 				/>
@@ -521,21 +526,21 @@ function CategorySearchFilters({
 			<SearchSelect
 				label="Property type"
 				value={filters.propertyType}
-				options={propertyTypeOptions}
+				options={options.propertyTypes}
 				placeholder="Any home"
 				onChange={(value) => onFilterChange("propertyType", value)}
 			/>
 			<SearchSelect
 				label="Bedrooms"
 				value={filters.bedrooms}
-				options={bedroomOptions}
+				options={options.bedrooms}
 				placeholder="Any bedrooms"
 				onChange={(value) => onFilterChange("bedrooms", value)}
 			/>
 			<SearchSelect
 				label="Bathrooms"
 				value={filters.bathrooms}
-				options={bathroomOptions}
+				options={options.bathrooms}
 				placeholder="Any bathrooms"
 				onChange={(value) => onFilterChange("bathrooms", value)}
 			/>
@@ -552,7 +557,7 @@ function SearchSelect({
 }: {
 	label: string;
 	value: string;
-	options: string[];
+	options: SearchSelectOption[];
 	placeholder: string;
 	onChange: (value: string) => void;
 }) {
@@ -562,13 +567,50 @@ function SearchSelect({
 			<select value={value} onChange={(event) => onChange(event.target.value)}>
 				<option value="">{placeholder}</option>
 				{options.map((option) => (
-					<option key={option} value={option}>
-						{option}
+					<option key={option.value} value={option.value}>
+						{option.label}
 					</option>
 				))}
 			</select>
 		</label>
 	);
+}
+
+function createOptionSets(
+	listingOptions: ReturnType<typeof useListingOptions>["options"],
+) {
+	return {
+		transmissions: toSearchOptions(listingOptions.cars.transmissions),
+		fuelTypes: toSearchOptions(listingOptions.cars.fuelTypes),
+		seats: numericOptionsToSearchOptions(listingOptions.cars.seats),
+		years: listingOptions.years.map((year) => ({
+			value: String(year),
+			label: String(year),
+		})),
+		bedrooms: numericOptionsToSearchOptions(listingOptions.numbers.bedrooms),
+		bathrooms: numericOptionsToSearchOptions(listingOptions.numbers.bathrooms),
+		roomTypes: toSearchOptions(listingOptions.hotelRooms.roomTypes),
+		bedTypes: toSearchOptions(listingOptions.hotelRooms.bedTypes),
+		propertyTypes: toSearchOptions(listingOptions.airbnb.propertyTypes),
+	};
+}
+
+function toSearchOptions<Value extends string>(
+	options: ListingOption<Value>[],
+): SearchSelectOption[] {
+	return options.map((option) => ({
+		value: option.value,
+		label: option.label,
+	}));
+}
+
+function numericOptionsToSearchOptions(
+	options: NumericListingOption[],
+): SearchSelectOption[] {
+	return options.map((option) => ({
+		value: String(option.value),
+		label: option.label,
+	}));
 }
 
 function PriceSlider({
