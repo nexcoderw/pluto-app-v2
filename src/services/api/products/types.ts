@@ -1,3 +1,12 @@
+import type {
+	AirbnbPropertyType,
+	BedType,
+	CarFuelType,
+	CarTransmission,
+	CurrencyCode,
+	HotelRoomType,
+} from "../listing-options";
+
 export type ProductCategory =
 	| "CAR"
 	| "APARTMENT"
@@ -49,8 +58,8 @@ export type CarDetails = {
 	model: string;
 	year: number;
 	plateNumber: string | null;
-	transmission: string;
-	fuelType: string;
+	transmission: CarTransmission;
+	fuelType: CarFuelType;
 	seats: number;
 	doors: number;
 	luggageCapacity: number | null;
@@ -83,8 +92,8 @@ export type HotelRoomDetails = {
 	id: string;
 	productId: string;
 	hotelName: string;
-	roomType: string;
-	bedType: string;
+	roomType: HotelRoomType;
+	bedType: BedType;
 	roomSizeSqm: number | null;
 	breakfastIncluded: boolean;
 	checkInTime: string;
@@ -98,7 +107,7 @@ export type HotelRoomDetails = {
 export type AirbnbHouseDetails = {
 	id: string;
 	productId: string;
-	houseType: string;
+	houseType: AirbnbPropertyType;
 	entirePlace: boolean;
 	selfCheckIn: boolean;
 	houseRules: string | null;
@@ -126,7 +135,7 @@ export type Product = {
 	country: string;
 	location?: ProductLocation | null;
 	basePrice: string;
-	currency: string;
+	currency: CurrencyCode;
 	pricingUnit: PricingUnit;
 	isAvailable?: boolean;
 	rejectionReason?: string | null;
