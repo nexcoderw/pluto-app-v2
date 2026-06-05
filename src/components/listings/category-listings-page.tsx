@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
 	ArrowLeft,
 	ArrowRight,
@@ -92,12 +93,23 @@ export function CategoryListingsPage({
 	renderSidebar,
 	filterPresentation = "sidebar",
 }: CategoryListingsPageProps) {
-	const [search, setSearch] = useState("");
+	const urlSearchParams = useSearchParams();
+	const initialUrlState = useMemo(
+		() => getInitialListingUrlState(urlSearchParams),
+		[urlSearchParams],
+	);
+	const [search, setSearch] = useState(initialUrlState.search);
 	const [page, setPage] = useState(1);
-	const [sortBy, setSortBy] = useState<ListingOrderBy>("createdAt");
-	const [sortOrder, setSortOrder] = useState<ListingSortOrder>("desc");
-	const [draftFilters, setDraftFilters] = useState<ListingListRequest>({});
-	const [appliedFilters, setAppliedFilters] = useState<ListingListRequest>({});
+	const [sortBy, setSortBy] = useState<ListingOrderBy>(initialUrlState.sortBy);
+	const [sortOrder, setSortOrder] = useState<ListingSortOrder>(
+		initialUrlState.sortOrder,
+	);
+	const [draftFilters, setDraftFilters] = useState<ListingListRequest>(
+		initialUrlState.filters,
+	);
+	const [appliedFilters, setAppliedFilters] = useState<ListingListRequest>(
+		initialUrlState.filters,
+	);
 	const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
 	const usesFilterDialog = filterPresentation === "dialog";
 	const usesResponsiveFilterDialog = filterPresentation === "responsive";
@@ -682,6 +694,50 @@ function cleanRequest(input: ListingListRequest): ListingListRequest {
 			([, value]) => value !== "" && value !== undefined,
 		),
 	) as ListingListRequest;
+}
+
+function getInitialListingUrlState(params: {
+	get: (key: string) => string | null;
+}) {
+	const search = params.get("search")?.trim() ?? "";
+	const filters = cleanRequest({
+		city: params.get("city")?.trim() || undefined,
+		country: params.get("country")?.trim() || undefined,
+		minPrice: parseNumberParam(params.get("minPrice")),
+		maxPrice: parseNumberParam(params.get("maxPrice")),
+		guests: parseNumberParam(params.get("guests")),
+	});
+
+	return {
+		search,
+		filters,
+		sortBy: parseListingOrderBy(params.get("sortBy")),
+		sortOrder: parseListingSortOrder(params.get("sortOrder")),
+	};
+}
+
+function parseNumberParam(value: string | null): number | undefined {
+	if (!value) {
+		return undefined;
+	}
+
+	const numberValue = Number(value);
+
+	return Number.isFinite(numberValue) && numberValue >= 0
+		? numberValue
+		: undefined;
+}
+
+function parseListingOrderBy(value: string | null): ListingOrderBy {
+	if (value === "basePrice" || value === "title" || value === "createdAt") {
+		return value;
+	}
+
+	return "createdAt";
+}
+
+function parseListingSortOrder(value: string | null): ListingSortOrder {
+	return value === "asc" ? "asc" : "desc";
 }
 
 function parseFilterValue(filter: ListingSidebarFilter, value: string) {
