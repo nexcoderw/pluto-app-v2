@@ -18,6 +18,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { useListingOptions } from "@/hooks/use-listing-options";
 import type { ListingListRequest } from "@/services/api/listings";
 import {
 	normalizeCarFuelType,
@@ -27,10 +28,6 @@ import type { ListingSidebarRenderProps } from "../category-listings-page";
 import styles from "./car-listings-sidebar.module.css";
 
 const countries = ["Rwanda", "Kenya", "Uganda", "Tanzania", "Burundi"];
-const transmissions = ["Automatic", "Manual"];
-const fuelTypes = ["Petrol", "Diesel", "Hybrid", "Electric"];
-const seatOptions = [2, 4, 5, 7, 8];
-const minYearOptions = [2024, 2022, 2020, 2018, 2015, 2010];
 const maxBudget = 500000;
 const budgetStep = 5000;
 const usdToRwfSellRate = 1460;
@@ -46,6 +43,7 @@ export function CarListingsSidebar({
 }: ListingSidebarRenderProps & {
 	variant?: "sidebar" | "dialog";
 }) {
+	const { options: listingOptions } = useListingOptions();
 	const selectedBudget =
 		typeof draftFilters.maxPrice === "number"
 			? draftFilters.maxPrice
@@ -144,9 +142,9 @@ export function CarListingsSidebar({
 						</SelectTrigger>
 						<SelectContent align="start" alignItemWithTrigger={false}>
 							<SelectItem value="ANY">Any transmission</SelectItem>
-							{transmissions.map((transmission) => (
-								<SelectItem key={transmission} value={transmission}>
-									{transmission}
+							{listingOptions.cars.transmissions.map((option) => (
+								<SelectItem key={option.value} value={option.value}>
+									{option.label}
 								</SelectItem>
 							))}
 						</SelectContent>
@@ -167,9 +165,9 @@ export function CarListingsSidebar({
 						</SelectTrigger>
 						<SelectContent align="start" alignItemWithTrigger={false}>
 							<SelectItem value="ANY">Any fuel type</SelectItem>
-							{fuelTypes.map((fuelType) => (
-								<SelectItem key={fuelType} value={fuelType}>
-									{fuelType}
+							{listingOptions.cars.fuelTypes.map((option) => (
+								<SelectItem key={option.value} value={option.value}>
+									{option.label}
 								</SelectItem>
 							))}
 						</SelectContent>
@@ -185,9 +183,9 @@ export function CarListingsSidebar({
 						</SelectTrigger>
 						<SelectContent align="start" alignItemWithTrigger={false}>
 							<SelectItem value="ANY">Any seats</SelectItem>
-							{seatOptions.map((seats) => (
-								<SelectItem key={seats} value={String(seats)}>
-									{seats}+ seats
+							{listingOptions.cars.seats.map((option) => (
+								<SelectItem key={option.value} value={String(option.value)}>
+									{option.label} seats
 								</SelectItem>
 							))}
 						</SelectContent>
@@ -203,7 +201,7 @@ export function CarListingsSidebar({
 						</SelectTrigger>
 						<SelectContent align="start" alignItemWithTrigger={false}>
 							<SelectItem value="ANY">Any year</SelectItem>
-							{minYearOptions.map((year) => (
+							{listingOptions.years.map((year) => (
 								<SelectItem key={year} value={String(year)}>
 									{year}+
 								</SelectItem>
