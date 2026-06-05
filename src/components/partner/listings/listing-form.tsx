@@ -56,6 +56,14 @@ import type {
 	ProductImage,
 } from "@/services/api/products";
 import {
+	normalizeAirbnbPropertyType,
+	normalizeBedType,
+	normalizeCarFuelType,
+	normalizeCarTransmission,
+	normalizeCurrencyCode,
+	normalizeHotelRoomType,
+} from "@/services/api/listing-options";
+import {
 	createListing,
 	deleteProductImage,
 	updateListing,
@@ -1883,7 +1891,7 @@ function toListingPayload(values: ListingFormValues) {
 		city: values.city.trim(),
 		country: values.country.trim() || "Rwanda",
 		basePrice: values.basePrice.trim(),
-		currency: values.currency.trim().toUpperCase() || "RWF",
+		currency: normalizeCurrencyCode(values.currency),
 		pricingUnit: values.pricingUnit,
 	};
 
@@ -1910,8 +1918,8 @@ function toListingPayload(values: ListingFormValues) {
 			...basePayload,
 			...toLocationPayload(values),
 			hotelName: values.hotelName.trim(),
-			roomType: values.roomType.trim(),
-			bedType: values.bedType.trim(),
+			roomType: normalizeHotelRoomType(values.roomType),
+			bedType: normalizeBedType(values.bedType),
 			roomSizeSqm: optionalNumber(values.roomSizeSqm),
 			breakfastIncluded: values.breakfastIncluded,
 			checkInTime: values.checkInTime.trim(),
@@ -1927,7 +1935,7 @@ function toListingPayload(values: ListingFormValues) {
 		return {
 			...basePayload,
 			...toLocationPayload(values),
-			houseType: values.houseType.trim(),
+			houseType: normalizeAirbnbPropertyType(values.houseType),
 			entirePlace: values.entirePlace,
 			selfCheckIn: values.selfCheckIn,
 			houseRules: values.houseRules.trim() || undefined,
@@ -1947,8 +1955,8 @@ function toListingPayload(values: ListingFormValues) {
 		model: values.model.trim(),
 		year: Number(values.year),
 		plateNumber: values.plateNumber.trim() || undefined,
-		transmission: values.transmission.trim(),
-		fuelType: values.fuelType.trim(),
+		transmission: normalizeCarTransmission(values.transmission),
+		fuelType: normalizeCarFuelType(values.fuelType),
 		seats: Number(values.seats),
 		doors: Number(values.doors),
 		luggageCapacity: optionalNumber(values.luggageCapacity),
