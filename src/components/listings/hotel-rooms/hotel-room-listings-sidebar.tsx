@@ -17,6 +17,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { useListingOptions } from "@/hooks/use-listing-options";
 import type { ListingListRequest } from "@/services/api/listings";
 import {
 	normalizeBedType,
@@ -26,9 +27,6 @@ import type { ListingSidebarRenderProps } from "../category-listings-page";
 import styles from "./hotel-room-listings-sidebar.module.css";
 
 const countries = ["Rwanda", "Kenya", "Uganda", "Tanzania", "Burundi"];
-const roomTypes = ["Standard", "Deluxe", "Suite", "Executive", "Family"];
-const bedTypes = ["Single", "Double", "Queen", "King", "Twin"];
-const guestOptions = [1, 2, 3, 4, 6, 8];
 const maxBudget = 900000;
 const budgetStep = 10000;
 
@@ -42,6 +40,7 @@ export function HotelRoomListingsSidebar({
 }: ListingSidebarRenderProps & {
 	variant?: "sidebar" | "dialog";
 }) {
+	const { options: listingOptions } = useListingOptions();
 	const selectedBudget =
 		typeof draftFilters.maxPrice === "number"
 			? draftFilters.maxPrice
@@ -119,9 +118,9 @@ export function HotelRoomListingsSidebar({
 						</SelectTrigger>
 						<SelectContent align="start" alignItemWithTrigger={false}>
 							<SelectItem value="ANY">Any room type</SelectItem>
-							{roomTypes.map((roomType) => (
-								<SelectItem key={roomType} value={roomType}>
-									{roomType}
+							{listingOptions.hotelRooms.roomTypes.map((option) => (
+								<SelectItem key={option.value} value={option.value}>
+									{option.label}
 								</SelectItem>
 							))}
 						</SelectContent>
@@ -140,9 +139,9 @@ export function HotelRoomListingsSidebar({
 						</SelectTrigger>
 						<SelectContent align="start" alignItemWithTrigger={false}>
 							<SelectItem value="ANY">Any bed type</SelectItem>
-							{bedTypes.map((bedType) => (
-								<SelectItem key={bedType} value={bedType}>
-									{bedType}
+							{listingOptions.hotelRooms.bedTypes.map((option) => (
+								<SelectItem key={option.value} value={option.value}>
+									{option.label}
 								</SelectItem>
 							))}
 						</SelectContent>
@@ -158,9 +157,9 @@ export function HotelRoomListingsSidebar({
 						</SelectTrigger>
 						<SelectContent align="start" alignItemWithTrigger={false}>
 							<SelectItem value="ANY">Any guests</SelectItem>
-							{guestOptions.map((guests) => (
-								<SelectItem key={guests} value={String(guests)}>
-									{guests}+ guests
+							{listingOptions.numbers.guests.map((option) => (
+								<SelectItem key={option.value} value={String(option.value)}>
+									{option.label} guests
 								</SelectItem>
 							))}
 						</SelectContent>
