@@ -1,4 +1,5 @@
 import { apiClient } from "../client";
+import { withFreshUserSession } from "../auth/ensure-user-session";
 import { normalizeApiError } from "../errors";
 import { PARTNER_PRODUCT_ROUTES } from "./routes";
 import type {
@@ -17,22 +18,24 @@ export async function completeProductImageUpload({
 	isCover,
 	sortOrder,
 }: CompleteProductImageUploadRequest): Promise<PartnerProductResponse> {
-	try {
-		const response = await apiClient.post<PartnerProductResponse>(
-			PARTNER_PRODUCT_ROUTES.completeImageUpload(productId),
-			{
-				publicId,
-				originalName,
-				mimeType,
-				sizeBytes,
-				altText,
-				isCover,
-				sortOrder,
-			},
-		);
+	return withFreshUserSession(async () => {
+		try {
+			const response = await apiClient.post<PartnerProductResponse>(
+				PARTNER_PRODUCT_ROUTES.completeImageUpload(productId),
+				{
+					publicId,
+					originalName,
+					mimeType,
+					sizeBytes,
+					altText,
+					isCover,
+					sortOrder,
+				},
+			);
 
-		return response.data;
-	} catch (error) {
-		throw normalizeApiError(error);
-	}
+			return response.data;
+		} catch (error) {
+			throw normalizeApiError(error);
+		}
+	});
 }
