@@ -1,12 +1,12 @@
 .searchPanel {
 	position: relative;
 	z-index: 2;
-	width: min(100% - clamp(1.5rem, 6vw, 8rem), 84rem);
+	width: min(100% - clamp(1.5rem, 6vw, 8rem), 88rem);
 	margin: clamp(3.2rem, 8vw, 6.5rem) auto clamp(1.5rem, 3vw, 2.5rem);
 	overflow: hidden;
-	border: 1px solid rgba(255, 255, 255, 0.74);
-	border-radius: 1.35rem;
-	background: rgba(255, 255, 255, 0.86);
+	border: 1px solid rgba(255, 255, 255, 0.82);
+	border-radius: 1.55rem;
+	background: rgba(255, 255, 255, 0.9);
 	box-shadow: 0 1.8rem 4.8rem rgba(16, 22, 33, 0.18);
 	backdrop-filter: blur(28px);
 }
@@ -14,26 +14,27 @@
 .categoryTabs {
 	display: grid;
 	grid-template-columns: repeat(5, minmax(0, 1fr));
-	gap: 0.35rem;
-	padding: 0.5rem;
+	gap: 0.42rem;
+	padding: 0.62rem;
 	border-bottom: 1px solid rgba(2, 0, 108, 0.08);
-	background: rgba(247, 248, 252, 0.76);
+	background: rgba(250, 251, 254, 0.84);
 }
 
 .categoryTab {
 	min-width: 0;
-	min-height: 3.15rem;
+	min-height: 3.25rem;
 	display: inline-flex;
 	align-items: center;
-	justify-content: center;
-	gap: 0.45rem;
+	justify-content: flex-start;
+	gap: 0.5rem;
 	position: relative;
-	border: 1px solid transparent;
+	padding: 0 0.95rem;
+	border: 1px solid rgba(2, 0, 108, 0.08);
 	border-radius: 999px;
-	background: transparent;
+	background: #ffffff;
 	color: #151823;
 	font-family: inherit;
-	font-size: 0.74rem;
+	font-size: 0.72rem;
 	font-weight: 850;
 	cursor: pointer;
 	transition:
@@ -44,8 +45,8 @@
 }
 
 .categoryTab svg {
-	width: 0.95rem;
-	height: 0.95rem;
+	width: 0.9rem;
+	height: 0.9rem;
 	color: #02006c;
 }
 
@@ -61,7 +62,7 @@
 }
 
 .categoryTab:hover:not(:disabled) {
-	border-color: rgba(2, 0, 108, 0.1);
+	border-color: rgba(2, 0, 108, 0.2);
 	background: rgba(2, 0, 108, 0.06);
 	transform: translateY(-1px);
 }
@@ -87,15 +88,16 @@
 .primaryFields {
 	display: grid;
 	grid-template-columns:
-		minmax(18rem, 1.3fr) minmax(11rem, 0.72fr) minmax(9rem, 0.5fr)
+		minmax(20rem, 1.35fr) minmax(12rem, 0.72fr) minmax(9.5rem, 0.5fr)
 		auto;
-	gap: 0.6rem;
+	gap: 0.7rem;
 	align-items: stretch;
-	padding: 0.85rem;
+	padding: 1rem;
+	background: #ffffff;
 }
 
 .primaryFields[data-category="cars"] {
-	grid-template-columns: minmax(18rem, 1.3fr) minmax(11rem, 0.72fr) auto;
+	grid-template-columns: minmax(22rem, 1.35fr) minmax(12rem, 0.72fr) auto;
 }
 
 .searchField,
@@ -106,13 +108,13 @@
 	display: grid;
 	align-content: center;
 	gap: 0.16rem;
-	padding: 0.76rem 0.9rem;
+	padding: 0.78rem 0.96rem;
 	border: 1px solid rgba(2, 0, 108, 0.1);
-	border-radius: 1rem;
-	background: rgba(255, 255, 255, 0.92);
+	border-radius: 1.1rem;
+	background: #ffffff;
 	color: #151823;
 	text-align: left;
-	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.72);
+	box-shadow: 0 0.8rem 1.6rem rgba(16, 22, 33, 0.04);
 }
 
 .searchField span,
@@ -195,7 +197,7 @@
 }
 
 .searchActions {
-	min-width: 15.5rem;
+	min-width: 16rem;
 	display: grid;
 	grid-template-columns: auto minmax(0, 1fr);
 	gap: 0.5rem;
@@ -209,16 +211,30 @@
 	align-self: stretch;
 	gap: 0.52rem;
 	border-radius: 999px;
-	font-size: 0.78rem;
+	font-size: 0.74rem;
 	font-weight: 900;
 }
 
 .filterButton {
-	min-width: 7.4rem;
+	min-width: 7.25rem;
+	position: relative;
 	border-color: rgba(2, 0, 108, 0.14);
 	background: rgba(255, 255, 255, 0.92);
 	color: #02006c;
 	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.72);
+}
+
+.filterButton small {
+	min-width: 1.25rem;
+	height: 1.25rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 999px;
+	background: #02006c;
+	color: #ffffff;
+	font-size: 0.62rem;
+	font-weight: 900;
 }
 
 .filterButton:hover {
@@ -254,14 +270,15 @@
 }
 
 .filterDialogTitle {
-	display: inline-flex;
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
 	align-items: center;
 	gap: 0.85rem;
 }
 
 .filterDialogTitle > span {
-	width: 3rem;
-	height: 3rem;
+	width: 3.15rem;
+	height: 3.15rem;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -278,14 +295,57 @@
 }
 
 .filterDialogBody {
+	display: grid;
+	gap: 0.85rem;
 	padding: 0.35rem 0 0;
+}
+
+.filterDialogIntro {
+	display: grid;
+	gap: 0.25rem;
+	padding: 0.85rem 1rem;
+	border: 1px solid rgba(2, 0, 108, 0.09);
+	border-radius: 1.1rem;
+	background: rgba(248, 249, 253, 0.9);
+}
+
+.filterDialogIntro strong {
+	color: #151823;
+	font-size: 0.86rem;
+	font-weight: 900;
+	letter-spacing: 0;
+}
+
+.filterDialogIntro p {
+	max-width: 42rem;
+	margin: 0;
+	color: rgba(21, 24, 35, 0.62);
+	font-size: 0.72rem;
+	font-weight: 620;
+	line-height: 1.45;
 }
 
 .advancedGrid {
 	display: grid;
-	grid-template-columns: repeat(4, minmax(0, 1fr)) minmax(13rem, 1.1fr);
-	gap: 0.55rem;
+	gap: 0.68rem;
 	align-items: stretch;
+}
+
+.advancedGrid[data-category="cars"] {
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.advancedGrid[data-category="apartments"] {
+	grid-template-columns: minmax(0, 1.18fr) minmax(0, 0.82fr);
+}
+
+.advancedGrid[data-category="hotel-rooms"] {
+	grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+	align-items: end;
+}
+
+.advancedGrid[data-category="airbnb"] {
+	grid-template-columns: minmax(0, 1.25fr) repeat(2, minmax(0, 0.8fr));
 }
 
 .advancedField {
@@ -293,10 +353,12 @@
 	display: grid;
 	align-content: center;
 	gap: 0.18rem;
-	padding: 0.65rem 0.72rem;
+	min-height: 4.8rem;
+	padding: 0.78rem 0.82rem;
 	border: 1px solid rgba(2, 0, 108, 0.09);
-	border-radius: 0.85rem;
+	border-radius: 1rem;
 	background: #ffffff;
+	box-shadow: 0 0.9rem 1.8rem rgba(16, 22, 33, 0.035);
 }
 
 .advancedField span {
@@ -314,7 +376,7 @@
 	background: transparent;
 	color: rgba(21, 24, 35, 0.78);
 	font: inherit;
-	font-size: 0.74rem;
+	font-size: 0.76rem;
 	font-weight: 680;
 	outline: none;
 	cursor: pointer;
@@ -323,11 +385,13 @@
 .priceField {
 	min-width: 0;
 	display: grid;
-	gap: 0.45rem;
-	padding: 0.65rem 0.72rem;
+	grid-column: 1 / -1;
+	gap: 0.65rem;
+	padding: 0.9rem 1rem;
 	border: 1px solid rgba(2, 0, 108, 0.1);
-	border-radius: 0.85rem;
+	border-radius: 1.1rem;
 	background: #ffffff;
+	box-shadow: 0 0.9rem 1.8rem rgba(16, 22, 33, 0.04);
 }
 
 .priceHeader {
@@ -355,7 +419,7 @@
 
 .priceHeader strong {
 	color: #151823;
-	font-size: 0.72rem;
+	font-size: 0.82rem;
 	font-weight: 900;
 	white-space: nowrap;
 }
@@ -393,14 +457,14 @@
 .exchangePanel {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 0.42rem;
+	gap: 0.52rem;
 }
 
 .exchangePanel span {
 	min-width: 0;
 	display: grid;
 	gap: 0.12rem;
-	padding: 0.48rem 0.55rem;
+	padding: 0.58rem 0.68rem;
 	border: 1px solid rgba(2, 0, 108, 0.08);
 	border-radius: 0.7rem;
 	background: rgba(247, 248, 252, 0.86);
@@ -424,7 +488,7 @@
 .budgetHint {
 	margin: 0;
 	color: rgba(21, 24, 35, 0.58);
-	font-size: 0.64rem;
+	font-size: 0.68rem;
 	font-weight: 650;
 	line-height: 1.45;
 }
@@ -561,11 +625,7 @@
 	}
 
 	.advancedGrid {
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-	}
-
-	.priceField {
-		grid-column: 1 / -1;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 }
 
@@ -586,7 +646,11 @@
 		min-width: 0;
 	}
 
-	.advancedGrid {
+	.advancedGrid,
+	.advancedGrid[data-category="cars"],
+	.advancedGrid[data-category="apartments"],
+	.advancedGrid[data-category="hotel-rooms"],
+	.advancedGrid[data-category="airbnb"] {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 }
@@ -597,7 +661,11 @@
 	}
 
 	.categoryTabs,
-	.advancedGrid {
+	.advancedGrid,
+	.advancedGrid[data-category="cars"],
+	.advancedGrid[data-category="apartments"],
+	.advancedGrid[data-category="hotel-rooms"],
+	.advancedGrid[data-category="airbnb"] {
 		grid-template-columns: 1fr;
 	}
 
