@@ -6,6 +6,14 @@ import type {
 	ProductListResponse,
 	ProductStatus,
 } from "../products";
+import type {
+	AirbnbPropertyType,
+	BedType,
+	CarFuelType,
+	CarTransmission,
+	CurrencyCode,
+	HotelRoomType,
+} from "../listing-options";
 
 export type CreateCarProductRequest = {
 	title: string;
@@ -14,14 +22,14 @@ export type CreateCarProductRequest = {
 	city: string;
 	country?: string;
 	basePrice: string;
-	currency?: string;
+	currency?: CurrencyCode;
 	pricingUnit?: PricingUnit;
 	brand: string;
 	model: string;
 	year: number;
 	plateNumber?: string;
-	transmission: string;
-	fuelType: string;
+	transmission: CarTransmission;
+	fuelType: CarFuelType;
 	seats: number;
 	doors: number;
 	luggageCapacity?: number;
@@ -59,8 +67,8 @@ export type CreateApartmentProductRequest =
 export type CreateHotelRoomProductRequest =
 	ProductBaseRequest & {} & ListingLocationRequest & {
 			hotelName: string;
-			roomType: string;
-			bedType: string;
+			roomType: HotelRoomType;
+			bedType: BedType;
 			roomSizeSqm?: number;
 			breakfastIncluded?: boolean;
 			checkInTime: string;
@@ -73,7 +81,7 @@ export type CreateHotelRoomProductRequest =
 
 export type CreateAirbnbHouseProductRequest =
 	ProductBaseRequest & {} & ListingLocationRequest & {
-			houseType: string;
+			houseType: AirbnbPropertyType;
 			entirePlace?: boolean;
 			selfCheckIn?: boolean;
 			houseRules?: string;
@@ -93,7 +101,7 @@ export type ProductBaseRequest = {
 	city: string;
 	country?: string;
 	basePrice: string;
-	currency?: string;
+	currency?: CurrencyCode;
 	pricingUnit?: PricingUnit;
 };
 
