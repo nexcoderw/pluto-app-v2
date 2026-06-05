@@ -3,6 +3,13 @@ import type {
 	ProductDetailResponse,
 	ProductListResponse,
 } from "../products";
+import type {
+	AirbnbPropertyType,
+	BedType,
+	CarFuelType,
+	CarTransmission,
+	HotelRoomType,
+} from "../listing-options";
 
 export type ListingCategorySlug =
 	| "cars"
@@ -25,8 +32,8 @@ export type ListingListRequest = {
 	sortOrder?: ListingSortOrder;
 	make?: string;
 	model?: string;
-	transmission?: string;
-	fuelType?: string;
+	transmission?: CarTransmission;
+	fuelType?: CarFuelType;
 	seats?: number;
 	minYear?: number;
 	maxYear?: number;
@@ -38,12 +45,12 @@ export type ListingListRequest = {
 	furnished?: boolean;
 	wifi?: boolean;
 	parking?: boolean;
-	roomType?: string;
-	bedType?: string;
+	roomType?: HotelRoomType;
+	bedType?: BedType;
 	breakfastIncluded?: boolean;
 	hasAirConditioning?: boolean;
 	hasPrivateBathroom?: boolean;
-	propertyType?: string;
+	propertyType?: AirbnbPropertyType;
 	entirePlace?: boolean;
 	selfCheckIn?: boolean;
 	allowPets?: boolean;
