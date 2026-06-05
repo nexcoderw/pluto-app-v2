@@ -1,55 +1,53 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Compass, Home, ListFilter, SearchX } from "lucide-react";
-import styles from "./not-found.module.css";
+import { useRouter } from "next/navigation";
+import { ArrowRight, Home, SearchX } from "lucide-react";
+import styles from "@/components/portal/portal-shell.module.css";
+
+const REDIRECT_DELAY_SECONDS = 5;
 
 export default function NotFound() {
+	const router = useRouter();
+	const [secondsLeft, setSecondsLeft] = useState(REDIRECT_DELAY_SECONDS);
+
+	useEffect(() => {
+		const redirectTimer = window.setTimeout(() => {
+			router.replace("/");
+		}, REDIRECT_DELAY_SECONDS * 1000);
+
+		const countdownTimer = window.setInterval(() => {
+			setSecondsLeft((value) => Math.max(0, value - 1));
+		}, 1000);
+
+		return () => {
+			window.clearTimeout(redirectTimer);
+			window.clearInterval(countdownTimer);
+		};
+	}, [router]);
+
 	return (
-		<main className={styles.page}>
-			<section className={styles.panel} aria-labelledby="not-found-title">
-				<div className={styles.logoMark}>
-					<Image
-						src="/logo-b.png"
-						alt="Pluto Booking"
-						width={132}
-						height={44}
-						priority
-					/>
-				</div>
-
-				<div className={styles.statusBadge}>
+		<main className={styles.forbiddenPage}>
+			<section className={styles.forbiddenPanel} aria-live="polite">
+				<div className={styles.forbiddenCode}>404</div>
+				<div className={styles.forbiddenIcon}>
 					<SearchX aria-hidden="true" />
-					<span>404</span>
 				</div>
-
-				<div className={styles.copy}>
-					<span>Page not found</span>
-					<h1 id="not-found-title">This Pluto Booking page moved</h1>
-					<p>
-						The address may be outdated, private, or no longer available. Start
-						from the homepage or continue browsing active listings.
-					</p>
+				<h1>Page not found</h1>
+				<p>
+					The page you are looking for may have moved, expired, or is no longer
+					available on Pluto Booking.
+				</p>
+				<div className={styles.redirectNotice}>
+					<Home aria-hidden="true" />
+					<span>Redirecting to homepage in {secondsLeft}s.</span>
 				</div>
-
-				<div className={styles.actionGrid}>
-					<Link href="/" className={styles.primaryAction}>
-						<Home aria-hidden="true" />
-						Go home
-						<ArrowRight aria-hidden="true" />
-					</Link>
-					<Link href="/listings/cars" className={styles.secondaryAction}>
-						<ListFilter aria-hidden="true" />
-						Browse listings
-					</Link>
-				</div>
-
-				<div className={styles.hintCard}>
-					<Compass aria-hidden="true" />
-					<p>
-						If you followed a saved partner or booking link, open your portal
-						and retry from the latest workspace navigation.
-					</p>
-				</div>
+				<Link href="/" className={styles.primaryAction}>
+					<Home aria-hidden="true" />
+					Go home now
+					<ArrowRight aria-hidden="true" />
+				</Link>
 			</section>
 		</main>
 	);
