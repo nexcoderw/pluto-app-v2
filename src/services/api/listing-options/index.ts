@@ -1,4 +1,13 @@
 export {
+	fallbackAirbnbPropertyTypeOptions,
+	fallbackBedTypeOptions,
+	fallbackCarFuelTypeOptions,
+	fallbackCarTransmissionOptions,
+	fallbackCurrencyOptions,
+	fallbackListingOptions,
+	fallbackNumberOptions,
+} from "./fallbacks";
+export {
 	getListingOptions,
 	listingOptionsQueryKey,
 } from "./get-listing-options";
