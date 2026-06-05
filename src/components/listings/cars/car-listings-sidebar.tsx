@@ -19,6 +19,10 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import type { ListingListRequest } from "@/services/api/listings";
+import {
+	normalizeCarFuelType,
+	normalizeCarTransmission,
+} from "@/services/api/listing-options";
 import type { ListingSidebarRenderProps } from "../category-listings-page";
 import styles from "./car-listings-sidebar.module.css";
 
@@ -127,7 +131,12 @@ export function CarListingsSidebar({
 					<Select
 						value={selectValue(draftFilters.transmission)}
 						onValueChange={(value) =>
-							setDraftFilter("transmission", optionalText(value))
+							setDraftFilter(
+								"transmission",
+								!value || value === "ANY"
+									? undefined
+									: normalizeCarTransmission(value),
+							)
 						}
 					>
 						<SelectTrigger className={styles.selectTrigger}>
@@ -145,7 +154,12 @@ export function CarListingsSidebar({
 					<Select
 						value={selectValue(draftFilters.fuelType)}
 						onValueChange={(value) =>
-							setDraftFilter("fuelType", optionalText(value))
+							setDraftFilter(
+								"fuelType",
+								!value || value === "ANY"
+									? undefined
+									: normalizeCarFuelType(value),
+							)
 						}
 					>
 						<SelectTrigger className={styles.selectTrigger}>
