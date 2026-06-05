@@ -171,6 +171,7 @@ export function HomeSearch() {
 		? Number(filters.maxPrice)
 		: activeSearchCategory.maxBudget;
 	const hasBudgetFilter = Boolean(filters.maxPrice);
+	const activeFilterCount = countActiveFilters(filters);
 
 	function selectCategory(category: SearchCategory) {
 		if (category.comingSoon) {
@@ -221,7 +222,11 @@ export function HomeSearch() {
 
 	return (
 		<>
-			<form className={styles.searchPanel} onSubmit={submitSearch}>
+			<form
+				className={styles.searchPanel}
+				data-category={activeCategory}
+				onSubmit={submitSearch}
+			>
 				<div className={styles.categoryTabs} aria-label="Search category">
 					{searchCategories.map((category) => {
 						const Icon = category.icon;
@@ -295,6 +300,9 @@ export function HomeSearch() {
 						>
 							<Filter aria-hidden="true" />
 							<span>Filters</span>
+							{activeFilterCount > 0 ? (
+								<small>{activeFilterCount}</small>
+							) : null}
 						</Button>
 						<Button type="submit" className={styles.searchButton}>
 							<Search aria-hidden="true" />
@@ -360,7 +368,10 @@ function SearchFilterDialog({
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent className={styles.filterDialog}>
+			<DialogContent
+				className={styles.filterDialog}
+				data-category={activeCategory}
+			>
 				<DialogHeader>
 					<div className={styles.filterDialogTitle}>
 						<span>
@@ -369,15 +380,23 @@ function SearchFilterDialog({
 						<div>
 							<DialogTitle>{category.label} filters</DialogTitle>
 							<DialogDescription>
-								Choose the exact details you want before opening{" "}
-								{category.shortLabel.toLowerCase()} listings.
+								Refine your search with details specific to{" "}
+								{category.shortLabel.toLowerCase()} before opening the listings.
 							</DialogDescription>
 						</div>
 					</div>
 				</DialogHeader>
 
 				<div className={styles.filterDialogBody}>
-					<div className={styles.advancedGrid}>
+					<div
+						className={styles.filterDialogIntro}
+						data-category={activeCategory}
+					>
+						<strong>{getFilterDialogTitle(activeCategory)}</strong>
+						<p>{getFilterDialogDescription(activeCategory)}</p>
+					</div>
+
+					<div className={styles.advancedGrid} data-category={activeCategory}>
 						<CategorySearchFilters
 							activeCategory={activeCategory}
 							filters={filters}
@@ -750,4 +769,40 @@ function formatPlainNumber(value: number) {
 	return new Intl.NumberFormat("en-US", {
 		maximumFractionDigits: 0,
 	}).format(value);
+}
+
+function countActiveFilters(filters: HomeSearchFilters) {
+	return Object.values(filters).filter((value) => value.trim()).length;
+}
+
+function getFilterDialogTitle(category: HomeSearchCategory) {
+	if (category === "cars") {
+		return "Vehicle requirements";
+	}
+
+	if (category === "apartments") {
+		return "Apartment space";
+	}
+
+	if (category === "hotel-rooms") {
+		return "Room setup";
+	}
+
+	return "Stay preferences";
+}
+
+function getFilterDialogDescription(category: HomeSearchCategory) {
+	if (category === "cars") {
+		return "Match transmission, fuel, seats, and year before comparing rental options.";
+	}
+
+	if (category === "apartments") {
+		return "Set the room count that fits the people staying with you.";
+	}
+
+	if (category === "hotel-rooms") {
+		return "Choose the room and bed format before viewing available hotels.";
+	}
+
+	return "Focus the search around the type of home and space you want.";
 }
