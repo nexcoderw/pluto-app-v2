@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { PortalShell } from "@/components/portal/portal-shell";
 import { partnerPortalNavigation } from "@/constants/partner-portal-navigation";
 import type { UserAuthProfile } from "@/services/api/auth";
+import { ApiRequestError } from "@/services/api/errors";
 import { getPartnerProfile } from "@/services/api/partner-profile";
 import { getPartnerProduct } from "@/services/api/partner-products";
 import {
@@ -86,27 +87,43 @@ function ListingFormWorkspace({
 		);
 	}
 
-	if (profileQuery.isError || !profile || productQuery.isError) {
+	const product = productQuery.data?.product;
+	const workspaceError = getListingWorkspaceError({
+		mode,
+		profile,
+		profileError: profileQuery.error,
+		product,
+		productError: productQuery.error,
+	});
+
+	if (workspaceError) {
 		return (
 			<PartnerStatusGate
-				title="Listing workspace unavailable"
-				description="We could not prepare the listing workflow. Refresh and try again."
+				title={workspaceError.title}
+				description={workspaceError.description}
 				action={
-					<Button
-						type="button"
-						onClick={() =>
-							mode === "edit" ? productQuery.refetch() : profileQuery.refetch()
-						}
-					>
-						<RefreshCcw aria-hidden="true" className="rounded-full" />
-						Retry
-					</Button>
+					workspaceError.href ? (
+						<Link href={workspaceError.href}>
+							<ArrowLeft aria-hidden="true" />
+							{workspaceError.actionLabel}
+						</Link>
+					) : (
+						<Button
+							type="button"
+							onClick={() =>
+								mode === "edit"
+									? productQuery.refetch()
+									: profileQuery.refetch()
+							}
+						>
+							<RefreshCcw aria-hidden="true" className="rounded-full" />
+							{workspaceError.actionLabel}
+						</Button>
+					)
 				}
 			/>
 		);
 	}
-
-	const product = productQuery.data?.product;
 
 	return (
 		<PortalShell
@@ -138,4 +155,82 @@ function ListingFormWorkspace({
 			<ListingForm mode={mode} product={product} />
 		</PortalShell>
 	);
+}
+
+function getListingWorkspaceError({
+	mode,
+	profile,
+	profileError,
+	product,
+	productError,
+}: {
+	mode: "create" | "edit";
+	profile: Awaited<ReturnType<typeof getPartnerProfile>>["profile"] | undefined;
+	profileError: unknown;
+	product: Awaited<ReturnType<typeof getPartnerProduct>>["product"] | undefined;
+	productError: unknown;
+}) {
+	if (profileError || !profile) {
+		return {
+			title: "Partner status unavailable",
+			description:
+				getSafeErrorMessage(profileError) ??
+				"We could not confirm your partner approval status. Refresh and try again.",
+			actionLabel: "Retry",
+		};
+	}
+
+	if (mode === "edit" && productError) {
+		const statusCode =
+			productError instanceof ApiRequestError
+				? productError.statusCode
+				: undefined;
+
+		if (statusCode === 404) {
+			return {
+				title: "Listing not found",
+				description:
+					"This listing could not be opened. It may have been removed, archived, or it may not belong to your partner account.",
+				actionLabel: "Back to listings",
+				href: "/partner/listings",
+			};
+		}
+
+		if (statusCode === 403) {
+			return {
+				title: "Listing access restricted",
+				description:
+					"Your partner account is not allowed to edit this listing. Open a listing owned by your account or contact support.",
+				actionLabel: "Back to listings",
+				href: "/partner/listings",
+			};
+		}
+
+		return {
+			title: "Listing editor unavailable",
+			description:
+				getSafeErrorMessage(productError) ??
+				"We could not load this listing for editing. Refresh and try again.",
+			actionLabel: "Retry",
+		};
+	}
+
+	if (mode === "edit" && !product) {
+		return {
+			title: "Listing not ready",
+			description:
+				"The listing editor did not receive listing details. Refresh and try again.",
+			actionLabel: "Retry",
+		};
+	}
+
+	return null;
+}
+
+function getSafeErrorMessage(error: unknown) {
+	if (error instanceof ApiRequestError) {
+		return error.message;
+	}
+
+	return null;
 }
