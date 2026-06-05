@@ -12,6 +12,7 @@ import {
 	Building2,
 	CalendarDays,
 	CarFront,
+	Filter,
 	Hotel,
 	LogIn,
 	Menu,
@@ -57,6 +58,18 @@ type SearchCategory = {
 	icon: typeof CarFront;
 };
 
+type HomeSearchFilters = {
+	transmission: string;
+	fuelType: string;
+	seats: string;
+	minYear: string;
+	bedrooms: string;
+	bathrooms: string;
+	roomType: string;
+	bedType: string;
+	propertyType: string;
+};
+
 const today = new Date();
 const defaultDateRange: DateRange = {
 	from: today,
@@ -77,7 +90,7 @@ const searchCategories: SearchCategory[] = [
 		label: "Car rent",
 		shortLabel: "Cars",
 		route: "/listings/cars",
-		placeholder: "Search car rentals, city, model, or partner",
+		placeholder: "Search car name, model, city, or partner",
 		icon: CarFront,
 	},
 	{
@@ -85,7 +98,7 @@ const searchCategories: SearchCategory[] = [
 		label: "Apartment",
 		shortLabel: "Apartments",
 		route: "/listings/apartments",
-		placeholder: "Search apartments by location or name",
+		placeholder: "Search location, address, city, or country",
 		icon: Building2,
 	},
 	{
@@ -93,7 +106,7 @@ const searchCategories: SearchCategory[] = [
 		label: "Hotel",
 		shortLabel: "Hotels",
 		route: "/listings/hotel-rooms",
-		placeholder: "Search hotel rooms by area or hotel name",
+		placeholder: "Search location, address, city, or country",
 		icon: Hotel,
 	},
 	{
@@ -101,7 +114,7 @@ const searchCategories: SearchCategory[] = [
 		label: "Airbnb",
 		shortLabel: "AirBnB",
 		route: "/listings/airbnb",
-		placeholder: "Search homes, stays, or neighborhoods",
+		placeholder: "Search location, address, city, or country",
 		icon: BedDouble,
 	},
 	{
@@ -115,12 +128,42 @@ const searchCategories: SearchCategory[] = [
 	},
 ];
 
+const defaultSearchFilters: HomeSearchFilters = {
+	transmission: "",
+	fuelType: "",
+	seats: "",
+	minYear: "",
+	bedrooms: "",
+	bathrooms: "",
+	roomType: "",
+	bedType: "",
+	propertyType: "",
+};
+
+const transmissionOptions = ["Automatic", "Manual"];
+const fuelTypeOptions = ["Petrol", "Diesel", "Hybrid", "Electric"];
+const seatOptions = ["2", "4", "5", "7", "8"];
+const yearOptions = ["2024", "2022", "2020", "2018", "2015", "2010"];
+const bedroomOptions = ["1", "2", "3", "4", "5"];
+const bathroomOptions = ["1", "2", "3", "4", "5"];
+const roomTypeOptions = ["Standard", "Deluxe", "Suite", "Family", "Executive"];
+const bedTypeOptions = ["Single", "Double", "Queen", "King", "Twin"];
+const propertyTypeOptions = [
+	"Entire home",
+	"Apartment",
+	"Villa",
+	"Studio",
+	"Guest suite",
+];
+
 export function HomePageExperience() {
 	const router = useRouter();
 	const [activeCategory, setActiveCategory] =
 		useState<HomeSearchCategory>("cars");
 	const [search, setSearch] = useState("");
 	const [guests, setGuests] = useState(1);
+	const [filters, setFilters] =
+		useState<HomeSearchFilters>(defaultSearchFilters);
 	const [dateRange, setDateRange] = useState<DateRange | undefined>(
 		defaultDateRange,
 	);
@@ -141,6 +184,13 @@ export function HomePageExperience() {
 					"We are preparing flight search for a later Pluto Booking release.",
 			});
 		}
+	}
+
+	function updateFilter<Key extends keyof HomeSearchFilters>(
+		key: Key,
+		value: HomeSearchFilters[Key],
+	) {
+		setFilters((current) => ({ ...current, [key]: value }));
 	}
 
 	function submitSearch(event: FormEvent<HTMLFormElement>) {
@@ -172,6 +222,8 @@ export function HomePageExperience() {
 		if (guests > 1 && activeCategory !== "cars") {
 			params.set("guests", String(guests));
 		}
+
+		appendCategoryFilters(params, activeCategory, filters);
 
 		const queryString = params.toString();
 		router.push(
@@ -218,7 +270,9 @@ export function HomePageExperience() {
 
 					<div className={styles.searchFields}>
 						<label className={styles.searchField}>
-							<span>Search</span>
+							<span>
+								{activeCategory === "cars" ? "Search" : "Location or address"}
+							</span>
 							<strong>{activeSearchCategory.shortLabel}</strong>
 							<input
 								type="search"
@@ -239,23 +293,22 @@ export function HomePageExperience() {
 							<strong>{formatDateRange(dateRange)}</strong>
 						</button>
 
-						<label className={styles.guestField}>
-							<Users aria-hidden="true" />
-							<span>Guests</span>
-							<select
-								value={guests}
-								onChange={(event) => setGuests(Number(event.target.value))}
-								disabled={
-									activeCategory === "cars" || activeCategory === "flight"
-								}
-							>
-								{[1, 2, 3, 4, 5, 6, 7, 8].map((value) => (
-									<option key={value} value={value}>
-										{value} {value === 1 ? "guest" : "guests"}
-									</option>
-								))}
-							</select>
-						</label>
+						{activeCategory !== "cars" && activeCategory !== "flight" ? (
+							<label className={styles.guestField}>
+								<Users aria-hidden="true" />
+								<span>Guests</span>
+								<select
+									value={guests}
+									onChange={(event) => setGuests(Number(event.target.value))}
+								>
+									{[1, 2, 3, 4, 5, 6, 7, 8].map((value) => (
+										<option key={value} value={value}>
+											{value} {value === 1 ? "guest" : "guests"}
+										</option>
+									))}
+								</select>
+							</label>
+						) : null}
 
 						<Button type="submit" className={styles.searchButton}>
 							<Search aria-hidden="true" />
@@ -265,6 +318,12 @@ export function HomePageExperience() {
 							<ArrowRight aria-hidden="true" />
 						</Button>
 					</div>
+
+					<CategorySearchFilters
+						activeCategory={activeCategory}
+						filters={filters}
+						onFilterChange={updateFilter}
+					/>
 				</form>
 			</section>
 
@@ -275,6 +334,166 @@ export function HomePageExperience() {
 				onDateRangeChange={setDateRange}
 			/>
 		</main>
+	);
+}
+
+function CategorySearchFilters({
+	activeCategory,
+	filters,
+	onFilterChange,
+}: {
+	activeCategory: HomeSearchCategory;
+	filters: HomeSearchFilters;
+	onFilterChange: <Key extends keyof HomeSearchFilters>(
+		key: Key,
+		value: HomeSearchFilters[Key],
+	) => void;
+}) {
+	if (activeCategory === "flight") {
+		return (
+			<div className={styles.comingSoonPanel}>
+				<Plane aria-hidden="true" />
+				<p>
+					Flight search is coming soon. Continue with verified cars, apartments,
+					hotel rooms, and AirBnB-style stays today.
+				</p>
+			</div>
+		);
+	}
+
+	return (
+		<div className={styles.advancedPanel} aria-label="Advanced search filters">
+			<div className={styles.advancedLabel}>
+				<Filter aria-hidden="true" />
+				<span>Refine search</span>
+			</div>
+			<div className={styles.advancedGrid}>
+				{activeCategory === "cars" ? (
+					<>
+						<SearchSelect
+							label="Transmission"
+							value={filters.transmission}
+							options={transmissionOptions}
+							placeholder="Any transmission"
+							onChange={(value) => onFilterChange("transmission", value)}
+						/>
+						<SearchSelect
+							label="Fuel type"
+							value={filters.fuelType}
+							options={fuelTypeOptions}
+							placeholder="Any fuel"
+							onChange={(value) => onFilterChange("fuelType", value)}
+						/>
+						<SearchSelect
+							label="Seats"
+							value={filters.seats}
+							options={seatOptions}
+							placeholder="Any seats"
+							onChange={(value) => onFilterChange("seats", value)}
+						/>
+						<SearchSelect
+							label="Year from"
+							value={filters.minYear}
+							options={yearOptions}
+							placeholder="Any year"
+							onChange={(value) => onFilterChange("minYear", value)}
+						/>
+					</>
+				) : null}
+
+				{activeCategory === "apartments" ? (
+					<>
+						<SearchSelect
+							label="Bedrooms"
+							value={filters.bedrooms}
+							options={bedroomOptions}
+							placeholder="Any bedrooms"
+							onChange={(value) => onFilterChange("bedrooms", value)}
+						/>
+						<SearchSelect
+							label="Bathrooms"
+							value={filters.bathrooms}
+							options={bathroomOptions}
+							placeholder="Any bathrooms"
+							onChange={(value) => onFilterChange("bathrooms", value)}
+						/>
+					</>
+				) : null}
+
+				{activeCategory === "hotel-rooms" ? (
+					<>
+						<SearchSelect
+							label="Room type"
+							value={filters.roomType}
+							options={roomTypeOptions}
+							placeholder="Any room"
+							onChange={(value) => onFilterChange("roomType", value)}
+						/>
+						<SearchSelect
+							label="Bed type"
+							value={filters.bedType}
+							options={bedTypeOptions}
+							placeholder="Any bed"
+							onChange={(value) => onFilterChange("bedType", value)}
+						/>
+					</>
+				) : null}
+
+				{activeCategory === "airbnb" ? (
+					<>
+						<SearchSelect
+							label="Property type"
+							value={filters.propertyType}
+							options={propertyTypeOptions}
+							placeholder="Any home"
+							onChange={(value) => onFilterChange("propertyType", value)}
+						/>
+						<SearchSelect
+							label="Bedrooms"
+							value={filters.bedrooms}
+							options={bedroomOptions}
+							placeholder="Any bedrooms"
+							onChange={(value) => onFilterChange("bedrooms", value)}
+						/>
+						<SearchSelect
+							label="Bathrooms"
+							value={filters.bathrooms}
+							options={bathroomOptions}
+							placeholder="Any bathrooms"
+							onChange={(value) => onFilterChange("bathrooms", value)}
+						/>
+					</>
+				) : null}
+			</div>
+		</div>
+	);
+}
+
+function SearchSelect({
+	label,
+	value,
+	options,
+	placeholder,
+	onChange,
+}: {
+	label: string;
+	value: string;
+	options: string[];
+	placeholder: string;
+	onChange: (value: string) => void;
+}) {
+	return (
+		<label className={styles.advancedField}>
+			<span>{label}</span>
+			<select value={value} onChange={(event) => onChange(event.target.value)}>
+				<option value="">{placeholder}</option>
+				{options.map((option) => (
+					<option key={option} value={option}>
+						{option}
+					</option>
+				))}
+			</select>
+		</label>
 	);
 }
 
@@ -536,6 +755,46 @@ function formatDateRange(range: DateRange | undefined): string {
 	}
 
 	return `${format(range.from, "MMM d")} - ${format(range.to, "MMM d")}`;
+}
+
+function appendCategoryFilters(
+	params: URLSearchParams,
+	category: HomeSearchCategory,
+	filters: HomeSearchFilters,
+) {
+	if (category === "cars") {
+		appendParam(params, "transmission", filters.transmission);
+		appendParam(params, "fuelType", filters.fuelType);
+		appendParam(params, "seats", filters.seats);
+		appendParam(params, "minYear", filters.minYear);
+		return;
+	}
+
+	if (category === "apartments") {
+		appendParam(params, "bedrooms", filters.bedrooms);
+		appendParam(params, "bathrooms", filters.bathrooms);
+		return;
+	}
+
+	if (category === "hotel-rooms") {
+		appendParam(params, "roomType", filters.roomType);
+		appendParam(params, "bedType", filters.bedType);
+		return;
+	}
+
+	if (category === "airbnb") {
+		appendParam(params, "propertyType", filters.propertyType);
+		appendParam(params, "bedrooms", filters.bedrooms);
+		appendParam(params, "bathrooms", filters.bathrooms);
+	}
+}
+
+function appendParam(params: URLSearchParams, key: string, value: string) {
+	const normalizedValue = value.trim();
+
+	if (normalizedValue) {
+		params.set(key, normalizedValue);
+	}
 }
 
 function getUserInitials(value: string) {
