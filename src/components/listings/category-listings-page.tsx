@@ -35,6 +35,13 @@ import type {
 	ListingSortOrder,
 	PublicListing,
 } from "@/services/api/listings";
+import {
+	normalizeOptionalAirbnbPropertyType,
+	normalizeOptionalBedType,
+	normalizeOptionalCarFuelType,
+	normalizeOptionalCarTransmission,
+	normalizeOptionalHotelRoomType,
+} from "@/services/api/listing-options";
 import { ApartmentListingsMap } from "./apartments/apartment-listings-map";
 import styles from "./category-listings-page.module.css";
 import { ListingFilterDialog } from "./listing-filter-dialog";
@@ -706,16 +713,18 @@ function getInitialListingUrlState(params: {
 		minPrice: parseNumberParam(params.get("minPrice")),
 		maxPrice: parseNumberParam(params.get("maxPrice")),
 		guests: parseNumberParam(params.get("guests")),
-		transmission: params.get("transmission")?.trim() || undefined,
-		fuelType: params.get("fuelType")?.trim() || undefined,
+		transmission: normalizeOptionalCarTransmission(params.get("transmission")),
+		fuelType: normalizeOptionalCarFuelType(params.get("fuelType")),
 		seats: parseNumberParam(params.get("seats")),
 		minYear: parseNumberParam(params.get("minYear")),
 		maxYear: parseNumberParam(params.get("maxYear")),
 		bedrooms: parseNumberParam(params.get("bedrooms")),
 		bathrooms: parseNumberParam(params.get("bathrooms")),
-		roomType: params.get("roomType")?.trim() || undefined,
-		bedType: params.get("bedType")?.trim() || undefined,
-		propertyType: params.get("propertyType")?.trim() || undefined,
+		roomType: normalizeOptionalHotelRoomType(params.get("roomType")),
+		bedType: normalizeOptionalBedType(params.get("bedType")),
+		propertyType: normalizeOptionalAirbnbPropertyType(
+			params.get("propertyType"),
+		),
 	});
 
 	return {
