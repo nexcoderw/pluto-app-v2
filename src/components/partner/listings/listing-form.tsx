@@ -49,6 +49,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useListingOptions } from "@/hooks/use-listing-options";
 import type {
 	PricingUnit,
 	Product,
@@ -62,6 +63,7 @@ import {
 	normalizeCarTransmission,
 	normalizeCurrencyCode,
 	normalizeHotelRoomType,
+	type ListingOptionsResponse,
 } from "@/services/api/listing-options";
 import {
 	createListing,
@@ -222,6 +224,8 @@ const pricingUnits: Array<{ label: string; value: PricingUnit }> = [
 ];
 const maxListingImages = 12;
 const maxImageSize = 8 * 1024 * 1024;
+const minimumVehicleYear = 2000;
+const maximumVehicleYear = new Date().getFullYear();
 const imageFileExtensions = [
 	".apng",
 	".avif",
@@ -271,6 +275,7 @@ export function ListingForm({
 }) {
 	const router = useRouter();
 	const queryClient = useQueryClient();
+	const { options: listingOptions } = useListingOptions();
 	const [currentStep, setCurrentStep] = useState(0);
 	const [values, setValues] = useState<ListingFormValues>(() =>
 		createInitialValues(product),
@@ -616,6 +621,7 @@ export function ListingForm({
 						<ListingStoryStep
 							values={values}
 							errors={errors}
+							listingOptions={listingOptions}
 							onChange={updateField}
 						/>
 					) : null}
@@ -624,6 +630,7 @@ export function ListingForm({
 						<CategoryDetailsStep
 							values={values}
 							errors={errors}
+							listingOptions={listingOptions}
 							onChange={updateField}
 						/>
 					) : null}
@@ -632,6 +639,7 @@ export function ListingForm({
 						<ListingLocationStep
 							values={values}
 							errors={errors}
+							listingOptions={listingOptions}
 							onChange={updateField}
 						/>
 					) : null}
@@ -640,6 +648,7 @@ export function ListingForm({
 						<PricingMediaStep
 							values={values}
 							errors={errors}
+							listingOptions={listingOptions}
 							selectedCategoryTitle={selectedCategory?.title ?? "Listing"}
 							existingImages={existingImages}
 							imageFiles={imageFiles}
@@ -796,26 +805,53 @@ function ListingStoryStep({ values, errors, onChange }: StepProps) {
 	);
 }
 
-function CategoryDetailsStep({ values, errors, onChange }: StepProps) {
+function CategoryDetailsStep({
+	values,
+	errors,
+	listingOptions,
+	onChange,
+}: StepProps) {
 	if (values.category === "APARTMENT") {
 		return (
-			<ApartmentStep values={values} errors={errors} onChange={onChange} />
+			<ApartmentStep
+				values={values}
+				errors={errors}
+				listingOptions={listingOptions}
+				onChange={onChange}
+			/>
 		);
 	}
 
 	if (values.category === "HOTEL_ROOM") {
 		return (
-			<HotelRoomStep values={values} errors={errors} onChange={onChange} />
+			<HotelRoomStep
+				values={values}
+				errors={errors}
+				listingOptions={listingOptions}
+				onChange={onChange}
+			/>
 		);
 	}
 
 	if (values.category === "AIRBNB_HOUSE") {
 		return (
-			<AirbnbHouseStep values={values} errors={errors} onChange={onChange} />
+			<AirbnbHouseStep
+				values={values}
+				errors={errors}
+				listingOptions={listingOptions}
+				onChange={onChange}
+			/>
 		);
 	}
 
-	return <VehicleStep values={values} errors={errors} onChange={onChange} />;
+	return (
+		<VehicleStep
+			values={values}
+			errors={errors}
+			listingOptions={listingOptions}
+			onChange={onChange}
+		/>
+	);
 }
 
 function ListingLocationStep({ values, errors, onChange }: StepProps) {
@@ -860,7 +896,7 @@ function ListingLocationStep({ values, errors, onChange }: StepProps) {
 	);
 }
 
-function VehicleStep({ values, errors, onChange }: StepProps) {
+function VehicleStep({ values, errors, listingOptions, onChange }: StepProps) {
 	return (
 		<div className={styles.fieldGrid}>
 			<FormField label="Brand" required error={errors.brand}>
@@ -882,14 +918,29 @@ function VehicleStep({ values, errors, onChange }: StepProps) {
 				/>
 			</FormField>
 			<FormField label="Year" required error={errors.year}>
-				<Input
-					type="number"
+				<Select
 					value={values.year}
-					onChange={(event) => onChange("year", event.target.value)}
-					placeholder="2022"
-					icon={<CarFront aria-hidden="true" />}
-					aria-invalid={Boolean(errors.year)}
-				/>
+					onValueChange={(value) => {
+						if (value) onChange("year", value);
+					}}
+				>
+					<SelectTrigger
+						className={styles.selectTrigger}
+						aria-invalid={Boolean(errors.year)}
+					>
+						<SelectValue>
+							<CarFront aria-hidden="true" />
+							{values.year || "Select year"}
+						</SelectValue>
+					</SelectTrigger>
+					<SelectContent align="start" alignItemWithTrigger={false}>
+						{listingOptions.years.map((year) => (
+							<SelectItem key={year} value={String(year)}>
+								{year}
+							</SelectItem>
+						))}
+					</SelectContent>
+				</Select>
 			</FormField>
 			<FormField label="Plate number" optional error={errors.plateNumber}>
 				<Input
@@ -901,78 +952,153 @@ function VehicleStep({ values, errors, onChange }: StepProps) {
 				/>
 			</FormField>
 			<FormField label="Transmission" required error={errors.transmission}>
-				<Input
+				<Select
 					value={values.transmission}
-					onChange={(event) => onChange("transmission", event.target.value)}
-					placeholder="Automatic"
-					icon={<CarFront aria-hidden="true" />}
-					aria-invalid={Boolean(errors.transmission)}
-				/>
+					onValueChange={(value) => {
+						if (value) onChange("transmission", value);
+					}}
+				>
+					<SelectTrigger
+						className={styles.selectTrigger}
+						aria-invalid={Boolean(errors.transmission)}
+					>
+						<SelectValue>
+							<CarFront aria-hidden="true" />
+							{getOptionLabel(
+								listingOptions.cars.transmissions,
+								values.transmission,
+								"Transmission",
+							)}
+						</SelectValue>
+					</SelectTrigger>
+					<SelectContent align="start" alignItemWithTrigger={false}>
+						{listingOptions.cars.transmissions.map((option) => (
+							<SelectItem key={option.value} value={option.value}>
+								{option.label}
+							</SelectItem>
+						))}
+					</SelectContent>
+				</Select>
 			</FormField>
 			<FormField label="Fuel type" required error={errors.fuelType}>
-				<Input
+				<Select
 					value={values.fuelType}
-					onChange={(event) => onChange("fuelType", event.target.value)}
-					placeholder="Petrol"
-					icon={<CarFront aria-hidden="true" />}
-					aria-invalid={Boolean(errors.fuelType)}
-				/>
+					onValueChange={(value) => {
+						if (value) onChange("fuelType", value);
+					}}
+				>
+					<SelectTrigger
+						className={styles.selectTrigger}
+						aria-invalid={Boolean(errors.fuelType)}
+					>
+						<SelectValue>
+							<CarFront aria-hidden="true" />
+							{getOptionLabel(
+								listingOptions.cars.fuelTypes,
+								values.fuelType,
+								"Fuel type",
+							)}
+						</SelectValue>
+					</SelectTrigger>
+					<SelectContent align="start" alignItemWithTrigger={false}>
+						{listingOptions.cars.fuelTypes.map((option) => (
+							<SelectItem key={option.value} value={option.value}>
+								{option.label}
+							</SelectItem>
+						))}
+					</SelectContent>
+				</Select>
 			</FormField>
 			<FormField label="Seats" required error={errors.seats}>
-				<Input
-					type="number"
+				<Select
 					value={values.seats}
-					onChange={(event) => onChange("seats", event.target.value)}
-					placeholder="5"
-					icon={<CarFront aria-hidden="true" />}
-					aria-invalid={Boolean(errors.seats)}
-				/>
+					onValueChange={(value) => {
+						if (value) onChange("seats", value);
+					}}
+				>
+					<SelectTrigger
+						className={styles.selectTrigger}
+						aria-invalid={Boolean(errors.seats)}
+					>
+						<SelectValue>
+							<CarFront aria-hidden="true" />
+							{values.seats ? `${values.seats} seats` : "Seats"}
+						</SelectValue>
+					</SelectTrigger>
+					<SelectContent align="start" alignItemWithTrigger={false}>
+						{listingOptions.cars.seats.map((option) => (
+							<SelectItem key={option.value} value={String(option.value)}>
+								{option.label} seats
+							</SelectItem>
+						))}
+					</SelectContent>
+				</Select>
 			</FormField>
 			<FormField label="Doors" required error={errors.doors}>
-				<Input
-					type="number"
+				<Select
 					value={values.doors}
-					onChange={(event) => onChange("doors", event.target.value)}
-					placeholder="4"
-					icon={<CarFront aria-hidden="true" />}
-					aria-invalid={Boolean(errors.doors)}
-				/>
+					onValueChange={(value) => {
+						if (value) onChange("doors", value);
+					}}
+				>
+					<SelectTrigger
+						className={styles.selectTrigger}
+						aria-invalid={Boolean(errors.doors)}
+					>
+						<SelectValue>
+							<CarFront aria-hidden="true" />
+							{values.doors ? `${values.doors} doors` : "Doors"}
+						</SelectValue>
+					</SelectTrigger>
+					<SelectContent align="start" alignItemWithTrigger={false}>
+						{listingOptions.numbers.doors.map((option) => (
+							<SelectItem key={option.value} value={String(option.value)}>
+								{option.label} doors
+							</SelectItem>
+						))}
+					</SelectContent>
+				</Select>
 			</FormField>
 		</div>
 	);
 }
 
-function ApartmentStep({ values, errors, onChange }: StepProps) {
+function ApartmentStep({
+	values,
+	errors,
+	listingOptions,
+	onChange,
+}: StepProps) {
 	return (
 		<div className={styles.fieldGrid}>
 			<FormField label="Bedrooms" required error={errors.bedrooms}>
-				<Input
-					type="number"
+				<NumberOptionSelect
 					value={values.bedrooms}
-					onChange={(event) => onChange("bedrooms", event.target.value)}
-					placeholder="2"
+					options={listingOptions.numbers.bedrooms}
+					placeholder="Bedrooms"
 					icon={<BedDouble aria-hidden="true" />}
 					aria-invalid={Boolean(errors.bedrooms)}
+					onChange={(value) => onChange("bedrooms", value)}
 				/>
 			</FormField>
 			<FormField label="Bathrooms" required error={errors.bathrooms}>
-				<Input
-					type="number"
+				<NumberOptionSelect
 					value={values.bathrooms}
-					onChange={(event) => onChange("bathrooms", event.target.value)}
-					placeholder="2"
+					options={listingOptions.numbers.bathrooms}
+					placeholder="Bathrooms"
 					icon={<DoorOpen aria-hidden="true" />}
 					aria-invalid={Boolean(errors.bathrooms)}
+					onChange={(value) => onChange("bathrooms", value)}
 				/>
 			</FormField>
 			<FormField label="Maximum guests" required error={errors.maxGuests}>
-				<Input
-					type="number"
+				<NumberOptionSelect
 					value={values.maxGuests}
-					onChange={(event) => onChange("maxGuests", event.target.value)}
-					placeholder="4"
+					options={listingOptions.numbers.guests}
+					placeholder="Maximum guests"
 					icon={<Building2 aria-hidden="true" />}
 					aria-invalid={Boolean(errors.maxGuests)}
+					onChange={(value) => onChange("maxGuests", value)}
 				/>
 			</FormField>
 			<FormField label="Floor number" optional error={errors.floorNumber}>
@@ -986,23 +1112,23 @@ function ApartmentStep({ values, errors, onChange }: StepProps) {
 				/>
 			</FormField>
 			<FormField label="Kitchens" optional error={errors.kitchens}>
-				<Input
-					type="number"
+				<NumberOptionSelect
 					value={values.kitchens}
-					onChange={(event) => onChange("kitchens", event.target.value)}
-					placeholder="1"
+					options={listingOptions.numbers.oneToTenPlus}
+					placeholder="Kitchens"
 					icon={<UtensilsCrossed aria-hidden="true" />}
 					aria-invalid={Boolean(errors.kitchens)}
+					onChange={(value) => onChange("kitchens", value)}
 				/>
 			</FormField>
 			<FormField label="Living rooms" optional error={errors.livingRooms}>
-				<Input
-					type="number"
+				<NumberOptionSelect
 					value={values.livingRooms}
-					onChange={(event) => onChange("livingRooms", event.target.value)}
-					placeholder="1"
+					options={listingOptions.numbers.oneToTenPlus}
+					placeholder="Living rooms"
 					icon={<House aria-hidden="true" />}
 					aria-invalid={Boolean(errors.livingRooms)}
+					onChange={(value) => onChange("livingRooms", value)}
 				/>
 			</FormField>
 			<div className={styles.toggleGrid}>
@@ -1036,7 +1162,12 @@ function ApartmentStep({ values, errors, onChange }: StepProps) {
 	);
 }
 
-function HotelRoomStep({ values, errors, onChange }: StepProps) {
+function HotelRoomStep({
+	values,
+	errors,
+	listingOptions,
+	onChange,
+}: StepProps) {
 	return (
 		<div className={styles.fieldGrid}>
 			<FormField label="Hotel name" required error={errors.hotelName}>
@@ -1049,31 +1180,71 @@ function HotelRoomStep({ values, errors, onChange }: StepProps) {
 				/>
 			</FormField>
 			<FormField label="Room type" required error={errors.roomType}>
-				<Input
+				<Select
 					value={values.roomType}
-					onChange={(event) => onChange("roomType", event.target.value)}
-					placeholder="Deluxe double room"
-					icon={<DoorOpen aria-hidden="true" />}
-					aria-invalid={Boolean(errors.roomType)}
-				/>
+					onValueChange={(value) => {
+						if (value) onChange("roomType", value);
+					}}
+				>
+					<SelectTrigger
+						className={styles.selectTrigger}
+						aria-invalid={Boolean(errors.roomType)}
+					>
+						<SelectValue>
+							<DoorOpen aria-hidden="true" />
+							{getOptionLabel(
+								listingOptions.hotelRooms.roomTypes,
+								values.roomType,
+								"Room type",
+							)}
+						</SelectValue>
+					</SelectTrigger>
+					<SelectContent align="start" alignItemWithTrigger={false}>
+						{listingOptions.hotelRooms.roomTypes.map((option) => (
+							<SelectItem key={option.value} value={option.value}>
+								{option.label}
+							</SelectItem>
+						))}
+					</SelectContent>
+				</Select>
 			</FormField>
 			<FormField label="Bed type" required error={errors.bedType}>
-				<Input
+				<Select
 					value={values.bedType}
-					onChange={(event) => onChange("bedType", event.target.value)}
-					placeholder="Queen bed"
-					icon={<BedDouble aria-hidden="true" />}
-					aria-invalid={Boolean(errors.bedType)}
-				/>
+					onValueChange={(value) => {
+						if (value) onChange("bedType", value);
+					}}
+				>
+					<SelectTrigger
+						className={styles.selectTrigger}
+						aria-invalid={Boolean(errors.bedType)}
+					>
+						<SelectValue>
+							<BedDouble aria-hidden="true" />
+							{getOptionLabel(
+								listingOptions.hotelRooms.bedTypes,
+								values.bedType,
+								"Bed type",
+							)}
+						</SelectValue>
+					</SelectTrigger>
+					<SelectContent align="start" alignItemWithTrigger={false}>
+						{listingOptions.hotelRooms.bedTypes.map((option) => (
+							<SelectItem key={option.value} value={option.value}>
+								{option.label}
+							</SelectItem>
+						))}
+					</SelectContent>
+				</Select>
 			</FormField>
 			<FormField label="Maximum guests" required error={errors.maxGuests}>
-				<Input
-					type="number"
+				<NumberOptionSelect
 					value={values.maxGuests}
-					onChange={(event) => onChange("maxGuests", event.target.value)}
-					placeholder="2"
+					options={listingOptions.numbers.guests}
+					placeholder="Maximum guests"
 					icon={<Hotel aria-hidden="true" />}
 					aria-invalid={Boolean(errors.maxGuests)}
+					onChange={(value) => onChange("maxGuests", value)}
 				/>
 			</FormField>
 			<FormField label="Check-in time" required error={errors.checkInTime}>
@@ -1134,46 +1305,71 @@ function HotelRoomStep({ values, errors, onChange }: StepProps) {
 	);
 }
 
-function AirbnbHouseStep({ values, errors, onChange }: StepProps) {
+function AirbnbHouseStep({
+	values,
+	errors,
+	listingOptions,
+	onChange,
+}: StepProps) {
 	return (
 		<div className={styles.fieldGrid}>
 			<FormField label="House type" required error={errors.houseType}>
-				<Input
+				<Select
 					value={values.houseType}
-					onChange={(event) => onChange("houseType", event.target.value)}
-					placeholder="Entire villa"
-					icon={<House aria-hidden="true" />}
-					aria-invalid={Boolean(errors.houseType)}
-				/>
+					onValueChange={(value) => {
+						if (value) onChange("houseType", value);
+					}}
+				>
+					<SelectTrigger
+						className={styles.selectTrigger}
+						aria-invalid={Boolean(errors.houseType)}
+					>
+						<SelectValue>
+							<House aria-hidden="true" />
+							{getOptionLabel(
+								listingOptions.airbnb.propertyTypes,
+								values.houseType,
+								"House type",
+							)}
+						</SelectValue>
+					</SelectTrigger>
+					<SelectContent align="start" alignItemWithTrigger={false}>
+						{listingOptions.airbnb.propertyTypes.map((option) => (
+							<SelectItem key={option.value} value={option.value}>
+								{option.label}
+							</SelectItem>
+						))}
+					</SelectContent>
+				</Select>
 			</FormField>
 			<FormField label="Bedrooms" required error={errors.bedrooms}>
-				<Input
-					type="number"
+				<NumberOptionSelect
 					value={values.bedrooms}
-					onChange={(event) => onChange("bedrooms", event.target.value)}
-					placeholder="3"
+					options={listingOptions.numbers.bedrooms}
+					placeholder="Bedrooms"
 					icon={<BedDouble aria-hidden="true" />}
 					aria-invalid={Boolean(errors.bedrooms)}
+					onChange={(value) => onChange("bedrooms", value)}
 				/>
 			</FormField>
 			<FormField label="Bathrooms" required error={errors.bathrooms}>
-				<Input
-					type="number"
+				<NumberOptionSelect
 					value={values.bathrooms}
-					onChange={(event) => onChange("bathrooms", event.target.value)}
-					placeholder="2"
+					options={listingOptions.numbers.bathrooms}
+					placeholder="Bathrooms"
 					icon={<DoorOpen aria-hidden="true" />}
 					aria-invalid={Boolean(errors.bathrooms)}
+					onChange={(value) => onChange("bathrooms", value)}
 				/>
 			</FormField>
 			<FormField label="Maximum guests" required error={errors.maxGuests}>
-				<Input
-					type="number"
+				<NumberOptionSelect
 					value={values.maxGuests}
-					onChange={(event) => onChange("maxGuests", event.target.value)}
-					placeholder="6"
+					options={listingOptions.numbers.guests}
+					placeholder="Maximum guests"
 					icon={<House aria-hidden="true" />}
 					aria-invalid={Boolean(errors.maxGuests)}
+					onChange={(value) => onChange("maxGuests", value)}
 				/>
 			</FormField>
 			<FormField label="Cleaning fee" optional error={errors.cleaningFee}>
@@ -1229,6 +1425,7 @@ function AirbnbHouseStep({ values, errors, onChange }: StepProps) {
 function PricingMediaStep({
 	values,
 	errors,
+	listingOptions,
 	selectedCategoryTitle,
 	existingImages,
 	imageFiles,
@@ -1263,13 +1460,33 @@ function PricingMediaStep({
 				/>
 			</FormField>
 			<FormField label="Currency" optional error={errors.currency}>
-				<Input
+				<Select
 					value={values.currency}
-					onChange={(event) => onChange("currency", event.target.value)}
-					placeholder="RWF"
-					icon={<CircleDollarSign aria-hidden="true" />}
-					aria-invalid={Boolean(errors.currency)}
-				/>
+					onValueChange={(value) => {
+						if (value) onChange("currency", value);
+					}}
+				>
+					<SelectTrigger
+						className={styles.selectTrigger}
+						aria-invalid={Boolean(errors.currency)}
+					>
+						<SelectValue>
+							<CircleDollarSign aria-hidden="true" />
+							{getOptionLabel(
+								listingOptions.currencies,
+								values.currency,
+								"Currency",
+							)}
+						</SelectValue>
+					</SelectTrigger>
+					<SelectContent align="start" alignItemWithTrigger={false}>
+						{listingOptions.currencies.map((option) => (
+							<SelectItem key={option.value} value={option.value}>
+								{option.label}
+							</SelectItem>
+						))}
+					</SelectContent>
+				</Select>
 			</FormField>
 			<FormField label="Pricing unit" required error={errors.pricingUnit}>
 				<Select
@@ -1507,6 +1724,7 @@ function PricingMediaStep({
 type StepProps = {
 	values: ListingFormValues;
 	errors: ListingFormErrors;
+	listingOptions: ListingOptionsResponse;
 	onChange: <K extends keyof ListingFormValues>(
 		field: K,
 		value: ListingFormValues[K],
@@ -1563,6 +1781,65 @@ function ToggleField({
 			{label}
 		</button>
 	);
+}
+
+function NumberOptionSelect({
+	value,
+	options,
+	placeholder,
+	icon,
+	"aria-invalid": ariaInvalid,
+	onChange,
+}: {
+	value: string;
+	options: ListingOptionsResponse["numbers"]["oneToTenPlus"];
+	placeholder: string;
+	icon: ReactNode;
+	"aria-invalid"?: boolean;
+	onChange: (value: string) => void;
+}) {
+	return (
+		<Select
+			value={value}
+			onValueChange={(nextValue) => {
+				if (nextValue) onChange(nextValue);
+			}}
+		>
+			<SelectTrigger
+				className={styles.selectTrigger}
+				aria-invalid={ariaInvalid}
+			>
+				<SelectValue>
+					{icon}
+					{value ? getNumericOptionLabel(options, value) : placeholder}
+				</SelectValue>
+			</SelectTrigger>
+			<SelectContent align="start" alignItemWithTrigger={false}>
+				{options.map((option) => (
+					<SelectItem key={option.value} value={String(option.value)}>
+						{option.label}
+					</SelectItem>
+				))}
+			</SelectContent>
+		</Select>
+	);
+}
+
+function getNumericOptionLabel(
+	options: ListingOptionsResponse["numbers"]["oneToTenPlus"],
+	value: string,
+) {
+	return (
+		options.find((option) => String(option.value) === value)?.label ?? value
+	);
+}
+
+function getOptionLabel(
+	options: ReadonlyArray<{ value: string; label: string }>,
+	value: string,
+	fallback: string,
+) {
+	return options.find((option) => option.value === value)?.label ?? fallback;
 }
 
 function CountrySelect({
@@ -1641,8 +1918,8 @@ function createInitialValues(product?: Product): ListingFormValues {
 		model: car?.model ?? "",
 		year: car?.year ? String(car.year) : "",
 		plateNumber: car?.plateNumber ?? "",
-		transmission: car?.transmission ?? "Automatic",
-		fuelType: car?.fuelType ?? "Petrol",
+		transmission: car?.transmission ?? "AUTOMATIC",
+		fuelType: car?.fuelType ?? "PETROL",
 		seats: car?.seats ? String(car.seats) : "",
 		doors: car?.doors ? String(car.doors) : "",
 		luggageCapacity: car?.luggageCapacity ? String(car.luggageCapacity) : "",
@@ -1726,8 +2003,8 @@ function validateValues(
 		if (values.category === "CAR") {
 			if (values.brand.trim().length < 2) errors.brand = "Brand is required.";
 			if (!values.model.trim()) errors.model = "Model is required.";
-			if (!isNumberInRange(values.year, 1990, 2035))
-				errors.year = "Enter a valid year between 1990 and 2035.";
+			if (!isNumberInRange(values.year, minimumVehicleYear, maximumVehicleYear))
+				errors.year = `Enter a valid year between ${minimumVehicleYear} and ${maximumVehicleYear}.`;
 			if (values.transmission.trim().length < 3)
 				errors.transmission = "Transmission is required.";
 			if (values.fuelType.trim().length < 3)
