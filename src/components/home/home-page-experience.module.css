@@ -366,10 +366,9 @@
 
 .searchFields {
 	display: grid;
-	grid-template-columns: minmax(18rem, 1.4fr) minmax(13rem, 0.82fr) minmax(
-			10rem,
-			0.62fr
-		) auto;
+	grid-template-columns:
+		minmax(18rem, 1.4fr) minmax(13rem, 0.82fr) minmax(10rem, 0.62fr)
+		auto;
 	gap: 0.8rem;
 	align-items: stretch;
 	padding: clamp(0.9rem, 2vw, 1.2rem);
@@ -499,6 +498,97 @@
 	height: 1.05rem;
 }
 
+.advancedPanel,
+.comingSoonPanel {
+	margin: 0 clamp(0.9rem, 2vw, 1.2rem) clamp(0.9rem, 2vw, 1.2rem);
+	padding: 0.9rem;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	border-radius: 1.15rem;
+	background: rgba(248, 249, 253, 0.94);
+}
+
+.advancedPanel {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	gap: 0.9rem;
+	align-items: center;
+}
+
+.advancedLabel {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.48rem;
+	color: #02006c;
+	font-size: 0.7rem;
+	font-weight: 880;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+
+.advancedLabel svg {
+	width: 0.95rem;
+	height: 0.95rem;
+}
+
+.advancedGrid {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 0.65rem;
+}
+
+.advancedField {
+	min-width: 0;
+	display: grid;
+	gap: 0.25rem;
+	padding: 0.72rem 0.8rem;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	border-radius: 0.9rem;
+	background: #ffffff;
+}
+
+.advancedField span {
+	color: #02006c;
+	font-size: 0.62rem;
+	font-weight: 860;
+	letter-spacing: 0.07em;
+	text-transform: uppercase;
+}
+
+.advancedField select {
+	width: 100%;
+	min-width: 0;
+	border: 0;
+	background: transparent;
+	color: rgba(17, 19, 28, 0.78);
+	font: inherit;
+	font-size: 0.82rem;
+	font-weight: 680;
+	outline: none;
+	cursor: pointer;
+}
+
+.comingSoonPanel {
+	display: flex;
+	align-items: center;
+	gap: 0.7rem;
+	color: rgba(17, 19, 28, 0.72);
+	font-size: 0.86rem;
+	font-weight: 620;
+	line-height: 1.5;
+}
+
+.comingSoonPanel svg {
+	width: 1.1rem;
+	height: 1.1rem;
+	flex: 0 0 auto;
+	color: #02006c;
+}
+
+.comingSoonPanel p {
+	margin: 0;
+}
+
 .dateDialog {
 	width: min(100% - 1.5rem, 50rem);
 	max-width: min(100% - 1.5rem, 50rem);
@@ -593,6 +683,10 @@
 				9rem,
 				0.6fr
 			);
+	}
+
+	.advancedPanel {
+		grid-template-columns: 1fr;
 	}
 
 	.searchButton {
@@ -737,6 +831,14 @@
 
 	.dateDialog {
 		border-radius: 1.2rem;
+	}
+
+	.advancedGrid {
+		grid-template-columns: 1fr;
+	}
+
+	.advancedLabel {
+		justify-content: center;
 	}
 
 	.datePreview,
