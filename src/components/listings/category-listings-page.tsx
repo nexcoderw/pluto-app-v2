@@ -706,6 +706,16 @@ function getInitialListingUrlState(params: {
 		minPrice: parseNumberParam(params.get("minPrice")),
 		maxPrice: parseNumberParam(params.get("maxPrice")),
 		guests: parseNumberParam(params.get("guests")),
+		transmission: params.get("transmission")?.trim() || undefined,
+		fuelType: params.get("fuelType")?.trim() || undefined,
+		seats: parseNumberParam(params.get("seats")),
+		minYear: parseNumberParam(params.get("minYear")),
+		maxYear: parseNumberParam(params.get("maxYear")),
+		bedrooms: parseNumberParam(params.get("bedrooms")),
+		bathrooms: parseNumberParam(params.get("bathrooms")),
+		roomType: params.get("roomType")?.trim() || undefined,
+		bedType: params.get("bedType")?.trim() || undefined,
+		propertyType: params.get("propertyType")?.trim() || undefined,
 	});
 
 	return {
