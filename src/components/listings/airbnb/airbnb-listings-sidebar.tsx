@@ -18,22 +18,13 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { useListingOptions } from "@/hooks/use-listing-options";
 import type { ListingListRequest } from "@/services/api/listings";
 import { normalizeAirbnbPropertyType } from "@/services/api/listing-options";
 import type { ListingSidebarRenderProps } from "../category-listings-page";
 import styles from "./airbnb-listings-sidebar.module.css";
 
 const countries = ["Rwanda", "Kenya", "Uganda", "Tanzania", "Burundi"];
-const propertyTypes = [
-	"Entire home",
-	"Apartment",
-	"Villa",
-	"Studio",
-	"Guest suite",
-];
-const bedroomOptions = [1, 2, 3, 4, 5];
-const bathroomOptions = [1, 2, 3, 4];
-const guestOptions = [1, 2, 4, 6, 8, 10, 12];
 const maxBudget = 1200000;
 const budgetStep = 10000;
 
@@ -47,6 +38,7 @@ export function AirbnbListingsSidebar({
 }: ListingSidebarRenderProps & {
 	variant?: "sidebar" | "dialog";
 }) {
+	const { options: listingOptions } = useListingOptions();
 	const selectedBudget =
 		typeof draftFilters.maxPrice === "number"
 			? draftFilters.maxPrice
@@ -124,9 +116,9 @@ export function AirbnbListingsSidebar({
 						</SelectTrigger>
 						<SelectContent align="start" alignItemWithTrigger={false}>
 							<SelectItem value="ANY">Any property type</SelectItem>
-							{propertyTypes.map((propertyType) => (
-								<SelectItem key={propertyType} value={propertyType}>
-									{propertyType}
+							{listingOptions.airbnb.propertyTypes.map((option) => (
+								<SelectItem key={option.value} value={option.value}>
+									{option.label}
 								</SelectItem>
 							))}
 						</SelectContent>
@@ -157,9 +149,9 @@ export function AirbnbListingsSidebar({
 						</SelectTrigger>
 						<SelectContent align="start" alignItemWithTrigger={false}>
 							<SelectItem value="ANY">Any beds</SelectItem>
-							{bedroomOptions.map((bedrooms) => (
-								<SelectItem key={bedrooms} value={String(bedrooms)}>
-									{bedrooms}+ beds
+							{listingOptions.numbers.bedrooms.map((option) => (
+								<SelectItem key={option.value} value={String(option.value)}>
+									{option.label} beds
 								</SelectItem>
 							))}
 						</SelectContent>
@@ -175,9 +167,9 @@ export function AirbnbListingsSidebar({
 						</SelectTrigger>
 						<SelectContent align="start" alignItemWithTrigger={false}>
 							<SelectItem value="ANY">Any baths</SelectItem>
-							{bathroomOptions.map((bathrooms) => (
-								<SelectItem key={bathrooms} value={String(bathrooms)}>
-									{bathrooms}+ baths
+							{listingOptions.numbers.bathrooms.map((option) => (
+								<SelectItem key={option.value} value={String(option.value)}>
+									{option.label} baths
 								</SelectItem>
 							))}
 						</SelectContent>
@@ -193,9 +185,9 @@ export function AirbnbListingsSidebar({
 						</SelectTrigger>
 						<SelectContent align="start" alignItemWithTrigger={false}>
 							<SelectItem value="ANY">Any guests</SelectItem>
-							{guestOptions.map((guests) => (
-								<SelectItem key={guests} value={String(guests)}>
-									{guests}+ guests
+							{listingOptions.numbers.guests.map((option) => (
+								<SelectItem key={option.value} value={String(option.value)}>
+									{option.label} guests
 								</SelectItem>
 							))}
 						</SelectContent>
