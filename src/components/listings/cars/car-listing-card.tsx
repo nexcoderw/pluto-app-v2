@@ -35,25 +35,35 @@ export function CarListingCard({ listing, detailHref }: CarListingCardProps) {
 
 	return (
 		<article className={styles.card}>
-			<Link href={detailHref} className={styles.media}>
-				{coverUrl ? (
-					<Image
-						src={coverUrl}
-						alt={coverImage.altText ?? listing.title}
-						fill
-						sizes="(max-width: 720px) 100vw, (max-width: 1280px) 31vw, 22vw"
-					/>
-				) : (
-					<span className={styles.emptyMedia}>
-						<CarFront aria-hidden="true" />
-						Vehicle image pending
+			<div className={styles.mediaFrame}>
+				<Link href={detailHref} className={styles.media}>
+					{coverUrl ? (
+						<Image
+							src={coverUrl}
+							alt={coverImage.altText ?? listing.title}
+							fill
+							sizes="(max-width: 720px) 100vw, (max-width: 1280px) 31vw, 22vw"
+						/>
+					) : (
+						<span className={styles.emptyMedia}>
+							<CarFront aria-hidden="true" />
+							Vehicle image pending
+						</span>
+					)}
+					<span className={styles.statusPill}>
+						<ShieldCheck aria-hidden="true" className="h-4" />
+						Approved
 					</span>
-				)}
-				<span className={styles.statusPill}>
-					<ShieldCheck aria-hidden="true" className="h-4" />
-					Approved
+				</Link>
+				<span className={styles.mediaFavorite}>
+					<ListingFavoriteButton
+						productId={listing.id}
+						listingTitle={listing.title}
+						className={styles.favoriteButton}
+						label="Save car"
+					/>
 				</span>
-			</Link>
+			</div>
 
 			<div className={styles.body}>
 				<div className={styles.heading}>
@@ -62,12 +72,6 @@ export function CarListingCard({ listing, detailHref }: CarListingCardProps) {
 						<h2>{listing.title}</h2>
 					</div>
 					<span className={styles.headingActions}>
-						<ListingFavoriteButton
-							productId={listing.id}
-							listingTitle={listing.title}
-							className={styles.favoriteButton}
-							label="Save car"
-						/>
 						<span className={styles.price}>
 							<strong>
 								{formatMoney(listing.basePrice, listing.currency)}
@@ -112,9 +116,12 @@ export function CarListingCard({ listing, detailHref }: CarListingCardProps) {
 export function CarListingCardSkeleton() {
 	return (
 		<article className={styles.card} aria-hidden="true">
-			<div className={styles.media}>
-				<span className={styles.skeletonMediaIcon} />
-				<span className={styles.skeletonStatusPill} />
+			<div className={styles.mediaFrame}>
+				<div className={styles.media}>
+					<span className={styles.skeletonMediaIcon} />
+					<span className={styles.skeletonStatusPill} />
+				</div>
+				<span className={styles.skeletonFavoriteButton} />
 			</div>
 
 			<div className={styles.body}>
