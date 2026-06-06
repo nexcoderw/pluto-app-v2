@@ -84,6 +84,60 @@
 	align-items: start;
 }
 
+.headingActions {
+	display: inline-flex;
+	align-items: flex-start;
+	gap: 0.5rem;
+}
+
+.favoriteButton {
+	width: 2.35rem;
+	height: 2.35rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	border-radius: 999px;
+	background: #f7f8fc;
+	color: #02006c;
+	cursor: pointer;
+	transition:
+		background 180ms ease,
+		color 180ms ease,
+		transform 180ms ease;
+}
+
+.favoriteButton:hover,
+.favoriteButton:focus-visible,
+.favoriteButton[aria-pressed="true"] {
+	background: #02006c;
+	color: #ffffff;
+	transform: translateY(-1px);
+}
+
+.favoriteButton:focus-visible {
+	outline: 2px solid rgba(2, 0, 108, 0.24);
+	outline-offset: 2px;
+}
+
+.favoriteButton:disabled {
+	cursor: wait;
+	opacity: 0.72;
+	transform: none;
+}
+
+.favoriteButton svg {
+	width: 0.95rem;
+	height: 0.95rem;
+	fill: transparent;
+	transition: fill 180ms ease;
+}
+
+.favoriteButton[aria-pressed="true"] svg {
+	fill: currentColor;
+}
+
 .vehicleName {
 	margin: 0 0 0.18rem;
 	color: #02006c;
