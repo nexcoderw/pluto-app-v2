@@ -8,11 +8,11 @@ import {
 	BedDouble,
 	ChevronLeft,
 	ChevronRight,
-	Heart,
 	Star,
 	Users,
 } from "lucide-react";
 import type { PublicListing } from "@/services/api/listings";
+import { ListingFavoriteButton } from "../listing-favorite-button";
 import { formatMoney } from "../listing-formatters";
 import styles from "./apartment-listing-card.module.css";
 
@@ -38,7 +38,6 @@ export function ApartmentListingCard({
 	const details =
 		listing.apartmentDetails as ApartmentDetailsWithGuestAlias | null;
 	const [activeImageIndex, setActiveImageIndex] = useState(0);
-	const [favorite, setFavorite] = useState(false);
 	const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 	const images = useMemo(
 		() =>
@@ -131,17 +130,12 @@ export function ApartmentListingCard({
 			</div>
 
 			<div className={styles.body}>
-				<button
-					type="button"
+				<ListingFavoriteButton
+					productId={listing.id}
+					listingTitle={listing.title}
 					className={styles.favoriteButton}
-					aria-label={
-						favorite ? "Remove apartment from favorites" : "Save apartment"
-					}
-					aria-pressed={favorite}
-					onClick={() => setFavorite((current) => !current)}
-				>
-					<Heart aria-hidden="true" />
-				</button>
+					label="Save apartment"
+				/>
 
 				<Link href={detailHref} className={styles.titleLink}>
 					<h2>{listing.title}</h2>
