@@ -4,7 +4,6 @@ import { FormEvent, ReactNode, useMemo, useState } from "react";
 import {
 	ArrowLeft,
 	ArrowRight,
-	Clock3,
 	FileSearch,
 	RefreshCcw,
 	Search,
@@ -12,9 +11,26 @@ import {
 	SlidersHorizontal,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 import {
 	listUserAuditLogs,
 	type ListUserAuditLogsRequest,
@@ -119,35 +135,55 @@ export function UserAuditLogsPage({
 				<div className={styles.controls}>
 					<label>
 						<span>Sort by</span>
-						<select
+						<Select
 							value={orderBy}
-							onChange={(event) => {
-								setOrderBy(event.target.value as UserAuditOrderBy);
+							onValueChange={(value) => {
+								setOrderBy(value as UserAuditOrderBy);
 								setPage(1);
 							}}
 						>
-							{orderByOptions.map((option) => (
-								<option key={option.value} value={option.value}>
-									{option.label}
-								</option>
-							))}
-						</select>
+							<SelectTrigger className={styles.selectTrigger}>
+								<SelectValue>
+									{orderByOptions.find((option) => option.value === orderBy)
+										?.label ?? "Sort"}
+								</SelectValue>
+							</SelectTrigger>
+							<SelectContent align="start" alignItemWithTrigger={false}>
+								<SelectGroup>
+									{orderByOptions.map((option) => (
+										<SelectItem key={option.value} value={option.value}>
+											{option.label}
+										</SelectItem>
+									))}
+								</SelectGroup>
+							</SelectContent>
+						</Select>
 					</label>
 					<label>
 						<span>Order</span>
-						<select
+						<Select
 							value={order}
-							onChange={(event) => {
-								setOrder(event.target.value as UserAuditOrder);
+							onValueChange={(value) => {
+								setOrder(value as UserAuditOrder);
 								setPage(1);
 							}}
 						>
-							{orderOptions.map((option) => (
-								<option key={option.value} value={option.value}>
-									{option.label}
-								</option>
-							))}
-						</select>
+							<SelectTrigger className={styles.selectTrigger}>
+								<SelectValue>
+									{orderOptions.find((option) => option.value === order)
+										?.label ?? "Order"}
+								</SelectValue>
+							</SelectTrigger>
+							<SelectContent align="start" alignItemWithTrigger={false}>
+								<SelectGroup>
+									{orderOptions.map((option) => (
+										<SelectItem key={option.value} value={option.value}>
+											{option.label}
+										</SelectItem>
+									))}
+								</SelectGroup>
+							</SelectContent>
+						</Select>
 					</label>
 					<Button type="submit" className={styles.primaryButton}>
 						<SlidersHorizontal aria-hidden="true" />
@@ -185,11 +221,7 @@ export function UserAuditLogsPage({
 				/>
 			) : items.length ? (
 				<>
-					<div className={styles.eventList}>
-						{items.map((log) => (
-							<UserAuditLogCard key={log.id} log={log} />
-						))}
-					</div>
+					<UserAuditLogsTable logs={items} />
 
 					{totalPages > 1 ? (
 						<nav className={styles.pagination} aria-label="Audit log pages">
@@ -259,75 +291,74 @@ export function UserAuditLogsPage({
 	);
 }
 
-function UserAuditLogCard({ log }: { log: UserAuditLog }) {
-	const hasTechnicalDetails =
-		Boolean(log.endpoint) ||
-		Boolean(log.ipAddress) ||
-		Boolean(log.statusCode) ||
-		Boolean(log.errorCode) ||
-		Boolean(log.fieldChanges.length);
-
+function UserAuditLogsTable({ logs }: { logs: UserAuditLog[] }) {
 	return (
-		<article className={styles.logCard}>
-			<div className={styles.logTime}>
-				<Clock3 aria-hidden="true" />
-				<span>{formatDateTime(log.createdAt)}</span>
-			</div>
-
-			<div className={styles.logMain}>
-				<div className={styles.logTitleRow}>
-					<div>
-						<h2>{formatAction(log.action)}</h2>
-						<p>{log.message || "Recorded account activity event."}</p>
-					</div>
-					<div className={styles.badgeStack}>
-						<span data-outcome={log.outcome}>{formatEnum(log.outcome)}</span>
-						<span data-severity={log.severity}>{formatEnum(log.severity)}</span>
-					</div>
-				</div>
-
-				<dl className={styles.detailGrid}>
-					<AuditDetail label="Category" value={formatEnum(log.category)} />
-					<AuditDetail
-						label="Entity"
-						value={log.entityName || log.entityType || "Unscoped"}
-					/>
-					<AuditDetail label="Method" value={log.method || "Event"} />
-					<AuditDetail label="Device" value={formatEnum(log.deviceType)} />
-				</dl>
-
-				{hasTechnicalDetails ? (
-					<div className={styles.technicalPanel}>
-						<AuditDetail
-							label="Endpoint"
-							value={log.endpoint || "Not linked"}
-						/>
-						<AuditDetail label="IP address" value={log.ipAddress || "Hidden"} />
-						<AuditDetail
-							label="Status code"
-							value={log.statusCode ? String(log.statusCode) : "Not set"}
-						/>
-						<AuditDetail
-							label="Field changes"
-							value={
-								log.fieldChanges.length
-									? `${log.fieldChanges.length} recorded`
-									: "None"
-							}
-						/>
-					</div>
-				) : null}
-			</div>
-		</article>
-	);
-}
-
-function AuditDetail({ label, value }: { label: string; value: string }) {
-	return (
-		<div>
-			<dt>{label}</dt>
-			<dd>{value}</dd>
-		</div>
+		<section className={styles.tablePanel}>
+			<Table className={styles.auditTable}>
+				<TableHeader>
+					<TableRow>
+						<TableHead>Event</TableHead>
+						<TableHead>Status</TableHead>
+						<TableHead>Entity</TableHead>
+						<TableHead>Request</TableHead>
+						<TableHead>Context</TableHead>
+						<TableHead>Time</TableHead>
+					</TableRow>
+				</TableHeader>
+				<TableBody>
+					{logs.map((log) => (
+						<TableRow key={log.id}>
+							<TableCell>
+								<div className={styles.eventCell}>
+									<strong>{formatAction(log.action)}</strong>
+									<span>{log.message || "Recorded account activity."}</span>
+								</div>
+							</TableCell>
+							<TableCell>
+								<div className={styles.badgeStack}>
+									<Badge className={styles[`outcome${log.outcome}`]}>
+										{formatEnum(log.outcome)}
+									</Badge>
+									<Badge className={styles[`severity${log.severity}`]}>
+										{formatEnum(log.severity)}
+									</Badge>
+								</div>
+							</TableCell>
+							<TableCell>
+								<div className={styles.entityCell}>
+									<strong>
+										{log.entityName || log.entityType || "Unscoped"}
+									</strong>
+									<span>{log.entityId || formatEnum(log.category)}</span>
+								</div>
+							</TableCell>
+							<TableCell>
+								<div className={styles.requestCell}>
+									<strong>{log.method || "EVENT"}</strong>
+									<span>{log.endpoint || "No endpoint"}</span>
+								</div>
+							</TableCell>
+							<TableCell>
+								<div className={styles.contextCell}>
+									<strong>{log.ipAddress || "IP hidden"}</strong>
+									<span>
+										{formatEnum(log.deviceType)} ·{" "}
+										{log.fieldChanges.length
+											? `${log.fieldChanges.length} changes`
+											: "No changes"}
+									</span>
+								</div>
+							</TableCell>
+							<TableCell>
+								<time className={styles.timeCell} dateTime={log.createdAt}>
+									{formatDateTime(log.createdAt)}
+								</time>
+							</TableCell>
+						</TableRow>
+					))}
+				</TableBody>
+			</Table>
+		</section>
 	);
 }
 
@@ -354,28 +385,20 @@ function UserAuditLogsState({
 
 function UserAuditLogsSkeleton() {
 	return (
-		<div className={styles.eventList} aria-label="Loading audit logs">
-			{Array.from({ length: 6 }).map((_, index) => (
-				<article key={index} className={styles.logCard} aria-hidden="true">
-					<div className={styles.logTime}>
-						<Skeleton className={styles.skeletonIcon} />
-						<Skeleton className={styles.skeletonTime} />
-					</div>
-					<div className={styles.logMain}>
-						<div className={styles.skeletonTitleRow}>
-							<Skeleton />
-							<Skeleton />
-						</div>
-						<Skeleton className={styles.skeletonMessage} />
-						<div className={styles.detailGrid}>
-							{Array.from({ length: 4 }).map((_, detailIndex) => (
-								<Skeleton key={detailIndex} className={styles.skeletonDetail} />
-							))}
-						</div>
-					</div>
-				</article>
+		<section className={styles.tablePanel} aria-label="Loading audit logs">
+			<div className={styles.skeletonTableHeader}>
+				{Array.from({ length: 6 }).map((_, index) => (
+					<Skeleton key={index} />
+				))}
+			</div>
+			{Array.from({ length: 6 }).map((_, rowIndex) => (
+				<div key={rowIndex} className={styles.skeletonTableRow}>
+					{Array.from({ length: 6 }).map((_, cellIndex) => (
+						<Skeleton key={cellIndex} />
+					))}
+				</div>
 			))}
-		</div>
+		</section>
 	);
 }
 
