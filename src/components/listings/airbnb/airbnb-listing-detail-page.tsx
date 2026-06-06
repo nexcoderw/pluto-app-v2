@@ -20,6 +20,8 @@ import {
 import type { DateRange } from "react-day-picker";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
+import { NotFoundState } from "@/components/shared/not-found-state";
+import { isApiNotFoundError } from "@/services/api/errors";
 import { getAirbnbListing, type PublicListing } from "@/services/api/listings";
 import {
 	buildListingGallery,
@@ -69,7 +71,19 @@ export function AirbnbListingDetailPage({ listingId }: { listingId: string }) {
 		return <AirbnbListingDetailSkeleton />;
 	}
 
-	if (listingQuery.isError || !listingQuery.data?.product) {
+	if (
+		isApiNotFoundError(listingQuery.error) ||
+		(!listingQuery.isError && !listingQuery.data?.product)
+	) {
+		return (
+			<NotFoundState
+				title="Listing not found"
+				description="This Airbnb listing may have moved, expired, or is no longer available on Pluto Booking."
+			/>
+		);
+	}
+
+	if (listingQuery.isError) {
 		return (
 			<ListingDetailErrorState
 				title="Airbnb stay unavailable"
