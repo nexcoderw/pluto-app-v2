@@ -9,13 +9,13 @@ import {
 	BedDouble,
 	ChevronLeft,
 	ChevronRight,
-	Heart,
 	MapPin,
 	ShieldCheck,
 	Star,
 	Users,
 } from "lucide-react";
 import type { PublicListing } from "@/services/api/listings";
+import { ListingFavoriteButton } from "../listing-favorite-button";
 import { formatMoney, formatPricingUnit } from "../listing-formatters";
 import styles from "./airbnb-listing-card.module.css";
 
@@ -34,7 +34,6 @@ export function AirbnbListingCard({
 }: AirbnbListingCardProps) {
 	const details = listing.airbnbDetails;
 	const [activeImageIndex, setActiveImageIndex] = useState(0);
-	const [favorite, setFavorite] = useState(false);
 	const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 	const images = useMemo(
 		() =>
@@ -143,17 +142,12 @@ export function AirbnbListingCard({
 							<h2>{listing.title}</h2>
 						</Link>
 					</div>
-					<button
-						type="button"
+					<ListingFavoriteButton
+						productId={listing.id}
+						listingTitle={listing.title}
 						className={styles.favoriteButton}
-						aria-label={
-							favorite ? "Remove Airbnb from favorites" : "Save Airbnb"
-						}
-						aria-pressed={favorite}
-						onClick={() => setFavorite((current) => !current)}
-					>
-						<Heart aria-hidden="true" />
-					</button>
+						label="Save Airbnb"
+					/>
 				</div>
 
 				<p className={styles.location}>
