@@ -8,7 +8,6 @@ import {
 	BedDouble,
 	Building2,
 	CarFront,
-	Heart,
 	Hotel,
 	House,
 	MapPin,
@@ -28,6 +27,7 @@ import {
 	buildListingGallery,
 	formatMoney,
 } from "@/components/listings/listing-formatters";
+import { ListingFavoriteButton } from "@/components/listings/listing-favorite-button";
 import styles from "./featured-listings.module.css";
 
 type FeaturedCategory = ListingCategorySlug | "all";
@@ -263,60 +263,65 @@ function FeaturedListingCard({
 	const formattedPrice = formatMoney(listing.basePrice, listing.currency);
 
 	return (
-		<Link href={detailHref} className={styles.card}>
-			<span className={styles.imageWrap}>
-				<Image
-					src={cover.src}
-					alt={cover.alt}
-					fill
-					sizes="(max-width: 720px) 100vw, (max-width: 1180px) 50vw, 25vw"
-				/>
-				<span className={styles.imageShade} aria-hidden="true" />
-				<span className={styles.topPills}>
-					<span>Popular</span>
-					<span className={styles.favoriteIcon}>
-						<Heart aria-hidden="true" />
+		<article className={styles.card}>
+			<Link href={detailHref} className={styles.cardLink}>
+				<span className={styles.imageWrap}>
+					<Image
+						src={cover.src}
+						alt={cover.alt}
+						fill
+						sizes="(max-width: 720px) 100vw, (max-width: 1180px) 50vw, 25vw"
+					/>
+					<span className={styles.imageShade} aria-hidden="true" />
+					<span className={styles.topPills}>
+						<span>Popular</span>
+					</span>
+					<span className={styles.imageCaption}>
+						<span>
+							<strong>{listing.title}</strong>
+							<small>
+								<MapPin aria-hidden="true" />
+								{location}
+							</small>
+						</span>
+						<span className={styles.imageAction}>
+							View listing
+							<ArrowRight aria-hidden="true" />
+						</span>
 					</span>
 				</span>
-				<span className={styles.imageCaption}>
-					<span>
-						<strong>{listing.title}</strong>
-						<small>
-							<MapPin aria-hidden="true" />
-							{location}
-						</small>
+				<span className={styles.cardMeta}>
+					<span className={styles.metric}>
+						<strong>{formattedPrice}</strong>
+						<small>{listing.pricingUnit.toLowerCase()} rate</small>
 					</span>
-					<span className={styles.imageAction}>
-						View listing
-						<ArrowRight aria-hidden="true" />
+					<span className={styles.metric}>
+						<strong>{source.label}</strong>
+						<small>Category</small>
 					</span>
-				</span>
-			</span>
-			<span className={styles.cardMeta}>
-				<span className={styles.metric}>
-					<strong>{formattedPrice}</strong>
-					<small>{listing.pricingUnit.toLowerCase()} rate</small>
-				</span>
-				<span className={styles.metric}>
-					<strong>{source.label}</strong>
-					<small>Category</small>
-				</span>
-				<span className={styles.metric}>
-					<strong>
-						{rating}
-						{rating !== "New" ? <Star aria-hidden="true" /> : null}
-					</strong>
-					<small>Rating</small>
-				</span>
-				<span className={styles.verifiedPanel}>
-					<Icon aria-hidden="true" />
-					<span>
-						<strong>Verified</strong>
-						<small>{listing.owner.fullName}</small>
+					<span className={styles.metric}>
+						<strong>
+							{rating}
+							{rating !== "New" ? <Star aria-hidden="true" /> : null}
+						</strong>
+						<small>Rating</small>
+					</span>
+					<span className={styles.verifiedPanel}>
+						<Icon aria-hidden="true" />
+						<span>
+							<strong>Verified</strong>
+							<small>{listing.owner.fullName}</small>
+						</span>
 					</span>
 				</span>
-			</span>
-		</Link>
+			</Link>
+			<ListingFavoriteButton
+				productId={listing.id}
+				listingTitle={listing.title}
+				className={styles.favoriteIcon}
+				label="Save listing"
+			/>
+		</article>
 	);
 }
 
