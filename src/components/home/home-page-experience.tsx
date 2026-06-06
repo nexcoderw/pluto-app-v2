@@ -15,6 +15,7 @@ import { getCachedPartnerProfileStatus } from "@/services/api/token-store";
 import { FeaturedListings } from "./featured-listings";
 import { HomeSearch } from "./home-search";
 import { PopularCategories } from "./popular-categories";
+import { WhyPlutoBooking } from "./why-pluto-booking";
 import styles from "./home-page-experience.module.css";
 
 const navigationLinks = [
@@ -44,6 +45,7 @@ export function HomePageExperience() {
 			</section>
 			<PopularCategories />
 			<FeaturedListings />
+			<WhyPlutoBooking />
 		</main>
 	);
 }
