@@ -6,10 +6,11 @@ import { useEffect } from "react";
 import { ArrowLeft, RefreshCcw } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { NotFoundState } from "@/components/shared/not-found-state";
 import { PortalShell } from "@/components/portal/portal-shell";
 import { partnerPortalNavigation } from "@/constants/partner-portal-navigation";
 import type { UserAuthProfile } from "@/services/api/auth";
-import { ApiRequestError } from "@/services/api/errors";
+import { ApiRequestError, isApiNotFoundError } from "@/services/api/errors";
 import { getPartnerProfile } from "@/services/api/partner-profile";
 import { getPartnerProduct } from "@/services/api/partner-products";
 import {
@@ -88,6 +89,19 @@ function ListingFormWorkspace({
 	}
 
 	const product = productQuery.data?.product;
+	if (
+		mode === "edit" &&
+		(isApiNotFoundError(productQuery.error) ||
+			(!productQuery.isError && !product))
+	) {
+		return (
+			<NotFoundState
+				title="Listing not found"
+				description="This listing may have been removed, archived, or is no longer available for your partner account."
+			/>
+		);
+	}
+
 	const workspaceError = getListingWorkspaceError({
 		mode,
 		profile,
@@ -185,16 +199,6 @@ function getListingWorkspaceError({
 			productError instanceof ApiRequestError
 				? productError.statusCode
 				: undefined;
-
-		if (statusCode === 404) {
-			return {
-				title: "Listing not found",
-				description:
-					"This listing could not be opened. It may have been removed, archived, or it may not belong to your partner account.",
-				actionLabel: "Back to listings",
-				href: "/partner/listings",
-			};
-		}
 
 		if (statusCode === 403) {
 			return {
