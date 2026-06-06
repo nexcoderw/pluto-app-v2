@@ -6,6 +6,9 @@ export { FAVORITE_ROUTES } from "./routes";
 export type {
 	FavoriteListingIdsResponse,
 	FavoriteListingMutationResponse,
+	FavoriteListingsOrderBy,
+	FavoriteListingsRequest,
 	FavoriteListingsResponse,
+	FavoriteListingsSortOrder,
 	FavoriteListingSummary,
 } from "./types";
