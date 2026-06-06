@@ -2,6 +2,8 @@
 
 import { useState, type ReactNode } from "react";
 import { Heart } from "lucide-react";
+import { toast } from "sonner";
+import type { UserLoginResponse } from "@/services/api/auth";
 import { ListingLoginDialog } from "./listing-login-dialog";
 import { useListingFavorite } from "./use-listing-favorite";
 
@@ -33,6 +35,18 @@ export function ListingFavoriteButton({
 		toggleFavorite();
 	}
 
+	function handleAuthenticated(response: UserLoginResponse) {
+		if (response.user.role !== "CUSTOMER") {
+			toast.warning("Favorites are for customer accounts", {
+				description:
+					"Sign in with a customer account to save listings for later.",
+			});
+			return;
+		}
+
+		saveAfterLogin();
+	}
+
 	return (
 		<>
 			<button
@@ -50,7 +64,7 @@ export function ListingFavoriteButton({
 				onOpenChange={setIsLoginDialogOpen}
 				listingTitle={listingTitle}
 				intent="favorite"
-				onAuthenticated={saveAfterLogin}
+				onAuthenticated={handleAuthenticated}
 			/>
 		</>
 	);
