@@ -13,6 +13,7 @@ import { getUserPortalPath } from "@/lib/user-portal";
 import { logoutUser, type UserAuthProfile } from "@/services/api/auth";
 import { getCachedPartnerProfileStatus } from "@/services/api/token-store";
 import { HomeSearch } from "./home-search";
+import { PopularCategories } from "./popular-categories";
 import styles from "./home-page-experience.module.css";
 
 const navigationLinks = [
@@ -40,6 +41,7 @@ export function HomePageExperience() {
 
 				<HomeSearch />
 			</section>
+			<PopularCategories />
 		</main>
 	);
 }
