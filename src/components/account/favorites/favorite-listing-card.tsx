@@ -1,0 +1,139 @@
+"use client";
+
+import Image from "next/image";
+import Link from "next/link";
+import {
+	ArrowRight,
+	Building2,
+	CarFront,
+	HeartOff,
+	Hotel,
+	House,
+	MapPin,
+	Trash2,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import type { FavoriteListingSummary } from "@/services/api/favorites";
+import {
+	formatMoney,
+	formatPricingUnit,
+} from "@/components/listings/listing-formatters";
+import styles from "./customer-favorites-page.module.css";
+
+type FavoriteListingCardProps = {
+	favorite: FavoriteListingSummary;
+	onRemove: (favorite: FavoriteListingSummary) => void;
+};
+
+const categoryConfig = {
+	CAR: {
+		label: "Car rental",
+		href: "/listings/cars",
+		icon: CarFront,
+	},
+	APARTMENT: {
+		label: "Apartment",
+		href: "/listings/apartments",
+		icon: Building2,
+	},
+	HOTEL_ROOM: {
+		label: "Hotel room",
+		href: "/listings/hotel-rooms",
+		icon: Hotel,
+	},
+	AIRBNB_HOUSE: {
+		label: "Airbnb stay",
+		href: "/listings/airbnb",
+		icon: House,
+	},
+} as const;
+
+export function FavoriteListingCard({
+	favorite,
+	onRemove,
+}: FavoriteListingCardProps) {
+	const product = favorite.product;
+	const category = categoryConfig[product.category];
+	const CategoryIcon = category.icon;
+	const coverImage =
+		product.images.find((image) => image.isCover) ?? product.images[0];
+	const coverUrl = coverImage?.file.publicUrl ?? "/hero/hero.jpg";
+	const detailHref = `${category.href}/${product.id}`;
+
+	return (
+		<article className={styles.card}>
+			<Link href={detailHref} className={styles.media}>
+				<Image
+					src={coverUrl}
+					alt={coverImage?.altText ?? product.title}
+					fill
+					sizes="(max-width: 720px) 100vw, (max-width: 1180px) 45vw, 28vw"
+				/>
+				<span className={styles.categoryPill}>
+					<CategoryIcon aria-hidden="true" />
+					{category.label}
+				</span>
+			</Link>
+
+			<div className={styles.cardBody}>
+				<div className={styles.cardTitleRow}>
+					<div>
+						<h2>{product.title}</h2>
+						<p>
+							<MapPin aria-hidden="true" />
+							{product.city}, {product.country}
+						</p>
+					</div>
+					<Button
+						type="button"
+						variant="ghost"
+						size="icon"
+						className={styles.removeIconButton}
+						aria-label={`Remove ${product.title} from favorites`}
+						onClick={() => onRemove(favorite)}
+					>
+						<Trash2 aria-hidden="true" />
+					</Button>
+				</div>
+
+				{product.shortDescription ? (
+					<p className={styles.description}>{product.shortDescription}</p>
+				) : (
+					<p className={styles.description}>
+						Saved listing ready for your next booking comparison.
+					</p>
+				)}
+
+				<div className={styles.cardFooter}>
+					<span className={styles.price}>
+						<strong>{formatMoney(product.basePrice, product.currency)}</strong>
+						<small>/{formatPricingUnit(product.pricingUnit)}</small>
+					</span>
+					<Link href={detailHref} className={styles.detailsLink}>
+						View
+						<ArrowRight aria-hidden="true" />
+					</Link>
+				</div>
+			</div>
+		</article>
+	);
+}
+
+export function FavoriteListingEmptyCard() {
+	return (
+		<section className={styles.emptyState}>
+			<span aria-hidden="true">
+				<HeartOff />
+			</span>
+			<h2>No saved listings yet</h2>
+			<p>
+				Save cars, apartments, hotel rooms, and Airbnb stays to compare them
+				here before booking.
+			</p>
+			<Link href="/listings/cars">
+				Start browsing
+				<ArrowRight aria-hidden="true" />
+			</Link>
+		</section>
+	);
+}
