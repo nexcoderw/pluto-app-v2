@@ -12,6 +12,7 @@ import {
 	Users,
 } from "lucide-react";
 import type { PublicListing } from "@/services/api/listings";
+import { ListingFavoriteButton } from "../listing-favorite-button";
 import {
 	formatMoney,
 	formatPricingUnit,
@@ -60,9 +61,19 @@ export function CarListingCard({ listing, detailHref }: CarListingCardProps) {
 						<p className={styles.vehicleName}>{vehicleName}</p>
 						<h2>{listing.title}</h2>
 					</div>
-					<span className={styles.price}>
-						<strong>{formatMoney(listing.basePrice, listing.currency)}</strong>
-						<small>/{formatPricingUnit(listing.pricingUnit)}</small>
+					<span className={styles.headingActions}>
+						<ListingFavoriteButton
+							productId={listing.id}
+							listingTitle={listing.title}
+							className={styles.favoriteButton}
+							label="Save car"
+						/>
+						<span className={styles.price}>
+							<strong>
+								{formatMoney(listing.basePrice, listing.currency)}
+							</strong>
+							<small>/{formatPricingUnit(listing.pricingUnit)}</small>
+						</span>
 					</span>
 				</div>
 
