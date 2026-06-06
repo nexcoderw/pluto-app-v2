@@ -4,54 +4,76 @@ import {
 	ArrowRight,
 	Building2,
 	CarFront,
+	Clock3,
 	Hotel,
 	House,
+	Plane,
 	type LucideIcon,
 } from "lucide-react";
 import styles from "./popular-categories.module.css";
 
 type PopularCategory = {
 	title: string;
-	description: string;
-	href: string;
+	subtitle: string;
+	href?: string;
 	action: string;
 	icon: LucideIcon;
 	imagePosition: string;
+	code: string;
+	meta: string;
+	isComingSoon?: boolean;
 };
 
 const categories: PopularCategory[] = [
 	{
 		title: "Rent a car",
-		description:
-			"Verified cars for city rides, airport trips, and longer routes.",
+		subtitle: "City rides",
 		href: "/listings/cars",
-		action: "Browse cars",
+		action: "Book car",
 		icon: CarFront,
 		imagePosition: "center 58%",
+		code: "CAR",
+		meta: "Verified",
 	},
 	{
 		title: "Find an apartment",
-		description: "Comfortable apartments for short stays and extended plans.",
+		subtitle: "Private stays",
 		href: "/listings/apartments",
-		action: "View apartments",
+		action: "Book apartment",
 		icon: Building2,
 		imagePosition: "center 42%",
+		code: "APT",
+		meta: "Homes",
 	},
 	{
 		title: "Book a hotel room",
-		description: "Hotel rooms reviewed for simple, reliable check-ins.",
+		subtitle: "Easy check-ins",
 		href: "/listings/hotel-rooms",
-		action: "See hotel rooms",
+		action: "Book room",
 		icon: Hotel,
 		imagePosition: "72% center",
+		code: "HTL",
+		meta: "Rooms",
 	},
 	{
 		title: "Stay in an Airbnb",
-		description: "Private homes and hosted stays from approved partners.",
+		subtitle: "Hosted homes",
 		href: "/listings/airbnb",
-		action: "Explore stays",
+		action: "Book stay",
 		icon: House,
 		imagePosition: "31% center",
+		code: "BNB",
+		meta: "Local",
+	},
+	{
+		title: "Flight booking",
+		subtitle: "Coming soon",
+		action: "Coming soon",
+		icon: Plane,
+		imagePosition: "center 50%",
+		code: "FLY",
+		meta: "Soon",
+		isComingSoon: true,
 	},
 ];
 
@@ -65,40 +87,80 @@ export function PopularCategories() {
 
 			<div className={styles.grid}>
 				{categories.map((category) => {
-					const Icon = category.icon;
-
 					return (
-						<Link
-							key={category.href}
-							href={category.href}
-							className={styles.card}
-							aria-label={`${category.action} on Pluto Booking`}
-						>
-							<span className={styles.media}>
-								<Image
-									src="/hero/hero.jpg"
-									alt=""
-									fill
-									sizes="(max-width: 720px) 100vw, (max-width: 1180px) 50vw, 25vw"
-									style={{ objectPosition: category.imagePosition }}
-								/>
-								<span className={styles.tint} aria-hidden="true" />
-							</span>
-							<span className={styles.copy}>
-								<span className={styles.iconWrap}>
-									<Icon aria-hidden="true" />
-								</span>
-								<strong>{category.title}</strong>
-								<small>{category.description}</small>
-								<span className={styles.action}>
-									{category.action}
-									<ArrowRight aria-hidden="true" />
-								</span>
-							</span>
-						</Link>
+						<PopularCategoryCard key={category.title} category={category} />
 					);
 				})}
 			</div>
 		</section>
+	);
+}
+
+function PopularCategoryCard({ category }: { category: PopularCategory }) {
+	const Icon = category.icon;
+	const content = (
+		<>
+			<span className={styles.media}>
+				<Image
+					src="/hero/hero.jpg"
+					alt=""
+					fill
+					sizes="(max-width: 980px) 42vw, 20vw"
+					style={{ objectPosition: category.imagePosition }}
+				/>
+				<span className={styles.tint} aria-hidden="true" />
+			</span>
+
+			<span className={styles.statusPill}>
+				{category.isComingSoon ? (
+					<Clock3 aria-hidden="true" />
+				) : (
+					<Icon aria-hidden="true" />
+				)}
+				{category.isComingSoon ? "Soon" : "Popular"}
+			</span>
+
+			<span className={styles.copy}>
+				<span>
+					<strong>{category.title}</strong>
+					<small>{category.subtitle}</small>
+				</span>
+
+				<span className={styles.metaRow}>
+					<span>
+						<Icon aria-hidden="true" />
+						{category.code}
+					</span>
+					<span>{category.meta}</span>
+				</span>
+
+				<span className={styles.action} data-disabled={category.isComingSoon}>
+					{category.action}
+					{category.isComingSoon ? null : <ArrowRight aria-hidden="true" />}
+				</span>
+			</span>
+		</>
+	);
+
+	if (category.isComingSoon || !category.href) {
+		return (
+			<article
+				className={styles.card}
+				data-disabled="true"
+				aria-label={`${category.title} is coming soon`}
+			>
+				{content}
+			</article>
+		);
+	}
+
+	return (
+		<Link
+			href={category.href}
+			className={styles.card}
+			aria-label={`${category.action} on Pluto Booking`}
+		>
+			{content}
+		</Link>
 	);
 }
