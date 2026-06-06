@@ -31,6 +31,7 @@ import {
 import styles from "./featured-listings.module.css";
 
 type FeaturedCategory = ListingCategorySlug | "all";
+const FEATURED_LISTING_LIMIT = 3;
 
 type FeaturedSource = {
 	slug: ListingCategorySlug;
@@ -51,7 +52,7 @@ const featuredSources: FeaturedSource[] = [
 		listListings: () =>
 			listCarListings({
 				page: 1,
-				limit: 3,
+				limit: FEATURED_LISTING_LIMIT,
 				sortBy: "createdAt",
 				sortOrder: "desc",
 			}),
@@ -65,7 +66,7 @@ const featuredSources: FeaturedSource[] = [
 		listListings: () =>
 			listApartmentListings({
 				page: 1,
-				limit: 3,
+				limit: FEATURED_LISTING_LIMIT,
 				sortBy: "createdAt",
 				sortOrder: "desc",
 			}),
@@ -79,7 +80,7 @@ const featuredSources: FeaturedSource[] = [
 		listListings: () =>
 			listHotelRoomListings({
 				page: 1,
-				limit: 3,
+				limit: FEATURED_LISTING_LIMIT,
 				sortBy: "createdAt",
 				sortOrder: "desc",
 			}),
@@ -93,7 +94,7 @@ const featuredSources: FeaturedSource[] = [
 		listListings: () =>
 			listAirbnbListings({
 				page: 1,
-				limit: 3,
+				limit: FEATURED_LISTING_LIMIT,
 				sortBy: "createdAt",
 				sortOrder: "desc",
 			}),
@@ -111,11 +112,13 @@ export function FeaturedListings() {
 	const apartments = apartmentsQuery.data?.items;
 	const hotelRooms = hotelRoomsQuery.data?.items;
 	const airbnb = airbnbQuery.data?.items;
+	const sourceItems = useMemo(
+		() => [cars, apartments, hotelRooms, airbnb],
+		[airbnb, apartments, cars, hotelRooms],
+	);
 	const isLoading = queries.some((query) => query.isPending);
 	const isError = queries.every((query) => query.isError);
 	const featuredItems = useMemo(() => {
-		const sourceItems = [cars, apartments, hotelRooms, airbnb];
-
 		return featuredSources
 			.flatMap((source, index) =>
 				(sourceItems[index] ?? []).map((listing) => ({ source, listing })),
@@ -125,7 +128,7 @@ export function FeaturedListings() {
 					getListingTime(second.listing) - getListingTime(first.listing),
 			)
 			.slice(0, 12);
-	}, [airbnb, apartments, cars, hotelRooms]);
+	}, [sourceItems]);
 	const visibleItems =
 		activeCategory === "all"
 			? featuredItems
@@ -134,6 +137,7 @@ export function FeaturedListings() {
 		activeCategory === "all"
 			? null
 			: featuredSources.find((source) => source.slug === activeCategory);
+	const skeletonCount = getFeaturedSkeletonCount(activeCategory, sourceItems);
 
 	function refetchAll() {
 		queries.forEach((query) => {
@@ -175,7 +179,7 @@ export function FeaturedListings() {
 
 			{isLoading ? (
 				<div className={styles.grid} aria-label="Loading featured listings">
-					{Array.from({ length: 8 }).map((_, index) => (
+					{Array.from({ length: skeletonCount }).map((_, index) => (
 						<FeaturedListingSkeleton key={index} />
 					))}
 				</div>
@@ -320,17 +324,60 @@ function FeaturedListingSkeleton() {
 	return (
 		<div className={styles.skeletonCard} aria-hidden="true">
 			<span className={styles.skeletonImage}>
-				<i />
-				<em />
+				<span className={styles.skeletonTopPills}>
+					<i />
+					<i />
+				</span>
+				<span className={styles.skeletonCaption}>
+					<strong />
+					<small />
+					<em />
+				</span>
 			</span>
 			<div className={styles.skeletonMeta}>
-				<span />
-				<span />
-				<span />
-				<strong />
+				<span>
+					<strong />
+					<small />
+				</span>
+				<span>
+					<strong />
+					<small />
+				</span>
+				<span>
+					<strong />
+					<small />
+				</span>
+				<div>
+					<i />
+					<span>
+						<strong />
+						<small />
+					</span>
+				</div>
 			</div>
 		</div>
 	);
+}
+
+function getFeaturedSkeletonCount(
+	activeCategory: FeaturedCategory,
+	sourceItems: Array<PublicListing[] | undefined>,
+) {
+	if (activeCategory !== "all") {
+		const activeIndex = featuredSources.findIndex(
+			(source) => source.slug === activeCategory,
+		);
+		const activeItems = sourceItems[activeIndex];
+
+		return Math.max(activeItems?.length ?? FEATURED_LISTING_LIMIT, 1);
+	}
+
+	const knownItemsCount = sourceItems.reduce(
+		(total, items) => total + (items?.length ?? 0),
+		0,
+	);
+
+	return knownItemsCount || featuredSources.length * FEATURED_LISTING_LIMIT;
 }
 
 function getListingTime(listing: PublicListing) {
