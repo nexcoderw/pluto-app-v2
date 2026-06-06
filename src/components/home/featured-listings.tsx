@@ -8,6 +8,7 @@ import {
 	BedDouble,
 	Building2,
 	CarFront,
+	Heart,
 	Hotel,
 	House,
 	MapPin,
@@ -255,6 +256,7 @@ function FeaturedListingCard({
 	const rating = listing.ratingAverage
 		? Number(listing.ratingAverage).toFixed(1)
 		: "New";
+	const formattedPrice = formatMoney(listing.basePrice, listing.currency);
 
 	return (
 		<Link href={detailHref} className={styles.card}>
@@ -265,33 +267,49 @@ function FeaturedListingCard({
 					fill
 					sizes="(max-width: 720px) 100vw, (max-width: 1180px) 50vw, 25vw"
 				/>
-				<span className={styles.badge}>
-					<Icon aria-hidden="true" />
-					{source.label}
+				<span className={styles.imageShade} aria-hidden="true" />
+				<span className={styles.topPills}>
+					<span>Popular</span>
+					<span className={styles.favoriteIcon}>
+						<Heart aria-hidden="true" />
+					</span>
+				</span>
+				<span className={styles.imageCaption}>
+					<span>
+						<strong>{listing.title}</strong>
+						<small>
+							<MapPin aria-hidden="true" />
+							{location}
+						</small>
+					</span>
+					<span className={styles.imageAction}>
+						View listing
+						<ArrowRight aria-hidden="true" />
+					</span>
 				</span>
 			</span>
-			<span className={styles.cardBody}>
-				<span className={styles.cardTopline}>
-					<span>
-						<MapPin aria-hidden="true" />
-						{location}
-					</span>
-					<span>
-						<Star aria-hidden="true" />
-						{rating}
-					</span>
+			<span className={styles.cardMeta}>
+				<span className={styles.metric}>
+					<strong>{formattedPrice}</strong>
+					<small>{listing.pricingUnit.toLowerCase()} rate</small>
 				</span>
-				<strong>{listing.title}</strong>
-				<small>{listing.shortDescription ?? listing.description}</small>
-				<span className={styles.cardFooter}>
+				<span className={styles.metric}>
+					<strong>{source.label}</strong>
+					<small>Category</small>
+				</span>
+				<span className={styles.metric}>
+					<strong>
+						{rating}
+						{rating !== "New" ? <Star aria-hidden="true" /> : null}
+					</strong>
+					<small>Rating</small>
+				</span>
+				<span className={styles.verifiedPanel}>
+					<Icon aria-hidden="true" />
 					<span>
-						{formatMoney(listing.basePrice, listing.currency)}
-						<small>/{listing.pricingUnit.toLowerCase()}</small>
+						<strong>Verified</strong>
+						<small>{listing.owner.fullName}</small>
 					</span>
-					<i>
-						View
-						<ArrowRight aria-hidden="true" />
-					</i>
 				</span>
 			</span>
 		</Link>
@@ -301,12 +319,15 @@ function FeaturedListingCard({
 function FeaturedListingSkeleton() {
 	return (
 		<div className={styles.skeletonCard} aria-hidden="true">
-			<span />
-			<div>
+			<span className={styles.skeletonImage}>
 				<i />
-				<strong />
-				<small />
 				<em />
+			</span>
+			<div className={styles.skeletonMeta}>
+				<span />
+				<span />
+				<span />
+				<strong />
 			</div>
 		</div>
 	);
