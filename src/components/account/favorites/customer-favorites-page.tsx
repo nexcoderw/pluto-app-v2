@@ -12,6 +12,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { CustomerPortalShell } from "@/components/account/customer-portal-shell";
 import { PortalAccessBoundary } from "@/components/portal/portal-access-boundary";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -177,35 +185,55 @@ function CustomerFavoritesContent() {
 					<div className={styles.controls}>
 						<label>
 							<span>Sort</span>
-							<select
+							<Select
 								value={orderBy}
-								onChange={(event) => {
-									setOrderBy(event.target.value as FavoriteListingsOrderBy);
+								onValueChange={(value) => {
+									setOrderBy(value as FavoriteListingsOrderBy);
 									setPage(1);
 								}}
 							>
-								{sortOptions.map((option) => (
-									<option key={option.value} value={option.value}>
-										{option.label}
-									</option>
-								))}
-							</select>
+								<SelectTrigger className={styles.selectTrigger}>
+									<SelectValue>
+										{sortOptions.find((option) => option.value === orderBy)
+											?.label ?? "Sort"}
+									</SelectValue>
+								</SelectTrigger>
+								<SelectContent align="start" alignItemWithTrigger={false}>
+									<SelectGroup>
+										{sortOptions.map((option) => (
+											<SelectItem key={option.value} value={option.value}>
+												{option.label}
+											</SelectItem>
+										))}
+									</SelectGroup>
+								</SelectContent>
+							</Select>
 						</label>
 						<label>
 							<span>Order</span>
-							<select
+							<Select
 								value={order}
-								onChange={(event) => {
-									setOrder(event.target.value as FavoriteListingsSortOrder);
+								onValueChange={(value) => {
+									setOrder(value as FavoriteListingsSortOrder);
 									setPage(1);
 								}}
 							>
-								{orderOptions.map((option) => (
-									<option key={option.value} value={option.value}>
-										{option.label}
-									</option>
-								))}
-							</select>
+								<SelectTrigger className={styles.selectTrigger}>
+									<SelectValue>
+										{orderOptions.find((option) => option.value === order)
+											?.label ?? "Order"}
+									</SelectValue>
+								</SelectTrigger>
+								<SelectContent align="start" alignItemWithTrigger={false}>
+									<SelectGroup>
+										{orderOptions.map((option) => (
+											<SelectItem key={option.value} value={option.value}>
+												{option.label}
+											</SelectItem>
+										))}
+									</SelectGroup>
+								</SelectContent>
+							</Select>
 						</label>
 						<Button type="submit" className={styles.filterButton}>
 							<Search aria-hidden="true" />
