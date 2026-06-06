@@ -1,1189 +1,524 @@
-# PLUTO Web App
+# Pluto Booking Web App
 
-PLUTO Web App is the public-facing listings application for the PLUTO travel platform.
+Next.js customer and partner frontend for Pluto Booking.
 
-This application is used by:
+This app is the public marketplace, customer portal, and partner portal. Public visitors can browse listings, customers can manage bookings, favorites, reviews, profile, and audit logs, and approved partners can manage listings, onboarding, and workspace pages.
 
-- Public visitors
-- Customers
-- Partners
-
-It allows users to browse and book cars, apartments, hotel rooms, and Airbnb-style houses. It also allows approved partners to manage their listings, bookings, and business activities.
-
-Admin and superadmin features must not be built inside this application. Admin features belong in the separate PLUTO Admin App located at:
+Admin and superadmin dashboards do not belong in this project. Admin functionality belongs in:
 
 ```txt
-pluto/app/admin
+../admin
 ```
 
----
-
-# 1. Project Identity
+## Project Identity
 
 ```txt
-Project Name: PLUTO Web App
-Project Type: Public Listings + Customer Dashboard + Partner Dashboard
+Project name: Pluto Booking Web App
+Project type: Public marketplace + Customer portal + Partner portal
 Framework: Next.js
 Language: TypeScript
-Package Manager: npm
-Default Port: 3000
-Backend API: PLUTO NestJS API
+Package manager: npm
+Default local port: 4000
+Primary backend: Pluto Booking NestJS API
 ```
 
 Recommended local URL:
 
 ```txt
-http://localhost:3000
+http://localhost:4000
 ```
 
----
+## What This App Owns
 
-# 2. Main Purpose
+- Public homepage and marketplace navigation.
+- Public listing category pages for cars, apartments, hotel rooms, and Airbnb stays.
+- Category-specific listing cards, filters, maps, pagination, and detail pages.
+- Listing reviews and review dialogs.
+- Listing favorite interactions and customer favorite page.
+- Auth pages for login, registration, partner registration, forgot password, reset password, Google callback, and phone completion.
+- Customer portal pages for dashboard, bookings, favorites, payments, profile, and audit logs.
+- Partner onboarding and partner workspace pages.
+- Partner listing create, edit, detail, delete, image upload, and status flows.
+- Profile update, profile image upload, and password change UI.
+- Shared public navbar, footer, customer sidebar, partner shell, booking sidebar, date planner, map, gallery, error states, and loading states.
 
-This app handles the customer and partner side of PLUTO.
+## What This App Must Not Own
 
-It must support:
+Do not build these features here:
 
-- Public product browsing
-- Product search and filtering
-- Product details
-- Customer registration
-- Customer login
-- Google login
-- Partner registration
-- Customer dashboard
-- Partner dashboard
-- Booking creation
-- Booking tracking
-- Booking history
-- Payment flow
-- Profile management
-- Partner product submission
-- Partner product status tracking
-- Partner booking management
-- Cloudinary upload flow through backend storage endpoints
+- Admin dashboard.
+- Superadmin dashboard.
+- Admin partner approval management.
+- Admin listing approval management.
+- Admin audit log supervision.
+- Platform-wide user role management.
+- Platform-wide security settings.
 
----
+Those features belong in `../admin`.
 
-# 3. What Must Not Be Built Here
+## Tech Stack
 
-Do not build these features in this app:
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS 4
+- CSS Modules
+- shadcn/ui and Base UI
+- TanStack Query
+- React Hook Form
+- Zod
+- Axios
+- Sonner
+- Lucide React
+- Framer Motion
+- Swiper
+- Embla Carousel
+- React Day Picker
+- MapLibre GL
+- Google Places proxy routes
+- libphonenumber-js
 
-- Admin dashboard
-- Superadmin dashboard
-- Partner approval management
-- Product approval management
-- Audit log management
-- Global payment supervision
-- User role management
-- Admin creation
-- Platform-wide settings
-- Security event monitoring
+## Installation
 
-Those features belong in:
-
-```txt
-pluto/app/admin
-```
-
----
-
-# 4. Technology Stack
-
-This app uses:
-
-```txt
-Next.js
-TypeScript
-Tailwind CSS
-shadcn/ui
-TanStack Query
-React Hook Form
-Zod
-Axios
-Framer Motion
-Lucide React
-Next Themes
-Sonner
-date-fns
-Embla Carousel
-React Day Picker
-```
-
-Purpose of each major tool:
-
-```txt
-Next.js              -> Web framework, routing, SEO, server/client rendering
-TypeScript           -> Type safety and clean development
-Tailwind CSS         -> Styling system
-shadcn/ui            -> Professional reusable UI components
-TanStack Query       -> API data fetching, caching, loading, refetching
-React Hook Form      -> Form state management
-Zod                  -> Schema validation
-Axios                -> API client
-Framer Motion        -> Smooth animations
-Lucide React         -> Icons
-Next Themes          -> Theme handling
-Sonner               -> Toast notifications
-date-fns             -> Date formatting and date calculations
-Embla Carousel       -> Product image sliders
-React Day Picker     -> Booking date selection
-```
-
----
-
-# 5. Installation
-
-From the project folder:
+From this project folder:
 
 ```bash
-cd pluto/app/app
 npm install
 ```
 
-Run development server:
+Run local development:
 
 ```bash
 npm run dev
 ```
 
-Build for production:
+The app runs on:
+
+```txt
+http://localhost:4000
+```
+
+Production build:
 
 ```bash
 npm run build
 ```
 
-Run production build:
+Production start:
 
 ```bash
 npm run start
 ```
 
----
+## Environment
 
-# 6. Environment Variables
+Create `.env` from `.env.example`.
 
-Create:
-
-```txt
-.env.local
-```
-
-from:
-
-```txt
-.env.example
-```
-
-Required environment variables:
+Current `.env.example`:
 
 ```env
-NEXT_PUBLIC_APP_NAME="PLUTO"
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
+NEXT_PUBLIC_APP_NAME="PLUTO Booking"
+NEXT_PUBLIC_APP_URL="http://localhost:4000"
 NEXT_PUBLIC_API_URL="http://localhost:4000/api/v1"
 
-NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=""
+GOOGLE_MAPS_API_KEY=""
 
 NEXT_PUBLIC_ENABLE_PARTNER_REGISTRATION=true
 NEXT_PUBLIC_ENABLE_GOOGLE_LOGIN=true
 ```
 
-Rules:
+Important API URL note:
 
-- Never commit `.env.local`.
-- Never expose backend secrets in frontend environment variables.
-- Only variables prefixed with `NEXT_PUBLIC_` are exposed to the browser.
-- Do not place JWT secrets, SMTP credentials, database URLs, or cloud storage private keys in this app.
+- If the NestJS API is running directly on port `3000`, set `NEXT_PUBLIC_API_URL` to `http://localhost:3000/api/v1`.
+- If Next.js rewrites or a local proxy is intentionally forwarding `/api/v1`, `http://localhost:4000/api/v1` is acceptable.
+- Do not put backend secrets in this file. Only variables prefixed with `NEXT_PUBLIC_` are exposed to the browser, but non-public variables in this app are still not a place for API secrets.
 
-Form UI rules:
+Google Maps and Places:
 
-- Every input must use `src/components/ui/input.tsx`.
-- Every input must include a visible leading icon.
-- Inputs, select triggers, and buttons must share the same height as the login input.
-- Select triggers must use `src/components/ui/select.tsx`.
-- Every button must include an icon.
+- `GOOGLE_MAPS_API_KEY` is server-only for the local Next routes in `src/app/api/places`.
+- Enable billing and Places API for the same Google Cloud project.
+- The public listing map uses MapLibre tiles through the local map route.
 
----
-
-# 7. Recommended Folder Structure
+## Scripts
 
 ```txt
-pluto/app/app/
-  src/
-    app/
-      layout.tsx
-      page.tsx
-      globals.css
-
-      (public)/
-        cars/
-        apartments/
-        hotels/
-        airbnb/
-        search/
-        about/
-        contact/
-
-      (auth)/
-        login/
-        register/
-        partner-register/
-        complete-profile/
-        forgot-password/
-        reset-password/
-
-      (customer)/
-        dashboard/
-          bookings/
-          booking-history/
-          payments/
-          favorites/
-          reviews/
-          profile/
-          security/
-
-      (partner)/
-        partner/
-          dashboard/
-          products/
-          products/new/car/
-          products/new/apartment/
-          products/new/hotel-room/
-          products/new/airbnb-house/
-          bookings/
-          earnings/
-          verification/
-          profile/
-
-    components/
-      ui/
-      common/
-      layout/
-      forms/
-      products/
-      bookings/
-      dashboard/
-      partner/
-      auth/
-      upload/
-      empty-states/
-      loaders/
-
-    config/
-      app.config.ts
-      routes.config.ts
-
-    constants/
-      roles.ts
-      product-categories.ts
-      query-keys.ts
-
-    features/
-      auth/
-      products/
-      bookings/
-      payments/
-      partner/
-      profile/
-      storage/
-
-    hooks/
-      use-current-user.ts
-      use-auth.ts
-      use-debounce.ts
-
-    lib/
-      utils.ts
-      formatters.ts
-      validators.ts
-
-    providers/
-      app-providers.tsx
-      query-provider.tsx
-      theme-provider.tsx
-
-    services/
-      api/
-        client.ts
-      auth/
-      products/
-      bookings/
-      payments/
-      partner/
-      storage/
-
-    types/
-      auth.ts
-      user.ts
-      product.ts
-      booking.ts
-      payment.ts
-      api.ts
+npm run dev    Start Next.js on port 4000.
+npm run build  Build production app.
+npm run start  Start production app on port 4000.
+npm run lint   Run ESLint.
 ```
 
----
+Do not run full `npm run build` or full `npm run lint` automatically for the user unless they explicitly ask. Use targeted TypeScript, ESLint, and `git diff --check` when making focused changes.
 
-# 8. Route Structure
+## Current Route Map
 
-Public routes:
+### Public
 
 ```txt
 /
- /cars
- /cars/[id]
- /apartments
- /apartments/[id]
- /hotels
- /hotels/[id]
- /airbnb
- /airbnb/[id]
- /search
- /about
- /contact
+/listings
+/listings/cars
+/listings/cars/[listingId]
+/listings/apartments
+/listings/apartments/[listingId]
+/listings/hotel-rooms
+/listings/hotel-rooms/[listingId]
+/listings/airbnb
+/listings/airbnb/[listingId]
 ```
 
-Auth routes:
+### Auth
 
 ```txt
 /login
 /register
 /partner-register
-/complete-profile
+/complete-phone
 /forgot-password
 /reset-password
+/auth/google/callback
 ```
 
-Customer dashboard routes:
+### Customer Portal
 
 ```txt
-/dashboard
-/dashboard/bookings
-/dashboard/booking-history
-/dashboard/payments
-/dashboard/favorites
-/dashboard/reviews
-/dashboard/profile
-/dashboard/security
+/account
+/account/bookings
+/account/favorites
+/account/payments
+/account/profile
+/account/audit-logs
 ```
 
-Partner dashboard routes:
+### Partner Portal
 
 ```txt
-/partner
 /partner/dashboard
-/partner/products
-/partner/products/new/car
-/partner/products/new/apartment
-/partner/products/new/hotel-room
-/partner/products/new/airbnb-house
+/partner/listings
+/partner/listings/create
+/partner/listings/[productId]
+/partner/listings/[productId]/edit
 /partner/bookings
-/partner/earnings
-/partner/verification
-/partner/profile
+/partner/payments
+/partner/settings
+/partner/audit-logs
+/partner-onboarding
 ```
 
----
-
-# 9. Backend Integration
-
-The app connects to:
+## Current Source Map
 
 ```txt
-NEXT_PUBLIC_API_URL
+src/
+  app/
+    (auth)/
+    (customer)/
+    (partner)/
+    (portal)/
+    (public)/
+    api/
+  components/
+    account/
+    audit-logs/
+    auth/
+    home/
+    listings/
+      airbnb/
+      apartments/
+      cars/
+      hotel-rooms/
+    partner/
+    portal/
+    shared/
+    ui/
+  constants/
+  features/
+  hooks/
+  lib/
+  providers/
+  services/
+    api/
+      audit-logs/
+      auth/
+      favorites/
+      listing-options/
+      listing-reviews/
+      listings/
+      partner-products/
+      partner-profile/
+      places/
+      products/
+  types/
 ```
 
-Default local API:
+## API Integration Rules
+
+All backend calls must go through `src/services/api`.
+
+Use one file per endpoint or endpoint action, grouped by feature:
 
 ```txt
-http://localhost:4000/api/v1
+src/services/api/auth/login.ts
+src/services/api/favorites/list-favorite-listings.ts
+src/services/api/listings/list-car-listings.ts
+src/services/api/partner-products/create-partner-product.ts
 ```
 
-The shared API client must be:
+Do not call `axios` or `fetch` directly inside pages or visual components unless the route is a local Next route intentionally owned by this app.
+
+Shared API client:
 
 ```txt
 src/services/api/client.ts
 ```
 
-All requests must go through services.
-
-Good:
+## Backend Endpoint Groups Used
 
 ```txt
-src/services/auth
-src/services/products
-src/services/bookings
-src/services/payments
-src/services/storage
-src/services/partner
+GET    /listing-options
+
+GET    /listings/cars
+GET    /listings/cars/:productId
+GET    /listings/apartments
+GET    /listings/apartments/:productId
+GET    /listings/hotel-rooms
+GET    /listings/hotel-rooms/:productId
+GET    /listings/airbnb
+GET    /listings/airbnb/:productId
+
+GET    /listings/:productId/reviews
+GET    /listings/:productId/reviews/summary
+POST   /listings/:productId/reviews
+PATCH  /listings/:productId/reviews/me
+DELETE /listings/:productId/reviews/me
+
+GET    /favorites
+GET    /favorites/ids
+POST   /favorites/:productId
+DELETE /favorites/:productId
+
+GET    /me/audit-logs
+
+POST   /auth/users/register
+POST   /auth/users/login
+POST   /auth/users/refresh
+POST   /auth/users/logout
+GET    /auth/users/me
+PATCH  /auth/users/profile
+POST   /auth/users/profile/image
+PATCH  /auth/users/password
+POST   /auth/users/forgot-password
+POST   /auth/users/reset-password
+POST   /auth/users/google/complete-phone
+GET    /auth/users/google
+GET    /auth/users/google/callback
+
+GET    /partner/profile
+POST   /partner/profile/individual
+PATCH  /partner/profile/individual
+POST   /partner/profile/company
+PATCH  /partner/profile/company
+POST   /partner/profile/submit
+POST   /partner/profile/documents
+POST   /partner/profile/start-fresh
+
+GET    /partner/products
+POST   /partner/products
+GET    /partner/products/:productId
+PATCH  /partner/products/:productId
+DELETE /partner/products/:productId
+POST   /partner/products/:productId/images/signature
+POST   /partner/products/:productId/images/complete
+POST   /partner/products/:productId/images
+PATCH  /partner/products/:productId/images/:imageId
+DELETE /partner/products/:productId/images/:imageId
 ```
 
-Bad:
+This app must not use `/admin/...` endpoints.
+
+## Authentication Behavior
+
+- All successful user logins redirect to the homepage.
+- Public navbar shows auth buttons when logged out.
+- Public navbar shows logged-in user information and a sign-out action when logged in.
+- Customer portal links route to `/account`.
+- Partner portal links must check partner profile state:
+  - `DRAFT`, `PENDING`, or `REJECTED` -> `/partner-onboarding`
+  - `APPROVED` -> `/partner/dashboard`
+- No flow should log a user out without an explicit logout action or refresh-token failure.
+- Unauthorized favorite attempts should open the login dialog and resume the favorite action after login.
+
+## Public Listing Rules
+
+The public marketplace has four category experiences:
+
+- Cars
+- Apartments
+- Hotel rooms
+- Airbnb stays
+
+Each category owns its own card, sidebar/filter UI, detail page, skeleton, and CSS module. Shared primitives live in `src/components/listings`, such as:
 
 ```txt
-Calling axios directly inside page components
-Calling fetch randomly from different components
-Duplicating API base URLs across files
+listing-booking-sidebar.tsx
+listing-date-planner.tsx
+listing-detail-error-state.tsx
+listing-favorite-button.tsx
+listing-location-map.tsx
+listing-login-dialog.tsx
+listing-stay-detail-shell.tsx
+listing-stay-gallery.tsx
+listing-verified-partner-card.tsx
 ```
 
----
+Avoid copying shared logic between category detail pages. Extract shared booking, map, gallery, partner-card, login-dialog, error, and date-planner behavior when it repeats.
 
-# 10. API Endpoint Groups Used by This App
+## Homepage Sections
 
-Public/customer endpoints:
+Current homepage sections:
+
+- Unique homepage navbar and hero using `public/hero/hero.jpg`.
+- Advanced category search with car, apartment, hotel room, Airbnb, and disabled flight search.
+- Popular Categories with five cards, including coming-soon flight booking.
+- Featured Listings with tabs and lightweight cards.
+- Why Pluto Booking trust section.
+- Partner CTA.
+
+Keep the homepage minimal, fast, and inventory-focused. Avoid heavy animations and avoid decorative gradients.
+
+## Partner Listing Workflow
+
+Partner listing create/edit pages use a reusable wizard form.
+
+Important rules:
+
+- Cars do not require map location.
+- Apartments, hotel rooms, and Airbnb stays require a place/location step.
+- Listing option values come from the backend `GET /listing-options`.
+- Images upload through the Cloudinary direct-upload signature and completion flow when possible.
+- Submit flows display a non-dismissible progress dialog until success or failure.
+- Listing updates should return to admin review where required.
+
+## Favorites
+
+Favorites are customer-only.
+
+Important UX rules:
+
+- Public listing cards show favorite buttons.
+- Logged-out users see the login dialog before saving.
+- After login, the intended favorite action should resume.
+- Customer favorites page supports search, sorting, ordering, pagination, and deletion confirmation.
+- Favorite cards should stay visually aligned with the homepage featured listing card style.
+
+## Reviews
+
+Reviews are listing-scoped and customer-only for creation.
+
+Review categories:
+
+- Cleanliness
+- Accuracy
+- Check-in
+- Communication
+- Location
+- Value
+
+Overall rating is calculated from the category ratings. Partners must not see or submit the customer review form.
+
+## Design Rules
+
+- Use Outfit as the primary font.
+- Use `#02006c` as the primary brand color.
+- Do not use gradient backgrounds.
+- Use premium, restrained glassmorphism only where it improves the UI.
+- Use CSS Modules for component-specific styling.
+- Keep `globals.css` limited to design tokens, base styles, and reusable primitives.
+- Every page must be responsive across desktop, laptop, tablet, and smartphone.
+- Every page must include meaningful loading, success, error, and empty states.
+- Loading states should use skeletons that match the final layout.
+- Error and success messages must be user-facing and must not leak backend internals.
+
+## Component Rules
+
+- Shared app components belong in `src/components/shared`.
+- shadcn/base UI components belong in `src/components/ui`.
+- Auth components belong in `src/components/auth`.
+- Customer account components belong in `src/components/account`.
+- Partner workspace components belong in `src/components/partner`.
+- Category listing components belong in:
+  - `src/components/listings/cars`
+  - `src/components/listings/apartments`
+  - `src/components/listings/hotel-rooms`
+  - `src/components/listings/airbnb`
+- Prefer reusable components over duplicating layout sections.
+
+## Form and Control Rules
+
+- Inputs must use `src/components/ui/input.tsx`.
+- Selects must use `src/components/ui/select.tsx`.
+- Buttons must have icons, pointer cursor, accessible labels, and the shared button height.
+- Submit buttons show only a loading icon while submitting and must be disabled.
+- Phone fields should use country-code behavior like registration/profile forms.
+- Error display should use the correct pattern:
+  - Toast for temporary low-risk feedback.
+  - Modal/dialog for blocking decisions.
+  - Inline error beside the field or control that failed.
+
+## SEO and Routing Rules
+
+- Every page should define professional metadata and a useful title.
+- Category detail pages should have category-specific titles.
+- 403, 404, and 503 states should use the shared restricted/error-page visual language.
+- Listing-not-found states should use the 404 design.
+
+## Documentation Map
+
+Additional rules live in `docs/`:
 
 ```txt
-GET    /api/v1/products
-GET    /api/v1/products/:id
-GET    /api/v1/cars
-GET    /api/v1/cars/:id
-GET    /api/v1/apartments
-GET    /api/v1/apartments/:id
-GET    /api/v1/hotel-rooms
-GET    /api/v1/hotel-rooms/:id
-GET    /api/v1/airbnb-houses
-GET    /api/v1/airbnb-houses/:id
-
-POST   /api/v1/auth/register
-POST   /api/v1/auth/login
-GET    /api/v1/auth/google
-POST   /api/v1/auth/logout
-POST   /api/v1/auth/refresh
-
-GET    /api/v1/me/profile
-PATCH  /api/v1/me/profile
-GET    /api/v1/me/bookings
-GET    /api/v1/me/payments
-
-POST   /api/v1/bookings
-GET    /api/v1/bookings/:id
-POST   /api/v1/payments/initiate
+docs/api-endpoints.md
+docs/component-structure.md
+docs/design-system.md
+docs/feedback-and-states.md
+docs/git.md
+docs/listing-categories.md
+docs/seo.md
+docs/styling.md
 ```
 
-Partner endpoints:
+AI agents must read `AGENTS.md` before editing this project.
+
+## Recommended Verification
+
+Use targeted checks for focused changes:
 
 ```txt
-POST   /api/v1/auth/register-partner
+TypeScript check:
+npx tsc --noEmit --pretty false
 
-GET    /api/v1/partner/dashboard
-GET    /api/v1/partner/profile
-PATCH  /api/v1/partner/profile
+Targeted ESLint:
+npx eslint path/to/file.tsx
 
-GET    /api/v1/partner/products
-POST   /api/v1/partner/products/cars
-POST   /api/v1/partner/products/apartments
-POST   /api/v1/partner/products/hotel-rooms
-POST   /api/v1/partner/products/airbnb-houses
-PATCH  /api/v1/partner/products/:id
-DELETE /api/v1/partner/products/:id
-
-GET    /api/v1/partner/bookings
-GET    /api/v1/partner/earnings
+Whitespace check:
+git diff --check -- path/to/file
 ```
 
-Storage endpoints:
+Do not run full `npm run build` or full `npm run lint` automatically unless the user asks. Ask the user to run those commands for release readiness.
 
-```txt
-POST   /api/v1/storage/signed-upload-url
-POST   /api/v1/storage/confirm-upload
-```
+## Git Commit Message Rule
 
-This app must not use admin endpoints like:
+When reporting commit commands, use one professional commit message per file and keep paths relative to this project root.
 
-```txt
-/api/v1/admin/...
-```
-
----
-
-# 11. Authentication Rules
-
-The app supports:
-
-- Email/password login
-- Google login
-- Customer registration
-- Partner registration
-- Complete profile flow after Google login
-- Password setup after Google login
-- Logout
-- Session refresh
-
-Rules:
-
-- If Google account lacks phone number, redirect user to complete profile form.
-- If Google registration lacks required fields, do not allow full dashboard access until profile is complete.
-- Password can be set after Google login.
-- Admin and superadmin users should be redirected to the admin app.
-- Pending partners should be sent to `/partner/verification`.
-- Approved partners should access `/partner/dashboard`.
-- Suspended users must be blocked.
-
-Recommended post-login redirect logic:
-
-```txt
-CUSTOMER              -> /dashboard
-PARTNER pending       -> /partner/verification
-PARTNER approved      -> /partner/dashboard
-ADMIN                 -> redirect to admin app
-SUPERADMIN            -> redirect to admin app
-SUSPENDED             -> show account suspended page
-```
-
----
-
-# 12. Role Rules
-
-Supported roles:
-
-```txt
-CUSTOMER
-PARTNER
-ADMIN
-SUPERADMIN
-```
-
-This app should mainly support:
-
-```txt
-CUSTOMER
-PARTNER
-```
-
-ADMIN and SUPERADMIN should be redirected to:
-
-```txt
-NEXT_PUBLIC_ADMIN_APP_URL
-```
-
-Never rely only on frontend role checks. Backend must enforce all role and ownership rules.
-
----
-
-# 13. Product Category Rules
-
-PLUTO supports:
-
-```txt
-CAR
-APARTMENT
-HOTEL_ROOM
-AIRBNB_HOUSE
-```
-
-Each category must have its own form.
-
-Do not create one messy product form with every input mixed together.
-
-Car form fields should include:
-
-```txt
-Brand
-Model
-Year
-Transmission
-Fuel type
-Seats
-Doors
-Luggage capacity
-Driver included
-Insurance included
-Mileage limit
-Deposit requirement
-Images
-Location
-Price
-Availability
-```
-
-Apartment form fields should include:
-
-```txt
-Bedrooms
-Bathrooms
-Kitchen
-Living room
-Furnished
-Wifi
-Parking
-Floor number
-Max guests
-Images
-Location
-Price
-Availability
-```
-
-Hotel room form fields should include:
-
-```txt
-Hotel name
-Room type
-Bed type
-Room size
-Breakfast included
-Check-in time
-Check-out time
-Max guests
-Images
-Location
-Price
-Availability
-```
-
-Airbnb house form fields should include:
-
-```txt
-House type
-Entire place
-Self check-in
-House rules
-Cleaning fee
-Bedrooms
-Bathrooms
-Max guests
-Pets allowed
-Smoking allowed
-Parties allowed
-Images
-Location
-Price
-Availability
-```
-
----
-
-# 14. Product Display Rules
-
-Public users must only see products where:
-
-```txt
-status = APPROVED
-visibility = PUBLIC
-isAvailable = true
-```
-
-Never display:
-
-```txt
-Pending products
-Rejected products
-Suspended products
-Private products
-Admin notes
-Rejection reasons
-Partner private documents
-```
-
-Product cards should show:
-
-```txt
-Cover image
-Title
-City
-Price
-Pricing unit
-Category-specific highlights
-Rating
-Favorite button
-View details button
-Book button
-```
-
-Product details pages should show:
-
-```txt
-Image gallery
-Title
-Location
-Description
-Amenities
-Category-specific details
-Availability
-Reviews
-Booking panel
-Partner public information
-Similar products
-```
-
----
-
-# 15. Booking Flow
-
-Booking must be simple and step-based.
-
-Recommended flow:
-
-```txt
-Step 1: Select dates
-Step 2: Confirm guests or rental details
-Step 3: Review booking summary
-Step 4: Initiate payment
-Step 5: Show confirmation
-```
-
-Booking pages must show:
-
-```txt
-Product name
-Product image
-Dates
-Number of nights/days
-Guests or rental quantity
-Subtotal
-Service fee
-Taxes
-Discount
-Total
-Payment status
-Booking status
-```
-
-Do not let users create bookings for unavailable dates.
-
-Do not trust frontend price calculations. The backend must calculate final price.
-
----
-
-# 16. Payment Flow Rules
-
-Payment must be initiated from the backend.
-
-The frontend may collect:
-
-```txt
-Payment provider
-Phone number for mobile money
-Card redirect choice, if supported
-Booking ID
-```
-
-The frontend must not mark payments as paid.
-
-Only backend webhook verification can confirm payment.
-
-Payment statuses:
-
-```txt
-PENDING
-PROCESSING
-PAID
-FAILED
-CANCELLED
-REFUNDED
-PARTIALLY_REFUNDED
-```
-
----
-
-# 17. Cloudinary Upload Flow
-
-This app must not upload files directly to the backend as base64.
-
-Use the backend upload flow:
-
-```txt
-1. User selects file
-2. Frontend validates file type and size
-3. Frontend sends multipart file to the backend endpoint
-4. Backend uploads to Cloudinary or local fallback storage
-5. Backend returns FileAsset metadata
-6. Backend saves FileAsset record
-7. Product/profile/document stores file reference
-```
-
-Allowed public files:
-
-```txt
-Product images
-Public profile images
-```
-
-Private files:
-
-```txt
-Partner verification documents
-Booking attachments
-Payment receipts
-Admin documents
-```
-
-Frontend validation must match backend validation.
-
-Recommended limits:
-
-```txt
-Images: JPG, PNG, WEBP up to 5MB
-Documents: PDF up to 10MB
-```
-
----
-
-# 18. State Management Rules
-
-Use TanStack Query for server state:
-
-```txt
-Products
-Bookings
-Payments
-Profile
-Partner products
-Partner dashboard
-```
-
-Use local component state for UI state:
-
-```txt
-Modals
-Tabs
-Dropdowns
-Form steps
-Temporary selections
-```
-
-Do not create unnecessary global state.
-
-Use query keys from:
-
-```txt
-src/constants/query-keys.ts
-```
-
-Example:
-
-```ts
-export const queryKeys = {
-	products: ["products"],
-	product: (id: string) => ["products", id],
-	myBookings: ["me", "bookings"],
-	partnerProducts: ["partner", "products"],
-};
-```
-
----
-
-# 19. Form Rules
-
-Use:
-
-```txt
-React Hook Form
-Zod
-shadcn/ui form components
-```
-
-Every form must have:
-
-```txt
-Client-side validation
-Backend error display
-Loading state
-Disabled submit during request
-Success feedback
-Error feedback
-Accessible labels
-```
-
-Do not submit invalid data to backend.
-
-Do not hide backend errors.
-
----
-
-# 20. UI/UX Rules
-
-The PLUTO Web App should feel:
-
-```txt
-Premium
-Fast
-Clean
-Trustworthy
-Modern
-Easy to use
-Mobile-first
-```
-
-Use:
-
-```txt
-Clear spacing
-Large product images
-Smooth animations
-Skeleton loading
-Professional empty states
-Clear error states
-Sticky booking summary
-Bottom mobile booking bar
-Simple filters
-Step-based forms
-Clear partner status messages
-```
-
-Avoid:
-
-```txt
-Crowded pages
-Too many colors
-Long forms without steps
-Tiny buttons
-Unclear booking totals
-Hidden errors
-Unoptimized images
-Slow animations
-```
-
----
-
-# 21. Animation Rules
-
-Use Framer Motion carefully.
-
-Good animations:
-
-```txt
-Page section entrance
-Product card hover
-Modal opening
-Form step transition
-Dashboard card reveal
-Loading skeletons
-```
-
-Avoid:
-
-```txt
-Animations that delay booking
-Animations that make dashboard slow
-Too many moving elements
-Animations on large lists
-```
-
-Animations must improve clarity, not distract.
-
----
-
-# 22. Performance Rules
-
-Required:
-
-```txt
-Use pagination
-Use lazy loading
-Use image optimization
-Use skeleton loading
-Use debounced filters
-Use server components for public SEO pages where useful
-Use TanStack Query caching
-Avoid unnecessary rerenders
-Avoid large client bundles
-```
-
-Product listing must use pagination:
-
-```txt
-GET /api/v1/products?page=1&limit=12&category=CAR&city=Kigali
-```
-
-Never fetch all products at once.
-
----
-
-# 23. SEO Rules
-
-Public listings pages must be SEO-friendly.
-
-Important pages:
-
-```txt
-/
- /cars
- /apartments
- /hotels
- /airbnb
- /products/[id]
-```
-
-Each product details page should have:
-
-```txt
-Dynamic title
-Dynamic description
-Open Graph image
-Canonical URL
-Structured metadata where possible
-```
-
-Example title:
-
-```txt
-Toyota RAV4 2021 for Rent in Kigali | PLUTO
-```
-
----
-
-# 24. Error Handling Rules
-
-Every API error must be handled.
-
-Show:
-
-```txt
-Clear message
-Retry option where useful
-Fallback state
-Toast notification for actions
-Inline errors for forms
-```
-
-Do not show raw technical errors to users.
-
-Bad:
-
-```txt
-PrismaClientKnownRequestError
-500 Internal Server Error
-```
-
-Good:
-
-```txt
-We could not complete your booking. Please try again.
-```
-
----
-
-# 25. Security Rules
-
-This app must follow these rules:
-
-```txt
-Do not store secrets in frontend
-Do not trust frontend role checks
-Do not expose admin endpoints
-Do not expose private file keys unnecessarily
-Do not store long-lived tokens in localStorage
-Do not allow partner routes to normal customers
-Do not show rejected products publicly
-Do not show pending products publicly
-Do not calculate final price only on frontend
-Do not mark payment as paid from frontend
-```
-
-Frontend guards are for UX only. Backend guards are the real protection.
-
----
-
-# 26. Accessibility Rules
-
-Every page must be usable with:
-
-```txt
-Keyboard navigation
-Screen readers
-Clear focus states
-Labels on inputs
-Proper button text
-Readable contrast
-Descriptive image alt text
-```
-
-Product images should include meaningful `altText`.
-
----
-
-# 27. Loading and Empty State Rules
-
-Every page that fetches data must include:
-
-```txt
-Loading state
-Empty state
-Error state
-Success state
-```
-
-Examples:
-
-```txt
-No cars found in Kigali.
-No bookings yet.
-Your partner account is still under review.
-This product is waiting for admin approval.
-```
-
----
-
-# 28. Git Rules
-
-Do not commit:
-
-```txt
-.env.local
-node_modules
-.next
-logs
-temporary files
-private keys
-```
-
-Recommended commits:
+Correct:
 
 ```bash
-git add .
-git commit -m "Create PLUTO public web app foundation"
-
-git add .
-git commit -m "Add PLUTO public listings landing page"
-
-git add .
-git commit -m "Add customer booking dashboard"
-
-git add .
-git commit -m "Add partner product creation flow"
-
-git add .
-git commit -m "Add Cloudinary upload flow to PLUTO web app"
+git add "src/components/listings/cars/car-listing-card.tsx"
+git commit -m "style(listings): improve car listing card media layout"
 ```
 
----
+Incorrect:
 
-# 29. Development Checklist
-
-Before pushing code:
-
-```txt
-npm run lint
-npm run build
+```bash
+git add "app/app/src/components/listings/cars/car-listing-card.tsx"
+git add "pluto/app/app/src/components/listings/cars/car-listing-card.tsx"
 ```
-
-Check:
-
-```txt
-No TypeScript errors
-No unused imports
-No broken routes
-No exposed secrets
-No direct admin API calls
-No unprotected partner pages
-No missing loading states
-No missing form validation
-No broken responsive layout
-```
-
----
-
-# 30. Final Rule
-
-This app must remain focused on:
-
-```txt
-Public listings
-Customer experience
-Partner experience
-Booking and payment flow
-```
-
-Do not mix admin operations into this project.
-
-PLUTO Web App must be clean, fast, mobile-friendly, secure, and easy for normal users and partners.
