@@ -17,14 +17,15 @@ type FavoriteAction = "save" | "remove";
 
 export function useListingFavorite(productId: string) {
 	const currentUser = useUserSession();
+	const canUseFavorites = currentUser?.role === "CUSTOMER";
 	const queryClient = useQueryClient();
 	const favoriteIdsQuery = useQuery({
 		queryKey: FAVORITE_LISTING_IDS_QUERY_KEY,
 		queryFn: listFavoriteListingIds,
-		enabled: Boolean(currentUser),
+		enabled: Boolean(canUseFavorites),
 		staleTime: 60_000,
 	});
-	const favoriteIds = currentUser
+	const favoriteIds = canUseFavorites
 		? (favoriteIdsQuery.data?.productIds ?? [])
 		: [];
 	const isFavorite = favoriteIds.includes(productId);
@@ -114,11 +115,20 @@ export function useListingFavorite(productId: string) {
 			return false;
 		}
 
+		if (!canUseFavorites) {
+			toast.warning("Favorites are for customer accounts", {
+				description:
+					"Use a customer account to save listings for later booking.",
+			});
+			return true;
+		}
+
 		mutation.mutate(isFavorite ? "remove" : "save");
 		return true;
 	}
 
 	return {
+		canUseFavorites,
 		currentUser,
 		isFavorite,
 		isPending: mutation.isPending || favoriteIdsQuery.isFetching,
