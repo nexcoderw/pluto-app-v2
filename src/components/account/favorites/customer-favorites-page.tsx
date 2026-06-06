@@ -356,19 +356,41 @@ function CustomerFavoritesSkeleton() {
 		<div className={styles.grid} aria-label="Loading favorite listings">
 			{Array.from({ length: 6 }).map((_, index) => (
 				<article key={index} className={styles.card} aria-hidden="true">
-					<div className={styles.media}>
-						<Skeleton className={styles.skeletonImage} />
-						<Skeleton className={styles.skeletonPill} />
+					<div className={styles.favoriteMediaFrame}>
+						<div className={styles.media}>
+							<Skeleton className={styles.skeletonImage} />
+							<Skeleton className={styles.skeletonPill} />
+							<Skeleton className={styles.skeletonRemoveButton} />
+							<div className={styles.skeletonImageCaption}>
+								<span>
+									<Skeleton />
+									<Skeleton />
+								</span>
+								<Skeleton />
+							</div>
+						</div>
 					</div>
 					<div className={styles.cardBody}>
-						<div className={styles.skeletonTitleRow}>
-							<Skeleton />
-							<Skeleton />
+						<div className={styles.skeletonCardMeta}>
+							<span>
+								<Skeleton />
+								<Skeleton />
+							</span>
+							<span>
+								<Skeleton />
+								<Skeleton />
+							</span>
+							<span>
+								<Skeleton />
+								<Skeleton />
+							</span>
 						</div>
-						<Skeleton className={styles.skeletonText} />
-						<Skeleton className={styles.skeletonTextShort} />
-						<div className={styles.skeletonFooter}>
+						<div className={styles.skeletonSavedPanel}>
 							<Skeleton />
+							<span>
+								<Skeleton />
+								<Skeleton />
+							</span>
 							<Skeleton />
 						</div>
 					</div>
