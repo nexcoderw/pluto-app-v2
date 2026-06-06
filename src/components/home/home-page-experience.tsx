@@ -12,6 +12,7 @@ import { useUserSession } from "@/hooks/use-user-session";
 import { getUserPortalPath } from "@/lib/user-portal";
 import { logoutUser, type UserAuthProfile } from "@/services/api/auth";
 import { getCachedPartnerProfileStatus } from "@/services/api/token-store";
+import { FeaturedListings } from "./featured-listings";
 import { HomeSearch } from "./home-search";
 import { PopularCategories } from "./popular-categories";
 import styles from "./home-page-experience.module.css";
@@ -42,6 +43,7 @@ export function HomePageExperience() {
 				<HomeSearch />
 			</section>
 			<PopularCategories />
+			<FeaturedListings />
 		</main>
 	);
 }
