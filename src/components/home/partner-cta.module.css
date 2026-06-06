@@ -1,0 +1,102 @@
+.section {
+	width: min(100% - 2rem, 112rem);
+	margin: 0 auto clamp(3rem, 7vw, 6.5rem);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: clamp(1rem, 3vw, 2rem);
+	padding: clamp(1rem, 2.2vw, 1.35rem);
+	border: 1px solid rgba(2, 0, 108, 0.12);
+	border-radius: 8px;
+	background: #fff;
+	box-shadow: 0 1.2rem 3rem rgba(16, 22, 33, 0.08);
+}
+
+.copy {
+	display: grid;
+	gap: 0.45rem;
+}
+
+.copy span {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.45rem;
+	color: #02006c;
+	font-size: 0.72rem;
+	font-weight: 900;
+	line-height: 1;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.copy span svg {
+	width: 0.95rem;
+	height: 0.95rem;
+}
+
+.copy h2 {
+	margin: 0;
+	color: #161821;
+	font-size: clamp(1.2rem, 2.1vw, 1.8rem);
+	font-weight: 860;
+	line-height: 1.08;
+	letter-spacing: 0;
+}
+
+.copy p {
+	max-width: 38rem;
+	margin: 0;
+	color: rgba(22, 24, 33, 0.62);
+	font-size: 0.82rem;
+	font-weight: 540;
+	line-height: 1.55;
+}
+
+.action {
+	height: var(--pluto-button-height);
+	min-height: var(--pluto-button-height);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	flex: 0 0 auto;
+	padding: 0 1.15rem;
+	border: 1px solid #02006c;
+	border-radius: 999px;
+	background: #02006c;
+	color: #fff;
+	font-size: 0.78rem;
+	font-weight: 900;
+	line-height: 1;
+	text-decoration: none;
+	white-space: nowrap;
+	box-shadow: 0 1rem 2rem rgba(2, 0, 108, 0.18);
+	transition:
+		background 160ms ease,
+		box-shadow 160ms ease,
+		transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.action:hover {
+	background: #09068f;
+	box-shadow: 0 1.2rem 2.4rem rgba(2, 0, 108, 0.24);
+	transform: translateY(-1px);
+}
+
+.action svg {
+	width: 1rem;
+	height: 1rem;
+}
+
+@media (max-width: 760px) {
+	.section {
+		width: min(100% - 1rem, 112rem);
+		display: grid;
+		align-items: start;
+		margin-bottom: 3rem;
+	}
+
+	.action {
+		width: 100%;
+	}
+}
