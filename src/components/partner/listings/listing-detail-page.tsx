@@ -27,10 +27,12 @@ import {
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { NotFoundState } from "@/components/shared/not-found-state";
 import { PortalShell } from "@/components/portal/portal-shell";
 import { partnerPortalNavigation } from "@/constants/partner-portal-navigation";
 import type { Product } from "@/services/api/products";
 import type { UserAuthProfile } from "@/services/api/auth";
+import { isApiNotFoundError } from "@/services/api/errors";
 import { getPartnerProfile } from "@/services/api/partner-profile";
 import { getPartnerProduct } from "@/services/api/partner-products";
 import {
@@ -89,6 +91,18 @@ function ListingDetailWorkspace({
 			<PartnerWorkspaceLoading
 				title="Redirecting to onboarding"
 				description="Complete approval before viewing listing details."
+			/>
+		);
+	}
+
+	if (
+		isApiNotFoundError(productQuery.error) ||
+		(!productQuery.isError && profile && !product)
+	) {
+		return (
+			<NotFoundState
+				title="Listing not found"
+				description="This listing may have been removed, archived, or is no longer available for your partner account."
 			/>
 		);
 	}
