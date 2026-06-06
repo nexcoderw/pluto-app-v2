@@ -7,12 +7,12 @@ import {
 	ArrowRight,
 	ChevronLeft,
 	ChevronRight,
-	Heart,
 	MapPin,
 	ShieldCheck,
 	Star,
 } from "lucide-react";
 import type { PublicListing } from "@/services/api/listings";
+import { ListingFavoriteButton } from "../listing-favorite-button";
 import { formatMoney, formatPricingUnit } from "../listing-formatters";
 import styles from "./hotel-room-listing-card.module.css";
 
@@ -31,7 +31,6 @@ export function HotelRoomListingCard({
 }: HotelRoomListingCardProps) {
 	const details = listing.hotelRoomDetails;
 	const [activeImageIndex, setActiveImageIndex] = useState(0);
-	const [favorite, setFavorite] = useState(false);
 	const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 	const images = useMemo(
 		() =>
@@ -134,17 +133,12 @@ export function HotelRoomListingCard({
 							<h2>{listing.title}</h2>
 						</Link>
 					</div>
-					<button
-						type="button"
+					<ListingFavoriteButton
+						productId={listing.id}
+						listingTitle={listing.title}
 						className={styles.favoriteButton}
-						aria-label={
-							favorite ? "Remove hotel room from favorites" : "Save hotel room"
-						}
-						aria-pressed={favorite}
-						onClick={() => setFavorite((current) => !current)}
-					>
-						<Heart aria-hidden="true" />
-					</button>
+						label="Save hotel room"
+					/>
 				</div>
 
 				<p className={styles.location}>
