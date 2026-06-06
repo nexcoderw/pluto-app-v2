@@ -234,7 +234,7 @@
 .imageCaption strong {
 	overflow: hidden;
 	color: #fff;
-	font-size: clamp(0.92rem, 1.3vw, 1.05rem);
+	font-size: clamp(0.85rem, 1.3vw, 0.92rem);
 	font-weight: 900;
 	line-height: 1.1;
 	text-shadow: 0 0.45rem 1rem rgba(0, 0, 0, 0.34);
@@ -272,8 +272,8 @@
 	padding: 0 1rem;
 	border: 1px solid rgba(255, 255, 255, 0.9);
 	border-radius: 999px;
-	background: #fff;
-	color: #161821;
+	background: variable(--pluto-button-bg, rgba(255, 255, 255, 0.9));
+	color: #fff;
 	font-size: 0.76rem;
 	font-weight: 820;
 	line-height: 1;
