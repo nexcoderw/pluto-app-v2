@@ -1,0 +1,407 @@
+.section {
+	width: min(100% - 2rem, 112rem);
+	margin: 0 auto clamp(3rem, 7vw, 6.5rem);
+}
+
+.header {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 1rem;
+	margin-bottom: 1rem;
+}
+
+.header div {
+	display: grid;
+	gap: 0.45rem;
+}
+
+.header span {
+	color: #02006c;
+	font-size: 0.72rem;
+	font-weight: 900;
+	line-height: 1;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.header h2 {
+	max-width: 43rem;
+	margin: 0;
+	color: #161821;
+	font-size: clamp(1.55rem, 3vw, 2.5rem);
+	font-weight: 860;
+	line-height: 1.04;
+	letter-spacing: 0;
+}
+
+.viewAll,
+.state a,
+.state button {
+	height: var(--pluto-button-height);
+	min-height: var(--pluto-button-height);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	padding: 0 1.05rem;
+	border-radius: 999px;
+	font-size: 0.76rem;
+	font-weight: 900;
+	line-height: 1;
+	text-decoration: none;
+	white-space: nowrap;
+	cursor: pointer;
+	transition:
+		background 160ms ease,
+		border-color 160ms ease,
+		color 160ms ease,
+		transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.viewAll {
+	border: 1px solid rgba(2, 0, 108, 0.14);
+	background: #fff;
+	color: #02006c;
+}
+
+.viewAll:hover,
+.state a:hover,
+.state button:hover {
+	transform: translateY(-1px);
+}
+
+.viewAll svg,
+.state a svg,
+.state button svg {
+	width: 0.95rem;
+	height: 0.95rem;
+}
+
+.tabs {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-bottom: 1.15rem;
+	overflow-x: auto;
+	scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar {
+	display: none;
+}
+
+.tabs button {
+	height: 2.65rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0 1rem;
+	border: 1px solid rgba(2, 0, 108, 0.12);
+	border-radius: 999px;
+	background: #fff;
+	color: rgba(22, 24, 33, 0.72);
+	font-size: 0.76rem;
+	font-weight: 860;
+	line-height: 1;
+	white-space: nowrap;
+	cursor: pointer;
+	transition:
+		background 160ms ease,
+		border-color 160ms ease,
+		color 160ms ease;
+}
+
+.tabs button[data-active="true"] {
+	border-color: #02006c;
+	background: #02006c;
+	color: #fff;
+}
+
+.grid {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: clamp(0.8rem, 1.4vw, 1.1rem);
+}
+
+.card,
+.skeletonCard {
+	overflow: hidden;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	border-radius: 8px;
+	background: #fff;
+	box-shadow: 0 1rem 2.8rem rgba(16, 22, 33, 0.08);
+}
+
+.card {
+	display: grid;
+	color: #161821;
+	text-decoration: none;
+	transition:
+		border-color 160ms ease,
+		box-shadow 180ms ease,
+		transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.card:hover {
+	border-color: rgba(2, 0, 108, 0.22);
+	box-shadow: 0 1.35rem 3rem rgba(16, 22, 33, 0.12);
+	transform: translateY(-0.18rem);
+}
+
+.imageWrap {
+	position: relative;
+	aspect-ratio: 1.2 / 1;
+	display: block;
+	overflow: hidden;
+	background: #eef0f6;
+}
+
+.imageWrap img {
+	object-fit: cover;
+	transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.card:hover .imageWrap img {
+	transform: scale(1.04);
+}
+
+.badge {
+	position: absolute;
+	top: 0.75rem;
+	left: 0.75rem;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	padding: 0.45rem 0.65rem;
+	border: 1px solid rgba(255, 255, 255, 0.68);
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.92);
+	color: #02006c;
+	font-size: 0.67rem;
+	font-weight: 900;
+	line-height: 1;
+	box-shadow: 0 0.75rem 1.4rem rgba(16, 22, 33, 0.12);
+}
+
+.badge svg {
+	width: 0.82rem;
+	height: 0.82rem;
+}
+
+.cardBody {
+	display: grid;
+	gap: 0.58rem;
+	padding: 0.85rem;
+}
+
+.cardTopline,
+.cardFooter {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+}
+
+.cardTopline span {
+	min-width: 0;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.28rem;
+	color: rgba(22, 24, 33, 0.58);
+	font-size: 0.68rem;
+	font-weight: 650;
+	line-height: 1.25;
+}
+
+.cardTopline span:first-child {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.cardTopline svg {
+	width: 0.8rem;
+	height: 0.8rem;
+	flex: 0 0 auto;
+	color: #02006c;
+}
+
+.cardBody strong {
+	display: -webkit-box;
+	min-height: 2.25rem;
+	overflow: hidden;
+	color: #161821;
+	font-size: 0.98rem;
+	font-weight: 860;
+	line-height: 1.15;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+}
+
+.cardBody > small {
+	display: -webkit-box;
+	min-height: 2.4rem;
+	overflow: hidden;
+	color: rgba(22, 24, 33, 0.62);
+	font-size: 0.76rem;
+	font-weight: 540;
+	line-height: 1.55;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+}
+
+.cardFooter {
+	padding-top: 0.2rem;
+}
+
+.cardFooter > span {
+	display: inline-flex;
+	align-items: baseline;
+	gap: 0.18rem;
+	color: #161821;
+	font-size: 0.9rem;
+	font-weight: 900;
+	line-height: 1;
+}
+
+.cardFooter > span small {
+	color: rgba(22, 24, 33, 0.56);
+	font-size: 0.68rem;
+	font-weight: 650;
+}
+
+.cardFooter i {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.28rem;
+	color: #02006c;
+	font-size: 0.72rem;
+	font-style: normal;
+	font-weight: 900;
+	line-height: 1;
+}
+
+.cardFooter i svg {
+	width: 0.82rem;
+	height: 0.82rem;
+}
+
+.state {
+	min-height: 18rem;
+	display: grid;
+	place-items: center;
+	align-content: center;
+	gap: 0.65rem;
+	padding: 2rem;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	border-radius: 8px;
+	background: #fff;
+	text-align: center;
+	box-shadow: 0 1rem 2.8rem rgba(16, 22, 33, 0.08);
+}
+
+.state > svg {
+	width: 2rem;
+	height: 2rem;
+	color: #02006c;
+}
+
+.state h3 {
+	margin: 0;
+	color: #161821;
+	font-size: 1.15rem;
+	font-weight: 860;
+}
+
+.state p {
+	max-width: 28rem;
+	margin: 0;
+	color: rgba(22, 24, 33, 0.62);
+	font-size: 0.82rem;
+	font-weight: 560;
+	line-height: 1.55;
+}
+
+.state a,
+.state button {
+	margin-top: 0.4rem;
+	border: 1px solid #02006c;
+	background: #02006c;
+	color: #fff;
+}
+
+.skeletonCard {
+	display: grid;
+}
+
+.skeletonCard span,
+.skeletonCard i,
+.skeletonCard strong,
+.skeletonCard small,
+.skeletonCard em {
+	display: block;
+	border-radius: 999px;
+	background: #eef0f6;
+}
+
+.skeletonCard > span {
+	aspect-ratio: 1.2 / 1;
+	border-radius: 0;
+}
+
+.skeletonCard div {
+	display: grid;
+	gap: 0.72rem;
+	padding: 0.85rem;
+}
+
+.skeletonCard i {
+	width: 72%;
+	height: 0.75rem;
+}
+
+.skeletonCard strong {
+	width: 92%;
+	height: 1.05rem;
+}
+
+.skeletonCard small {
+	width: 78%;
+	height: 0.85rem;
+}
+
+.skeletonCard em {
+	width: 48%;
+	height: 0.9rem;
+}
+
+@media (max-width: 1180px) {
+	.grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 720px) {
+	.section {
+		width: min(100% - 1rem, 112rem);
+		margin-bottom: 3rem;
+	}
+
+	.header {
+		align-items: flex-start;
+	}
+
+	.viewAll {
+		display: none;
+	}
+
+	.grid {
+		grid-template-columns: 1fr;
+	}
+
+	.imageWrap,
+	.skeletonCard > span {
+		aspect-ratio: 1.35 / 1;
+	}
+}
