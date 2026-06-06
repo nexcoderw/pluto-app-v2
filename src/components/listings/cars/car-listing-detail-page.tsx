@@ -25,6 +25,8 @@ import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
+import { NotFoundState } from "@/components/shared/not-found-state";
+import { isApiNotFoundError } from "@/services/api/errors";
 import { getCarListing, type PublicListing } from "@/services/api/listings";
 import {
 	buildListingGallery,
@@ -62,7 +64,19 @@ export function CarListingDetailPage({ listingId }: { listingId: string }) {
 		return <CarListingDetailSkeleton />;
 	}
 
-	if (listingQuery.isError || !listingQuery.data?.product) {
+	if (
+		isApiNotFoundError(listingQuery.error) ||
+		(!listingQuery.isError && !listingQuery.data?.product)
+	) {
+		return (
+			<NotFoundState
+				title="Listing not found"
+				description="This car listing may have moved, expired, or is no longer available on Pluto Booking."
+			/>
+		);
+	}
+
+	if (listingQuery.isError) {
 		return (
 			<ListingDetailErrorState
 				title="Car listing unavailable"
