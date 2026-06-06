@@ -104,24 +104,25 @@
 	text-transform: uppercase;
 }
 
-.controls select {
+.selectTrigger {
+	width: 100%;
 	height: var(--pluto-button-height);
 	min-height: var(--pluto-button-height);
-	padding: 0 2.35rem 0 1rem;
 	border: 1px solid rgba(2, 0, 108, 0.2);
-	border-radius: 999px;
 	background: #ffffff;
 	color: #17171f;
-	font: inherit;
 	font-size: 0.78rem;
 	font-weight: 800;
 	cursor: pointer;
-	outline: none;
 }
 
-.controls select:focus-visible {
-	border-color: #02006c;
-	box-shadow: 0 0 0 0.22rem rgba(2, 0, 108, 0.12);
+.selectTrigger > span {
+	padding-left: 0;
+	color: inherit;
+	font-size: inherit;
+	font-weight: inherit;
+	letter-spacing: 0;
+	text-transform: none;
 }
 
 .filterButton,
