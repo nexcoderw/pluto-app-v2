@@ -165,34 +165,57 @@
 .card {
 	overflow: hidden;
 	display: grid;
+	gap: 0.85rem;
+	padding: 0.95rem;
 	border: 1px solid rgba(2, 0, 108, 0.1);
-	border-radius: 1.35rem;
+	border-radius: 2rem;
 	background: #ffffff;
-	box-shadow: 0 1rem 2.4rem rgba(16, 22, 33, 0.06);
+	box-shadow: 0 1.4rem 3.2rem rgba(16, 22, 33, 0.09);
+	transition:
+		border-color 160ms ease,
+		box-shadow 180ms ease,
+		transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.card:hover {
+	border-color: rgba(2, 0, 108, 0.22);
+	box-shadow: 0 1.75rem 3.8rem rgba(16, 22, 33, 0.13);
+	transform: translateY(-0.18rem);
+}
+
+.favoriteMediaFrame {
+	position: relative;
 }
 
 .media {
 	position: relative;
-	min-height: 13.5rem;
+	aspect-ratio: 1 / 0.9;
 	display: block;
 	overflow: hidden;
-	background: rgba(2, 0, 108, 0.05);
+	border-radius: 1.45rem;
+	background: #eef0f6;
 	text-decoration: none;
 }
 
 .media img {
 	object-fit: cover;
-	transition: transform 280ms ease;
+	transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .card:hover .media img {
-	transform: scale(1.035);
+	transform: scale(1.04);
+}
+
+.mediaShade {
+	position: absolute;
+	inset: 0;
+	background: rgba(10, 12, 22, 0.34);
 }
 
 .categoryPill {
 	position: absolute;
-	left: 0.75rem;
 	top: 0.75rem;
+	left: 0.75rem;
 	display: inline-flex;
 	align-items: center;
 	gap: 0.35rem;
@@ -204,7 +227,9 @@
 	color: #02006c;
 	font-size: 0.68rem;
 	font-weight: 900;
+	line-height: 1;
 	backdrop-filter: blur(14px);
+	box-shadow: 0 0.75rem 1.5rem rgba(16, 22, 33, 0.12);
 }
 
 .categoryPill svg {
@@ -212,99 +237,199 @@
 	height: 0.85rem;
 }
 
-.cardBody {
-	display: grid;
-	gap: 0.85rem;
-	padding: 0.95rem;
-}
-
-.cardTitleRow {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) auto;
-	align-items: start;
-	gap: 0.75rem;
-}
-
-.cardTitleRow h2 {
-	margin: 0;
-	overflow: hidden;
-	color: #17171f;
-	font-size: 1rem;
-	font-weight: 900;
-	line-height: 1.2;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-.cardTitleRow p {
-	display: inline-flex;
-	align-items: center;
-	gap: 0.34rem;
-	margin: 0.35rem 0 0;
-	color: rgba(23, 23, 31, 0.58);
-	font-size: 0.76rem;
-	font-weight: 650;
-}
-
-.cardTitleRow p svg {
-	width: 0.82rem;
-	height: 0.82rem;
-	color: #02006c;
-}
-
 .removeIconButton {
-	width: 2.6rem;
-	height: 2.6rem;
-	min-height: 2.6rem;
-	border: 1px solid rgba(190, 18, 60, 0.12);
+	position: absolute;
+	top: 0.75rem;
+	right: 0.75rem;
+	z-index: 2;
+	width: 2rem;
+	height: 2rem;
+	min-height: 2rem;
+	border: 1px solid rgba(255, 255, 255, 0.75);
 	border-radius: 999px;
-	background: rgba(190, 18, 60, 0.06);
+	background: rgba(255, 255, 255, 0.92);
 	color: #be123c;
 	cursor: pointer;
+	box-shadow: 0 0.75rem 1.5rem rgba(16, 22, 33, 0.12);
+	backdrop-filter: blur(14px);
+	transition:
+		background 160ms ease,
+		color 160ms ease,
+		transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .removeIconButton:hover {
 	background: #be123c;
 	color: #ffffff;
+	transform: translateY(-1px);
 }
 
-.description {
-	min-height: 2.8rem;
-	margin: 0;
-	overflow: hidden;
-	display: -webkit-box;
-	color: rgba(23, 23, 31, 0.58);
-	font-size: 0.82rem;
-	font-weight: 650;
-	line-height: 1.55;
-	-webkit-box-orient: vertical;
-	-webkit-line-clamp: 2;
+.removeIconButton svg {
+	width: 0.95rem;
+	height: 0.95rem;
 }
 
-.cardFooter {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 0.75rem;
-}
-
-.price {
+.imageCaption {
+	position: absolute;
+	right: 0.85rem;
+	bottom: 0.85rem;
+	left: 0.85rem;
 	display: grid;
-	gap: 0.05rem;
-	color: #02006c;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: end;
+	gap: 0.8rem;
+}
+
+.imageCaption > span:first-child {
+	min-width: 0;
+	display: grid;
+	gap: 0.28rem;
+}
+
+.imageCaption strong {
+	overflow: hidden;
+	color: #ffffff;
+	font-size: clamp(0.9rem, 1.4vw, 1rem);
+	font-weight: 920;
+	line-height: 1.1;
+	text-overflow: ellipsis;
+	text-shadow: 0 0.45rem 1rem rgba(0, 0, 0, 0.34);
+	white-space: nowrap;
+}
+
+.imageCaption small {
+	min-width: 0;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.3rem;
+	overflow: hidden;
+	color: rgba(255, 255, 255, 0.88);
 	font-size: 0.72rem;
-	font-weight: 760;
+	font-weight: 560;
+	line-height: 1.2;
+	text-overflow: ellipsis;
+	text-shadow: 0 0.4rem 0.9rem rgba(0, 0, 0, 0.3);
+	white-space: nowrap;
 }
 
-.price strong {
+.imageCaption small svg {
+	width: 0.85rem;
+	height: 0.85rem;
+	flex: 0 0 auto;
+}
+
+.imageAction {
+	height: 2.55rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.45rem;
+	padding: 0 0.95rem;
+	border: 1px solid rgba(255, 255, 255, 0.9);
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.24);
+	color: #ffffff;
+	font-size: 0.74rem;
+	font-weight: 850;
+	line-height: 1;
+	white-space: nowrap;
+	box-shadow: 0 0.9rem 1.8rem rgba(0, 0, 0, 0.18);
+}
+
+.imageAction svg {
+	width: 0.88rem;
+	height: 0.88rem;
+	transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.card:hover .imageAction svg {
+	transform: translateX(0.12rem);
+}
+
+.cardBody {
+	display: grid;
+	gap: 0.8rem;
+}
+
+.cardMeta {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 0.72rem;
+}
+
+.metric {
+	min-width: 0;
+	display: grid;
+	gap: 0.28rem;
+}
+
+.metric strong {
+	overflow: hidden;
 	color: #17171f;
-	font-size: 1rem;
-	font-weight: 950;
+	font-size: 0.84rem;
+	font-weight: 900;
+	line-height: 1.1;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
-.price small {
-	color: rgba(23, 23, 31, 0.54);
-	font-weight: 700;
+.metric small {
+	overflow: hidden;
+	color: rgba(23, 23, 31, 0.56);
+	font-size: 0.65rem;
+	font-weight: 560;
+	line-height: 1.2;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.savedPanel {
+	display: grid;
+	grid-template-columns: 2.25rem minmax(0, 1fr) auto;
+	align-items: center;
+	gap: 0.65rem;
+	min-height: 4.4rem;
+	padding: 0.72rem;
+	border: 1px solid rgba(2, 0, 108, 0.08);
+	border-radius: 1.25rem;
+	background: #f7f8fc;
+}
+
+.savedPanel > svg {
+	width: 2.25rem;
+	height: 2.25rem;
+	padding: 0.58rem;
+	border-radius: 999px;
+	background: #ffffff;
+	color: #02006c;
+	box-shadow: 0 0.55rem 1.1rem rgba(16, 22, 33, 0.08);
+}
+
+.savedPanel span {
+	min-width: 0;
+	display: grid;
+	gap: 0.24rem;
+}
+
+.savedPanel strong,
+.savedPanel small {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.savedPanel strong {
+	color: #17171f;
+	font-size: 0.78rem;
+	font-weight: 900;
+	line-height: 1;
+}
+
+.savedPanel small {
+	color: rgba(23, 23, 31, 0.56);
+	font-size: 0.68rem;
+	font-weight: 560;
+	line-height: 1;
 }
 
 .detailsLink,
@@ -312,25 +437,34 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	gap: 0.45rem;
-	padding: 0 1rem;
-	background: #02006c;
-	color: #ffffff;
-	font-size: 0.74rem;
+	min-height: 2.55rem;
+	padding: 0 0.95rem;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	border-radius: 999px;
+	background: #ffffff;
+	color: #02006c;
+	font-size: 0.72rem;
 	font-weight: 900;
 	text-decoration: none;
+	white-space: nowrap;
+	box-shadow: 0 0.65rem 1.2rem rgba(16, 22, 33, 0.06);
 }
 
 .detailsLink:hover,
 .emptyState a:hover {
-	background: #08048a;
+	border-color: #02006c;
+	background: #02006c;
 	color: #ffffff;
 }
 
-.detailsLink svg,
-.emptyState a svg {
-	width: 0.9rem;
-	height: 0.9rem;
+.emptyState a {
+	gap: 0.45rem;
+	background: #02006c;
+	color: #ffffff;
+}
+
+.emptyState a:hover {
+	background: #08048a;
 }
 
 .state,
@@ -504,47 +638,113 @@
 	position: absolute;
 	left: 0.75rem;
 	top: 0.75rem;
-	width: 7.5rem;
+	width: 6.8rem;
 	height: 2rem;
 	border-radius: 999px;
 }
 
-.skeletonTitleRow {
-	display: grid;
-	grid-template-columns: 1fr 2.6rem;
-	gap: 0.75rem;
-}
-
-.skeletonTitleRow span:first-child {
-	height: 2.8rem;
-	border-radius: 1rem;
-}
-
-.skeletonTitleRow span:last-child {
-	width: 2.6rem;
-	height: 2.6rem;
+.skeletonRemoveButton {
+	position: absolute;
+	top: 0.75rem;
+	right: 0.75rem;
+	width: 2rem;
+	height: 2rem;
 	border-radius: 999px;
 }
 
-.skeletonText,
-.skeletonTextShort {
+.skeletonImageCaption {
+	position: absolute;
+	right: 0.85rem;
+	bottom: 0.85rem;
+	left: 0.85rem;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 5.2rem;
+	align-items: end;
+	gap: 0.8rem;
+}
+
+.skeletonImageCaption span {
+	display: grid;
+	gap: 0.42rem;
+}
+
+.skeletonImageCaption span div:first-child {
+	width: 82%;
+	height: 1rem;
+	border-radius: 999px;
+}
+
+.skeletonImageCaption span div:last-child {
+	width: 58%;
+	height: 0.72rem;
+	border-radius: 999px;
+}
+
+.skeletonImageCaption > div {
+	width: 100%;
+	height: 2.55rem;
+	border-radius: 999px;
+}
+
+.skeletonCardMeta {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 0.72rem;
+}
+
+.skeletonCardMeta > span {
+	display: grid;
+	gap: 0.35rem;
+}
+
+.skeletonCardMeta > span div:first-child {
+	width: 84%;
 	height: 0.9rem;
 	border-radius: 999px;
 }
 
-.skeletonTextShort {
-	width: 74%;
+.skeletonCardMeta > span div:last-child {
+	width: 68%;
+	height: 0.64rem;
+	border-radius: 999px;
 }
 
-.skeletonFooter {
+.skeletonSavedPanel {
 	display: grid;
-	grid-template-columns: minmax(0, 1fr) 5.4rem;
-	gap: 0.8rem;
+	grid-template-columns: 2.25rem minmax(0, 1fr) 5rem;
 	align-items: center;
+	gap: 0.65rem;
+	min-height: 4.4rem;
+	padding: 0.72rem;
+	border-radius: 1.25rem;
+	background: #f7f8fc;
 }
 
-.skeletonFooter span {
-	height: 3.15rem;
+.skeletonSavedPanel > span {
+	display: grid;
+	gap: 0.38rem;
+}
+
+.skeletonSavedPanel > div:first-child {
+	width: 2.25rem;
+	height: 2.25rem;
+	border-radius: 999px;
+}
+
+.skeletonSavedPanel > span:nth-child(2) div:first-child {
+	width: 44%;
+	height: 0.78rem;
+	border-radius: 999px;
+}
+
+.skeletonSavedPanel > span:nth-child(2) div:last-child {
+	width: 86%;
+	height: 0.68rem;
+	border-radius: 999px;
+}
+
+.skeletonSavedPanel > div:last-child {
+	height: 2.55rem;
 	border-radius: 999px;
 }
 
@@ -603,6 +803,30 @@
 		display: grid;
 		grid-template-columns: 1fr;
 		border-radius: 1.35rem;
+	}
+
+	.imageCaption {
+		grid-template-columns: 1fr;
+	}
+
+	.imageAction,
+	.detailsLink,
+	.savedPanel {
+		width: 100%;
+	}
+
+	.cardMeta {
+		grid-template-columns: 1fr;
+	}
+
+	.savedPanel,
+	.skeletonSavedPanel {
+		grid-template-columns: 2.25rem minmax(0, 1fr);
+	}
+
+	.savedPanel .detailsLink,
+	.skeletonSavedPanel > div:last-child {
+		grid-column: 1 / -1;
 	}
 
 	.detailsLink,
