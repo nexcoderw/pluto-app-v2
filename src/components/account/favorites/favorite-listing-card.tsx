@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import {
 	ArrowRight,
+	BookmarkCheck,
 	Building2,
 	CarFront,
 	HeartOff,
@@ -59,59 +60,78 @@ export function FavoriteListingCard({
 		product.images.find((image) => image.isCover) ?? product.images[0];
 	const coverUrl = coverImage?.file.publicUrl ?? "/hero/hero.jpg";
 	const detailHref = `${category.href}/${product.id}`;
+	const savedDate = formatSavedDate(favorite.createdAt);
+	const location = `${product.city}, ${product.country}`;
+	const description =
+		product.shortDescription ??
+		"Saved listing ready for your next booking comparison.";
 
 	return (
 		<article className={styles.card}>
-			<Link href={detailHref} className={styles.media}>
-				<Image
-					src={coverUrl}
-					alt={coverImage?.altText ?? product.title}
-					fill
-					sizes="(max-width: 720px) 100vw, (max-width: 1180px) 45vw, 28vw"
-				/>
-				<span className={styles.categoryPill}>
-					<CategoryIcon aria-hidden="true" />
-					{category.label}
-				</span>
-			</Link>
+			<div className={styles.favoriteMediaFrame}>
+				<Link href={detailHref} className={styles.media}>
+					<Image
+						src={coverUrl}
+						alt={coverImage?.altText ?? product.title}
+						fill
+						sizes="(max-width: 720px) 100vw, (max-width: 1180px) 45vw, 28vw"
+					/>
+					<span className={styles.mediaShade} aria-hidden="true" />
+					<span className={styles.categoryPill}>
+						<CategoryIcon aria-hidden="true" />
+						{category.label}
+					</span>
+					<span className={styles.imageCaption}>
+						<span>
+							<strong>{product.title}</strong>
+							<small>
+								<MapPin aria-hidden="true" />
+								{location}
+							</small>
+						</span>
+						<span className={styles.imageAction}>
+							Open
+							<ArrowRight aria-hidden="true" />
+						</span>
+					</span>
+				</Link>
+
+				<Button
+					type="button"
+					variant="ghost"
+					size="icon"
+					className={styles.removeIconButton}
+					aria-label={`Remove ${product.title} from favorites`}
+					onClick={() => onRemove(favorite)}
+				>
+					<Trash2 aria-hidden="true" />
+				</Button>
+			</div>
 
 			<div className={styles.cardBody}>
-				<div className={styles.cardTitleRow}>
-					<div>
-						<h2>{product.title}</h2>
-						<p>
-							<MapPin aria-hidden="true" />
-							{product.city}, {product.country}
-						</p>
-					</div>
-					<Button
-						type="button"
-						variant="ghost"
-						size="icon"
-						className={styles.removeIconButton}
-						aria-label={`Remove ${product.title} from favorites`}
-						onClick={() => onRemove(favorite)}
-					>
-						<Trash2 aria-hidden="true" />
-					</Button>
+				<div className={styles.cardMeta}>
+					<span className={styles.metric}>
+						<strong>{formatMoney(product.basePrice, product.currency)}</strong>
+						<small>{formatPricingUnit(product.pricingUnit)} rate</small>
+					</span>
+					<span className={styles.metric}>
+						<strong>{savedDate}</strong>
+						<small>Saved</small>
+					</span>
+					<span className={styles.metric}>
+						<strong>{category.label}</strong>
+						<small>Type</small>
+					</span>
 				</div>
 
-				{product.shortDescription ? (
-					<p className={styles.description}>{product.shortDescription}</p>
-				) : (
-					<p className={styles.description}>
-						Saved listing ready for your next booking comparison.
-					</p>
-				)}
-
-				<div className={styles.cardFooter}>
-					<span className={styles.price}>
-						<strong>{formatMoney(product.basePrice, product.currency)}</strong>
-						<small>/{formatPricingUnit(product.pricingUnit)}</small>
+				<div className={styles.savedPanel}>
+					<BookmarkCheck aria-hidden="true" />
+					<span>
+						<strong>Saved for later</strong>
+						<small>{description}</small>
 					</span>
 					<Link href={detailHref} className={styles.detailsLink}>
-						View
-						<ArrowRight aria-hidden="true" />
+						Details
 					</Link>
 				</div>
 			</div>
@@ -136,4 +156,18 @@ export function FavoriteListingEmptyCard() {
 			</Link>
 		</section>
 	);
+}
+
+function formatSavedDate(value: string) {
+	const date = new Date(value);
+
+	if (Number.isNaN(date.getTime())) {
+		return "Saved";
+	}
+
+	return new Intl.DateTimeFormat("en-RW", {
+		day: "numeric",
+		month: "short",
+		timeZone: "Africa/Kigali",
+	}).format(date);
 }
