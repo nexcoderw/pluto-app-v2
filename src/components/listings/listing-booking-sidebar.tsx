@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useUserSession } from "@/hooks/use-user-session";
 import type { PublicListing } from "@/services/api/listings";
 import { formatMoney } from "./listing-formatters";
+import { ListingFavoriteButton } from "./listing-favorite-button";
 import { ListingLoginDialog } from "./listing-login-dialog";
 import {
 	ListingVerifiedPartnerCard,
@@ -66,12 +67,20 @@ export function ListingBookingSidebar({
 			) : null}
 
 			<section className={styles.panel}>
-				{eyebrow ? (
-					<span className={styles.eyebrow}>
-						<CalendarCheck aria-hidden="true" />
-						{eyebrow}
-					</span>
-				) : null}
+				<div className={styles.panelHeader}>
+					{eyebrow ? (
+						<span className={styles.eyebrow}>
+							<CalendarCheck aria-hidden="true" />
+							{eyebrow}
+						</span>
+					) : null}
+					<ListingFavoriteButton
+						productId={listing.id}
+						listingTitle={listing.title}
+						className={styles.favoriteButton}
+						label="Save listing"
+					/>
+				</div>
 				<div className={styles.priceLine}>
 					<strong>
 						{formatMoney(
