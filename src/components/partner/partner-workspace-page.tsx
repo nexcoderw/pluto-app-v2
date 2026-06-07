@@ -8,10 +8,10 @@ import {
 	BadgeCheck,
 	CalendarCheck2,
 	CreditCard,
+	MousePointer,
 	RefreshCcw,
 	Settings,
 	ShieldCheck,
-	Sparkles,
 	Store,
 	type LucideIcon,
 } from "lucide-react";
@@ -369,7 +369,7 @@ function buildWorkspaceActions(config: PartnerWorkspaceConfig): PortalAction[] {
 			href: `/partner/${config.key}`,
 			label: `Review ${config.key}`,
 			description: "Stay on this workspace and continue preparing tools.",
-			icon: Sparkles,
+			icon: MousePointer,
 		},
 	];
 }

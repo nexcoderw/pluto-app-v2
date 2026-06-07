@@ -10,7 +10,7 @@ import {
 	Fuel,
 	MapPin,
 	ShieldCheck,
-	Sparkles,
+	Star,
 	Tag,
 	Users,
 } from "lucide-react";
@@ -301,7 +301,7 @@ function CarListingDetail({ listing }: { listing: PublicListing }) {
 										<span>{listing.owner.fullName}</span>
 									</div>
 									<div>
-										<Sparkles aria-hidden="true" />
+										<Star aria-hidden="true" />
 										<strong>Rating</strong>
 										<span>
 											{listing.ratingAverage

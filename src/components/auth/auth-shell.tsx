@@ -7,7 +7,6 @@ import {
 	CarFront,
 	Info,
 	ShieldCheck,
-	Sparkles,
 } from 'lucide-react';
 import styles from './auth-shell.module.css';
 
@@ -100,7 +99,6 @@ export function AuthShell({
 				</div>
 
 				<div className={styles.metricCard}>
-					<Sparkles aria-hidden="true" />
 					<div>
 						<strong>{copy.metric}</strong>
 						<span>Pluto Booking account flow</span>

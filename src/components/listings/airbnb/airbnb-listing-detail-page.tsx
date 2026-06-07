@@ -8,7 +8,7 @@ import {
 	Home,
 	House,
 	KeyRound,
-	Sparkles,
+	MousePointer,
 	Users,
 } from "lucide-react";
 import {
@@ -164,7 +164,7 @@ function AirbnbListingDetail({ listing }: { listing: PublicListing }) {
 			value: details?.cleaningFee
 				? formatMoney(details.cleaningFee, listing.currency)
 				: "Not listed",
-			icon: Sparkles,
+			icon: MousePointer,
 		},
 		{
 			label: "Review status",

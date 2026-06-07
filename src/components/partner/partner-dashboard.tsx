@@ -10,10 +10,10 @@ import {
 	CarFront,
 	Home,
 	ListChecks,
+	MousePointer,
 	PackageCheck,
 	RefreshCcw,
 	ShieldCheck,
-	Sparkles,
 	UploadCloud,
 	UserRoundCheck,
 	type LucideIcon,
@@ -129,7 +129,7 @@ function PartnerDashboardWorkspace({ profile }: { profile: PartnerProfile }) {
 			<section className={styles.commandPanel}>
 				<div className={styles.panelHeader}>
 					<span>
-						<Sparkles aria-hidden="true" />
+						<MousePointer aria-hidden="true" />
 						Operations
 					</span>
 					<h2>
