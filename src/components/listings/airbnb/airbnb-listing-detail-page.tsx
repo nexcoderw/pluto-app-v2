@@ -54,11 +54,12 @@ import {
 import { AirbnbReviewSection } from "./airbnb-review-section";
 import styles from "./airbnb-listing-detail-page.module.css";
 
-type AirbnbDetailTab = "overview" | "space" | "rules";
+type AirbnbDetailTab = "overview" | "space" | "amenities" | "rules";
 
 const detailTabs: Array<{ value: AirbnbDetailTab; label: string }> = [
 	{ value: "overview", label: "Overview" },
 	{ value: "space", label: "Space details" },
+	{ value: "amenities", label: "Amenities" },
 	{ value: "rules", label: "House rules" },
 ];
 
@@ -261,11 +262,6 @@ function AirbnbListingDetail({ listing }: { listing: PublicListing }) {
 								</div>
 							))}
 						</div>
-						<ListingAmenitiesSection
-							amenities={listing.amenities}
-							title="Stay amenities"
-							description="Comfort, access, and house features selected by the host."
-						/>
 					</section>
 				) : null}
 
@@ -283,6 +279,16 @@ function AirbnbListingDetail({ listing }: { listing: PublicListing }) {
 								</div>
 							))}
 						</div>
+					</section>
+				) : null}
+
+				{activeTab === "amenities" ? (
+					<section className={styles.tabPanel}>
+						<ListingAmenitiesSection
+							amenities={listing.amenities}
+							title="Stay amenities"
+							description="Comfort, access, and house features selected by the host."
+						/>
 					</section>
 				) : null}
 
