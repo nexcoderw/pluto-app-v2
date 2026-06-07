@@ -47,11 +47,12 @@ import { ListingDetailErrorState } from "../listing-detail-error-state";
 import { CarReviewSection } from "./reviews/car-review-section";
 import styles from "./car-listing-detail-page.module.css";
 
-type CarDetailTab = "overview" | "details" | "review";
+type CarDetailTab = "overview" | "details" | "amenities" | "review";
 
 const tabs: Array<{ value: CarDetailTab; label: string }> = [
 	{ value: "overview", label: "Overview" },
 	{ value: "details", label: "Details" },
+	{ value: "amenities", label: "Amenities" },
 	{ value: "review", label: "Listing review" },
 ];
 
@@ -279,11 +280,6 @@ function CarListingDetail({ listing }: { listing: PublicListing }) {
 										</div>
 									))}
 								</div>
-								<ListingAmenitiesSection
-									amenities={listing.amenities}
-									title="Car amenities"
-									description="Vehicle features and rental support included by this verified partner."
-								/>
 								<div className={styles.policyGrid}>
 									{policies.map((policy) => (
 										<div key={policy.label}>
@@ -292,6 +288,16 @@ function CarListingDetail({ listing }: { listing: PublicListing }) {
 										</div>
 									))}
 								</div>
+							</section>
+						) : null}
+
+						{activeTab === "amenities" ? (
+							<section className={styles.tabPanel}>
+								<ListingAmenitiesSection
+									amenities={listing.amenities}
+									title="Car amenities"
+									description="Vehicle features and rental support included by this verified partner."
+								/>
 							</section>
 						) : null}
 
