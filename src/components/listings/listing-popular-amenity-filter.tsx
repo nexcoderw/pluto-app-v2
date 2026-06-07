@@ -9,7 +9,9 @@ import styles from "./listing-popular-amenity-filter.module.css";
 
 type ListingPopularAmenityFilterProps = {
 	category: ListingOptionProductCategory;
-	amenities: Record<ListingOptionProductCategory, ListingAmenityOption[]>;
+	amenities?: Partial<
+		Record<ListingOptionProductCategory, ListingAmenityOption[]>
+	>;
 	value?: string;
 	onChange: (value: string | undefined) => void;
 };
@@ -20,7 +22,7 @@ export function ListingPopularAmenityFilter({
 	value,
 	onChange,
 }: ListingPopularAmenityFilterProps) {
-	const popularAmenities = (amenities[category] ?? [])
+	const popularAmenities = (amenities?.[category] ?? [])
 		.filter((amenity) => amenity.isPopular)
 		.slice(0, 12);
 
