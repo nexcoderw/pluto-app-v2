@@ -1,0 +1,70 @@
+.filter {
+	display: grid;
+	gap: 0.7rem;
+}
+
+.filter header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+}
+
+.filter header span {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.42rem;
+	color: #02006c;
+	font-size: 0.74rem;
+	font-weight: 850;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.filter header button {
+	border: 0;
+	background: transparent;
+	color: rgba(23, 23, 31, 0.58);
+	font-size: 0.72rem;
+	font-weight: 760;
+	cursor: pointer;
+}
+
+.chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.45rem;
+}
+
+.chips button {
+	min-height: 2.35rem;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.38rem;
+	padding: 0 0.74rem;
+	border: 1px solid rgba(2, 0, 108, 0.12);
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.72);
+	color: rgba(23, 23, 31, 0.68);
+	font-size: 0.72rem;
+	font-weight: 760;
+	cursor: pointer;
+	transition:
+		background 180ms ease,
+		border-color 180ms ease,
+		color 180ms ease,
+		transform 180ms ease;
+}
+
+.chips button:hover,
+.chips button[data-selected="true"] {
+	border-color: rgba(2, 0, 108, 0.28);
+	background: rgba(2, 0, 108, 0.08);
+	color: #02006c;
+	transform: translateY(-1px);
+}
+
+.chips button svg {
+	width: 0.95rem;
+	height: 0.95rem;
+}
