@@ -20,6 +20,7 @@ import {
 import { useListingOptions } from "@/hooks/use-listing-options";
 import type { ListingListRequest } from "@/services/api/listings";
 import type { ListingSidebarRenderProps } from "../category-listings-page";
+import { ListingPopularAmenityFilter } from "../listing-popular-amenity-filter";
 import styles from "./apartment-listings-sidebar.module.css";
 
 const countries = ["Rwanda", "Kenya", "Uganda", "Tanzania", "Burundi"];
@@ -155,6 +156,15 @@ export function ApartmentListingsSidebar({
 						</SelectContent>
 					</Select>
 				</div>
+			</div>
+
+			<div className={styles.section}>
+				<ListingPopularAmenityFilter
+					category="APARTMENT"
+					amenities={listingOptions.amenities}
+					value={textValue(draftFilters.amenity)}
+					onChange={(value) => setDraftFilter("amenity", value)}
+				/>
 			</div>
 
 			<div className={styles.section}>
