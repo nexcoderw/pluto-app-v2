@@ -44,6 +44,7 @@ export type ListingListRequest = {
 	bedType?: BedType;
 	propertyType?: AirbnbPropertyType;
 	amenity?: string;
+	amenities?: string;
 };
 
 export type ListingListResponse = ProductListResponse;
