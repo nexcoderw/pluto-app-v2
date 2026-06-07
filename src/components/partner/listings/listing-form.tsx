@@ -63,6 +63,7 @@ import {
 	normalizeCarTransmission,
 	normalizeCurrencyCode,
 	normalizeHotelRoomType,
+	type ListingAmenityOption,
 	type ListingOptionsResponse,
 } from "@/services/api/listing-options";
 import {
@@ -99,6 +100,7 @@ type ListingFormValues = {
 	basePrice: string;
 	currency: string;
 	pricingUnit: PricingUnit;
+	amenityIds: string[];
 	brand: string;
 	model: string;
 	year: string;
@@ -167,6 +169,12 @@ const steps = [
 		title: "Category details",
 		description: "Required specifications for the selected listing type.",
 		icon: BadgeCheck,
+	},
+	{
+		key: "amenities",
+		title: "Amenities",
+		description: "Select the useful features customers should see.",
+		icon: CheckCircle2,
 	},
 	{
 		key: "location",
@@ -450,7 +458,11 @@ export function ListingForm({
 		field: K,
 		value: ListingFormValues[K],
 	) {
-		setValues((current) => ({ ...current, [field]: value }));
+		setValues((current) => ({
+			...current,
+			[field]: value,
+			...(field === "category" && { amenityIds: [] }),
+		}));
 		setErrors((current) => ({ ...current, [field]: undefined }));
 	}
 
@@ -628,6 +640,15 @@ export function ListingForm({
 
 					{selectedStep.key === "details" ? (
 						<CategoryDetailsStep
+							values={values}
+							errors={errors}
+							listingOptions={listingOptions}
+							onChange={updateField}
+						/>
+					) : null}
+
+					{selectedStep.key === "amenities" ? (
+						<AmenitiesStep
 							values={values}
 							errors={errors}
 							listingOptions={listingOptions}
@@ -851,6 +872,89 @@ function CategoryDetailsStep({
 			listingOptions={listingOptions}
 			onChange={onChange}
 		/>
+	);
+}
+
+function AmenitiesStep({ values, listingOptions, onChange }: StepProps) {
+	const amenities = listingOptions.amenities?.[values.category] ?? [];
+	const selectedAmenityIds = new Set(values.amenityIds);
+	const groupedAmenities = groupAmenitiesByGroup(amenities);
+	const selectedCategory = categoryOptions.find(
+		(category) => category.value === values.category,
+	);
+
+	function toggleAmenity(amenityId: string) {
+		const nextAmenityIds = selectedAmenityIds.has(amenityId)
+			? values.amenityIds.filter((selectedAmenityId) => selectedAmenityId !== amenityId)
+			: [...values.amenityIds, amenityId];
+
+		onChange("amenityIds", nextAmenityIds);
+	}
+
+	if (!amenities.length) {
+		return (
+			<div className={styles.amenitiesStep}>
+				<div className={styles.pricingNote}>
+					<Info aria-hidden="true" />
+					<p>
+						<strong>No amenities configured for this category yet</strong>
+						<span>
+							You can still submit this listing. Amenities will become available
+							after the category catalog is seeded.
+						</span>
+					</p>
+				</div>
+			</div>
+		);
+	}
+
+	return (
+		<div className={styles.amenitiesStep}>
+			<div className={styles.amenitiesSummary}>
+				<span>
+					<CheckCircle2 aria-hidden="true" />
+					{selectedCategory?.title ?? "Listing"} amenities
+				</span>
+				<strong>{values.amenityIds.length} selected</strong>
+			</div>
+
+			<div className={styles.amenityGroupList}>
+				{groupedAmenities.map((group) => (
+					<section className={styles.amenityGroup} key={group.name}>
+						<header className={styles.amenityGroupHeader}>
+							<div>
+								<strong>{group.name}</strong>
+								<small>{group.items.length} options</small>
+							</div>
+						</header>
+
+						<div className={styles.amenityOptionGrid}>
+							{group.items.map((amenity) => {
+								const isSelected = selectedAmenityIds.has(amenity.id);
+
+								return (
+									<button
+										key={amenity.id}
+										type="button"
+										className={styles.amenityOption}
+										data-selected={isSelected}
+										onClick={() => toggleAmenity(amenity.id)}
+									>
+										<span>
+											<CheckCircle2 aria-hidden="true" />
+										</span>
+										<strong>{amenity.name}</strong>
+										{amenity.description ? (
+											<small>{amenity.description}</small>
+										) : null}
+									</button>
+								);
+							})}
+						</div>
+					</section>
+				))}
+			</div>
+		</div>
 	);
 }
 
@@ -1914,6 +2018,9 @@ function createInitialValues(product?: Product): ListingFormValues {
 		basePrice: product?.basePrice ?? "",
 		currency: product?.currency ?? "RWF",
 		pricingUnit: product?.pricingUnit ?? "DAY",
+		amenityIds:
+			product?.amenities?.map((productAmenity) => productAmenity.amenity.id) ??
+			[],
 		brand: car?.brand ?? "",
 		model: car?.model ?? "",
 		year: car?.year ? String(car.year) : "",
@@ -2146,7 +2253,7 @@ function getFirstErrorStep(
 		"locationLatitude",
 		"locationLongitude",
 	];
-	const pricingStep = category === "CAR" ? 3 : 4;
+	const pricingStep = category === "CAR" ? 4 : 5;
 
 	if (Object.keys(errors).some((key) => stepOneFields.includes(key))) return 1;
 	if (Object.keys(errors).some((key) => stepTwoFields.includes(key))) return 2;
@@ -2170,6 +2277,7 @@ function toListingPayload(values: ListingFormValues) {
 		basePrice: values.basePrice.trim(),
 		currency: normalizeCurrencyCode(values.currency),
 		pricingUnit: values.pricingUnit,
+		amenityIds: values.amenityIds,
 	};
 
 	if (values.category === "APARTMENT") {
@@ -2274,6 +2382,28 @@ function getTitlePlaceholder(category: ProductCategory) {
 
 function optionalNumber(value: string) {
 	return value.trim() ? Number(value) : undefined;
+}
+
+function groupAmenitiesByGroup(amenities: ListingAmenityOption[]) {
+	const groups = new Map<string, ListingAmenityOption[]>();
+
+	for (const amenity of amenities) {
+		const group = amenity.group ?? "General";
+		groups.set(group, [...(groups.get(group) ?? []), amenity]);
+	}
+
+	return Array.from(groups.entries())
+		.map(([name, items]) => ({
+			name,
+			items: [...items].sort((first, second) => {
+				if (first.sortOrder !== second.sortOrder) {
+					return first.sortOrder - second.sortOrder;
+				}
+
+				return first.name.localeCompare(second.name);
+			}),
+		}))
+		.sort((first, second) => first.name.localeCompare(second.name));
 }
 
 function isNumberInRange(value: string, min: number, max: number) {
