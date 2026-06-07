@@ -5,9 +5,7 @@ import {
 	Bath,
 	BedDouble,
 	CheckCircle2,
-	Home,
 	House,
-	KeyRound,
 	MousePointer,
 	Users,
 } from "lucide-react";
@@ -25,7 +23,6 @@ import { isApiNotFoundError } from "@/services/api/errors";
 import { getAirbnbListing, type PublicListing } from "@/services/api/listings";
 import {
 	buildListingGallery,
-	formatBoolean,
 	formatMoney,
 	formatOptional,
 } from "../listing-formatters";
@@ -152,16 +149,6 @@ function AirbnbListingDetail({ listing }: { listing: PublicListing }) {
 	);
 	const spaceSetup = [
 		{
-			label: "Entire place",
-			value: details ? formatBoolean(details.entirePlace) : "Not listed",
-			icon: Home,
-		},
-		{
-			label: "Self check-in",
-			value: details ? formatBoolean(details.selfCheckIn) : "Not listed",
-			icon: KeyRound,
-		},
-		{
 			label: "Cleaning fee",
 			value: details?.cleaningFee
 				? formatMoney(details.cleaningFee, listing.currency)
@@ -177,18 +164,6 @@ function AirbnbListingDetail({ listing }: { listing: PublicListing }) {
 		},
 	];
 	const houseRules = [
-		{
-			label: "Pets",
-			value: details ? formatBoolean(details.allowPets) : "Not listed",
-		},
-		{
-			label: "Smoking",
-			value: details ? formatBoolean(details.allowSmoking) : "Not listed",
-		},
-		{
-			label: "Parties",
-			value: details ? formatBoolean(details.allowParties) : "Not listed",
-		},
 		{
 			label: "House notes",
 			value: details?.houseRules ? "Provided" : "Not listed",
