@@ -26,7 +26,6 @@ import {
 } from "@/services/api/listings";
 import {
 	buildListingGallery,
-	formatBoolean,
 	formatOptional,
 } from "../listing-formatters";
 import {
@@ -158,18 +157,6 @@ function HotelRoomListingDetail({ listing }: { listing: PublicListing }) {
 		{
 			label: "Room size",
 			value: details?.roomSizeSqm ? `${details.roomSizeSqm} sqm` : "Not listed",
-		},
-		{
-			label: "Private bathroom",
-			value: details ? formatBoolean(details.hasPrivateBathroom) : "Not listed",
-		},
-		{
-			label: "Air conditioning",
-			value: details ? formatBoolean(details.hasAirConditioning) : "Not listed",
-		},
-		{
-			label: "Breakfast",
-			value: details ? formatBoolean(details.breakfastIncluded) : "Not listed",
 		},
 	];
 	const policies = [
