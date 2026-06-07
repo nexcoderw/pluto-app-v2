@@ -25,6 +25,7 @@ import {
 	normalizeCarTransmission,
 } from "@/services/api/listing-options";
 import type { ListingSidebarRenderProps } from "../category-listings-page";
+import { ListingPopularAmenityFilter } from "../listing-popular-amenity-filter";
 import styles from "./car-listings-sidebar.module.css";
 
 const countries = ["Rwanda", "Kenya", "Uganda", "Tanzania", "Burundi"];
@@ -209,6 +210,15 @@ export function CarListingsSidebar({
 						</SelectContent>
 					</Select>
 				</div>
+			</div>
+
+			<div className={styles.section}>
+				<ListingPopularAmenityFilter
+					category="CAR"
+					amenities={listingOptions.amenities}
+					value={textValue(draftFilters.amenity)}
+					onChange={(value) => setDraftFilter("amenity", value)}
+				/>
 			</div>
 
 			<div className={styles.section}>
