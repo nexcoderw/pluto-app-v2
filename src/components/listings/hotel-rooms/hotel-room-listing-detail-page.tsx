@@ -37,6 +37,7 @@ import {
 	ListingDatePlanner,
 	ListingDatePlannerSkeleton,
 } from "../listing-date-planner";
+import { ListingAmenitiesSection } from "../listing-amenities-section";
 import { ListingDetailErrorState } from "../listing-detail-error-state";
 import {
 	ListingLocationMap,
@@ -270,6 +271,11 @@ function HotelRoomListingDetail({ listing }: { listing: PublicListing }) {
 								</div>
 							))}
 						</div>
+						<ListingAmenitiesSection
+							amenities={listing.amenities}
+							title="Room amenities"
+							description="Guest-ready services and room features included with this stay."
+						/>
 					</section>
 				) : null}
 
