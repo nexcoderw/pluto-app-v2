@@ -37,6 +37,7 @@ import {
 	ListingDatePlanner,
 	ListingDatePlannerSkeleton,
 } from "../listing-date-planner";
+import { ListingAmenitiesSection } from "../listing-amenities-section";
 import { ListingDetailErrorState } from "../listing-detail-error-state";
 import {
 	ListingLocationMap,
@@ -260,6 +261,11 @@ function AirbnbListingDetail({ listing }: { listing: PublicListing }) {
 								</div>
 							))}
 						</div>
+						<ListingAmenitiesSection
+							amenities={listing.amenities}
+							title="Stay amenities"
+							description="Comfort, access, and house features selected by the host."
+						/>
 					</section>
 				) : null}
 
