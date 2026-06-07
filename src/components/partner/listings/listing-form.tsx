@@ -28,7 +28,6 @@ import {
 	Info,
 	LoaderCircle,
 	MapPin,
-	Plus,
 	ShieldCheck,
 	Store,
 	Text,
@@ -110,42 +109,24 @@ type ListingFormValues = {
 	seats: string;
 	doors: string;
 	luggageCapacity: string;
-	airConditioning: boolean;
-	driverIncluded: boolean;
-	insuranceIncluded: boolean;
 	mileageLimitPerDay: string;
 	minimumDriverAge: string;
-	requiresDeposit: boolean;
-	depositAmount: string;
 	bedrooms: string;
 	bathrooms: string;
 	kitchens: string;
 	livingRooms: string;
-	furnished: boolean;
-	wifi: boolean;
-	parking: boolean;
 	floorNumber: string;
 	maxGuests: string;
-	hasBalcony: boolean;
-	hasSecurity: boolean;
 	hotelName: string;
 	roomType: string;
 	bedType: string;
 	roomSizeSqm: string;
-	breakfastIncluded: boolean;
 	checkInTime: string;
 	checkOutTime: string;
 	roomNumber: string;
-	hasAirConditioning: boolean;
-	hasPrivateBathroom: boolean;
 	houseType: string;
-	entirePlace: boolean;
-	selfCheckIn: boolean;
 	houseRules: string;
 	cleaningFee: string;
-	allowPets: boolean;
-	allowSmoking: boolean;
-	allowParties: boolean;
 };
 type ListingFormErrors = Partial<
 	Record<keyof ListingFormValues | "images", string>
@@ -1235,33 +1216,6 @@ function ApartmentStep({
 					onChange={(value) => onChange("livingRooms", value)}
 				/>
 			</FormField>
-			<div className={styles.toggleGrid}>
-				<ToggleField
-					label="Furnished"
-					checked={values.furnished}
-					onChange={(checked) => onChange("furnished", checked)}
-				/>
-				<ToggleField
-					label="Wi-Fi"
-					checked={values.wifi}
-					onChange={(checked) => onChange("wifi", checked)}
-				/>
-				<ToggleField
-					label="Parking"
-					checked={values.parking}
-					onChange={(checked) => onChange("parking", checked)}
-				/>
-				<ToggleField
-					label="Balcony"
-					checked={values.hasBalcony}
-					onChange={(checked) => onChange("hasBalcony", checked)}
-				/>
-				<ToggleField
-					label="Security"
-					checked={values.hasSecurity}
-					onChange={(checked) => onChange("hasSecurity", checked)}
-				/>
-			</div>
 		</div>
 	);
 }
@@ -1388,23 +1342,6 @@ function HotelRoomStep({
 					aria-invalid={Boolean(errors.roomNumber)}
 				/>
 			</FormField>
-			<div className={styles.toggleGrid}>
-				<ToggleField
-					label="Breakfast"
-					checked={values.breakfastIncluded}
-					onChange={(checked) => onChange("breakfastIncluded", checked)}
-				/>
-				<ToggleField
-					label="Air conditioning"
-					checked={values.hasAirConditioning}
-					onChange={(checked) => onChange("hasAirConditioning", checked)}
-				/>
-				<ToggleField
-					label="Private bathroom"
-					checked={values.hasPrivateBathroom}
-					onChange={(checked) => onChange("hasPrivateBathroom", checked)}
-				/>
-			</div>
 		</div>
 	);
 }
@@ -1495,33 +1432,6 @@ function AirbnbHouseStep({
 					aria-invalid={Boolean(errors.houseRules)}
 				/>
 			</FormField>
-			<div className={styles.toggleGrid}>
-				<ToggleField
-					label="Entire place"
-					checked={values.entirePlace}
-					onChange={(checked) => onChange("entirePlace", checked)}
-				/>
-				<ToggleField
-					label="Self check-in"
-					checked={values.selfCheckIn}
-					onChange={(checked) => onChange("selfCheckIn", checked)}
-				/>
-				<ToggleField
-					label="Pets allowed"
-					checked={values.allowPets}
-					onChange={(checked) => onChange("allowPets", checked)}
-				/>
-				<ToggleField
-					label="Smoking allowed"
-					checked={values.allowSmoking}
-					onChange={(checked) => onChange("allowSmoking", checked)}
-				/>
-				<ToggleField
-					label="Parties allowed"
-					checked={values.allowParties}
-					onChange={(checked) => onChange("allowParties", checked)}
-				/>
-			</div>
 		</div>
 	);
 }
@@ -1672,28 +1582,6 @@ function PricingMediaStep({
 						/>
 					</FormField>
 
-					<div className={styles.toggleGrid}>
-						<ToggleField
-							label="Air conditioning"
-							checked={values.airConditioning}
-							onChange={(checked) => onChange("airConditioning", checked)}
-						/>
-						<ToggleField
-							label="Driver included"
-							checked={values.driverIncluded}
-							onChange={(checked) => onChange("driverIncluded", checked)}
-						/>
-						<ToggleField
-							label="Insurance included"
-							checked={values.insuranceIncluded}
-							onChange={(checked) => onChange("insuranceIncluded", checked)}
-						/>
-						<ToggleField
-							label="Requires deposit"
-							checked={values.requiresDeposit}
-							onChange={(checked) => onChange("requiresDeposit", checked)}
-						/>
-					</div>
 				</>
 			) : (
 				<div className={styles.pricingNote}>
@@ -1708,19 +1596,6 @@ function PricingMediaStep({
 					</p>
 				</div>
 			)}
-
-			{values.category === "CAR" && values.requiresDeposit ? (
-				<FormField label="Deposit amount" required error={errors.depositAmount}>
-					<Input
-						inputMode="decimal"
-						value={values.depositAmount}
-						onChange={(event) => onChange("depositAmount", event.target.value)}
-						placeholder="100000.00"
-						icon={<CircleDollarSign aria-hidden="true" />}
-						aria-invalid={Boolean(errors.depositAmount)}
-					/>
-				</FormField>
-			) : null}
 
 			{existingImages.length ? (
 				<div className={styles.currentImages}>
@@ -1859,31 +1734,6 @@ function FormField({
 			{children}
 			{error ? <p className={styles.inlineError}>{error}</p> : null}
 		</div>
-	);
-}
-
-function ToggleField({
-	label,
-	checked,
-	onChange,
-}: {
-	label: string;
-	checked: boolean;
-	onChange: (checked: boolean) => void;
-}) {
-	return (
-		<button
-			type="button"
-			className={styles.toggleField}
-			data-active={checked}
-			aria-pressed={checked}
-			onClick={() => onChange(!checked)}
-		>
-			<span>
-				<Plus aria-hidden="true" />
-			</span>
-			{label}
-		</button>
 	);
 }
 
@@ -2030,15 +1880,10 @@ function createInitialValues(product?: Product): ListingFormValues {
 		seats: car?.seats ? String(car.seats) : "",
 		doors: car?.doors ? String(car.doors) : "",
 		luggageCapacity: car?.luggageCapacity ? String(car.luggageCapacity) : "",
-		airConditioning: car?.airConditioning ?? false,
-		driverIncluded: car?.driverIncluded ?? false,
-		insuranceIncluded: car?.insuranceIncluded ?? false,
 		mileageLimitPerDay: car?.mileageLimitPerDay
 			? String(car.mileageLimitPerDay)
 			: "",
 		minimumDriverAge: car?.minimumDriverAge ? String(car.minimumDriverAge) : "",
-		requiresDeposit: car?.requiresDeposit ?? false,
-		depositAmount: car?.depositAmount ?? "",
 		bedrooms:
 			apartment?.bedrooms || airbnb?.bedrooms
 				? String(apartment?.bedrooms ?? airbnb?.bedrooms)
@@ -2049,9 +1894,6 @@ function createInitialValues(product?: Product): ListingFormValues {
 				: "",
 		kitchens: apartment?.kitchens ? String(apartment.kitchens) : "1",
 		livingRooms: apartment?.livingRooms ? String(apartment.livingRooms) : "1",
-		furnished: apartment?.furnished ?? false,
-		wifi: apartment?.wifi ?? false,
-		parking: apartment?.parking ?? false,
 		floorNumber: apartment?.floorNumber ? String(apartment.floorNumber) : "",
 		maxGuests:
 			apartment?.maxGuests || hotelRoom?.maxGuests || airbnb?.maxGuests
@@ -2059,26 +1901,16 @@ function createInitialValues(product?: Product): ListingFormValues {
 						apartment?.maxGuests ?? hotelRoom?.maxGuests ?? airbnb?.maxGuests,
 					)
 				: "",
-		hasBalcony: apartment?.hasBalcony ?? false,
-		hasSecurity: apartment?.hasSecurity ?? false,
 		hotelName: hotelRoom?.hotelName ?? "",
 		roomType: hotelRoom?.roomType ?? "",
 		bedType: hotelRoom?.bedType ?? "",
 		roomSizeSqm: hotelRoom?.roomSizeSqm ? String(hotelRoom.roomSizeSqm) : "",
-		breakfastIncluded: hotelRoom?.breakfastIncluded ?? false,
 		checkInTime: hotelRoom?.checkInTime ?? "14:00",
 		checkOutTime: hotelRoom?.checkOutTime ?? "11:00",
 		roomNumber: hotelRoom?.roomNumber ?? "",
-		hasAirConditioning: hotelRoom?.hasAirConditioning ?? false,
-		hasPrivateBathroom: hotelRoom?.hasPrivateBathroom ?? true,
 		houseType: airbnb?.houseType ?? "",
-		entirePlace: airbnb?.entirePlace ?? true,
-		selfCheckIn: airbnb?.selfCheckIn ?? false,
 		houseRules: airbnb?.houseRules ?? "",
 		cleaningFee: airbnb?.cleaningFee ?? "",
-		allowPets: airbnb?.allowPets ?? false,
-		allowSmoking: airbnb?.allowSmoking ?? false,
-		allowParties: airbnb?.allowParties ?? false,
 	};
 }
 
@@ -2200,9 +2032,6 @@ function validateValues(
 			)
 				errors.minimumDriverAge =
 					"Minimum driver age must be between 18 and 80.";
-			if (values.requiresDeposit && !isPositiveDecimal(values.depositAmount))
-				errors.depositAmount =
-					"Deposit amount is required when deposits are enabled.";
 		}
 	}
 
@@ -2288,13 +2117,8 @@ function toListingPayload(values: ListingFormValues) {
 			bathrooms: Number(values.bathrooms),
 			kitchens: optionalNumber(values.kitchens),
 			livingRooms: optionalNumber(values.livingRooms),
-			furnished: values.furnished,
-			wifi: values.wifi,
-			parking: values.parking,
 			floorNumber: optionalNumber(values.floorNumber),
 			maxGuests: Number(values.maxGuests),
-			hasBalcony: values.hasBalcony,
-			hasSecurity: values.hasSecurity,
 		};
 	}
 
@@ -2306,13 +2130,10 @@ function toListingPayload(values: ListingFormValues) {
 			roomType: normalizeHotelRoomType(values.roomType),
 			bedType: normalizeBedType(values.bedType),
 			roomSizeSqm: optionalNumber(values.roomSizeSqm),
-			breakfastIncluded: values.breakfastIncluded,
 			checkInTime: values.checkInTime.trim(),
 			checkOutTime: values.checkOutTime.trim(),
 			maxGuests: Number(values.maxGuests),
 			roomNumber: values.roomNumber.trim() || undefined,
-			hasAirConditioning: values.hasAirConditioning,
-			hasPrivateBathroom: values.hasPrivateBathroom,
 		};
 	}
 
@@ -2321,16 +2142,11 @@ function toListingPayload(values: ListingFormValues) {
 			...basePayload,
 			...toLocationPayload(values),
 			houseType: normalizeAirbnbPropertyType(values.houseType),
-			entirePlace: values.entirePlace,
-			selfCheckIn: values.selfCheckIn,
 			houseRules: values.houseRules.trim() || undefined,
 			cleaningFee: values.cleaningFee.trim() || undefined,
 			bedrooms: Number(values.bedrooms),
 			bathrooms: Number(values.bathrooms),
 			maxGuests: Number(values.maxGuests),
-			allowPets: values.allowPets,
-			allowSmoking: values.allowSmoking,
-			allowParties: values.allowParties,
 		};
 	}
 
@@ -2345,15 +2161,8 @@ function toListingPayload(values: ListingFormValues) {
 		seats: Number(values.seats),
 		doors: Number(values.doors),
 		luggageCapacity: optionalNumber(values.luggageCapacity),
-		airConditioning: values.airConditioning,
-		driverIncluded: values.driverIncluded,
-		insuranceIncluded: values.insuranceIncluded,
 		mileageLimitPerDay: optionalNumber(values.mileageLimitPerDay),
 		minimumDriverAge: optionalNumber(values.minimumDriverAge),
-		requiresDeposit: values.requiresDeposit,
-		depositAmount: values.requiresDeposit
-			? values.depositAmount.trim()
-			: undefined,
 	};
 }
 
