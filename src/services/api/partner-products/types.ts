@@ -24,6 +24,7 @@ export type CreateCarProductRequest = {
 	basePrice: string;
 	currency?: CurrencyCode;
 	pricingUnit?: PricingUnit;
+	amenityIds?: string[];
 	brand: string;
 	model: string;
 	year: number;
@@ -103,6 +104,7 @@ export type ProductBaseRequest = {
 	basePrice: string;
 	currency?: CurrencyCode;
 	pricingUnit?: PricingUnit;
+	amenityIds?: string[];
 };
 
 export type CreateListingRequest = (
