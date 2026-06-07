@@ -9,6 +9,11 @@ export type NumericListingOption = {
 };
 
 export type CurrencyCode = "RWF" | "USD";
+export type ListingOptionProductCategory =
+	| "CAR"
+	| "APARTMENT"
+	| "HOTEL_ROOM"
+	| "AIRBNB_HOUSE";
 export type CarTransmission = "AUTOMATIC" | "MANUAL";
 export type CarFuelType = "PETROL" | "DIESEL" | "HYBRID" | "ELECTRIC";
 export type HotelRoomType =
@@ -24,6 +29,18 @@ export type AirbnbPropertyType =
 	| "VILLA"
 	| "STUDIO"
 	| "GUEST_SUITE";
+
+export type ListingAmenityOption = {
+	id: string;
+	name: string;
+	slug: string;
+	icon: string | null;
+	description: string | null;
+	group: string | null;
+	category: ListingOptionProductCategory;
+	isPopular: boolean;
+	sortOrder: number;
+};
 
 export type ListingOptionsResponse = {
 	version: string;
@@ -48,4 +65,5 @@ export type ListingOptionsResponse = {
 	airbnb: {
 		propertyTypes: ListingOption<AirbnbPropertyType>[];
 	};
+	amenities: Record<ListingOptionProductCategory, ListingAmenityOption[]>;
 };
