@@ -22,6 +22,7 @@ import { useListingOptions } from "@/hooks/use-listing-options";
 import type { ListingListRequest } from "@/services/api/listings";
 import { normalizeAirbnbPropertyType } from "@/services/api/listing-options";
 import type { ListingSidebarRenderProps } from "../category-listings-page";
+import { ListingPopularAmenityFilter } from "../listing-popular-amenity-filter";
 import styles from "./airbnb-listings-sidebar.module.css";
 
 const countries = ["Rwanda", "Kenya", "Uganda", "Tanzania", "Burundi"];
@@ -123,13 +124,16 @@ export function AirbnbListingsSidebar({
 							))}
 						</SelectContent>
 					</Select>
-					<Input
-						type="text"
-						value={textValue(draftFilters.amenity)}
-						placeholder="Amenity, e.g. pool"
-						onChange={(event) => setDraftFilter("amenity", event.target.value)}
-					/>
 				</div>
+			</div>
+
+			<div className={styles.section}>
+				<ListingPopularAmenityFilter
+					category="AIRBNB_HOUSE"
+					amenities={listingOptions.amenities}
+					value={textValue(draftFilters.amenity)}
+					onChange={(value) => setDraftFilter("amenity", value)}
+				/>
 			</div>
 
 			<div className={styles.section}>
