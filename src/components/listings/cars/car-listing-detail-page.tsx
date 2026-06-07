@@ -42,6 +42,7 @@ import {
 	ListingDatePlanner,
 	ListingDatePlannerSkeleton,
 } from "../listing-date-planner";
+import { ListingAmenitiesSection } from "../listing-amenities-section";
 import { ListingDetailErrorState } from "../listing-detail-error-state";
 import { CarReviewSection } from "./reviews/car-review-section";
 import styles from "./car-listing-detail-page.module.css";
@@ -278,6 +279,11 @@ function CarListingDetail({ listing }: { listing: PublicListing }) {
 										</div>
 									))}
 								</div>
+								<ListingAmenitiesSection
+									amenities={listing.amenities}
+									title="Car amenities"
+									description="Vehicle features and rental support included by this verified partner."
+								/>
 								<div className={styles.policyGrid}>
 									{policies.map((policy) => (
 										<div key={policy.label}>
