@@ -32,7 +32,9 @@ export type {
 	CarTransmission,
 	CurrencyCode,
 	HotelRoomType,
+	ListingAmenityOption,
 	ListingOption,
+	ListingOptionProductCategory,
 	ListingOptionsResponse,
 	NumericListingOption,
 } from "./types";
