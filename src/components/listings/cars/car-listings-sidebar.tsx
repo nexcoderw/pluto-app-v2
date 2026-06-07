@@ -216,8 +216,8 @@ export function CarListingsSidebar({
 				<ListingPopularAmenityFilter
 					category="CAR"
 					amenities={listingOptions.amenities}
-					value={textValue(draftFilters.amenity)}
-					onChange={(value) => setDraftFilter("amenity", value)}
+					value={textValue(draftFilters.amenities)}
+					onChange={(value) => setDraftFilter("amenities", value)}
 				/>
 			</div>
 
