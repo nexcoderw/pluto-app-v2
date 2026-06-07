@@ -30,6 +30,7 @@ import {
 	ListingDatePlanner,
 	ListingDatePlannerSkeleton,
 } from "../listing-date-planner";
+import { ListingAmenitiesSection } from "../listing-amenities-section";
 import { ListingDetailErrorState } from "../listing-detail-error-state";
 import {
 	ListingLocationMap,
@@ -241,6 +242,11 @@ function ApartmentListingDetail({ listing }: { listing: PublicListing }) {
 								</div>
 							))}
 						</div>
+						<ListingAmenitiesSection
+							amenities={listing.amenities}
+							title="Apartment amenities"
+							description="Comfort, safety, and stay features selected for this apartment."
+						/>
 					</section>
 				) : null}
 			</section>
