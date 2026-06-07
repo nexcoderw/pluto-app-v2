@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Bath, BedDouble, CheckCircle2, Home, Users } from "lucide-react";
+import { Bath, BedDouble, Home, Users } from "lucide-react";
 import {
 	addDays,
 	differenceInCalendarDays,
@@ -17,11 +17,7 @@ import {
 	getApartmentListing,
 	type PublicListing,
 } from "@/services/api/listings";
-import {
-	buildListingGallery,
-	formatBoolean,
-	formatOptional,
-} from "../listing-formatters";
+import { buildListingGallery } from "../listing-formatters";
 import {
 	ListingBookingSidebar,
 	ListingBookingSidebarSkeleton,
@@ -145,15 +141,6 @@ function ApartmentListingDetail({ listing }: { listing: PublicListing }) {
 		],
 		[details],
 	);
-	const amenities = [
-		{ label: "Furnished", value: formatBoolean(Boolean(details?.furnished)) },
-		{ label: "WiFi", value: formatBoolean(Boolean(details?.wifi)) },
-		{ label: "Parking", value: formatBoolean(Boolean(details?.parking)) },
-		{ label: "Balcony", value: formatBoolean(Boolean(details?.hasBalcony)) },
-		{ label: "Security", value: formatBoolean(Boolean(details?.hasSecurity)) },
-		{ label: "Floor", value: formatOptional(details?.floorNumber) },
-	];
-
 	return (
 		<ListingStayDetailShell
 			title={listing.title}
@@ -230,18 +217,6 @@ function ApartmentListingDetail({ listing }: { listing: PublicListing }) {
 
 				{activeTab === "amenities" ? (
 					<section className={styles.tabPanel}>
-						<div className={styles.sectionHeader}>
-							<span>Apartment setup</span>
-						</div>
-						<div className={styles.amenityGrid}>
-							{amenities.map((amenity) => (
-								<div key={amenity.label}>
-									<CheckCircle2 aria-hidden="true" />
-									<span>{amenity.label}</span>
-									<strong>{amenity.value}</strong>
-								</div>
-							))}
-						</div>
 						<ListingAmenitiesSection
 							amenities={listing.amenities}
 							title="Apartment amenities"
