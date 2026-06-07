@@ -8,6 +8,7 @@ export type {
 	HotelRoomDetails,
 	PricingUnit,
 	Product,
+	ProductAmenity,
 	ProductCategory,
 	ProductDetailResponse,
 	ProductImage,
