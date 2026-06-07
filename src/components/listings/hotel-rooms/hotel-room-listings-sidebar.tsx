@@ -24,6 +24,7 @@ import {
 	normalizeHotelRoomType,
 } from "@/services/api/listing-options";
 import type { ListingSidebarRenderProps } from "../category-listings-page";
+import { ListingPopularAmenityFilter } from "../listing-popular-amenity-filter";
 import styles from "./hotel-room-listings-sidebar.module.css";
 
 const countries = ["Rwanda", "Kenya", "Uganda", "Tanzania", "Burundi"];
@@ -165,6 +166,15 @@ export function HotelRoomListingsSidebar({
 						</SelectContent>
 					</Select>
 				</div>
+			</div>
+
+			<div className={styles.section}>
+				<ListingPopularAmenityFilter
+					category="HOTEL_ROOM"
+					amenities={listingOptions.amenities}
+					value={textValue(draftFilters.amenity)}
+					onChange={(value) => setDraftFilter("amenity", value)}
+				/>
 			</div>
 
 			<div className={styles.section}>
