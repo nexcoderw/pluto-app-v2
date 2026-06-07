@@ -20,7 +20,7 @@
 	padding: clamp(1.1rem, 2.4vw, 1.85rem);
 	border: 1px solid rgba(2, 0, 108, 0.1);
 	border-radius: 1.25rem;
-	background: #f7f8fc;
+	background: #02006c;
 }
 
 .eyebrow {
@@ -50,8 +50,8 @@
 .intro h2 {
 	max-width: 28rem;
 	margin: 0;
-	color: #161821;
-	font-size: clamp(2rem, 4vw, 3.65rem);
+	color: #fff;
+	font-size: clamp(2.35rem, 4vw, 3rem);
 	font-weight: 930;
 	line-height: 0.95;
 	letter-spacing: 0;
@@ -60,8 +60,8 @@
 .intro p {
 	max-width: 31rem;
 	margin: 0;
-	color: rgba(22, 24, 33, 0.64);
-	font-size: clamp(0.9rem, 1.4vw, 1rem);
+	color: rgba(255, 255, 255, 0.64);
+	font-size: clamp(0.75rem, 1.4vw, 0.81rem);
 	font-weight: 560;
 	line-height: 1.68;
 }

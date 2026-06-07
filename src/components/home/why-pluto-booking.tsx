@@ -2,6 +2,7 @@ import {
 	BadgeCheck,
 	Headphones,
 	LockKeyhole,
+	MousePointer,
 	ReceiptText,
 	ShieldCheck,
 } from "lucide-react";
@@ -37,6 +38,7 @@ export function WhyPlutoBooking() {
 		<section className={styles.section} aria-labelledby="why-pluto-booking">
 			<div className={styles.intro}>
 				<span className={styles.eyebrow}>
+					<MousePointer aria-hidden="true" />
 					Why Pluto Booking
 				</span>
 				<h2 id="why-pluto-booking">Confidence before every booking</h2>
