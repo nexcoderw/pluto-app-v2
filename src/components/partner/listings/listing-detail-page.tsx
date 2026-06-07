@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
 	ArrowLeft,
-	BadgeCheck,
 	CalendarClock,
 	Building2,
 	CarFront,
@@ -445,13 +444,6 @@ function CategorySpecifications({ product }: { product: Product }) {
 						}
 					/>
 				</div>
-				<div className={styles.featureGrid}>
-					<Feature enabled={details.furnished} label="Furnished" />
-					<Feature enabled={details.wifi} label="Wi-Fi" />
-					<Feature enabled={details.parking} label="Parking" />
-					<Feature enabled={details.hasBalcony} label="Balcony" />
-					<Feature enabled={details.hasSecurity} label="Security" />
-				</div>
 			</section>
 		);
 	}
@@ -487,20 +479,6 @@ function CategorySpecifications({ product }: { product: Product }) {
 						value={details.roomNumber ?? "Not provided"}
 					/>
 				</div>
-				<div className={styles.featureGrid}>
-					<Feature
-						enabled={details.breakfastIncluded}
-						label="Breakfast included"
-					/>
-					<Feature
-						enabled={details.hasAirConditioning}
-						label="Air conditioning"
-					/>
-					<Feature
-						enabled={details.hasPrivateBathroom}
-						label="Private bathroom"
-					/>
-				</div>
 			</section>
 		);
 	}
@@ -530,13 +508,6 @@ function CategorySpecifications({ product }: { product: Product }) {
 								: "Not charged"
 						}
 					/>
-				</div>
-				<div className={styles.featureGrid}>
-					<Feature enabled={details.entirePlace} label="Entire place" />
-					<Feature enabled={details.selfCheckIn} label="Self check-in" />
-					<Feature enabled={details.allowPets} label="Pets allowed" />
-					<Feature enabled={details.allowSmoking} label="Smoking allowed" />
-					<Feature enabled={details.allowParties} label="Parties allowed" />
 				</div>
 			</section>
 		);
@@ -584,24 +555,6 @@ function CategorySpecifications({ product }: { product: Product }) {
 					}
 				/>
 			</div>
-			<div className={styles.featureGrid}>
-				<Feature
-					enabled={product.carDetails.airConditioning}
-					label="Air conditioning"
-				/>
-				<Feature
-					enabled={product.carDetails.driverIncluded}
-					label="Driver included"
-				/>
-				<Feature
-					enabled={product.carDetails.insuranceIncluded}
-					label="Insurance included"
-				/>
-				<Feature
-					enabled={product.carDetails.requiresDeposit}
-					label="Deposit required"
-				/>
-			</div>
 		</section>
 	);
 }
@@ -612,19 +565,6 @@ function Fact({ label, value }: { label: string; value: string }) {
 			<span>{label}</span>
 			<strong>{value}</strong>
 		</div>
-	);
-}
-
-function Feature({ enabled, label }: { enabled: boolean; label: string }) {
-	return (
-		<span className={styles.feature} data-enabled={enabled}>
-			{enabled ? (
-				<BadgeCheck aria-hidden="true" />
-			) : (
-				<XCircle aria-hidden="true" />
-			)}
-			{label}
-		</span>
 	);
 }
 
