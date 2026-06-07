@@ -51,7 +51,7 @@
 	max-width: 48rem;
 	margin: 0;
 	color: #161821;
-	font-size: clamp(2.25rem, 5vw, 4.8rem);
+	font-size: clamp(2.35rem, 4vw, 3rem);
 	font-weight: 950;
 	line-height: 0.92;
 	letter-spacing: 0;
