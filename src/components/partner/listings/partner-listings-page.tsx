@@ -10,8 +10,6 @@ import {
 	Building2,
 	CarFront,
 	ChevronsUpDown,
-	CircleDollarSign,
-	Clock3,
 	Eye,
 	Filter,
 	Hotel,
@@ -100,6 +98,13 @@ const categoryOptions: Array<{
 	{ label: "Hotel rooms", value: "HOTEL_ROOM" },
 	{ label: "Airbnb homes", value: "AIRBNB_HOUSE" },
 ];
+
+const categoryIconMap: Record<ProductCategory, typeof CarFront> = {
+	APARTMENT: Building2,
+	HOTEL_ROOM: Hotel,
+	AIRBNB_HOUSE: House,
+	CAR: CarFront,
+};
 
 const orderOptions: Array<{ label: string; value: ProductOrderBy }> = [
 	{ label: "Newest activity", value: "createdAt" },
@@ -529,11 +534,16 @@ function ListingCard({ product }: { product: Product }) {
 	const coverImage =
 		product.images.find((image) => image.isCover) ?? product.images[0];
 	const coverUrl = coverImage?.file.publicUrl;
-	const CategoryIcon = getCategoryIcon(product.category);
+	const CategoryIcon = categoryIconMap[product.category];
+	const status = product.status ?? "DRAFT";
+	const detailHref = `/partner/listings/${product.id}`;
+	const editHref = `/partner/listings/${product.id}/edit`;
+	const summary =
+		product.shortDescription ?? product.description ?? "No public summary yet.";
 
 	return (
 		<article className={styles.listingCard}>
-			<div className={styles.cover}>
+			<Link href={detailHref} className={styles.cover}>
 				{coverUrl ? (
 					<Image
 						src={coverUrl}
@@ -542,53 +552,59 @@ function ListingCard({ product }: { product: Product }) {
 						sizes="(max-width: 900px) 100vw, 33vw"
 					/>
 				) : (
-					<span>
+					<span className={styles.emptyCover}>
 						<ImageIcon aria-hidden="true" />
 					</span>
 				)}
-				<StatusPill status={product.status ?? "DRAFT"} />
-			</div>
-			<div className={styles.cardBody}>
-				<div>
-					<strong>{product.title}</strong>
-					<small>
-						{product.city}, {product.country}
-					</small>
-				</div>
-				<span className={styles.categoryPill}>
-					<CategoryIcon aria-hidden="true" />
-					{formatLabel(product.category)}
-				</span>
-				<p>
-					{product.shortDescription ??
-						product.description ??
-						"No public summary yet."}
-				</p>
-				<div className={styles.cardMeta}>
+				<span className={styles.coverShade} aria-hidden="true" />
+				<StatusPill status={status} />
+				<span className={styles.coverCaption}>
 					<span>
-						<CircleDollarSign aria-hidden="true" />
-						{formatMoney(product.basePrice, product.currency)}/
-						{product.pricingUnit.toLowerCase()}
+						<strong>{product.title}</strong>
+						<small>
+							{product.city}, {product.country}
+						</small>
 					</span>
-					<span>
-						<Clock3 aria-hidden="true" />
-						{formatDate(product.updatedAt ?? product.createdAt)}
-					</span>
-				</div>
-				<div className={styles.cardActions}>
-					<Link
-						href={`/partner/listings/${product.id}`}
-						className={styles.secondaryLink}
-					>
-						<Eye aria-hidden="true" />
-						View
-					</Link>
-					<Link
-						href={`/partner/listings/${product.id}/edit`}
-						className={styles.editButton}
-					>
+					<span className={styles.coverAction}>
+						Open
 						<ArrowRight aria-hidden="true" />
-						Edit
+					</span>
+				</span>
+			</Link>
+			<div className={styles.cardBody}>
+				<div className={styles.cardMeta}>
+					<span className={styles.metric}>
+						<strong>{formatMoney(product.basePrice, product.currency)}</strong>
+						<small>{product.pricingUnit.toLowerCase()} rate</small>
+					</span>
+					<span className={styles.metric}>
+						<strong>{formatLabel(product.category)}</strong>
+						<small>Category</small>
+					</span>
+					<span className={styles.metric}>
+						<strong>
+							{formatDate(product.updatedAt ?? product.createdAt)}
+						</strong>
+						<small>Last update</small>
+					</span>
+				</div>
+
+				<div className={styles.workflowPanel}>
+					<CategoryIcon aria-hidden="true" />
+					<span>
+						<strong>{formatLabel(status)}</strong>
+						<small>{summary}</small>
+					</span>
+				</div>
+
+				<div className={styles.cardActions}>
+					<Link href={detailHref} className={styles.secondaryLink}>
+						<Eye aria-hidden="true" />
+						Details
+					</Link>
+					<Link href={editHref} className={styles.editButton}>
+						<ArrowRight aria-hidden="true" />
+						Edit listing
 					</Link>
 				</div>
 			</div>
@@ -596,29 +612,46 @@ function ListingCard({ product }: { product: Product }) {
 	);
 }
 
-function getCategoryIcon(category: ProductCategory) {
-	switch (category) {
-		case "APARTMENT":
-			return Building2;
-		case "HOTEL_ROOM":
-			return Hotel;
-		case "AIRBNB_HOUSE":
-			return House;
-		case "CAR":
-		default:
-			return CarFront;
-	}
-}
-
 function ListingsSkeleton() {
 	return (
 		<div className={styles.listingGrid} aria-label="Loading listings">
 			{Array.from({ length: 6 }).map((_, index) => (
 				<article className={styles.skeletonCard} key={index}>
-					<Skeleton className={styles.skeletonCover} />
-					<Skeleton className={styles.skeletonLine} />
-					<Skeleton className={styles.skeletonText} />
-					<Skeleton className={styles.skeletonText} />
+					<div className={styles.skeletonCover}>
+						<Skeleton className={styles.skeletonPill} />
+						<div className={styles.skeletonCaption}>
+							<span>
+								<Skeleton />
+								<Skeleton />
+							</span>
+							<Skeleton />
+						</div>
+					</div>
+					<div className={styles.skeletonMeta}>
+						<span>
+							<Skeleton />
+							<Skeleton />
+						</span>
+						<span>
+							<Skeleton />
+							<Skeleton />
+						</span>
+						<span>
+							<Skeleton />
+							<Skeleton />
+						</span>
+					</div>
+					<div className={styles.skeletonWorkflow}>
+						<Skeleton />
+						<span>
+							<Skeleton />
+							<Skeleton />
+						</span>
+					</div>
+					<div className={styles.skeletonActions}>
+						<Skeleton />
+						<Skeleton />
+					</div>
 				</article>
 			))}
 		</div>
@@ -740,6 +773,7 @@ function formatDate(value?: string) {
 		month: "short",
 		day: "numeric",
 		year: "numeric",
+		timeZone: "Africa/Kigali",
 	}).format(new Date(value));
 }
 
