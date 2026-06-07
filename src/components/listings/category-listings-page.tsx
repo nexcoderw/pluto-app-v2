@@ -49,7 +49,7 @@ import { ListingFilterDialog } from "./listing-filter-dialog";
 export type ListingSidebarFilter = {
 	key: keyof ListingListRequest;
 	label: string;
-	kind: "text" | "number" | "boolean";
+	kind: "text" | "number";
 	placeholder?: string;
 };
 
@@ -469,24 +469,6 @@ function ListingFilterControl({
 	value: ListingListRequest[keyof ListingListRequest];
 	onChange: (filter: ListingSidebarFilter, value: string) => void;
 }) {
-	if (filter.kind === "boolean") {
-		return (
-			<Select
-				value={value === undefined ? "ANY" : String(value)}
-				onValueChange={(nextValue) => onChange(filter, nextValue ?? "ANY")}
-			>
-				<SelectTrigger className={styles.selectTrigger}>
-					<SelectValue>{filter.label}</SelectValue>
-				</SelectTrigger>
-				<SelectContent align="start" alignItemWithTrigger={false}>
-					<SelectItem value="ANY">Any {filter.label.toLowerCase()}</SelectItem>
-					<SelectItem value="true">Yes</SelectItem>
-					<SelectItem value="false">No</SelectItem>
-				</SelectContent>
-			</Select>
-		);
-	}
-
 	return (
 		<Input
 			type={filter.kind}
@@ -767,10 +749,6 @@ function parseFilterValue(filter: ListingSidebarFilter, value: string) {
 	if (filter.kind === "number") {
 		const numberValue = Number(value);
 		return Number.isFinite(numberValue) ? numberValue : undefined;
-	}
-
-	if (filter.kind === "boolean") {
-		return value === "true";
 	}
 
 	return value;
