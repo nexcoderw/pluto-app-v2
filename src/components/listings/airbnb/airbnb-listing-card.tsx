@@ -64,7 +64,6 @@ export function AirbnbListingCard({
 			? "New"
 			: `${listing.ratingAverage.toFixed(2)} (${listing.ratingCount ?? 0})`;
 	const homeType = details?.houseType ?? "Curated stay";
-	const stayMode = details?.entirePlace ? "Entire place" : "Hosted stay";
 
 	function showPreviousImage() {
 		setActiveImageIndex((current) =>
@@ -152,7 +151,7 @@ export function AirbnbListingCard({
 
 				<p className={styles.location}>
 					<MapPin aria-hidden="true" />
-					{stayMode} · {listing.city}, {listing.country}
+					{listing.city}, {listing.country}
 				</p>
 
 				<ul className={styles.specs} aria-label="Airbnb home highlights">
