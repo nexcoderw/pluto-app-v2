@@ -37,23 +37,12 @@ export type ListingListRequest = {
 	seats?: number;
 	minYear?: number;
 	maxYear?: number;
-	airConditioning?: boolean;
-	driverIncluded?: boolean;
 	bedrooms?: number;
 	bathrooms?: number;
 	guests?: number;
-	furnished?: boolean;
-	wifi?: boolean;
-	parking?: boolean;
 	roomType?: HotelRoomType;
 	bedType?: BedType;
-	breakfastIncluded?: boolean;
-	hasAirConditioning?: boolean;
-	hasPrivateBathroom?: boolean;
 	propertyType?: AirbnbPropertyType;
-	entirePlace?: boolean;
-	selfCheckIn?: boolean;
-	allowPets?: boolean;
 	amenity?: string;
 };
 
