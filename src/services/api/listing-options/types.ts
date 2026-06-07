@@ -40,6 +40,7 @@ export type ListingAmenityOption = {
 	category: ListingOptionProductCategory;
 	isPopular: boolean;
 	sortOrder: number;
+	listingCount?: number;
 };
 
 export type ListingOptionsResponse = {
