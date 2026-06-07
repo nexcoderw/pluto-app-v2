@@ -707,6 +707,7 @@ function getInitialListingUrlState(params: {
 		propertyType: normalizeOptionalAirbnbPropertyType(
 			params.get("propertyType"),
 		),
+		amenities: params.get("amenities")?.trim() || undefined,
 	});
 
 	return {
@@ -757,7 +758,7 @@ function parseFilterValue(filter: ListingSidebarFilter, value: string) {
 function formatFilterInputValue(
 	value: ListingListRequest[keyof ListingListRequest],
 ) {
-	return typeof value === "boolean" ? String(value) : (value ?? "");
+	return value ?? "";
 }
 
 function getMapListingLabel(
