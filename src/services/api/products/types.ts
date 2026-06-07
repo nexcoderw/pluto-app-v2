@@ -5,6 +5,7 @@ import type {
 	CarTransmission,
 	CurrencyCode,
 	HotelRoomType,
+	ListingAmenityOption,
 } from "../listing-options";
 
 export type ProductCategory =
@@ -49,6 +50,10 @@ export type ProductLocation = {
 	longitude: string | null;
 	createdAt?: string;
 	updatedAt?: string;
+};
+
+export type ProductAmenity = {
+	amenity: ListingAmenityOption;
 };
 
 export type CarDetails = {
@@ -147,6 +152,7 @@ export type Product = {
 	createdAt?: string;
 	updatedAt?: string;
 	images: ProductImage[];
+	amenities?: ProductAmenity[];
 	owner: {
 		id: string;
 		fullName: string;
