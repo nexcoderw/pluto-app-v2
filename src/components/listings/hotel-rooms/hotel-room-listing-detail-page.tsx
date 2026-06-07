@@ -54,11 +54,12 @@ import {
 import { HotelRoomReviewSection } from "./hotel-room-review-section";
 import styles from "./hotel-room-listing-detail-page.module.css";
 
-type HotelRoomDetailTab = "overview" | "room" | "policies";
+type HotelRoomDetailTab = "overview" | "room" | "amenities" | "policies";
 
 const detailTabs: Array<{ value: HotelRoomDetailTab; label: string }> = [
 	{ value: "overview", label: "Overview" },
 	{ value: "room", label: "Room details" },
+	{ value: "amenities", label: "Amenities" },
 	{ value: "policies", label: "Stay rules" },
 ];
 
@@ -271,6 +272,11 @@ function HotelRoomListingDetail({ listing }: { listing: PublicListing }) {
 								</div>
 							))}
 						</div>
+					</section>
+				) : null}
+
+				{activeTab === "amenities" ? (
+					<section className={styles.tabPanel}>
 						<ListingAmenitiesSection
 							amenities={listing.amenities}
 							title="Room amenities"
