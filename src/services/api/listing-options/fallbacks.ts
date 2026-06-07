@@ -80,6 +80,12 @@ export const fallbackListingOptions: ListingOptionsResponse = {
 	airbnb: {
 		propertyTypes: fallbackAirbnbPropertyTypeOptions,
 	},
+	amenities: {
+		CAR: [],
+		APARTMENT: [],
+		HOTEL_ROOM: [],
+		AIRBNB_HOUSE: [],
+	},
 };
 
 function createNumberOptions(maximum = 10): NumericListingOption[] {
