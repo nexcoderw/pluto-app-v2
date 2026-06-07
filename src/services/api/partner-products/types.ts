@@ -34,13 +34,8 @@ export type CreateCarProductRequest = {
 	seats: number;
 	doors: number;
 	luggageCapacity?: number;
-	airConditioning?: boolean;
-	driverIncluded?: boolean;
-	insuranceIncluded?: boolean;
 	mileageLimitPerDay?: number;
 	minimumDriverAge?: number;
-	requiresDeposit?: boolean;
-	depositAmount?: string;
 };
 
 export type ListingLocationRequest = {
@@ -56,13 +51,8 @@ export type CreateApartmentProductRequest =
 			bathrooms: number;
 			kitchens?: number;
 			livingRooms?: number;
-			furnished?: boolean;
-			wifi?: boolean;
-			parking?: boolean;
 			floorNumber?: number;
 			maxGuests: number;
-			hasBalcony?: boolean;
-			hasSecurity?: boolean;
 		};
 
 export type CreateHotelRoomProductRequest =
@@ -71,28 +61,20 @@ export type CreateHotelRoomProductRequest =
 			roomType: HotelRoomType;
 			bedType: BedType;
 			roomSizeSqm?: number;
-			breakfastIncluded?: boolean;
 			checkInTime: string;
 			checkOutTime: string;
 			maxGuests: number;
 			roomNumber?: string;
-			hasAirConditioning?: boolean;
-			hasPrivateBathroom?: boolean;
 		};
 
 export type CreateAirbnbHouseProductRequest =
 	ProductBaseRequest & {} & ListingLocationRequest & {
 			houseType: AirbnbPropertyType;
-			entirePlace?: boolean;
-			selfCheckIn?: boolean;
 			houseRules?: string;
 			cleaningFee?: string;
 			bedrooms: number;
 			bathrooms: number;
 			maxGuests: number;
-			allowPets?: boolean;
-			allowSmoking?: boolean;
-			allowParties?: boolean;
 		};
 
 export type ProductBaseRequest = {
