@@ -6,7 +6,6 @@ import {
 	BriefcaseBusiness,
 	CalendarCheck,
 	CarFront,
-	CheckCircle2,
 	Fuel,
 	MapPin,
 	ShieldCheck,
@@ -30,8 +29,6 @@ import { isApiNotFoundError } from "@/services/api/errors";
 import { getCarListing, type PublicListing } from "@/services/api/listings";
 import {
 	buildListingGallery,
-	formatBoolean,
-	formatMoney,
 	formatOptional,
 } from "../listing-formatters";
 import {
@@ -132,19 +129,10 @@ function CarListingDetail({ listing }: { listing: PublicListing }) {
 				value: details ? String(details.seats) : "Not listed",
 				icon: Users,
 			},
-			{
-				label: "Driver included",
-				value: details ? formatBoolean(details.driverIncluded) : "Not listed",
-				icon: CheckCircle2,
-			},
 		],
 		[details],
 	);
 	const policies = [
-		{
-			label: "Insurance included",
-			value: details ? formatBoolean(details.insuranceIncluded) : "Not listed",
-		},
 		{
 			label: "Daily mileage",
 			value: details?.mileageLimitPerDay
@@ -156,12 +144,6 @@ function CarListingDetail({ listing }: { listing: PublicListing }) {
 			value: details?.minimumDriverAge
 				? `${details.minimumDriverAge}+`
 				: "Ask partner",
-		},
-		{
-			label: "Deposit",
-			value: details?.requiresDeposit
-				? formatMoney(details.depositAmount ?? "0", listing.currency)
-				: "No deposit listed",
 		},
 	];
 	const fromDate = dateRange?.from;
