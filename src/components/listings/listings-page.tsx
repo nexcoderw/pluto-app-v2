@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import {
 	ArrowLeft,
@@ -34,6 +33,7 @@ import {
 	type Product,
 	type ProductCategory,
 } from "@/services/api/products";
+import { ListingImageFrame } from "./listing-image-frame";
 import styles from "./listings-page.module.css";
 
 type ProductOrderBy = "createdAt" | "basePrice" | "title";
@@ -56,6 +56,13 @@ const orderOptions: Array<{ label: string; value: ProductOrderBy }> = [
 	{ label: "Price", value: "basePrice" },
 	{ label: "Title", value: "title" },
 ];
+
+const categoryIcons: Record<ProductCategory, typeof CarFront> = {
+	CAR: CarFront,
+	APARTMENT: Building2,
+	HOTEL_ROOM: Hotel,
+	AIRBNB_HOUSE: House,
+};
 
 export function ListingsPage() {
 	const [search, setSearch] = useState("");
@@ -223,16 +230,15 @@ function ProductCard({ product }: { product: Product }) {
 	const coverImage =
 		product.images.find((image) => image.isCover) ?? product.images[0];
 	const coverUrl = coverImage?.file.publicUrl;
-	const CategoryIcon = getCategoryIcon(product.category);
+	const CategoryIcon = categoryIcons[product.category];
 
 	return (
 		<article className={styles.card}>
 			<div className={styles.cover}>
 				{coverUrl ? (
-					<Image
+					<ListingImageFrame
 						src={coverUrl}
 						alt={coverImage.altText ?? product.title}
-						fill
 						sizes="(max-width: 760px) 100vw, 33vw"
 					/>
 				) : (
@@ -350,20 +356,6 @@ function Pagination({
 			</Button>
 		</nav>
 	);
-}
-
-function getCategoryIcon(category: ProductCategory) {
-	switch (category) {
-		case "APARTMENT":
-			return Building2;
-		case "HOTEL_ROOM":
-			return Hotel;
-		case "AIRBNB_HOUSE":
-			return House;
-		case "CAR":
-		default:
-			return CarFront;
-	}
 }
 
 function formatMoney(value: string, currency: string) {
