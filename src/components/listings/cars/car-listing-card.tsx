@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import {
 	ArrowRight,
@@ -18,6 +17,7 @@ import {
 	formatPricingUnit,
 	getListingCoverImage,
 } from "../listing-formatters";
+import { ListingImageFrame } from "../listing-image-frame";
 import styles from "./car-listing-card.module.css";
 
 type CarListingCardProps = {
@@ -38,10 +38,9 @@ export function CarListingCard({ listing, detailHref }: CarListingCardProps) {
 			<div className={styles.mediaFrame}>
 				<Link href={detailHref} className={styles.media}>
 					{coverUrl ? (
-						<Image
+						<ListingImageFrame
 							src={coverUrl}
 							alt={coverImage.altText ?? listing.title}
-							fill
 							sizes="(max-width: 720px) 100vw, (max-width: 1280px) 31vw, 22vw"
 						/>
 					) : (
