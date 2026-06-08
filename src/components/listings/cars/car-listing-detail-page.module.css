@@ -143,10 +143,6 @@
 	background: rgba(2, 0, 108, 0.08);
 }
 
-.slideImage img {
-	object-fit: cover;
-}
-
 .swiper :global(.swiper-button-prev),
 .swiper :global(.swiper-button-next) {
 	position: absolute;
