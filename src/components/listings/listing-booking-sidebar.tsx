@@ -56,6 +56,8 @@ export function ListingBookingSidebar({
 	const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
 	const currentUser = useUserSession();
 	const ActionIcon = ctaIcon === "calendar" ? CalendarDays : DoorOpen;
+	const canBook = currentUser?.role === "CUSTOMER";
+	const canStartLogin = !currentUser;
 
 	return (
 		<aside className={styles.sidebar}>
@@ -108,12 +110,12 @@ export function ListingBookingSidebar({
 						<strong>{toDate ? format(toDate, "M/d/yyyy") : "Add date"}</strong>
 					</div>
 				</div>
-				{currentUser ? (
+				{canBook ? (
 					<Button type="button" className={styles.actionButton}>
 						<ActionIcon aria-hidden="true" />
 						{ctaLabel}
 					</Button>
-				) : (
+				) : canStartLogin ? (
 					<button
 						type="button"
 						className={styles.loginPrompt}
@@ -122,8 +124,8 @@ export function ListingBookingSidebar({
 						{loginLabel}
 						<ActionIcon aria-hidden="true" />
 					</button>
-				)}
-				<p>{footerNote}</p>
+				) : null}
+				{canBook || canStartLogin ? <p>{footerNote}</p> : null}
 			</section>
 
 			<ListingVerifiedPartnerCard owner={listing.owner} />
