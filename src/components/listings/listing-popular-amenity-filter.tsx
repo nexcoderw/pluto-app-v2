@@ -1,14 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import {
-	Check,
-	ChevronDown,
-	Eye,
-	PackageCheck,
-	Search,
-	X,
-} from "lucide-react";
 import type {
 	ListingAmenityOption,
 	ListingOptionProductCategory,
@@ -82,9 +74,6 @@ export function ListingPopularAmenityFilter({
 		<section className={styles.filter} aria-label="Amenity filters">
 			<header className={styles.header}>
 				<div className={styles.heading}>
-					<span className={styles.icon}>
-						<PackageCheck aria-hidden="true" />
-					</span>
 					<div>
 						<p>Amenities</p>
 						<strong>
@@ -120,9 +109,9 @@ export function ListingPopularAmenityFilter({
 									key={amenitySlug}
 									type="button"
 									onClick={() => clearAmenity(amenitySlug)}
+									aria-label={`Remove ${amenity?.name ?? amenitySlug}`}
 								>
 									{amenity?.name ?? amenitySlug}
-									<X aria-hidden="true" />
 								</button>
 							);
 						})}
@@ -132,7 +121,6 @@ export function ListingPopularAmenityFilter({
 
 			{showsSearch ? (
 				<label className={styles.searchField}>
-					<Search aria-hidden="true" />
 					<input
 						type="search"
 						value={search}
@@ -157,13 +145,6 @@ export function ListingPopularAmenityFilter({
 								data-selected={isSelected}
 								onClick={() => toggleAmenity(amenity)}
 							>
-								<span className={styles.checkmark}>
-									{isSelected ? (
-										<Check aria-hidden="true" />
-									) : amenity.isPopular ? (
-										<Eye aria-hidden="true" />
-									) : null}
-								</span>
 								<span>{amenity.name}</span>
 								{amenity.listingCount ? (
 									<small>{formatCount(amenity.listingCount)}</small>
@@ -186,7 +167,6 @@ export function ListingPopularAmenityFilter({
 					{isExpanded
 						? "Show fewer amenities"
 						: `Show all ${categoryAmenities.length} amenities`}
-					<ChevronDown aria-hidden="true" />
 				</button>
 			) : null}
 		</section>
