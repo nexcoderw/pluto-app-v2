@@ -1,7 +1,7 @@
 import { API_BASE_URL } from '../client';
 import { refreshUserSession } from './refresh-session';
 import { USER_AUTH_ROUTES } from './routes';
-import type { PartnerType, UserAuthResponse, UserRole } from './types';
+import type { PartnerType, PublicUserRole, UserAuthResponse } from './types';
 
 export type UserGoogleCallbackStatus =
 	| 'success'
@@ -16,7 +16,7 @@ export function isUserGoogleLoginEnabled(): boolean {
 
 // Request target: Google login starts as a browser redirect, not an XHR request.
 export function getUserGoogleLoginUrl(
-	role: UserRole = 'CUSTOMER',
+	role: PublicUserRole = 'CUSTOMER',
 	partnerType?: PartnerType,
 ): string {
 	const url = new URL(
@@ -33,7 +33,7 @@ export function getUserGoogleLoginUrl(
 
 // Browser action: avoids placing provider tokens in frontend application code.
 export function redirectToUserGoogleLogin(
-	role: UserRole = 'CUSTOMER',
+	role: PublicUserRole = 'CUSTOMER',
 	partnerType?: PartnerType,
 ): void {
 	window.location.assign(getUserGoogleLoginUrl(role, partnerType));
