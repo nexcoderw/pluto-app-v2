@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, ShieldCheck, Sparkles } from "lucide-react";
+import { CheckCircle2, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { ProductAmenity } from "@/services/api/products";
 import styles from "./listing-amenities-section.module.css";
@@ -43,7 +43,6 @@ export function ListingAmenitiesSection({
 			<header className={styles.header}>
 				<div>
 					<span>
-						<Sparkles aria-hidden="true" />
 						Amenities
 					</span>
 					<h2>{title}</h2>
