@@ -135,11 +135,7 @@
 	background: rgba(2, 0, 108, 0.08);
 }
 
-.cover img {
-	object-fit: cover;
-}
-
-.cover > span {
+.cover > span:not([class]) {
 	min-height: 14rem;
 	display: grid;
 	place-items: center;
