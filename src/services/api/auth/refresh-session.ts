@@ -1,6 +1,10 @@
 import { apiClient } from '../client';
-import { normalizeApiError } from '../errors';
+import { ApiRequestError, normalizeApiError } from '../errors';
 import { clearUserSession, setUserAccessToken } from '../token-store';
+import {
+	createPublicUserRoleError,
+	isPublicUserRole,
+} from './public-user-role';
 import { USER_AUTH_ROUTES } from './routes';
 import { storeAuthenticatedUserSession } from './session-bootstrap';
 import type { UserAuthResponse } from './types';
@@ -33,9 +37,18 @@ async function performRefreshUserSession(): Promise<RefreshUserSessionResponse> 
 		);
 
 		setUserAccessToken(response.data.accessToken);
+		if (!isPublicUserRole(response.data.user.role)) {
+			clearUserSession();
+			throw createPublicUserRoleError();
+		}
+
 		await storeAuthenticatedUserSession(response.data.user);
 		return response.data;
 	} catch (error) {
+		if (error instanceof ApiRequestError) {
+			throw error;
+		}
+
 		const apiError = normalizeApiError(error);
 
 		if (apiError.statusCode === 401) {
