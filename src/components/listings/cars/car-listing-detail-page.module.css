@@ -277,8 +277,7 @@
 
 .quickGrid,
 .factGrid,
-.policyGrid,
-.reviewGrid {
+.policyGrid {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
 	gap: 0.7rem;
@@ -286,8 +285,7 @@
 
 .quickGrid div,
 .factItem,
-.policyGrid div,
-.reviewGrid div {
+.policyGrid div {
 	min-height: 7.1rem;
 	display: grid;
 	align-content: space-between;
@@ -299,15 +297,13 @@
 }
 
 .quickGrid svg,
-.factItem svg,
-.reviewGrid svg {
+.factItem svg {
 	color: #02006c;
 }
 
 .quickGrid span,
 .factItem span,
-.policyGrid span,
-.reviewGrid span {
+.policyGrid span {
 	color: rgba(23, 23, 31, 0.54);
 	font-size: 0.72rem;
 	font-weight: 600;
@@ -315,8 +311,7 @@
 
 .quickGrid strong,
 .factItem strong,
-.policyGrid strong,
-.reviewGrid strong {
+.policyGrid strong {
 	color: #17171f;
 	font-size: 0.81rem;
 	font-weight: 700;
@@ -514,8 +509,7 @@
 
 	.quickGrid,
 	.factGrid,
-	.policyGrid,
-	.reviewGrid {
+	.policyGrid {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 
@@ -565,7 +559,6 @@
 	.quickGrid,
 	.factGrid,
 	.policyGrid,
-	.reviewGrid,
 	.skeletonReviewMetrics,
 	.skeletonReviewList {
 		grid-template-columns: 1fr;
