@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
 	Bath,
@@ -13,7 +14,6 @@ import {
 import type { PublicListing } from "@/services/api/listings";
 import { ListingFavoriteButton } from "../listing-favorite-button";
 import { formatMoney } from "../listing-formatters";
-import { ListingImageFrame } from "../listing-image-frame";
 import styles from "./apartment-listing-card.module.css";
 
 type ApartmentListingCardProps = {
@@ -87,9 +87,10 @@ export function ApartmentListingCard({
 		<article className={styles.card}>
 			<div className={styles.media}>
 				<Link href={detailHref} className={styles.imageLink}>
-					<ListingImageFrame
+					<Image
 						src={activeImageSrc}
 						alt={activeImage.alt}
+						fill
 						sizes="(max-width: 720px) 100vw, 22rem"
 						loading={priorityImage ? "eager" : "lazy"}
 						priority={priorityImage}
