@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Image from "next/image";
 import {
 	BriefcaseBusiness,
 	CalendarCheck,
@@ -38,6 +37,7 @@ import {
 } from "../listing-date-planner";
 import { ListingAmenitiesSection } from "../listing-amenities-section";
 import { ListingDetailErrorState } from "../listing-detail-error-state";
+import { ListingImageFrame } from "../listing-image-frame";
 import { CarReviewSection } from "./reviews/car-review-section";
 import styles from "./car-listing-detail-page.module.css";
 
@@ -189,10 +189,9 @@ function CarListingDetail({ listing }: { listing: PublicListing }) {
 							{gallery.map((image, index) => (
 								<SwiperSlide key={image.id}>
 									<div className={styles.slideImage}>
-										<Image
+										<ListingImageFrame
 											src={image.src}
 											alt={image.alt}
-											fill
 											sizes="(max-width: 900px) 100vw, 64vw"
 											priority={index === 0}
 										/>
