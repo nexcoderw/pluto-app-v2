@@ -1,6 +1,7 @@
 "use client";
 
 import { CheckCircle2, ShieldCheck, Sparkles } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import type { ProductAmenity } from "@/services/api/products";
 import styles from "./listing-amenities-section.module.css";
 
@@ -68,14 +69,14 @@ export function ListingAmenitiesSection({
 								</small>
 							</div>
 						</header>
-						<ul>
+						<div className={styles.badgeList}>
 							{group.items.map((item) => (
-								<li key={item.id}>
+								<Badge key={item.id} className={styles.amenityBadge}>
 									<CheckCircle2 aria-hidden="true" />
 									<span>{item.name}</span>
-								</li>
+								</Badge>
 							))}
-						</ul>
+						</div>
 					</div>
 				))}
 			</div>
