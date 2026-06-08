@@ -10,7 +10,6 @@
 
 .header,
 .heading,
-.groupHeader,
 .selectedBar,
 .selectedBar div,
 .chips button,
@@ -155,63 +154,29 @@
 	color: rgba(23, 23, 31, 0.46);
 }
 
-.groups {
+.chips {
 	max-height: 21rem;
-	display: grid;
-	gap: 0.8rem;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.46rem;
+	align-items: flex-start;
 	overflow: auto;
 	padding-right: 0.18rem;
 	scrollbar-width: thin;
 }
 
-.groups[data-expanded="false"] {
+.chips[data-expanded="false"] {
 	max-height: none;
 	overflow: visible;
 }
 
-.group {
-	display: grid;
-	gap: 0.54rem;
-}
-
-.groupHeader {
-	justify-content: space-between;
-	gap: 0.64rem;
-	padding: 0 0.14rem;
-}
-
-.groupHeader span {
-	color: rgba(23, 23, 31, 0.72);
-	font-size: 0.7rem;
-	font-weight: 850;
-	letter-spacing: 0.06em;
-	text-transform: uppercase;
-}
-
-.groupHeader small {
-	min-width: 1.45rem;
-	height: 1.45rem;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	border-radius: 999px;
-	background: rgba(2, 0, 108, 0.06);
-	color: #02006c;
-	font-size: 0.66rem;
-	font-weight: 850;
-}
-
-.chips {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 0.42rem;
-}
-
 .chips button {
-	min-height: 2.8rem;
+	width: auto;
+	max-width: 100%;
+	min-height: 2.35rem;
 	justify-content: flex-start;
 	gap: 0.48rem;
-	padding: 0 0.62rem;
+	padding: 0.42rem 0.68rem;
 	border: 1px solid rgba(2, 0, 108, 0.12);
 	border-radius: 999px;
 	background: rgba(255, 255, 255, 0.86);
@@ -219,6 +184,7 @@
 	font-size: 0.72rem;
 	font-weight: 760;
 	text-align: left;
+	white-space: normal;
 	cursor: pointer;
 	transition:
 		background 180ms ease,
@@ -243,13 +209,9 @@
 
 .chips button > span:nth-child(2) {
 	min-width: 0;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
 }
 
 .chips button small {
-	margin-left: auto;
 	color: rgba(23, 23, 31, 0.48);
 	font-size: 0.64rem;
 	font-weight: 850;
@@ -305,10 +267,6 @@
 @media (max-width: 520px) {
 	.filter {
 		padding: 0.72rem;
-	}
-
-	.chips {
-		grid-template-columns: 1fr;
 	}
 
 	.selectedBar {
