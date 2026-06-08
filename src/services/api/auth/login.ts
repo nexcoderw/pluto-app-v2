@@ -1,6 +1,11 @@
 import { apiClient } from '../client';
-import { normalizeApiError } from '../errors';
+import { ApiRequestError, normalizeApiError } from '../errors';
 import { setUserAccessToken } from '../token-store';
+import { logoutUser } from './logout';
+import {
+	createPublicUserRoleError,
+	isPublicUserRole,
+} from './public-user-role';
 import { USER_AUTH_ROUTES } from './routes';
 import { storeAuthenticatedUserSession } from './session-bootstrap';
 import type { UserAuthResponse } from './types';
@@ -25,10 +30,20 @@ export async function loginUser(
 			payload,
 		);
 
+		if (!isPublicUserRole(response.data.user.role)) {
+			setUserAccessToken(response.data.accessToken);
+			await logoutUser().catch(() => undefined);
+			throw createPublicUserRoleError();
+		}
+
 		setUserAccessToken(response.data.accessToken);
 		await storeAuthenticatedUserSession(response.data.user);
 		return response.data;
 	} catch (error) {
+		if (error instanceof ApiRequestError) {
+			throw error;
+		}
+
 		throw normalizeApiError(error);
 	}
 }
