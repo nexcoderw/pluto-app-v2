@@ -1,0 +1,38 @@
+.frame {
+	position: absolute;
+	inset: 0;
+	display: block;
+	overflow: hidden;
+	background: #ffffff;
+}
+
+.frame::after {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	content: "";
+	background:
+		linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0)),
+		radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.46) 100%);
+	pointer-events: none;
+}
+
+.backdrop,
+.image {
+	user-select: none;
+	pointer-events: none;
+}
+
+.backdrop {
+	z-index: 0;
+	object-fit: cover;
+	filter: blur(24px) saturate(1.08);
+	opacity: 0.42;
+	transform: scale(1.12);
+}
+
+.image {
+	z-index: 2;
+	object-fit: contain;
+	object-position: center;
+}
