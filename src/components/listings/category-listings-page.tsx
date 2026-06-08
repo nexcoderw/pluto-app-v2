@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useMemo, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -44,7 +45,6 @@ import {
 import { ApartmentListingsMap } from "./apartments/apartment-listings-map";
 import styles from "./category-listings-page.module.css";
 import { ListingFilterDialog } from "./listing-filter-dialog";
-import { ListingImageFrame } from "./listing-image-frame";
 
 export type ListingSidebarFilter = {
 	key: keyof ListingListRequest;
@@ -495,9 +495,10 @@ function DefaultListingCard({
 		<article className={styles.card}>
 			<Link href={detailHref} className={styles.cover}>
 				{coverUrl ? (
-					<ListingImageFrame
+					<Image
 						src={coverUrl}
 						alt={coverImage.altText ?? listing.title}
+						fill
 						sizes="(max-width: 860px) 100vw, 28vw"
 					/>
 				) : (
