@@ -62,7 +62,7 @@ import {
 	isUserGoogleLoginEnabled,
 	redirectToUserGoogleLogin,
 	registerUser,
-	type UserRole,
+	type PublicUserRole,
 } from '@/services/api/auth';
 import styles from './auth-form.module.css';
 
@@ -116,7 +116,7 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 type WizardStep = 1 | 2 | 3;
 
 type RegisterFormProps = {
-	initialRole?: UserRole;
+	initialRole?: PublicUserRole;
 	title: string;
 	description: string;
 };
