@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
 	ArrowLeft,
@@ -33,7 +34,6 @@ import {
 	type Product,
 	type ProductCategory,
 } from "@/services/api/products";
-import { ListingImageFrame } from "./listing-image-frame";
 import styles from "./listings-page.module.css";
 
 type ProductOrderBy = "createdAt" | "basePrice" | "title";
@@ -236,9 +236,10 @@ function ProductCard({ product }: { product: Product }) {
 		<article className={styles.card}>
 			<div className={styles.cover}>
 				{coverUrl ? (
-					<ListingImageFrame
+					<Image
 						src={coverUrl}
 						alt={coverImage.altText ?? product.title}
+						fill
 						sizes="(max-width: 760px) 100vw, 33vw"
 					/>
 				) : (
