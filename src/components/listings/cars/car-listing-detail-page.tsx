@@ -273,7 +273,7 @@ function CarListingDetail({ listing }: { listing: PublicListing }) {
 							<section className={styles.tabPanel}>
 								<ListingAmenitiesSection
 									amenities={listing.amenities}
-									title="Car amenities"
+									title=""
 									description="Vehicle features and rental support included by this verified partner."
 								/>
 							</section>
