@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import type { Swiper as SwiperInstance } from "swiper";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ListingImageFrame } from "./listing-image-frame";
 import styles from "./listing-stay-gallery.module.css";
 
 export type ListingStayGalleryImage = {
@@ -55,10 +55,9 @@ export function ListingStayGallery({
 				{images.map((image, index) => (
 					<SwiperSlide key={image.id}>
 						<div className={styles.primaryImage}>
-							<Image
+							<ListingImageFrame
 								src={image.src}
 								alt={image.alt}
-								fill
 								sizes="(max-width: 900px) 100vw, 64vw"
 								priority={index === 0}
 							/>
@@ -77,7 +76,11 @@ export function ListingStayGallery({
 							gallerySwiper?.slideToLoop(index);
 						}}
 					>
-						<Image src={image.src} alt={image.alt} fill sizes="8rem" />
+						<ListingImageFrame
+							src={image.src}
+							alt={image.alt}
+							sizes="8rem"
+						/>
 					</button>
 				))}
 			</div>
