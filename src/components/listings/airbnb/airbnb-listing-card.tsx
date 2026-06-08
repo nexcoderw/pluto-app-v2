@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import {
 	ArrowRight,
@@ -17,6 +16,7 @@ import {
 import type { PublicListing } from "@/services/api/listings";
 import { ListingFavoriteButton } from "../listing-favorite-button";
 import { formatMoney, formatPricingUnit } from "../listing-formatters";
+import { ListingImageFrame } from "../listing-image-frame";
 import styles from "./airbnb-listing-card.module.css";
 
 type AirbnbListingCardProps = {
@@ -89,10 +89,9 @@ export function AirbnbListingCard({
 		<article className={styles.card}>
 			<div className={styles.media}>
 				<Link href={detailHref} className={styles.imageLink}>
-					<Image
+					<ListingImageFrame
 						src={activeImageSrc}
 						alt={activeImage.alt}
-						fill
 						sizes="(max-width: 720px) 100vw, (max-width: 1280px) 43vw, 19vw"
 						loading={priorityImage ? "eager" : "lazy"}
 						priority={priorityImage}
