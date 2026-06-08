@@ -56,6 +56,7 @@ export { USER_AUTH_ROUTES } from "./routes";
 export type {
   ApiMessageResponse,
   PartnerType,
+  PublicUserRole,
   UserAuthProfile,
   UserAuthResponse,
   UserCurrentProfileResponse,
