@@ -8,9 +8,6 @@ import {
 	CarFront,
 	Fuel,
 	MapPin,
-	ShieldCheck,
-	Star,
-	Tag,
 	Users,
 } from "lucide-react";
 import {
@@ -44,13 +41,12 @@ import { ListingDetailErrorState } from "../listing-detail-error-state";
 import { CarReviewSection } from "./reviews/car-review-section";
 import styles from "./car-listing-detail-page.module.css";
 
-type CarDetailTab = "overview" | "details" | "amenities" | "review";
+type CarDetailTab = "overview" | "details" | "amenities";
 
 const tabs: Array<{ value: CarDetailTab; label: string }> = [
 	{ value: "overview", label: "Overview" },
 	{ value: "details", label: "Details" },
 	{ value: "amenities", label: "Amenities" },
-	{ value: "review", label: "Listing review" },
 ];
 
 export function CarListingDetailPage({ listingId }: { listingId: string }) {
@@ -283,34 +279,6 @@ function CarListingDetail({ listing }: { listing: PublicListing }) {
 							</section>
 						) : null}
 
-						{activeTab === "review" ? (
-							<section className={styles.tabPanel}>
-								<div className={styles.sectionHeader}>
-									<span>Listing review</span>
-								</div>
-								<div className={styles.reviewGrid}>
-									<div>
-										<ShieldCheck aria-hidden="true" />
-										<strong>Verified partner</strong>
-										<span>{listing.owner.fullName}</span>
-									</div>
-									<div>
-										<Star aria-hidden="true" />
-										<strong>Rating</strong>
-										<span>
-											{listing.ratingAverage
-												? `${listing.ratingAverage.toFixed(2)} / 5`
-												: "New listing"}
-										</span>
-									</div>
-									<div>
-										<Tag aria-hidden="true" />
-										<strong>Listing number</strong>
-										<span>{listing.productNo}</span>
-									</div>
-								</div>
-							</section>
-						) : null}
 					</section>
 
 					<ListingDatePlanner
