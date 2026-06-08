@@ -26,6 +26,10 @@ export function ListingFavoriteButton({
 	const { currentUser, isFavorite, isPending, saveAfterLogin, toggleFavorite } =
 		useListingFavorite(productId);
 
+	if (currentUser && currentUser.role !== "CUSTOMER") {
+		return null;
+	}
+
 	function handleClick() {
 		if (!currentUser) {
 			setIsLoginDialogOpen(true);
