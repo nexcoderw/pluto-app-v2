@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 import {
 	listAirbnbListings,
 	listApartmentListings,
@@ -152,5 +152,9 @@ export function CategoryListingsRoute({
 }) {
 	const config = categoryConfigs[categorySlug];
 
-	return <CategoryListingsPage categorySlug={categorySlug} {...config} />;
+	return (
+		<Suspense fallback={null}>
+			<CategoryListingsPage categorySlug={categorySlug} {...config} />
+		</Suspense>
+	);
 }
