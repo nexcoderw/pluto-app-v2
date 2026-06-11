@@ -325,8 +325,6 @@ function CarListingDetail({ listing }: { listing: PublicListing }) {
 					ctaIcon="calendar"
 					notice="Your price is calculated from the selected dates."
 					availabilityMessage={bookingFlow.availabilityMessage}
-					isOwnBookingSelection={bookingFlow.isOwnBookingSelection}
-					isBlockedByAnotherBooking={bookingFlow.isBlockedByAnotherBooking}
 					isBookingPending={bookingFlow.isBookingPending}
 					onReserve={bookingFlow.openBookingDialog}
 				/>
