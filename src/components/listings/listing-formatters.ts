@@ -53,6 +53,10 @@ export function formatPricingUnit(value: string) {
 	return value.toLowerCase();
 }
 
+export function formatAverageRating(value: number | null | undefined) {
+	return value === null || value === undefined ? "New" : value.toFixed(1);
+}
+
 export function formatBoolean(value: boolean) {
 	return value ? "Yes" : "No";
 }
