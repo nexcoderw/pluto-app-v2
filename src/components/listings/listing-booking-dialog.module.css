@@ -1,0 +1,177 @@
+.dialog {
+	width: min(34rem, calc(100vw - 2rem));
+	max-width: 34rem;
+	gap: 1rem;
+	border: 1px solid rgba(255, 255, 255, 0.82);
+	border-radius: 1.6rem;
+	background: rgba(255, 255, 255, 0.96);
+	padding: clamp(1rem, 3vw, 1.35rem);
+	box-shadow: 0 2rem 5rem rgba(16, 22, 33, 0.22);
+	backdrop-filter: blur(18px);
+}
+
+.header {
+	align-items: center;
+	text-align: center;
+}
+
+.header h2 {
+	color: #17171f;
+	font-size: clamp(1.25rem, 3vw, 1.65rem);
+	font-weight: 850;
+	letter-spacing: 0;
+	text-transform: none;
+}
+
+.header p {
+	max-width: 28rem;
+	color: rgba(23, 23, 31, 0.66);
+	font-size: 0.83rem;
+	font-weight: 500;
+	line-height: 1.65;
+}
+
+.iconWrap {
+	width: 3.1rem;
+	height: 3.1rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 999px;
+	background: rgba(2, 0, 108, 0.08);
+	color: #02006c;
+}
+
+.iconWrap[data-tone="progress"] svg {
+	animation: bookingSpin 900ms linear infinite;
+}
+
+.iconWrap[data-tone="success"] {
+	background: rgba(22, 138, 73, 0.1);
+	color: #168a49;
+}
+
+.iconWrap[data-tone="error"] {
+	background: rgba(202, 23, 70, 0.1);
+	color: #ca1746;
+}
+
+.iconWrap svg {
+	width: 1.35rem;
+	height: 1.35rem;
+}
+
+.summary {
+	display: grid;
+	gap: 0.65rem;
+	padding: 0.85rem;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	border-radius: 1.15rem;
+	background: rgba(2, 0, 108, 0.035);
+}
+
+.summary div {
+	display: grid;
+	grid-template-columns: minmax(7rem, 0.65fr) minmax(0, 1fr);
+	gap: 0.75rem;
+	align-items: baseline;
+}
+
+.summary span,
+.successBox span {
+	color: rgba(23, 23, 31, 0.56);
+	font-size: 0.68rem;
+	font-weight: 800;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+}
+
+.summary strong {
+	color: #17171f;
+	font-size: 0.88rem;
+	font-weight: 720;
+	line-height: 1.35;
+}
+
+.progressTrack {
+	height: 0.55rem;
+	overflow: hidden;
+	border-radius: 999px;
+	background: rgba(2, 0, 108, 0.08);
+}
+
+.progressTrack span {
+	width: 42%;
+	height: 100%;
+	display: block;
+	border-radius: inherit;
+	background: #02006c;
+	animation: bookingProgress 1.15s ease-in-out infinite;
+}
+
+.successBox {
+	display: grid;
+	justify-items: center;
+	gap: 0.35rem;
+	padding: 1rem;
+	border: 1px solid rgba(22, 138, 73, 0.16);
+	border-radius: 1.2rem;
+	background: rgba(22, 138, 73, 0.06);
+}
+
+.successBox strong {
+	color: #168a49;
+	font-size: 1.15rem;
+	font-weight: 850;
+}
+
+.footer {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.7rem;
+}
+
+.primaryButton,
+.secondaryButton {
+	min-height: var(--pluto-button-height);
+	border-radius: 999px;
+	font-size: 0.75rem;
+	font-weight: 800;
+	cursor: pointer;
+}
+
+.primaryButton {
+	background: #02006c;
+	color: #ffffff;
+	box-shadow: 0 1rem 2rem rgba(2, 0, 108, 0.22);
+}
+
+.secondaryButton {
+	border-color: rgba(2, 0, 108, 0.14);
+	color: #02006c;
+}
+
+@keyframes bookingProgress {
+	0% {
+		transform: translateX(-105%);
+	}
+	50% {
+		transform: translateX(70%);
+	}
+	100% {
+		transform: translateX(250%);
+	}
+}
+
+@keyframes bookingSpin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@media (max-width: 560px) {
+	.footer,
+	.summary div {
+		grid-template-columns: 1fr;
+	}
+}
