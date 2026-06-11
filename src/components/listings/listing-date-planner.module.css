@@ -104,6 +104,19 @@
 	cursor: pointer;
 }
 
+.calendar :global(.rdp-disabled button) {
+	cursor: not-allowed;
+	text-decoration: line-through;
+}
+
+.availabilityMessage {
+	margin: -0.15rem 0 0;
+	color: #ca1746;
+	font-size: 0.78rem;
+	font-weight: 700;
+	line-height: 1.55;
+}
+
 .clearDatesButton {
 	width: fit-content;
 	margin-left: auto;
