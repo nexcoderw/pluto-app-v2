@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { CustomerPortalLoading } from "@/components/account/customer-portal-loading";
 import { CustomerPortalShell } from "@/components/account/customer-portal-shell";
 import { PortalAccessBoundary } from "@/components/portal/portal-access-boundary";
 import { Button } from "@/components/ui/button";
@@ -25,6 +24,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
 	cancelBooking,
 	listMyBookings,
@@ -66,15 +66,7 @@ const sortOptions: Array<{ label: string; value: BookingOrderBy }> = [
 
 export function CustomerBookingsPage() {
 	return (
-		<PortalAccessBoundary
-			allowedRole="CUSTOMER"
-			loadingFallback={
-				<CustomerPortalLoading
-					title="Opening bookings"
-					description="Checking your customer session before loading reservation history."
-				/>
-			}
-		>
+		<PortalAccessBoundary allowedRole="CUSTOMER">
 			{(user) => (
 				<CustomerPortalShell user={user}>
 					<CustomerBookingsContent />
@@ -250,11 +242,7 @@ function CustomerBookingsContent() {
 				</form>
 
 				{bookingsQuery.isPending ? (
-					<CustomerPortalLoading
-						variant="panel"
-						title="Loading bookings"
-						description="Fetching your reservation history and latest booking statuses."
-					/>
+					<CustomerBookingsSkeleton />
 				) : bookingsQuery.isError ? (
 					<BookingState
 						title="Bookings could not load"
@@ -386,6 +374,19 @@ function BookingState({
 				Refresh
 			</Button>
 		</section>
+	);
+}
+
+function CustomerBookingsSkeleton() {
+	return (
+		<div className={styles.tablePanel} aria-label="Loading customer bookings">
+			<div className={styles.skeletonTable}>
+				<Skeleton className={styles.skeletonHeader} />
+				{Array.from({ length: 6 }).map((_, index) => (
+					<Skeleton key={index} className={styles.skeletonRow} />
+				))}
+			</div>
+		</div>
 	);
 }
 
