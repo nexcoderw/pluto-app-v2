@@ -367,6 +367,31 @@
 	box-shadow: 0 0.75rem 1.5rem rgba(2, 0, 108, 0.18);
 }
 
+.skeletonTableHeader,
+.skeletonTableRow {
+	display: grid;
+	grid-template-columns: 1.6fr 1.1fr 1.2fr 1.25fr 1.25fr 0.9fr;
+	gap: 1rem;
+	align-items: center;
+	min-width: 62rem;
+	padding: 0.95rem 1rem;
+	border-bottom: 1px solid rgba(2, 0, 108, 0.06);
+}
+
+.skeletonTableHeader {
+	background: rgba(2, 0, 108, 0.035);
+}
+
+.skeletonTableHeader span,
+.skeletonTableRow span {
+	height: 1rem;
+	border-radius: 999px;
+}
+
+.skeletonTableRow span:first-child {
+	height: 2.4rem;
+}
+
 @media (max-width: 1180px) {
 	.toolbar {
 		grid-template-columns: 1fr;
