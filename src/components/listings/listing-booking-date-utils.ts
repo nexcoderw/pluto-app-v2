@@ -24,9 +24,9 @@ export function findOverlappingBlockedRange(
 	const rangeStart = getDayTime(range.from);
 	const rangeEnd = getDayTime(range.to);
 
-	const overlappingRanges = blockedRanges.filter((blockedRange) =>
-		doRangesOverlap(rangeStart, rangeEnd, blockedRange),
-	);
+	const overlappingRanges = blockedRanges
+		.filter((blockedRange) => blockedRange.blocksBooking !== false)
+		.filter((blockedRange) => doRangesOverlap(rangeStart, rangeEnd, blockedRange));
 
 	return (
 		overlappingRanges.find((blockedRange) => blockedRange.isOwnBooking) ??
@@ -37,7 +37,18 @@ export function findOverlappingBlockedRange(
 export function mapBlockedRangesToCalendarMatchers(
 	blockedRanges: ListingAvailabilityBlockedRange[],
 ) {
-	return blockedRanges.map((blockedRange) => ({
+	return blockedRanges
+		.filter((blockedRange) => blockedRange.blocksBooking !== false)
+		.map((blockedRange) => ({
+			from: startOfDay(parseISO(blockedRange.startDate)),
+			to: startOfDay(parseISO(blockedRange.endDate)),
+		}));
+}
+
+export function mapBookedMarkerRangesToCalendarMatchers(
+	blockedRanges: ListingAvailabilityBlockedRange[],
+) {
+	return blockedRanges.filter((blockedRange) => blockedRange.showBookedMarker).map((blockedRange) => ({
 		from: startOfDay(parseISO(blockedRange.startDate)),
 		to: startOfDay(parseISO(blockedRange.endDate)),
 	}));
