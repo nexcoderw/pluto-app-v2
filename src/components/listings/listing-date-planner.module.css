@@ -109,6 +109,27 @@
 	text-decoration: line-through;
 }
 
+.calendar :global(.rdp-disabled button:has([data-booked-date-marker="true"])) {
+	text-decoration: none;
+}
+
+.bookedDateMarker {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 1.45rem;
+	height: 1.45rem;
+	border: 1px solid rgba(2, 0, 108, 0.14);
+	border-radius: 999px;
+	background: rgba(2, 0, 108, 0.08);
+	color: #02006c;
+	font-size: 0.7rem;
+	font-weight: 850;
+	line-height: 1;
+	text-decoration: none;
+	opacity: 1;
+}
+
 .availabilityMessage {
 	margin: -0.15rem 0 0;
 	color: #ca1746;
