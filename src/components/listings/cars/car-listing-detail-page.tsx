@@ -23,10 +23,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { NotFoundState } from "@/components/shared/not-found-state";
 import { isApiNotFoundError } from "@/services/api/errors";
 import { getCarListing, type PublicListing } from "@/services/api/listings";
-import {
-	buildListingGallery,
-	formatOptional,
-} from "../listing-formatters";
+import { buildListingGallery, formatOptional } from "../listing-formatters";
 import {
 	ListingBookingSidebar,
 	ListingBookingSidebarSkeleton,
@@ -38,6 +35,7 @@ import {
 import { ListingAmenitiesSection } from "../listing-amenities-section";
 import { ListingDetailErrorState } from "../listing-detail-error-state";
 import { ListingImageFrame } from "../listing-image-frame";
+import { useListingBookingFlow } from "../use-listing-booking-flow";
 import { CarReviewSection } from "./reviews/car-review-section";
 import styles from "./car-listing-detail-page.module.css";
 
@@ -153,6 +151,18 @@ function CarListingDetail({ listing }: { listing: PublicListing }) {
 		fromDate && toDate
 			? `${format(fromDate, "MMM d, yyyy")} - ${format(toDate, "MMM d, yyyy")}`
 			: "Select your pickup and return dates";
+	const bookingFlow = useListingBookingFlow({
+		listing,
+		today,
+		dateRange,
+		fromDate,
+		toDate,
+		durationCount: rentalDays,
+		durationLabel: rentalDays === 1 ? "day" : "days",
+		totalPrice,
+		formattedRange,
+		onDateRangeChange: setDateRange,
+	});
 
 	return (
 		<main className={styles.page}>
@@ -277,7 +287,6 @@ function CarListingDetail({ listing }: { listing: PublicListing }) {
 								/>
 							</section>
 						) : null}
-
 					</section>
 
 					<ListingDatePlanner
@@ -290,7 +299,10 @@ function CarListingDetail({ listing }: { listing: PublicListing }) {
 						toDate={toDate}
 						formattedRange={formattedRange}
 						resetRange={{ from: addDays(today, 1), to: addDays(today, 4) }}
-						onDateRangeChange={setDateRange}
+						blockedRanges={bookingFlow.blockedRanges}
+						availabilityMessage={bookingFlow.availabilityMessage}
+						onUnavailableSelection={bookingFlow.rejectUnavailableDateRange}
+						onDateRangeChange={bookingFlow.handleDateRangeChange}
 					/>
 
 					<CarReviewSection listing={listing} />
@@ -312,8 +324,12 @@ function CarListingDetail({ listing }: { listing: PublicListing }) {
 					footerNote="You will not be charged yet."
 					ctaIcon="calendar"
 					notice="Your price is calculated from the selected dates."
+					availabilityMessage={bookingFlow.availabilityMessage}
+					isBookingPending={bookingFlow.isBookingPending}
+					onReserve={bookingFlow.openBookingDialog}
 				/>
 			</section>
+			{bookingFlow.bookingDialog}
 		</main>
 	);
 }
