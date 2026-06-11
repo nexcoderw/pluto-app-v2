@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import type { PublicListing } from "@/services/api/listings";
 import { ListingFavoriteButton } from "../listing-favorite-button";
-import { formatMoney } from "../listing-formatters";
+import { formatAverageRating, formatMoney } from "../listing-formatters";
 import styles from "./apartment-listing-card.module.css";
 
 type ApartmentListingCardProps = {
@@ -61,7 +61,7 @@ export function ApartmentListingCard({
 	const ratingLabel =
 		listing.ratingAverage === null || listing.ratingAverage === undefined
 			? "New"
-			: `${listing.ratingAverage.toFixed(2)} (${listing.ratingCount ?? 0})`;
+			: `${formatAverageRating(listing.ratingAverage)} (${listing.ratingCount ?? 0})`;
 
 	function showPreviousImage() {
 		setActiveImageIndex((current) =>
