@@ -26,8 +26,7 @@
 	gap: 0.35rem;
 }
 
-.header span,
-.dialogField span {
+.header span {
 	display: inline-flex;
 	align-items: center;
 	gap: 0.4rem;
@@ -47,8 +46,7 @@
 }
 
 .header p,
-.state p,
-.dialogHeader p {
+.state p {
 	margin: 0;
 	color: rgba(23, 23, 31, 0.62);
 	font-size: 0.86rem;
@@ -90,8 +88,7 @@
 .primaryButton,
 .secondaryButton,
 .rowAction,
-.paginationButton,
-.dialogFooter button {
+.paginationButton {
 	min-height: var(--pluto-button-height);
 	border-radius: 999px;
 	font-size: 0.75rem;
@@ -245,72 +242,6 @@
 	color: #ffffff;
 }
 
-.dialog {
-	width: min(34rem, calc(100vw - 2rem));
-	max-width: 34rem;
-	border-radius: 1.5rem;
-	background: rgba(255, 255, 255, 0.96);
-	padding: 1.2rem;
-}
-
-.dialogHeader {
-	align-items: center;
-	text-align: center;
-}
-
-.dialogIcon {
-	width: 3rem;
-	height: 3rem;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	border-radius: 999px;
-	background: rgba(202, 23, 70, 0.1);
-	color: #ca1746;
-}
-
-.dialogIcon svg {
-	width: 1.35rem;
-	height: 1.35rem;
-}
-
-.dialogHeader h2 {
-	color: #17171f;
-	font-size: 1.45rem;
-	font-weight: 850;
-	letter-spacing: 0;
-	text-transform: none;
-}
-
-.dialogMeta {
-	display: grid;
-	gap: 0.2rem;
-	padding: 0.85rem;
-	border-radius: 1rem;
-	background: rgba(2, 0, 108, 0.05);
-}
-
-.dialogMeta span {
-	color: #02006c;
-	font-size: 0.72rem;
-	font-weight: 850;
-}
-
-.dialogField {
-	display: grid;
-	gap: 0.45rem;
-}
-
-.dialogFooter {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 0.65rem;
-}
-
-.spinner {
-	animation: spin 850ms linear infinite;
-}
-
 .skeletonTable {
 	display: grid;
 	gap: 0.65rem;
@@ -330,12 +261,6 @@
 	height: 4.5rem;
 }
 
-@keyframes spin {
-	to {
-		transform: rotate(360deg);
-	}
-}
-
 @media (max-width: 920px) {
 	.toolbar {
 		grid-template-columns: 1fr;
@@ -352,8 +277,7 @@
 
 @media (max-width: 640px) {
 	.header,
-	.pagination,
-	.dialogFooter {
+	.pagination {
 		flex-direction: column;
 		grid-template-columns: 1fr;
 		align-items: stretch;
