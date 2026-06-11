@@ -101,7 +101,8 @@ export function useListingBookingFlow({
 		canSeeUnavailableMessage && selectedBlockedRange?.isOwnBooking,
 	);
 	const isBlockedByAnotherBooking = Boolean(
-		selectedBlockedRange && !selectedBlockedRange.isOwnBooking,
+		(selectedBlockedRange && !selectedBlockedRange.isOwnBooking) ||
+			availabilityMessage === unavailableMessage,
 	);
 
 	const createBookingMutation = useMutation({
