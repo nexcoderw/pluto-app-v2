@@ -242,6 +242,25 @@
 	color: #ffffff;
 }
 
+.skeletonTable {
+	display: grid;
+	gap: 0.65rem;
+	padding: 0.9rem;
+}
+
+.skeletonHeader,
+.skeletonRow {
+	border-radius: 1rem;
+}
+
+.skeletonHeader {
+	height: 2.2rem;
+}
+
+.skeletonRow {
+	height: 4.5rem;
+}
+
 @media (max-width: 920px) {
 	.toolbar {
 		grid-template-columns: 1fr;
