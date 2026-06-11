@@ -10,19 +10,28 @@ export function doesDateRangeOverlapBlockedRange(
 	range: DateRange | undefined,
 	blockedRanges: ListingAvailabilityBlockedRange[],
 ): boolean {
+	return Boolean(findOverlappingBlockedRange(range, blockedRanges));
+}
+
+export function findOverlappingBlockedRange(
+	range: DateRange | undefined,
+	blockedRanges: ListingAvailabilityBlockedRange[],
+): ListingAvailabilityBlockedRange | undefined {
 	if (!range?.from || !range.to || blockedRanges.length === 0) {
-		return false;
+		return undefined;
 	}
 
 	const rangeStart = getDayTime(range.from);
 	const rangeEnd = getDayTime(range.to);
 
-	return blockedRanges.some((blockedRange) => {
-		const blockedStart = getDayTime(parseISO(blockedRange.startDate));
-		const blockedEnd = getDayTime(parseISO(blockedRange.endDate));
+	const overlappingRanges = blockedRanges.filter((blockedRange) =>
+		doRangesOverlap(rangeStart, rangeEnd, blockedRange),
+	);
 
-		return rangeStart <= blockedEnd && rangeEnd >= blockedStart;
-	});
+	return (
+		overlappingRanges.find((blockedRange) => blockedRange.isOwnBooking) ??
+		overlappingRanges[0]
+	);
 }
 
 export function mapBlockedRangesToCalendarMatchers(
@@ -36,4 +45,15 @@ export function mapBlockedRangesToCalendarMatchers(
 
 function getDayTime(date: Date): number {
 	return startOfDay(date).getTime();
+}
+
+function doRangesOverlap(
+	rangeStart: number,
+	rangeEnd: number,
+	blockedRange: ListingAvailabilityBlockedRange,
+): boolean {
+	const blockedStart = getDayTime(parseISO(blockedRange.startDate));
+	const blockedEnd = getDayTime(parseISO(blockedRange.endDate));
+
+	return rangeStart <= blockedEnd && rangeEnd >= blockedStart;
 }
