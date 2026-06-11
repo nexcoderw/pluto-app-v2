@@ -97,8 +97,19 @@ export function useListingBookingFlow({
 		() => findOverlappingBlockedRange(dateRange, blockedRanges),
 		[blockedRanges, dateRange],
 	);
+	const currentOrUpcomingOwnBookingRange = useMemo(
+		() =>
+			blockedRanges.find(
+				(blockedRange) =>
+					blockedRange.isOwnBooking && blockedRange.blocksBooking !== false,
+			),
+		[blockedRanges],
+	);
+	const hasCompleteDateRange = Boolean(dateRange?.from && dateRange.to);
 	const isOwnBookingSelection = Boolean(
-		canSeeUnavailableMessage && selectedBlockedRange?.isOwnBooking,
+		canSeeUnavailableMessage &&
+			(selectedBlockedRange?.isOwnBooking ||
+				(!hasCompleteDateRange && currentOrUpcomingOwnBookingRange)),
 	);
 	const isBlockedByAnotherBooking = Boolean(
 		(selectedBlockedRange && !selectedBlockedRange.isOwnBooking) ||
@@ -155,8 +166,26 @@ export function useListingBookingFlow({
 				canSeeUnavailableMessage ? buildAvailabilityMessage(overlap) : null,
 			);
 			onDateRangeChange(undefined);
+			return;
 		}
-	}, [blockedRanges, canSeeUnavailableMessage, dateRange, onDateRangeChange]);
+
+		if (
+			canSeeUnavailableMessage &&
+			!hasCompleteDateRange &&
+			currentOrUpcomingOwnBookingRange
+		) {
+			setAvailabilityMessage(
+				buildAvailabilityMessage(currentOrUpcomingOwnBookingRange),
+			);
+		}
+	}, [
+		blockedRanges,
+		canSeeUnavailableMessage,
+		currentOrUpcomingOwnBookingRange,
+		dateRange,
+		hasCompleteDateRange,
+		onDateRangeChange,
+	]);
 
 	function handleDateRangeChange(nextRange: DateRange | undefined) {
 		const overlap = findOverlappingBlockedRange(nextRange, blockedRanges);
