@@ -42,6 +42,8 @@ export type ListingAvailabilityBlockedRange = {
 	source: "BOOKING" | "MANUAL_BLOCK";
 	status?: BookingStatus;
 	reason?: string | null;
+	isOwnBooking?: boolean;
+	bookingNo?: string | null;
 	startDate: string;
 	endDate: string;
 };
