@@ -48,6 +48,7 @@ import {
 	ListingStayGallery,
 	ListingStayGallerySkeleton,
 } from "../listing-stay-gallery";
+import { useListingBookingFlow } from "../use-listing-booking-flow";
 import { AirbnbReviewSection } from "./airbnb-review-section";
 import styles from "./airbnb-listing-detail-page.module.css";
 
@@ -122,6 +123,18 @@ function AirbnbListingDetail({ listing }: { listing: PublicListing }) {
 		fromDate && toDate
 			? `${format(fromDate, "MMM d, yyyy")} - ${format(toDate, "MMM d, yyyy")}`
 			: "Select your check-in and checkout dates";
+	const bookingFlow = useListingBookingFlow({
+		listing,
+		today,
+		dateRange,
+		fromDate,
+		toDate,
+		durationCount: stayNights,
+		durationLabel: stayNights === 1 ? "night" : "nights",
+		totalPrice,
+		formattedRange,
+		onDateRangeChange: setDateRange,
+	});
 	const facts = useMemo(
 		() => [
 			{
@@ -197,6 +210,9 @@ function AirbnbListingDetail({ listing }: { listing: PublicListing }) {
 					loginLabel="Sign in to reserve"
 					footerNote="You will review the final booking details before paying."
 					ctaIcon="door"
+					availabilityMessage={bookingFlow.availabilityMessage}
+					isBookingPending={bookingFlow.isBookingPending}
+					onReserve={bookingFlow.openBookingDialog}
 				/>
 			}
 		>
@@ -298,7 +314,10 @@ function AirbnbListingDetail({ listing }: { listing: PublicListing }) {
 				toDate={toDate}
 				formattedRange={formattedRange}
 				resetRange={{ from: addDays(today, 1), to: addDays(today, 4) }}
-				onDateRangeChange={setDateRange}
+				blockedRanges={bookingFlow.blockedRanges}
+				availabilityMessage={bookingFlow.availabilityMessage}
+				onUnavailableSelection={bookingFlow.rejectUnavailableDateRange}
+				onDateRangeChange={bookingFlow.handleDateRangeChange}
 			/>
 
 			<AirbnbReviewSection listing={listing} />
@@ -309,6 +328,7 @@ function AirbnbListingDetail({ listing }: { listing: PublicListing }) {
 				ariaLabel="Airbnb map location"
 				unavailableDescription="The partner has not attached exact coordinates to this stay yet. Confirm arrival details before check-in."
 			/>
+			{bookingFlow.bookingDialog}
 		</ListingStayDetailShell>
 	);
 }
