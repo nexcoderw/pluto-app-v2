@@ -11,6 +11,7 @@ import {
 	SlidersHorizontal,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { CustomerPortalLoading } from "@/components/account/customer-portal-loading";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,7 +23,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
 	Table,
 	TableBody,
@@ -202,7 +202,11 @@ export function UserAuditLogsPage({
 			</form>
 
 			{auditLogsQuery.isPending ? (
-				<UserAuditLogsSkeleton />
+				<CustomerPortalLoading
+					variant="panel"
+					title="Loading audit logs"
+					description="Fetching your latest account activity and security events."
+				/>
 			) : auditLogsQuery.isError ? (
 				<UserAuditLogsState
 					icon={<RefreshCcw aria-hidden="true" />}
@@ -379,25 +383,6 @@ function UserAuditLogsState({
 			<h2>{title}</h2>
 			<p>{description}</p>
 			{action}
-		</section>
-	);
-}
-
-function UserAuditLogsSkeleton() {
-	return (
-		<section className={styles.tablePanel} aria-label="Loading audit logs">
-			<div className={styles.skeletonTableHeader}>
-				{Array.from({ length: 6 }).map((_, index) => (
-					<Skeleton key={index} />
-				))}
-			</div>
-			{Array.from({ length: 6 }).map((_, rowIndex) => (
-				<div key={rowIndex} className={styles.skeletonTableRow}>
-					{Array.from({ length: 6 }).map((_, cellIndex) => (
-						<Skeleton key={cellIndex} />
-					))}
-				</div>
-			))}
 		</section>
 	);
 }
