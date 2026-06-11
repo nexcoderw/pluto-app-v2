@@ -7,10 +7,10 @@ import {
   UserRound,
   type LucideIcon,
 } from "lucide-react";
+import { CustomerPortalLoading } from "@/components/account/customer-portal-loading";
 import { CustomerPortalShell } from "@/components/account/customer-portal-shell";
 import { PortalAccessBoundary } from "@/components/portal/portal-access-boundary";
 import type { UserAuthProfile } from "@/services/api/auth";
-import { AccountProfileSkeleton } from "./account-profile-skeleton";
 import { ProfileDetailsForm } from "./profile-details-form";
 import { ProfileImagePanel } from "./profile-image-panel";
 import { ProfilePasswordForm } from "./profile-password-form";
@@ -42,7 +42,12 @@ export function AccountProfilePage() {
   return (
     <PortalAccessBoundary
       allowedRole="CUSTOMER"
-      loadingFallback={<AccountProfileSkeleton />}
+      loadingFallback={
+        <CustomerPortalLoading
+          title="Opening profile"
+          description="Checking your customer session before loading profile settings."
+        />
+      }
     >
       {(user) => <AccountProfileWorkspace user={user} />}
     </PortalAccessBoundary>
