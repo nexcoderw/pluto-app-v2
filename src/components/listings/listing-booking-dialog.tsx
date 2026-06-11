@@ -1,7 +1,6 @@
 "use client";
 
 import {
-	AlertCircle,
 	CalendarCheck,
 	CheckCircle2,
 	Loader2,
@@ -78,13 +77,9 @@ export function ListingBookingDialog({
 				{mode === "confirm" ? (
 					<>
 						<DialogHeader className={styles.header}>
-							<span className={styles.iconWrap} data-tone="confirm">
-								<CalendarCheck aria-hidden="true" />
-							</span>
-							<DialogTitle>Confirm booking request</DialogTitle>
+							<DialogTitle>Confirm booking</DialogTitle>
 							<DialogDescription>
-								Review your selected dates before Pluto Booking sends this
-								request to the verified partner.
+								Review your dates and total before sending this request.
 							</DialogDescription>
 						</DialogHeader>
 						<BookingDialogSummary
@@ -102,7 +97,6 @@ export function ListingBookingDialog({
 								className={styles.secondaryButton}
 								onClick={() => onOpenChange(false)}
 							>
-								<AlertCircle aria-hidden="true" />
 								Review dates
 							</Button>
 							<Button
@@ -123,10 +117,9 @@ export function ListingBookingDialog({
 							<span className={styles.iconWrap} data-tone="progress">
 								<Loader2 aria-hidden="true" />
 							</span>
-							<DialogTitle>Creating your booking</DialogTitle>
+							<DialogTitle>Creating booking</DialogTitle>
 							<DialogDescription>
-								We are checking availability again and saving your request
-								securely. Keep this window open.
+								Checking availability and saving your request.
 							</DialogDescription>
 						</DialogHeader>
 						<div className={styles.progressTrack} aria-hidden="true">
@@ -149,10 +142,9 @@ export function ListingBookingDialog({
 							<span className={styles.iconWrap} data-tone="success">
 								<CheckCircle2 aria-hidden="true" />
 							</span>
-							<DialogTitle>Booking request received</DialogTitle>
+							<DialogTitle>Booking sent</DialogTitle>
 							<DialogDescription>
-								Your request is now pending partner review. You can track it
-								from your customer portal.
+								Your request is pending partner review.
 							</DialogDescription>
 						</DialogHeader>
 						<div className={styles.successBox}>
@@ -160,6 +152,14 @@ export function ListingBookingDialog({
 							<strong>{booking?.bookingNo ?? "Created"}</strong>
 						</div>
 						<DialogFooter className={styles.footer}>
+							<Button
+								type="button"
+								variant="outline"
+								className={styles.secondaryButton}
+								onClick={() => onOpenChange(false)}
+							>
+								Close
+							</Button>
 							<Button
 								type="button"
 								className={styles.primaryButton}
@@ -175,9 +175,6 @@ export function ListingBookingDialog({
 				{mode === "error" ? (
 					<>
 						<DialogHeader className={styles.header}>
-							<span className={styles.iconWrap} data-tone="error">
-								<AlertCircle aria-hidden="true" />
-							</span>
 							<DialogTitle>Booking needs attention</DialogTitle>
 							<DialogDescription>
 								{errorMessage ??
@@ -226,23 +223,13 @@ function BookingDialogSummary({
 }) {
 	return (
 		<section className={styles.summary}>
+			<strong>{listingTitle}</strong>
+			<p>{formattedRange}</p>
 			<div>
-				<span>Listing</span>
-				<strong>{listingTitle}</strong>
-			</div>
-			<div>
-				<span>Dates</span>
-				<strong>{formattedRange}</strong>
-			</div>
-			<div>
-				<span>Duration</span>
-				<strong>
+				<span>
 					{durationCount} {durationLabel}
-				</strong>
-			</div>
-			<div>
-				<span>Estimated total</span>
-				<strong>{formatMoney(String(totalPrice), currency)}</strong>
+				</span>
+				<b>{formatMoney(String(totalPrice), currency)}</b>
 			</div>
 		</section>
 	);
