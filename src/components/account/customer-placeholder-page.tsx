@@ -2,7 +2,6 @@
 
 import { ArrowRight, Clock3 } from "lucide-react";
 import Link from "next/link";
-import { CustomerPortalLoading } from "@/components/account/customer-portal-loading";
 import { CustomerPortalShell } from "@/components/account/customer-portal-shell";
 import { PortalAccessBoundary } from "@/components/portal/portal-access-boundary";
 import type { UserAuthProfile } from "@/services/api/auth";
@@ -17,10 +16,7 @@ type CustomerPlaceholderPageProps = {
 
 export function CustomerPlaceholderPage(props: CustomerPlaceholderPageProps) {
   return (
-    <PortalAccessBoundary
-      allowedRole="CUSTOMER"
-      loadingFallback={<CustomerPortalLoading />}
-    >
+    <PortalAccessBoundary allowedRole="CUSTOMER">
       {(user) => <PlaceholderContent user={user} {...props} />}
     </PortalAccessBoundary>
   );
