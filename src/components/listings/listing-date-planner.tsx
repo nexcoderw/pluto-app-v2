@@ -1,10 +1,12 @@
 "use client";
 
+import type { ComponentProps } from "react";
 import { CalendarDays } from "lucide-react";
 import { format } from "date-fns";
 import type { DateRange } from "react-day-picker";
-import { Calendar } from "@/components/ui/calendar";
+import { Calendar, CalendarDayButton } from "@/components/ui/calendar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useUserSession } from "@/hooks/use-user-session";
 import type { ListingAvailabilityBlockedRange } from "@/services/api/bookings";
 import {
 	doesDateRangeOverlapBlockedRange,
@@ -44,7 +46,14 @@ export function ListingDatePlanner({
 	onUnavailableSelection,
 	onDateRangeChange,
 }: ListingDatePlannerProps) {
+	const currentUser = useUserSession();
+	const canShowBookedMarkers = Boolean(currentUser);
 	const disabledRanges = mapBlockedRangesToCalendarMatchers(blockedRanges);
+	const bookedRanges = canShowBookedMarkers
+		? mapBlockedRangesToCalendarMatchers(
+				blockedRanges.filter((blockedRange) => blockedRange.source === "BOOKING"),
+			)
+		: [];
 	const selectedBlockedRange = findOverlappingBlockedRange(
 		dateRange,
 		blockedRanges,
@@ -94,6 +103,8 @@ export function ListingDatePlanner({
 					selected={dateRange}
 					onSelect={handleDateRangeChange}
 					disabled={[{ before: today }, ...disabledRanges]}
+					modifiers={{ booked: bookedRanges }}
+					components={{ DayButton: BookedDateDayButton }}
 					excludeDisabled
 					className={styles.calendar}
 					showOutsideDays={false}
@@ -116,6 +127,26 @@ export function ListingDatePlanner({
 				Clear dates
 			</button>
 		</section>
+	);
+}
+
+function BookedDateDayButton(props: ComponentProps<typeof CalendarDayButton>) {
+	const isBooked = Boolean(props.modifiers.booked);
+
+	return (
+		<CalendarDayButton {...props}>
+			{isBooked ? (
+				<span
+					className={styles.bookedDateMarker}
+					data-booked-date-marker="true"
+					aria-label="Booked date"
+				>
+					B
+				</span>
+			) : (
+				props.children
+			)}
+		</CalendarDayButton>
 	);
 }
 
