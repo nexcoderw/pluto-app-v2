@@ -8,7 +8,7 @@ import styles from "./listing-verified-partner-card.module.css";
 type ListingVerifiedPartnerCardProps = {
 	owner: {
 		fullName: string;
-		imageKey: string | null;
+		imageKey?: string | null;
 	};
 };
 
