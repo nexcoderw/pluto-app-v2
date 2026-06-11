@@ -117,6 +117,10 @@
 	line-height: 1.55;
 }
 
+.availabilityMessage[data-own-booking="true"] {
+	color: #02006c;
+}
+
 .clearDatesButton {
 	width: fit-content;
 	margin-left: auto;
