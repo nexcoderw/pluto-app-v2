@@ -20,9 +20,9 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { CustomerPortalLoading } from "@/components/account/customer-portal-loading";
 import { CustomerPortalShell } from "@/components/account/customer-portal-shell";
 import { PortalAccessBoundary } from "@/components/portal/portal-access-boundary";
-import { Skeleton } from "@/components/ui/skeleton";
 import { ApiRequestError } from "@/services/api/errors";
 import {
 	listFavoriteListings,
@@ -61,7 +61,15 @@ const orderOptions: Array<{
 
 export function CustomerFavoritesPage() {
 	return (
-		<PortalAccessBoundary allowedRole="CUSTOMER">
+		<PortalAccessBoundary
+			allowedRole="CUSTOMER"
+			loadingFallback={
+				<CustomerPortalLoading
+					title="Opening favorites"
+					description="Checking your customer session before loading saved listings."
+				/>
+			}
+		>
 			{(user) => (
 				<CustomerPortalShell user={user}>
 					<CustomerFavoritesContent />
@@ -252,7 +260,11 @@ function CustomerFavoritesContent() {
 				</form>
 
 				{favoritesQuery.isPending ? (
-					<CustomerFavoritesSkeleton />
+					<CustomerPortalLoading
+						variant="panel"
+						title="Loading favorites"
+						description="Fetching the listings you saved for later comparison."
+					/>
 				) : favoritesQuery.isError ? (
 					<section className={styles.state}>
 						<RefreshCcw aria-hidden="true" />
@@ -348,55 +360,6 @@ function CustomerFavoritesContent() {
 				onConfirm={confirmRemoveFavorite}
 			/>
 		</>
-	);
-}
-
-function CustomerFavoritesSkeleton() {
-	return (
-		<div className={styles.grid} aria-label="Loading favorite listings">
-			{Array.from({ length: 6 }).map((_, index) => (
-				<article key={index} className={styles.card} aria-hidden="true">
-					<div className={styles.favoriteMediaFrame}>
-						<div className={styles.media}>
-							<Skeleton className={styles.skeletonImage} />
-							<Skeleton className={styles.skeletonPill} />
-							<Skeleton className={styles.skeletonRemoveButton} />
-							<div className={styles.skeletonImageCaption}>
-								<span>
-									<Skeleton />
-									<Skeleton />
-								</span>
-								<Skeleton />
-							</div>
-						</div>
-					</div>
-					<div className={styles.cardBody}>
-						<div className={styles.skeletonCardMeta}>
-							<span>
-								<Skeleton />
-								<Skeleton />
-							</span>
-							<span>
-								<Skeleton />
-								<Skeleton />
-							</span>
-							<span>
-								<Skeleton />
-								<Skeleton />
-							</span>
-						</div>
-						<div className={styles.skeletonSavedPanel}>
-							<Skeleton />
-							<span>
-								<Skeleton />
-								<Skeleton />
-							</span>
-							<Skeleton />
-						</div>
-					</div>
-				</article>
-			))}
-		</div>
 	);
 }
 
