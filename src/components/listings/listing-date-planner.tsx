@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import type { ListingAvailabilityBlockedRange } from "@/services/api/bookings";
 import {
 	doesDateRangeOverlapBlockedRange,
+	findOverlappingBlockedRange,
 	mapBlockedRangesToCalendarMatchers,
 } from "./listing-booking-date-utils";
 import styles from "./listing-date-planner.module.css";
@@ -44,11 +45,17 @@ export function ListingDatePlanner({
 	onDateRangeChange,
 }: ListingDatePlannerProps) {
 	const disabledRanges = mapBlockedRangesToCalendarMatchers(blockedRanges);
+	const selectedBlockedRange = findOverlappingBlockedRange(
+		dateRange,
+		blockedRanges,
+	);
 
 	function handleDateRangeChange(range: DateRange | undefined) {
 		if (doesDateRangeOverlapBlockedRange(range, blockedRanges)) {
 			onUnavailableSelection?.(
-				"That date range includes unavailable days. Choose a different start and end date.",
+				buildCalendarUnavailableMessage(
+					findOverlappingBlockedRange(range, blockedRanges),
+				),
 			);
 			return;
 		}
@@ -93,7 +100,12 @@ export function ListingDatePlanner({
 				/>
 			</div>
 			{availabilityMessage ? (
-				<p className={styles.availabilityMessage}>{availabilityMessage}</p>
+				<p
+					className={styles.availabilityMessage}
+					data-own-booking={Boolean(selectedBlockedRange?.isOwnBooking)}
+				>
+					{availabilityMessage}
+				</p>
 			) : null}
 
 			<button
@@ -105,6 +117,18 @@ export function ListingDatePlanner({
 			</button>
 		</section>
 	);
+}
+
+function buildCalendarUnavailableMessage(
+	blockedRange?: ListingAvailabilityBlockedRange,
+): string {
+	if (blockedRange?.isOwnBooking) {
+		return blockedRange.bookingNo
+			? `You already booked this listing for those dates. Booking ${blockedRange.bookingNo} is available in your customer portal.`
+			: "You already booked this listing for those dates. Open your customer portal to review or manage it.";
+	}
+
+	return "Those dates are not available for this listing. Choose another available range.";
 }
 
 export function ListingDatePlannerSkeleton() {
