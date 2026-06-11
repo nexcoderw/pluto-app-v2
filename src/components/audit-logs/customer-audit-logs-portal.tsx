@@ -1,21 +1,12 @@
 "use client";
 
-import { CustomerPortalLoading } from "@/components/account/customer-portal-loading";
 import { CustomerPortalShell } from "@/components/account/customer-portal-shell";
 import { PortalAccessBoundary } from "@/components/portal/portal-access-boundary";
 import { UserAuditLogsPage } from "./user-audit-logs-page";
 
 export function CustomerAuditLogsPortal() {
 	return (
-		<PortalAccessBoundary
-			allowedRole="CUSTOMER"
-			loadingFallback={
-				<CustomerPortalLoading
-					title="Opening audit logs"
-					description="Checking your customer session before loading account activity."
-				/>
-			}
-		>
+		<PortalAccessBoundary allowedRole="CUSTOMER">
 			{(user) => (
 				<CustomerPortalShell user={user}>
 					<UserAuditLogsPage
