@@ -15,6 +15,7 @@ import { ApiRequestError } from "@/services/api/errors";
 import type { PublicListing } from "@/services/api/listings";
 import {
 	doesDateRangeOverlapBlockedRange,
+	findOverlappingBlockedRange,
 	toBookingDateValue,
 } from "./listing-booking-date-utils";
 import {
@@ -38,6 +39,9 @@ type UseListingBookingFlowInput = {
 type UseListingBookingFlowResult = {
 	blockedRanges: ListingAvailabilityBlockedRange[];
 	availabilityMessage: string | null;
+	selectedBlockedRange?: ListingAvailabilityBlockedRange;
+	isOwnBookingSelection: boolean;
+	isBlockedByAnotherBooking: boolean;
 	isAvailabilityLoading: boolean;
 	isBookingPending: boolean;
 	handleDateRangeChange: (range: DateRange | undefined) => void;
@@ -48,6 +52,8 @@ type UseListingBookingFlowResult = {
 
 const unavailableMessage =
 	"Those dates are not available for this listing. Choose another available range.";
+const ownBookingMessage =
+	"You already booked this listing for those dates. Open your customer portal to review or manage that booking.";
 
 export function useListingBookingFlow({
 	listing,
@@ -83,6 +89,14 @@ export function useListingBookingFlow({
 	const blockedRanges = useMemo(
 		() => availabilityQuery.data?.blockedRanges ?? [],
 		[availabilityQuery.data?.blockedRanges],
+	);
+	const selectedBlockedRange = useMemo(
+		() => findOverlappingBlockedRange(dateRange, blockedRanges),
+		[blockedRanges, dateRange],
+	);
+	const isOwnBookingSelection = Boolean(selectedBlockedRange?.isOwnBooking);
+	const isBlockedByAnotherBooking = Boolean(
+		selectedBlockedRange && !selectedBlockedRange.isOwnBooking,
 	);
 
 	const createBookingMutation = useMutation({
@@ -123,18 +137,30 @@ export function useListingBookingFlow({
 	});
 
 	useEffect(() => {
-		if (
-			doesDateRangeOverlapBlockedRange(dateRange, blockedRanges) &&
-			blockedRanges.length > 0
-		) {
-			setAvailabilityMessage(unavailableMessage);
+		const overlap = findOverlappingBlockedRange(dateRange, blockedRanges);
+
+		if (overlap?.isOwnBooking) {
+			setAvailabilityMessage(buildAvailabilityMessage(overlap));
+			return;
+		}
+
+		if (overlap) {
+			setAvailabilityMessage(buildAvailabilityMessage(overlap));
 			onDateRangeChange(undefined);
 		}
 	}, [blockedRanges, dateRange, onDateRangeChange]);
 
 	function handleDateRangeChange(nextRange: DateRange | undefined) {
-		if (doesDateRangeOverlapBlockedRange(nextRange, blockedRanges)) {
-			rejectUnavailableDateRange();
+		const overlap = findOverlappingBlockedRange(nextRange, blockedRanges);
+
+		if (overlap?.isOwnBooking) {
+			rejectUnavailableDateRange(buildAvailabilityMessage(overlap));
+			onDateRangeChange(nextRange);
+			return;
+		}
+
+		if (overlap) {
+			rejectUnavailableDateRange(buildAvailabilityMessage(overlap));
 			return;
 		}
 
@@ -155,7 +181,8 @@ export function useListingBookingFlow({
 		}
 
 		if (doesDateRangeOverlapBlockedRange(dateRange, blockedRanges)) {
-			setBookingError(unavailableMessage);
+			const overlap = findOverlappingBlockedRange(dateRange, blockedRanges);
+			setBookingError(buildAvailabilityMessage(overlap));
 			setDialogMode("error");
 			setIsDialogOpen(true);
 			void availabilityQuery.refetch();
@@ -194,6 +221,9 @@ export function useListingBookingFlow({
 	return {
 		blockedRanges,
 		availabilityMessage,
+		selectedBlockedRange,
+		isOwnBookingSelection,
+		isBlockedByAnotherBooking,
 		isAvailabilityLoading: availabilityQuery.isPending,
 		isBookingPending: createBookingMutation.isPending,
 		handleDateRangeChange,
@@ -201,4 +231,16 @@ export function useListingBookingFlow({
 		openBookingDialog,
 		bookingDialog,
 	};
+}
+
+function buildAvailabilityMessage(
+	blockedRange?: ListingAvailabilityBlockedRange,
+): string {
+	if (!blockedRange?.isOwnBooking) {
+		return unavailableMessage;
+	}
+
+	return blockedRange.bookingNo
+		? `${ownBookingMessage} Booking ${blockedRange.bookingNo} covers the selected dates.`
+		: ownBookingMessage;
 }
