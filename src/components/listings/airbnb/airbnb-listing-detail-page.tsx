@@ -211,8 +211,6 @@ function AirbnbListingDetail({ listing }: { listing: PublicListing }) {
 					footerNote="You will review the final booking details before paying."
 					ctaIcon="door"
 					availabilityMessage={bookingFlow.availabilityMessage}
-					isOwnBookingSelection={bookingFlow.isOwnBookingSelection}
-					isBlockedByAnotherBooking={bookingFlow.isBlockedByAnotherBooking}
 					isBookingPending={bookingFlow.isBookingPending}
 					onReserve={bookingFlow.openBookingDialog}
 				/>
