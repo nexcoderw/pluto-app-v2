@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { CalendarCheck, CalendarDays, DoorOpen, Tag } from "lucide-react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
@@ -35,8 +34,6 @@ type ListingBookingSidebarProps = {
 	eyebrow?: string;
 	notice?: string;
 	availabilityMessage?: string | null;
-	isOwnBookingSelection?: boolean;
-	isBlockedByAnotherBooking?: boolean;
 	isBookingPending?: boolean;
 	onReserve?: () => void;
 };
@@ -59,8 +56,6 @@ export function ListingBookingSidebar({
 	eyebrow,
 	notice,
 	availabilityMessage,
-	isOwnBookingSelection = false,
-	isBlockedByAnotherBooking = false,
 	isBookingPending = false,
 	onReserve,
 }: ListingBookingSidebarProps) {
@@ -122,19 +117,9 @@ export function ListingBookingSidebar({
 					</div>
 				</div>
 				{availabilityMessage ? (
-					<p
-						className={styles.availabilityMessage}
-						data-own-booking={isOwnBookingSelection}
-					>
-						{availabilityMessage}
-					</p>
+					<p className={styles.availabilityMessage}>{availabilityMessage}</p>
 				) : null}
-				{isOwnBookingSelection ? (
-					<Link href="/account/bookings" className={styles.portalButton}>
-						View my bookings
-						<ActionIcon aria-hidden="true" />
-					</Link>
-				) : canBook && !isBlockedByAnotherBooking ? (
+				{canBook ? (
 					<Button
 						type="button"
 						className={styles.actionButton}
@@ -144,7 +129,7 @@ export function ListingBookingSidebar({
 						<ActionIcon aria-hidden="true" />
 						{isBookingPending ? "Saving request..." : ctaLabel}
 					</Button>
-				) : canStartLogin && !isBlockedByAnotherBooking ? (
+				) : canStartLogin ? (
 					<button
 						type="button"
 						className={styles.loginPrompt}
@@ -154,9 +139,7 @@ export function ListingBookingSidebar({
 						<ActionIcon aria-hidden="true" />
 					</button>
 				) : null}
-				{(canBook || canStartLogin) && !isBlockedByAnotherBooking ? (
-					<p>{footerNote}</p>
-				) : null}
+				{canBook || canStartLogin ? <p>{footerNote}</p> : null}
 			</section>
 
 			<ListingVerifiedPartnerCard owner={listing.owner} />
