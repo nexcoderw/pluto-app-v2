@@ -24,10 +24,7 @@ import {
 	getHotelRoomListing,
 	type PublicListing,
 } from "@/services/api/listings";
-import {
-	buildListingGallery,
-	formatOptional,
-} from "../listing-formatters";
+import { buildListingGallery, formatOptional } from "../listing-formatters";
 import {
 	ListingBookingSidebar,
 	ListingBookingSidebarSkeleton,
@@ -50,6 +47,7 @@ import {
 	ListingStayGallery,
 	ListingStayGallerySkeleton,
 } from "../listing-stay-gallery";
+import { useListingBookingFlow } from "../use-listing-booking-flow";
 import { HotelRoomReviewSection } from "./hotel-room-review-section";
 import styles from "./hotel-room-listing-detail-page.module.css";
 
@@ -128,6 +126,18 @@ function HotelRoomListingDetail({ listing }: { listing: PublicListing }) {
 		fromDate && toDate
 			? `${format(fromDate, "MMM d, yyyy")} - ${format(toDate, "MMM d, yyyy")}`
 			: "Select your check-in and checkout dates";
+	const bookingFlow = useListingBookingFlow({
+		listing,
+		today,
+		dateRange,
+		fromDate,
+		toDate,
+		durationCount: stayNights,
+		durationLabel: stayNights === 1 ? "night" : "nights",
+		totalPrice,
+		formattedRange,
+		onDateRangeChange: setDateRange,
+	});
 	const facts = useMemo(
 		() => [
 			{
@@ -198,6 +208,9 @@ function HotelRoomListingDetail({ listing }: { listing: PublicListing }) {
 					loginLabel="Sign in to reserve"
 					footerNote="You will review the final booking details before paying."
 					ctaIcon="door"
+					availabilityMessage={bookingFlow.availabilityMessage}
+					isBookingPending={bookingFlow.isBookingPending}
+					onReserve={bookingFlow.openBookingDialog}
 				/>
 			}
 		>
@@ -300,7 +313,10 @@ function HotelRoomListingDetail({ listing }: { listing: PublicListing }) {
 				toDate={toDate}
 				formattedRange={formattedRange}
 				resetRange={{ from: addDays(today, 1), to: addDays(today, 3) }}
-				onDateRangeChange={setDateRange}
+				blockedRanges={bookingFlow.blockedRanges}
+				availabilityMessage={bookingFlow.availabilityMessage}
+				onUnavailableSelection={bookingFlow.rejectUnavailableDateRange}
+				onDateRangeChange={bookingFlow.handleDateRangeChange}
 			/>
 
 			<HotelRoomReviewSection listing={listing} />
@@ -311,6 +327,7 @@ function HotelRoomListingDetail({ listing }: { listing: PublicListing }) {
 				ariaLabel="Hotel room map location"
 				unavailableDescription="The partner has not attached exact coordinates to this hotel room yet. Confirm arrival details before check-in."
 			/>
+			{bookingFlow.bookingDialog}
 		</ListingStayDetailShell>
 	);
 }
