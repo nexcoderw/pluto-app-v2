@@ -1,0 +1,319 @@
+.page {
+	display: grid;
+	gap: 1rem;
+}
+
+.toolbar,
+.tablePanel,
+.state {
+	border: 1px solid rgba(255, 255, 255, 0.72);
+	border-radius: 1.35rem;
+	background: rgba(255, 255, 255, 0.86);
+	box-shadow: 0 1.4rem 3.6rem rgba(16, 22, 33, 0.08);
+	backdrop-filter: blur(18px);
+}
+
+.toolbar {
+	display: grid;
+	grid-template-columns: minmax(16rem, 0.9fr) auto;
+	gap: 0.8rem;
+	align-items: center;
+	padding: 0.8rem;
+}
+
+.searchInput {
+	min-height: var(--pluto-button-height);
+	border-radius: 999px;
+}
+
+.controls {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: 0.55rem;
+}
+
+.selectTrigger,
+.primaryButton,
+.secondaryButton,
+.rowAction,
+.paginationButton,
+.dialogFooter button {
+	min-height: var(--pluto-button-height);
+	border-radius: 999px;
+	font-size: 0.75rem;
+	font-weight: 800;
+	cursor: pointer;
+}
+
+.selectTrigger {
+	min-width: 10rem;
+	border-color: rgba(2, 0, 108, 0.12);
+	background: #ffffff;
+}
+
+.primaryButton {
+	background: #02006c;
+	color: #ffffff;
+}
+
+.secondaryButton,
+.rowAction,
+.paginationButton {
+	border-color: rgba(2, 0, 108, 0.13);
+	color: #02006c;
+}
+
+.tablePanel {
+	overflow-x: auto;
+}
+
+.table {
+	width: 100%;
+	min-width: 68rem;
+	border-collapse: collapse;
+}
+
+.table th,
+.table td {
+	padding: 0.95rem;
+	text-align: left;
+	border-bottom: 1px solid rgba(2, 0, 108, 0.08);
+}
+
+.table th {
+	color: rgba(23, 23, 31, 0.54);
+	font-size: 0.7rem;
+	font-weight: 850;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.table td {
+	color: #17171f;
+	font-size: 0.84rem;
+	font-weight: 600;
+}
+
+.table td strong,
+.table td span {
+	display: block;
+}
+
+.table td span {
+	margin-top: 0.2rem;
+	color: rgba(23, 23, 31, 0.58);
+	font-size: 0.75rem;
+	font-weight: 600;
+}
+
+.statusBadge {
+	width: fit-content;
+	padding: 0.38rem 0.68rem;
+	border-radius: 999px;
+	font-size: 0.68rem !important;
+	font-weight: 850 !important;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+.statusBadge[data-tone="success"] {
+	background: rgba(22, 138, 73, 0.1);
+	color: #168a49;
+}
+
+.statusBadge[data-tone="pending"] {
+	background: rgba(2, 0, 108, 0.08);
+	color: #02006c;
+}
+
+.statusBadge[data-tone="danger"] {
+	background: rgba(202, 23, 70, 0.1);
+	color: #ca1746;
+}
+
+.statusBadge[data-tone="neutral"] {
+	background: rgba(23, 23, 31, 0.07);
+	color: #17171f;
+}
+
+.state {
+	display: grid;
+	justify-items: center;
+	gap: 0.65rem;
+	padding: 2.5rem 1rem;
+	text-align: center;
+}
+
+.state svg {
+	width: 2rem;
+	height: 2rem;
+	color: #02006c;
+}
+
+.state h2 {
+	margin: 0;
+	font-size: 1.35rem;
+	font-weight: 850;
+}
+
+.state p,
+.dialogHeader p {
+	margin: 0;
+	color: rgba(23, 23, 31, 0.62);
+	font-size: 0.86rem;
+	font-weight: 500;
+	line-height: 1.65;
+}
+
+.pagination {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.8rem;
+}
+
+.pageNumbers {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0.35rem;
+}
+
+.pageNumbers button,
+.pageNumbers span {
+	width: 2.2rem;
+	height: 2.2rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid rgba(2, 0, 108, 0.12);
+	border-radius: 999px;
+	background: #ffffff;
+	color: #02006c;
+	font-size: 0.78rem;
+	font-weight: 850;
+	cursor: pointer;
+}
+
+.pageNumbers button[data-active="true"] {
+	background: #02006c;
+	color: #ffffff;
+}
+
+.dialog {
+	width: min(34rem, calc(100vw - 2rem));
+	max-width: 34rem;
+	border-radius: 1.5rem;
+	background: rgba(255, 255, 255, 0.96);
+	padding: 1.2rem;
+}
+
+.dialogHeader {
+	align-items: center;
+	text-align: center;
+}
+
+.dialogIcon {
+	width: 3rem;
+	height: 3rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 999px;
+	background: rgba(2, 0, 108, 0.08);
+	color: #02006c;
+}
+
+.dialogHeader h2 {
+	color: #17171f;
+	font-size: 1.45rem;
+	font-weight: 850;
+	letter-spacing: 0;
+	text-transform: none;
+}
+
+.dialogMeta {
+	display: grid;
+	gap: 0.2rem;
+	padding: 0.85rem;
+	border-radius: 1rem;
+	background: rgba(2, 0, 108, 0.05);
+}
+
+.dialogMeta span,
+.dialogField span {
+	color: #02006c;
+	font-size: 0.72rem;
+	font-weight: 850;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.dialogMeta small {
+	color: rgba(23, 23, 31, 0.62);
+	font-weight: 650;
+}
+
+.dialogField {
+	display: grid;
+	gap: 0.45rem;
+}
+
+.dialogFooter {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.65rem;
+}
+
+.spinner {
+	animation: spin 850ms linear infinite;
+}
+
+.skeletonTable {
+	display: grid;
+	gap: 0.65rem;
+	padding: 0.9rem;
+}
+
+.skeletonHeader,
+.skeletonRow {
+	border-radius: 1rem;
+}
+
+.skeletonHeader {
+	height: 2.2rem;
+}
+
+.skeletonRow {
+	height: 4.5rem;
+}
+
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@media (max-width: 920px) {
+	.toolbar {
+		grid-template-columns: 1fr;
+	}
+
+	.controls {
+		justify-content: stretch;
+	}
+
+	.controls > * {
+		flex: 1 1 10rem;
+	}
+}
+
+@media (max-width: 640px) {
+	.pagination,
+	.dialogFooter {
+		grid-template-columns: 1fr;
+		flex-direction: column;
+		align-items: stretch;
+	}
+}
