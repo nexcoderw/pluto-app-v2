@@ -57,16 +57,6 @@ export function ListingDatePlanner({
 		dateRange,
 		blockedRanges,
 	);
-	const currentOrUpcomingOwnBookingRange = blockedRanges.find(
-		(blockedRange) =>
-			blockedRange.isOwnBooking && blockedRange.blocksBooking !== false,
-	);
-	const hasCompleteDateRange = Boolean(dateRange?.from && dateRange.to);
-	const ownMessageRange =
-		selectedBlockedRange?.isOwnBooking ||
-		(!hasCompleteDateRange && currentOrUpcomingOwnBookingRange)
-			? (selectedBlockedRange ?? currentOrUpcomingOwnBookingRange)
-			: undefined;
 
 	function handleDateRangeChange(range: DateRange | undefined) {
 		if (doesDateRangeOverlapBlockedRange(range, blockedRanges)) {
@@ -122,7 +112,7 @@ export function ListingDatePlanner({
 			{availabilityMessage ? (
 				<p
 					className={styles.availabilityMessage}
-					data-own-booking={Boolean(ownMessageRange?.isOwnBooking)}
+					data-own-booking={Boolean(selectedBlockedRange?.isOwnBooking)}
 				>
 					{availabilityMessage}
 				</p>
