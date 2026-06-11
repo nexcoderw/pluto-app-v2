@@ -33,6 +33,9 @@ type ListingBookingSidebarProps = {
 	ctaIcon: "calendar" | "door";
 	eyebrow?: string;
 	notice?: string;
+	availabilityMessage?: string | null;
+	isBookingPending?: boolean;
+	onReserve?: () => void;
 };
 
 export function ListingBookingSidebar({
@@ -52,6 +55,9 @@ export function ListingBookingSidebar({
 	ctaIcon,
 	eyebrow,
 	notice,
+	availabilityMessage,
+	isBookingPending = false,
+	onReserve,
 }: ListingBookingSidebarProps) {
 	const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
 	const currentUser = useUserSession();
@@ -110,10 +116,18 @@ export function ListingBookingSidebar({
 						<strong>{toDate ? format(toDate, "M/d/yyyy") : "Add date"}</strong>
 					</div>
 				</div>
+				{availabilityMessage ? (
+					<p className={styles.availabilityMessage}>{availabilityMessage}</p>
+				) : null}
 				{canBook ? (
-					<Button type="button" className={styles.actionButton}>
+					<Button
+						type="button"
+						className={styles.actionButton}
+						disabled={isBookingPending}
+						onClick={onReserve}
+					>
 						<ActionIcon aria-hidden="true" />
-						{ctaLabel}
+						{isBookingPending ? "Saving request..." : ctaLabel}
 					</Button>
 				) : canStartLogin ? (
 					<button
