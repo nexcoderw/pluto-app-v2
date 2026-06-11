@@ -1,0 +1,204 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import type { ReactNode } from "react";
+import { addMonths } from "date-fns";
+import type { DateRange } from "react-day-picker";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+	createBooking,
+	getListingAvailability,
+	type BookingSummary,
+	type ListingAvailabilityBlockedRange,
+} from "@/services/api/bookings";
+import { ApiRequestError } from "@/services/api/errors";
+import type { PublicListing } from "@/services/api/listings";
+import {
+	doesDateRangeOverlapBlockedRange,
+	toBookingDateValue,
+} from "./listing-booking-date-utils";
+import {
+	ListingBookingDialog,
+	type ListingBookingDialogMode,
+} from "./listing-booking-dialog";
+
+type UseListingBookingFlowInput = {
+	listing: PublicListing;
+	today: Date;
+	dateRange: DateRange | undefined;
+	fromDate?: Date;
+	toDate?: Date;
+	durationCount: number;
+	durationLabel: string;
+	totalPrice: number;
+	formattedRange: string;
+	onDateRangeChange: (range: DateRange | undefined) => void;
+};
+
+type UseListingBookingFlowResult = {
+	blockedRanges: ListingAvailabilityBlockedRange[];
+	availabilityMessage: string | null;
+	isAvailabilityLoading: boolean;
+	isBookingPending: boolean;
+	handleDateRangeChange: (range: DateRange | undefined) => void;
+	rejectUnavailableDateRange: (message?: string) => void;
+	openBookingDialog: () => void;
+	bookingDialog: ReactNode;
+};
+
+const unavailableMessage =
+	"Those dates are not available for this listing. Choose another available range.";
+
+export function useListingBookingFlow({
+	listing,
+	today,
+	dateRange,
+	fromDate,
+	toDate,
+	durationCount,
+	durationLabel,
+	totalPrice,
+	formattedRange,
+	onDateRangeChange,
+}: UseListingBookingFlowInput): UseListingBookingFlowResult {
+	const [availabilityMessage, setAvailabilityMessage] = useState<string | null>(
+		null,
+	);
+	const [dialogMode, setDialogMode] =
+		useState<ListingBookingDialogMode>("confirm");
+	const [isDialogOpen, setIsDialogOpen] = useState(false);
+	const [bookingError, setBookingError] = useState<string | undefined>();
+	const [booking, setBooking] = useState<BookingSummary | undefined>();
+
+	const availabilityQuery = useQuery({
+		queryKey: ["listing-booking-availability", listing.id],
+		queryFn: () =>
+			getListingAvailability(listing.id, {
+				startDate: toBookingDateValue(today),
+				endDate: toBookingDateValue(addMonths(today, 12)),
+			}),
+		staleTime: 30_000,
+	});
+
+	const blockedRanges = useMemo(
+		() => availabilityQuery.data?.blockedRanges ?? [],
+		[availabilityQuery.data?.blockedRanges],
+	);
+
+	const createBookingMutation = useMutation({
+		mutationFn: () => {
+			if (!fromDate || !toDate) {
+				throw new ApiRequestError({
+					message: "Choose valid booking dates before continuing.",
+					code: "BOOKING_DATES_REQUIRED",
+				});
+			}
+
+			return createBooking({
+				productId: listing.id,
+				startDate: toBookingDateValue(fromDate),
+				endDate: toBookingDateValue(toDate),
+				quantity: 1,
+			});
+		},
+		onMutate: () => {
+			setBookingError(undefined);
+			setDialogMode("progress");
+		},
+		onSuccess: (response) => {
+			setBooking(response.booking);
+			setDialogMode("success");
+			void availabilityQuery.refetch();
+		},
+		onError: (error) => {
+			const message =
+				error instanceof ApiRequestError
+					? error.message
+					: "We could not create this booking. Please try again.";
+
+			setBookingError(message);
+			setDialogMode("error");
+			void availabilityQuery.refetch();
+		},
+	});
+
+	useEffect(() => {
+		if (
+			doesDateRangeOverlapBlockedRange(dateRange, blockedRanges) &&
+			blockedRanges.length > 0
+		) {
+			setAvailabilityMessage(unavailableMessage);
+			onDateRangeChange(undefined);
+		}
+	}, [blockedRanges, dateRange, onDateRangeChange]);
+
+	function handleDateRangeChange(nextRange: DateRange | undefined) {
+		if (doesDateRangeOverlapBlockedRange(nextRange, blockedRanges)) {
+			rejectUnavailableDateRange();
+			return;
+		}
+
+		setAvailabilityMessage(null);
+		onDateRangeChange(nextRange);
+	}
+
+	function rejectUnavailableDateRange(message = unavailableMessage) {
+		setAvailabilityMessage(message);
+	}
+
+	function openBookingDialog() {
+		if (!fromDate || !toDate) {
+			setBookingError("Choose your start and end date before booking.");
+			setDialogMode("error");
+			setIsDialogOpen(true);
+			return;
+		}
+
+		if (doesDateRangeOverlapBlockedRange(dateRange, blockedRanges)) {
+			setBookingError(unavailableMessage);
+			setDialogMode("error");
+			setIsDialogOpen(true);
+			void availabilityQuery.refetch();
+			return;
+		}
+
+		setBookingError(undefined);
+		setBooking(undefined);
+		setDialogMode("confirm");
+		setIsDialogOpen(true);
+	}
+
+	const bookingDialog = (
+		<ListingBookingDialog
+			open={isDialogOpen}
+			mode={dialogMode}
+			listingTitle={listing.title}
+			formattedRange={formattedRange}
+			durationCount={durationCount}
+			durationLabel={durationLabel}
+			totalPrice={totalPrice}
+			currency={listing.currency}
+			errorMessage={bookingError}
+			booking={booking}
+			onOpenChange={setIsDialogOpen}
+			onConfirm={() => createBookingMutation.mutate()}
+			onRetryDates={() => {
+				setIsDialogOpen(false);
+				setAvailabilityMessage(
+					"Select a fresh date range from the calendar below.",
+				);
+			}}
+		/>
+	);
+
+	return {
+		blockedRanges,
+		availabilityMessage,
+		isAvailabilityLoading: availabilityQuery.isPending,
+		isBookingPending: createBookingMutation.isPending,
+		handleDateRangeChange,
+		rejectUnavailableDateRange,
+		openBookingDialog,
+		bookingDialog,
+	};
+}
