@@ -16,7 +16,11 @@ import {
 } from "lucide-react";
 import type { PublicListing } from "@/services/api/listings";
 import { ListingFavoriteButton } from "../listing-favorite-button";
-import { formatMoney, formatPricingUnit } from "../listing-formatters";
+import {
+	formatAverageRating,
+	formatMoney,
+	formatPricingUnit,
+} from "../listing-formatters";
 import styles from "./airbnb-listing-card.module.css";
 
 type AirbnbListingCardProps = {
@@ -62,7 +66,7 @@ export function AirbnbListingCard({
 	const ratingLabel =
 		listing.ratingAverage === null || listing.ratingAverage === undefined
 			? "New"
-			: `${listing.ratingAverage.toFixed(2)} (${listing.ratingCount ?? 0})`;
+			: `${formatAverageRating(listing.ratingAverage)} (${listing.ratingCount ?? 0})`;
 	const homeType = details?.houseType ?? "Curated stay";
 
 	function showPreviousImage() {
