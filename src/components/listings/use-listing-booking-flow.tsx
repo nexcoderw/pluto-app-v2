@@ -41,8 +41,6 @@ type UseListingBookingFlowResult = {
 	blockedRanges: ListingAvailabilityBlockedRange[];
 	availabilityMessage: string | null;
 	selectedBlockedRange?: ListingAvailabilityBlockedRange;
-	isOwnBookingSelection: boolean;
-	isBlockedByAnotherBooking: boolean;
 	isAvailabilityLoading: boolean;
 	isBookingPending: boolean;
 	handleDateRangeChange: (range: DateRange | undefined) => void;
@@ -97,24 +95,6 @@ export function useListingBookingFlow({
 		() => findOverlappingBlockedRange(dateRange, blockedRanges),
 		[blockedRanges, dateRange],
 	);
-	const currentOrUpcomingOwnBookingRange = useMemo(
-		() =>
-			blockedRanges.find(
-				(blockedRange) =>
-					blockedRange.isOwnBooking && blockedRange.blocksBooking !== false,
-			),
-		[blockedRanges],
-	);
-	const hasCompleteDateRange = Boolean(dateRange?.from && dateRange.to);
-	const isOwnBookingSelection = Boolean(
-		canSeeUnavailableMessage &&
-			(selectedBlockedRange?.isOwnBooking ||
-				(!hasCompleteDateRange && currentOrUpcomingOwnBookingRange)),
-	);
-	const isBlockedByAnotherBooking = Boolean(
-		(selectedBlockedRange && !selectedBlockedRange.isOwnBooking) ||
-			availabilityMessage === unavailableMessage,
-	);
 
 	const createBookingMutation = useMutation({
 		mutationFn: () => {
@@ -166,24 +146,11 @@ export function useListingBookingFlow({
 				canSeeUnavailableMessage ? buildAvailabilityMessage(overlap) : null,
 			);
 			onDateRangeChange(undefined);
-			return;
-		}
-
-		if (
-			canSeeUnavailableMessage &&
-			!hasCompleteDateRange &&
-			currentOrUpcomingOwnBookingRange
-		) {
-			setAvailabilityMessage(
-				buildAvailabilityMessage(currentOrUpcomingOwnBookingRange),
-			);
 		}
 	}, [
 		blockedRanges,
 		canSeeUnavailableMessage,
-		currentOrUpcomingOwnBookingRange,
 		dateRange,
-		hasCompleteDateRange,
 		onDateRangeChange,
 	]);
 
@@ -265,8 +232,6 @@ export function useListingBookingFlow({
 		blockedRanges,
 		availabilityMessage,
 		selectedBlockedRange,
-		isOwnBookingSelection,
-		isBlockedByAnotherBooking,
 		isAvailabilityLoading: availabilityQuery.isPending,
 		isBookingPending: createBookingMutation.isPending,
 		handleDateRangeChange,
