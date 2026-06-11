@@ -626,128 +626,6 @@
 	animation: spin 800ms linear infinite;
 }
 
-.skeletonImage {
-	position: absolute;
-	inset: 0;
-	width: 100%;
-	height: 100%;
-	border-radius: 0;
-}
-
-.skeletonPill {
-	position: absolute;
-	left: 0.75rem;
-	top: 0.75rem;
-	width: 6.8rem;
-	height: 2rem;
-	border-radius: 999px;
-}
-
-.skeletonRemoveButton {
-	position: absolute;
-	top: 0.75rem;
-	right: 0.75rem;
-	width: 2rem;
-	height: 2rem;
-	border-radius: 999px;
-}
-
-.skeletonImageCaption {
-	position: absolute;
-	right: 0.85rem;
-	bottom: 0.85rem;
-	left: 0.85rem;
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) 5.2rem;
-	align-items: end;
-	gap: 0.8rem;
-}
-
-.skeletonImageCaption span {
-	display: grid;
-	gap: 0.42rem;
-}
-
-.skeletonImageCaption span div:first-child {
-	width: 82%;
-	height: 1rem;
-	border-radius: 999px;
-}
-
-.skeletonImageCaption span div:last-child {
-	width: 58%;
-	height: 0.72rem;
-	border-radius: 999px;
-}
-
-.skeletonImageCaption > div {
-	width: 100%;
-	height: 2.55rem;
-	border-radius: 999px;
-}
-
-.skeletonCardMeta {
-	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: 0.72rem;
-}
-
-.skeletonCardMeta > span {
-	display: grid;
-	gap: 0.35rem;
-}
-
-.skeletonCardMeta > span div:first-child {
-	width: 84%;
-	height: 0.9rem;
-	border-radius: 999px;
-}
-
-.skeletonCardMeta > span div:last-child {
-	width: 68%;
-	height: 0.64rem;
-	border-radius: 999px;
-}
-
-.skeletonSavedPanel {
-	display: grid;
-	grid-template-columns: 2.25rem minmax(0, 1fr) 5rem;
-	align-items: center;
-	gap: 0.65rem;
-	min-height: 4.4rem;
-	padding: 0.72rem;
-	border-radius: 1.25rem;
-	background: #f7f8fc;
-}
-
-.skeletonSavedPanel > span {
-	display: grid;
-	gap: 0.38rem;
-}
-
-.skeletonSavedPanel > div:first-child {
-	width: 2.25rem;
-	height: 2.25rem;
-	border-radius: 999px;
-}
-
-.skeletonSavedPanel > span:nth-child(2) div:first-child {
-	width: 44%;
-	height: 0.78rem;
-	border-radius: 999px;
-}
-
-.skeletonSavedPanel > span:nth-child(2) div:last-child {
-	width: 86%;
-	height: 0.68rem;
-	border-radius: 999px;
-}
-
-.skeletonSavedPanel > div:last-child {
-	height: 2.55rem;
-	border-radius: 999px;
-}
-
 @keyframes spin {
 	to {
 		transform: rotate(360deg);
@@ -819,13 +697,11 @@
 		grid-template-columns: 1fr;
 	}
 
-	.savedPanel,
-	.skeletonSavedPanel {
+	.savedPanel {
 		grid-template-columns: 2.25rem minmax(0, 1fr);
 	}
 
-	.savedPanel .detailsLink,
-	.skeletonSavedPanel > div:last-child {
+	.savedPanel .detailsLink {
 		grid-column: 1 / -1;
 	}
 
