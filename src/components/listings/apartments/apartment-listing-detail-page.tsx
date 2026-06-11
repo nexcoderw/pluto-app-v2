@@ -40,6 +40,7 @@ import {
 	ListingStayGallery,
 	ListingStayGallerySkeleton,
 } from "../listing-stay-gallery";
+import { useListingBookingFlow } from "../use-listing-booking-flow";
 import { ApartmentReviewSection } from "./apartment-review-section";
 import styles from "./apartment-listing-detail-page.module.css";
 
@@ -116,6 +117,18 @@ function ApartmentListingDetail({ listing }: { listing: PublicListing }) {
 		fromDate && toDate
 			? `${format(fromDate, "MMM d, yyyy")} - ${format(toDate, "MMM d, yyyy")}`
 			: "Select your check-in and checkout dates";
+	const bookingFlow = useListingBookingFlow({
+		listing,
+		today,
+		dateRange,
+		fromDate,
+		toDate,
+		durationCount: stayNights,
+		durationLabel: stayNights === 1 ? "night" : "nights",
+		totalPrice,
+		formattedRange,
+		onDateRangeChange: setDateRange,
+	});
 	const facts = useMemo(
 		() => [
 			{
@@ -168,6 +181,9 @@ function ApartmentListingDetail({ listing }: { listing: PublicListing }) {
 					loginLabel="Sign in to reserve"
 					footerNote="You will review the final booking details before paying."
 					ctaIcon="door"
+					availabilityMessage={bookingFlow.availabilityMessage}
+					isBookingPending={bookingFlow.isBookingPending}
+					onReserve={bookingFlow.openBookingDialog}
 				/>
 			}
 		>
@@ -236,7 +252,10 @@ function ApartmentListingDetail({ listing }: { listing: PublicListing }) {
 				toDate={toDate}
 				formattedRange={formattedRange}
 				resetRange={{ from: addDays(today, 1), to: addDays(today, 4) }}
-				onDateRangeChange={setDateRange}
+				blockedRanges={bookingFlow.blockedRanges}
+				availabilityMessage={bookingFlow.availabilityMessage}
+				onUnavailableSelection={bookingFlow.rejectUnavailableDateRange}
+				onDateRangeChange={bookingFlow.handleDateRangeChange}
 			/>
 
 			<ApartmentReviewSection listing={listing} />
@@ -247,6 +266,7 @@ function ApartmentListingDetail({ listing }: { listing: PublicListing }) {
 				ariaLabel="Apartment map location"
 				unavailableDescription="The partner has not attached exact coordinates to this apartment yet. Confirm arrival details before check-in."
 			/>
+			{bookingFlow.bookingDialog}
 		</ListingStayDetailShell>
 	);
 }
