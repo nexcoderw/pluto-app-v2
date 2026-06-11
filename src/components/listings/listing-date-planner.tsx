@@ -5,6 +5,11 @@ import { format } from "date-fns";
 import type { DateRange } from "react-day-picker";
 import { Calendar } from "@/components/ui/calendar";
 import { Skeleton } from "@/components/ui/skeleton";
+import type { ListingAvailabilityBlockedRange } from "@/services/api/bookings";
+import {
+	doesDateRangeOverlapBlockedRange,
+	mapBlockedRangesToCalendarMatchers,
+} from "./listing-booking-date-utils";
 import styles from "./listing-date-planner.module.css";
 
 type ListingDatePlannerProps = {
@@ -17,6 +22,9 @@ type ListingDatePlannerProps = {
 	fromDate?: Date;
 	toDate?: Date;
 	resetRange: DateRange;
+	blockedRanges?: ListingAvailabilityBlockedRange[];
+	availabilityMessage?: string | null;
+	onUnavailableSelection?: (message: string) => void;
 	onDateRangeChange: (range: DateRange | undefined) => void;
 };
 
@@ -30,8 +38,24 @@ export function ListingDatePlanner({
 	fromDate,
 	toDate,
 	resetRange,
+	blockedRanges = [],
+	availabilityMessage,
+	onUnavailableSelection,
 	onDateRangeChange,
 }: ListingDatePlannerProps) {
+	const disabledRanges = mapBlockedRangesToCalendarMatchers(blockedRanges);
+
+	function handleDateRangeChange(range: DateRange | undefined) {
+		if (doesDateRangeOverlapBlockedRange(range, blockedRanges)) {
+			onUnavailableSelection?.(
+				"That date range includes unavailable days. Choose a different start and end date.",
+			);
+			return;
+		}
+
+		onDateRangeChange(range);
+	}
+
 	return (
 		<section className={styles.planner}>
 			<div className={styles.header}>
@@ -61,12 +85,16 @@ export function ListingDatePlanner({
 					mode="range"
 					numberOfMonths={2}
 					selected={dateRange}
-					onSelect={onDateRangeChange}
-					disabled={{ before: today }}
+					onSelect={handleDateRangeChange}
+					disabled={[{ before: today }, ...disabledRanges]}
+					excludeDisabled
 					className={styles.calendar}
 					showOutsideDays={false}
 				/>
 			</div>
+			{availabilityMessage ? (
+				<p className={styles.availabilityMessage}>{availabilityMessage}</p>
+			) : null}
 
 			<button
 				type="button"
