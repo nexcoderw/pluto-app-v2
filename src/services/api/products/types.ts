@@ -156,7 +156,7 @@ export type Product = {
 	owner: {
 		id: string;
 		fullName: string;
-		imageKey: string | null;
+		imageKey?: string | null;
 		email?: string;
 	};
 	carDetails?: CarDetails | null;
