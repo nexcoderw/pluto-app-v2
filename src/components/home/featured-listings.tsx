@@ -261,6 +261,7 @@ function FeaturedListingCard({
 		? Number(listing.ratingAverage).toFixed(1)
 		: "New";
 	const formattedPrice = formatMoney(listing.basePrice, listing.currency);
+	const ownerName = listing.owner?.fullName ?? "Verified partner";
 
 	return (
 		<article className={styles.card}>
@@ -310,7 +311,7 @@ function FeaturedListingCard({
 						<Icon aria-hidden="true" />
 						<span>
 							<strong>Verified</strong>
-							<small>{listing.owner.fullName}</small>
+							<small>{ownerName}</small>
 						</span>
 					</span>
 				</span>
