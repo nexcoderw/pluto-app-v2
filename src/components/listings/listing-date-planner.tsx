@@ -11,6 +11,7 @@ import type { ListingAvailabilityBlockedRange } from "@/services/api/bookings";
 import {
 	doesDateRangeOverlapBlockedRange,
 	findOverlappingBlockedRange,
+	mapBookedMarkerRangesToCalendarMatchers,
 	mapBlockedRangesToCalendarMatchers,
 } from "./listing-booking-date-utils";
 import styles from "./listing-date-planner.module.css";
@@ -50,14 +51,22 @@ export function ListingDatePlanner({
 	const canShowBookedMarkers = Boolean(currentUser);
 	const disabledRanges = mapBlockedRangesToCalendarMatchers(blockedRanges);
 	const bookedRanges = canShowBookedMarkers
-		? mapBlockedRangesToCalendarMatchers(
-				blockedRanges.filter((blockedRange) => blockedRange.source === "BOOKING"),
-			)
+		? mapBookedMarkerRangesToCalendarMatchers(blockedRanges)
 		: [];
 	const selectedBlockedRange = findOverlappingBlockedRange(
 		dateRange,
 		blockedRanges,
 	);
+	const currentOrUpcomingOwnBookingRange = blockedRanges.find(
+		(blockedRange) =>
+			blockedRange.isOwnBooking && blockedRange.blocksBooking !== false,
+	);
+	const hasCompleteDateRange = Boolean(dateRange?.from && dateRange.to);
+	const ownMessageRange =
+		selectedBlockedRange?.isOwnBooking ||
+		(!hasCompleteDateRange && currentOrUpcomingOwnBookingRange)
+			? (selectedBlockedRange ?? currentOrUpcomingOwnBookingRange)
+			: undefined;
 
 	function handleDateRangeChange(range: DateRange | undefined) {
 		if (doesDateRangeOverlapBlockedRange(range, blockedRanges)) {
@@ -113,7 +122,7 @@ export function ListingDatePlanner({
 			{availabilityMessage ? (
 				<p
 					className={styles.availabilityMessage}
-					data-own-booking={Boolean(selectedBlockedRange?.isOwnBooking)}
+					data-own-booking={Boolean(ownMessageRange?.isOwnBooking)}
 				>
 					{availabilityMessage}
 				</p>
