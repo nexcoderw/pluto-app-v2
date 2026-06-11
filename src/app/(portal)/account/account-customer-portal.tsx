@@ -3,7 +3,6 @@
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { AccountWelcomePage } from "@/components/account/account-welcome-page";
-import { CustomerPortalLoading } from "@/components/account/customer-portal-loading";
 import { CustomerPortalShell } from "@/components/account/customer-portal-shell";
 import { PortalAccessBoundary } from "@/components/portal/portal-access-boundary";
 import type { UserAuthProfile } from "@/services/api/auth";
@@ -21,10 +20,7 @@ function AccountCustomerPortalContent() {
   const showRegistrationDialog = searchParams.get("registered") === "success";
 
   return (
-    <PortalAccessBoundary
-      allowedRole="CUSTOMER"
-      loadingFallback={<CustomerPortalLoading />}
-    >
+    <PortalAccessBoundary allowedRole="CUSTOMER">
       {(user) => (
         <CustomerPortalContent
           user={user}
