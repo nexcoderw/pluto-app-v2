@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { addMonths } from "date-fns";
 import type { DateRange } from "react-day-picker";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useUserSession } from "@/hooks/use-user-session";
 import {
 	createBooking,
 	getListingAvailability,
@@ -75,6 +76,8 @@ export function useListingBookingFlow({
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const [bookingError, setBookingError] = useState<string | undefined>();
 	const [booking, setBooking] = useState<BookingSummary | undefined>();
+	const currentUser = useUserSession();
+	const canSeeUnavailableMessage = Boolean(currentUser);
 
 	const availabilityQuery = useQuery({
 		queryKey: ["listing-booking-availability", listing.id],
@@ -94,7 +97,9 @@ export function useListingBookingFlow({
 		() => findOverlappingBlockedRange(dateRange, blockedRanges),
 		[blockedRanges, dateRange],
 	);
-	const isOwnBookingSelection = Boolean(selectedBlockedRange?.isOwnBooking);
+	const isOwnBookingSelection = Boolean(
+		canSeeUnavailableMessage && selectedBlockedRange?.isOwnBooking,
+	);
 	const isBlockedByAnotherBooking = Boolean(
 		selectedBlockedRange && !selectedBlockedRange.isOwnBooking,
 	);
@@ -139,28 +144,32 @@ export function useListingBookingFlow({
 	useEffect(() => {
 		const overlap = findOverlappingBlockedRange(dateRange, blockedRanges);
 
-		if (overlap?.isOwnBooking) {
+		if (overlap?.isOwnBooking && canSeeUnavailableMessage) {
 			setAvailabilityMessage(buildAvailabilityMessage(overlap));
 			return;
 		}
 
 		if (overlap) {
-			setAvailabilityMessage(buildAvailabilityMessage(overlap));
+			setAvailabilityMessage(
+				canSeeUnavailableMessage ? buildAvailabilityMessage(overlap) : null,
+			);
 			onDateRangeChange(undefined);
 		}
-	}, [blockedRanges, dateRange, onDateRangeChange]);
+	}, [blockedRanges, canSeeUnavailableMessage, dateRange, onDateRangeChange]);
 
 	function handleDateRangeChange(nextRange: DateRange | undefined) {
 		const overlap = findOverlappingBlockedRange(nextRange, blockedRanges);
 
-		if (overlap?.isOwnBooking) {
+		if (overlap?.isOwnBooking && canSeeUnavailableMessage) {
 			rejectUnavailableDateRange(buildAvailabilityMessage(overlap));
 			onDateRangeChange(nextRange);
 			return;
 		}
 
 		if (overlap) {
-			rejectUnavailableDateRange(buildAvailabilityMessage(overlap));
+			rejectUnavailableDateRange(
+				canSeeUnavailableMessage ? buildAvailabilityMessage(overlap) : null,
+			);
 			return;
 		}
 
@@ -168,8 +177,8 @@ export function useListingBookingFlow({
 		onDateRangeChange(nextRange);
 	}
 
-	function rejectUnavailableDateRange(message = unavailableMessage) {
-		setAvailabilityMessage(message);
+	function rejectUnavailableDateRange(message: string | null = unavailableMessage) {
+		setAvailabilityMessage(canSeeUnavailableMessage ? message : null);
 	}
 
 	function openBookingDialog() {
@@ -182,7 +191,11 @@ export function useListingBookingFlow({
 
 		if (doesDateRangeOverlapBlockedRange(dateRange, blockedRanges)) {
 			const overlap = findOverlappingBlockedRange(dateRange, blockedRanges);
-			setBookingError(buildAvailabilityMessage(overlap));
+			setBookingError(
+				canSeeUnavailableMessage
+					? buildAvailabilityMessage(overlap)
+					: "Sign in to check listing availability and continue booking.",
+			);
 			setDialogMode("error");
 			setIsDialogOpen(true);
 			void availabilityQuery.refetch();
