@@ -1,155 +1,81 @@
 .dialog {
-	width: min(38rem, calc(100vw - 2rem));
-	max-width: 38rem;
-	gap: 1rem;
+	width: min(30rem, calc(100vw - 2rem));
+	max-width: 30rem;
+	gap: 0.9rem;
 	border: 1px solid rgba(202, 23, 70, 0.14);
-	border-radius: 1.65rem;
+	border-radius: 1.35rem;
 	background: #ffffff;
-	padding: clamp(1rem, 3vw, 1.35rem);
-	box-shadow: 0 2rem 5rem rgba(16, 22, 33, 0.18);
+	padding: clamp(1rem, 3vw, 1.25rem);
+	box-shadow: 0 1.5rem 4rem rgba(16, 22, 33, 0.16);
 }
 
 .dialogHeader {
-	display: grid;
-	grid-template-columns: auto minmax(0, 1fr);
-	gap: 0.95rem;
-	align-items: start;
-	padding-right: 2.7rem;
-	text-align: left;
-}
-
-.dialogIdentity {
-	display: grid;
-	justify-items: center;
-	gap: 0.45rem;
+	align-items: center;
+	text-align: center;
 }
 
 .dialogIcon {
-	width: 3.25rem;
-	height: 3.25rem;
+	width: 2.8rem;
+	height: 2.8rem;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	border: 1px solid rgba(202, 23, 70, 0.18);
 	border-radius: 999px;
-	background: rgba(202, 23, 70, 0.08);
+	background: rgba(202, 23, 70, 0.09);
 	color: #ca1746;
 }
 
 .dialogIcon svg {
-	width: 1.35rem;
-	height: 1.35rem;
+	width: 1.2rem;
+	height: 1.2rem;
 }
 
-.dialogEyebrow,
+.dialogHeader h2 {
+	margin: 0;
+	color: #17171f;
+	font-size: clamp(1.25rem, 3vw, 1.55rem);
+	font-weight: 850;
+	letter-spacing: 0;
+	text-transform: none;
+}
+
+.dialogHeader p {
+	margin: 0;
+	color: rgba(23, 23, 31, 0.62);
+	font-size: 0.84rem;
+	font-weight: 500;
+	line-height: 1.55;
+}
+
+.bookingSummary {
+	display: grid;
+	gap: 0.25rem;
+	padding: 0.85rem;
+	border: 1px solid rgba(2, 0, 108, 0.1);
+	border-radius: 1rem;
+	background: rgba(2, 0, 108, 0.035);
+}
+
+.bookingSummary span,
 .dialogField > span {
 	color: #02006c;
 	font-size: 0.68rem;
 	font-weight: 850;
 	letter-spacing: 0.08em;
-	line-height: 1.35;
 	text-transform: uppercase;
 }
 
-.dialogEyebrow {
-	max-width: 5rem;
-	text-align: center;
-}
-
-.dialogCopy {
-	display: grid;
-	gap: 0.45rem;
-}
-
-.dialogCopy h2 {
-	margin: 0;
+.bookingSummary strong {
 	color: #17171f;
-	font-size: clamp(1.55rem, 4vw, 2.15rem);
-	font-weight: 850;
-	letter-spacing: 0;
-	line-height: 1.02;
-	text-transform: none;
-}
-
-.dialogCopy p {
-	max-width: 30rem;
-	margin: 0;
-	color: rgba(23, 23, 31, 0.62);
-	font-size: 0.86rem;
-	font-weight: 500;
-	line-height: 1.65;
-}
-
-.bookingSummary {
-	display: grid;
-	gap: 0.85rem;
-	padding: 1rem;
-	border: 1px solid rgba(2, 0, 108, 0.1);
-	border-radius: 1.25rem;
-	background: rgba(2, 0, 108, 0.035);
-}
-
-.bookingTitle {
-	display: grid;
-	gap: 0.25rem;
-}
-
-.bookingTitle span {
-	width: fit-content;
-	padding: 0.35rem 0.6rem;
-	border-radius: 999px;
-	background: #ffffff;
-	color: #02006c;
-	font-size: 0.68rem;
-	font-weight: 850;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
-}
-
-.bookingTitle strong {
-	color: #17171f;
-	font-size: 0.98rem;
+	font-size: 0.9rem;
 	font-weight: 850;
 	line-height: 1.35;
 }
 
-.summaryGrid {
-	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: 0.65rem;
-}
-
-.summaryGrid span {
-	min-width: 0;
-	display: grid;
-	gap: 0.25rem;
-	align-content: start;
-	padding: 0.8rem;
-	border: 1px solid rgba(2, 0, 108, 0.08);
-	border-radius: 1rem;
-	background: #ffffff;
-}
-
-.summaryGrid svg {
-	width: 1rem;
-	height: 1rem;
-	color: #02006c;
-}
-
-.summaryGrid strong {
-	overflow: hidden;
-	color: #17171f;
+.bookingSummary small {
+	color: rgba(23, 23, 31, 0.56);
 	font-size: 0.76rem;
-	font-weight: 850;
-	line-height: 1.35;
-	text-overflow: ellipsis;
-}
-
-.summaryGrid small {
-	color: rgba(23, 23, 31, 0.52);
-	font-size: 0.68rem;
 	font-weight: 600;
-	line-height: 1.4;
 }
 
 .dialogField {
@@ -158,16 +84,16 @@
 }
 
 .reasonTextarea {
-	min-height: 7.5rem;
+	min-height: 6.5rem;
 	resize: vertical;
 	border: 1px solid rgba(2, 0, 108, 0.12);
-	border-radius: 1.1rem;
+	border-radius: 1rem;
 	background: #ffffff;
-	padding: 0.95rem 1rem;
+	padding: 0.85rem 0.95rem;
 	color: #17171f;
-	font-size: 0.86rem;
+	font-size: 0.84rem;
 	font-weight: 500;
-	line-height: 1.6;
+	line-height: 1.55;
 }
 
 .reasonTextarea:focus-visible {
@@ -182,33 +108,10 @@
 	font-weight: 700;
 }
 
-.warningBox {
-	display: grid;
-	gap: 0.3rem;
-	padding: 0.9rem 1rem;
-	border: 1px solid rgba(202, 23, 70, 0.14);
-	border-radius: 1.1rem;
-	background: rgba(202, 23, 70, 0.055);
-}
-
-.warningBox strong {
-	color: #ca1746;
-	font-size: 0.78rem;
-	font-weight: 850;
-}
-
-.warningBox p {
-	margin: 0;
-	color: rgba(23, 23, 31, 0.62);
-	font-size: 0.78rem;
-	font-weight: 500;
-	line-height: 1.55;
-}
-
 .dialogFooter {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 0.65rem;
+	gap: 0.6rem;
 }
 
 .keepButton,
@@ -228,7 +131,6 @@
 .cancelButton {
 	background: #ca1746;
 	color: #ffffff;
-	box-shadow: 0 1rem 2rem rgba(202, 23, 70, 0.22);
 }
 
 .cancelButton:hover {
@@ -245,24 +147,8 @@
 	}
 }
 
-@media (max-width: 640px) {
-	.dialogHeader,
-	.summaryGrid,
+@media (max-width: 560px) {
 	.dialogFooter {
 		grid-template-columns: 1fr;
-	}
-
-	.dialogHeader {
-		padding-right: 0;
-		text-align: center;
-	}
-
-	.dialogIdentity,
-	.dialogCopy {
-		justify-items: center;
-	}
-
-	.dialogCopy p {
-		max-width: none;
 	}
 }
