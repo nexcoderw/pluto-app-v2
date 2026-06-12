@@ -13,6 +13,11 @@ import {
 	type BookingSummary,
 	type ListingAvailabilityBlockedRange,
 } from "@/services/api/bookings";
+import {
+	BOOKING_AVAILABILITY_STALE_TIME_MS,
+	BOOKING_QUERY_GC_TIME_MS,
+	shouldRetryBookingQuery,
+} from "@/services/api/bookings/query-options";
 import { ApiRequestError } from "@/services/api/errors";
 import type { PublicListing } from "@/services/api/listings";
 import {
@@ -90,7 +95,10 @@ export function useListingBookingFlow({
 	const availabilityQuery = useQuery({
 		queryKey: bookingQueryKeys.availability(listing.id, availabilityParams),
 		queryFn: () => getListingAvailability(listing.id, availabilityParams),
-		staleTime: 30_000,
+		staleTime: BOOKING_AVAILABILITY_STALE_TIME_MS,
+		gcTime: BOOKING_QUERY_GC_TIME_MS,
+		retry: shouldRetryBookingQuery,
+		refetchOnReconnect: true,
 	});
 
 	const blockedRanges = useMemo(
