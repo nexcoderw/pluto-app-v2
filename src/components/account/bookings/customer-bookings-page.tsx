@@ -26,12 +26,14 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
+	bookingQueryKeys,
 	cancelBooking,
 	listMyBookings,
 	type BookingOrderBy,
 	type BookingSortOrder,
 	type BookingStatus,
 	type BookingSummary,
+	type ListBookingsResponse,
 } from "@/services/api/bookings";
 import { ApiRequestError } from "@/services/api/errors";
 import {
@@ -47,7 +49,6 @@ import { CustomerBookingCancelDialog } from "./customer-booking-cancel-dialog";
 import styles from "./customer-bookings-page.module.css";
 
 const CUSTOMER_BOOKINGS_LIMIT = 10;
-const CUSTOMER_BOOKINGS_QUERY_KEY = ["customer-bookings"] as const;
 
 const statusOptions: Array<{ label: string; value: BookingStatus | "ALL" }> = [
 	{ label: "All statuses", value: "ALL" },
@@ -86,41 +87,108 @@ function CustomerBookingsContent() {
 	const [order, setOrder] = useState<BookingSortOrder>("desc");
 	const [cancelBookingTarget, setCancelBookingTarget] =
 		useState<BookingSummary | null>(null);
+	const bookingListParams = useMemo(
+		() => ({
+			page,
+			limit: CUSTOMER_BOOKINGS_LIMIT,
+			search: search || undefined,
+			status: status === "ALL" ? undefined : status,
+			orderBy,
+			order,
+		}),
+		[order, orderBy, page, search, status],
+	);
 	const bookingsQuery = useQuery({
-		queryKey: [
-			...CUSTOMER_BOOKINGS_QUERY_KEY,
-			{ page, search, status, orderBy, order },
-		],
-		queryFn: () =>
-			listMyBookings({
-				page,
-				limit: CUSTOMER_BOOKINGS_LIMIT,
-				search: search || undefined,
-				status: status === "ALL" ? undefined : status,
-				orderBy,
-				order,
-			}),
+		queryKey: bookingQueryKeys.myList(bookingListParams),
+		queryFn: () => listMyBookings(bookingListParams),
 		staleTime: 20_000,
 	});
 	const cancelMutation = useMutation({
 		mutationFn: (reason?: string) =>
 			cancelBooking(cancelBookingTarget?.id ?? "", { reason }),
+		onMutate: async (reason?: string) => {
+			const target = cancelBookingTarget;
+
+			if (!target) {
+				return { previousLists: [] };
+			}
+
+			await queryClient.cancelQueries({
+				queryKey: bookingQueryKeys.myLists(),
+			});
+
+			const previousLists =
+				queryClient.getQueriesData<ListBookingsResponse>({
+					queryKey: bookingQueryKeys.myLists(),
+				});
+
+			queryClient.setQueriesData<ListBookingsResponse>(
+				{ queryKey: bookingQueryKeys.myLists() },
+				(existing) =>
+					existing
+						? {
+								...existing,
+								items: existing.items.map((booking) =>
+									booking.id === target.id
+										? {
+												...booking,
+												status: "CANCELLED_BY_CUSTOMER",
+												cancellationReason: reason ?? null,
+												cancelledAt: new Date().toISOString(),
+											}
+										: booking,
+								),
+							}
+						: existing,
+			);
+
+			return { previousLists };
+		},
 		onSuccess: (response) => {
 			toast.success(response.message, {
 				description: "Your booking timeline has been updated.",
 			});
 			setCancelBookingTarget(null);
+			queryClient.setQueryData(bookingQueryKeys.myDetail(response.booking.id), {
+				booking: response.booking,
+			});
+			queryClient.setQueriesData<ListBookingsResponse>(
+				{ queryKey: bookingQueryKeys.myLists() },
+				(existing) =>
+					existing
+						? {
+								...existing,
+								items: existing.items.map((booking) =>
+									booking.id === response.booking.id
+										? response.booking
+										: booking,
+								),
+							}
+						: existing,
+			);
 			void queryClient.invalidateQueries({
-				queryKey: CUSTOMER_BOOKINGS_QUERY_KEY,
+				queryKey: bookingQueryKeys.availabilityLists(),
+				predicate: (query) =>
+					query.queryKey.includes(response.booking.productId),
 			});
 		},
-		onError: (error) => {
+		onError: (error, _reason, context) => {
+			context?.previousLists.forEach(([queryKey, data]) => {
+				queryClient.setQueryData(queryKey, data);
+			});
+
 			const message =
 				error instanceof ApiRequestError
 					? error.message
 					: "Booking could not be cancelled. Please try again.";
 
 			toast.error("Booking was not cancelled", { description: message });
+		},
+		onSettled: () => {
+			void queryClient.invalidateQueries({
+				queryKey: bookingQueryKeys.myLists(),
+				refetchType: "inactive",
+			});
 		},
 	});
 	const bookings = bookingsQuery.data?.items ?? [];
