@@ -14,6 +14,7 @@ import styles from "./popular-categories.module.css";
 
 type PopularCategory = {
 	title: string;
+	imageBackground: string;
 	subtitle: string;
 	href?: string;
 	action: string;
@@ -27,6 +28,7 @@ type PopularCategory = {
 const categories: PopularCategory[] = [
 	{
 		title: "Rent a car",
+		imageBackground: "/services/car-rent.png",
 		subtitle: "City rides",
 		href: "/listings/cars",
 		action: "Book car",
@@ -37,6 +39,7 @@ const categories: PopularCategory[] = [
 	},
 	{
 		title: "Find an apartment",
+		imageBackground: "/services/apartment.png",
 		subtitle: "Private stays",
 		href: "/listings/apartments",
 		action: "Book apartment",
@@ -47,6 +50,7 @@ const categories: PopularCategory[] = [
 	},
 	{
 		title: "Book a hotel room",
+		imageBackground: "/services/hotel.png",
 		subtitle: "Easy check-ins",
 		href: "/listings/hotel-rooms",
 		action: "Book room",
@@ -57,6 +61,7 @@ const categories: PopularCategory[] = [
 	},
 	{
 		title: "Stay in an Airbnb",
+		imageBackground: "/services/airbnb.png",
 		subtitle: "Hosted homes",
 		href: "/listings/airbnb",
 		action: "Book stay",
@@ -67,6 +72,7 @@ const categories: PopularCategory[] = [
 	},
 	{
 		title: "Flight booking",
+		imageBackground: "/services/flight.png",
 		subtitle: "Coming soon",
 		action: "Coming soon",
 		icon: Plane,
@@ -102,7 +108,7 @@ function PopularCategoryCard({ category }: { category: PopularCategory }) {
 		<>
 			<span className={styles.media}>
 				<Image
-					src="/hero/hero.jpg"
+					src={category.imageBackground}
 					alt=""
 					fill
 					sizes="(max-width: 980px) 42vw, 20vw"
