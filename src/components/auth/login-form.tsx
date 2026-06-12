@@ -36,6 +36,7 @@ import {
 	loginUser,
 	redirectToUserGoogleLogin,
 	refreshUserSession,
+	storePendingVerificationEmail,
 } from '@/services/api/auth';
 import { hasKnownUserSession } from '@/services/api/token-store';
 import styles from './auth-form.module.css';
@@ -114,6 +115,19 @@ export function LoginForm({
 
 			if (apiError.isNetworkError || apiError.statusCode === 429) {
 				setModalError(apiError.message);
+				return;
+			}
+
+			if (
+				apiError.statusCode === 403 &&
+				apiError.message.toLowerCase().includes('verify your email')
+			) {
+				storePendingVerificationEmail(form.getValues('email'));
+				toast.error(apiError.message, {
+					description:
+						'Request a new verification link if the previous one expired.',
+				});
+				router.push('/verify-email');
 				return;
 			}
 
