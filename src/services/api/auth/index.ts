@@ -8,6 +8,11 @@ export type {
   CompleteGooglePhoneRequest,
   CompleteGooglePhoneResponse,
 } from "./complete-google-phone";
+export { confirmEmailVerification } from "./confirm-email-verification";
+export type {
+  ConfirmEmailVerificationRequest,
+  ConfirmEmailVerificationResponse,
+} from "./confirm-email-verification";
 export { forgotUserPassword } from "./forgot-password";
 export type {
   ForgotUserPasswordRequest,
@@ -30,6 +35,11 @@ export { loginUser } from "./login";
 export type { UserLoginRequest, UserLoginResponse } from "./login";
 export { logoutUser } from "./logout";
 export type { LogoutUserRequest, LogoutUserResponse } from "./logout";
+export {
+  clearPendingVerificationEmail,
+  getPendingVerificationEmail,
+  storePendingVerificationEmail,
+} from "./pending-email-verification";
 export { refreshUserSession } from "./refresh-session";
 export type {
   RefreshUserSessionRequest,
@@ -37,6 +47,11 @@ export type {
 } from "./refresh-session";
 export { registerUser } from "./register";
 export type { RegisterUserRequest, RegisterUserResponse } from "./register";
+export { resendEmailVerification } from "./resend-email-verification";
+export type {
+  ResendEmailVerificationRequest,
+  ResendEmailVerificationResponse,
+} from "./resend-email-verification";
 export { resetUserPassword } from "./reset-password";
 export type {
   ResetUserPasswordRequest,
@@ -60,5 +75,6 @@ export type {
   UserAuthProfile,
   UserAuthResponse,
   UserCurrentProfileResponse,
+  UserRegistrationResponse,
   UserRole,
 } from "./types";
