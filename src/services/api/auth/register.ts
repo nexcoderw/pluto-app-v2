@@ -1,9 +1,11 @@
 import { apiClient } from '../client';
 import { normalizeApiError } from '../errors';
-import { setUserAccessToken } from '../token-store';
 import { USER_AUTH_ROUTES } from './routes';
-import { storeAuthenticatedUserSession } from './session-bootstrap';
-import type { PartnerType, PublicUserRole, UserAuthResponse } from './types';
+import type {
+	PartnerType,
+	PublicUserRole,
+	UserRegistrationResponse,
+} from './types';
 
 // Request payload: the backend requires every registration field.
 export type RegisterUserRequest = {
@@ -16,10 +18,10 @@ export type RegisterUserRequest = {
 	deviceName?: string;
 };
 
-// Response payload: safe user profile plus a short-lived access token.
-export type RegisterUserResponse = UserAuthResponse;
+// Response payload: account creation remains pending until email confirmation.
+export type RegisterUserResponse = UserRegistrationResponse;
 
-// Endpoint call: creates a customer or partner account and starts a session.
+// Endpoint call: starts registration and sends a one-time verification link.
 export async function registerUser(
 	payload: RegisterUserRequest,
 ): Promise<RegisterUserResponse> {
@@ -29,8 +31,6 @@ export async function registerUser(
 			payload,
 		);
 
-		setUserAccessToken(response.data.accessToken);
-		await storeAuthenticatedUserSession(response.data.user);
 		return response.data;
 	} catch (error) {
 		throw normalizeApiError(error);
