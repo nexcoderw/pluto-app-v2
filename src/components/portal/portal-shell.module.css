@@ -700,40 +700,6 @@
 	color: #02006c;
 }
 
-.skeletonBrand,
-.skeletonTopbar,
-.skeletonHero {
-	border-radius: 1.25rem;
-}
-
-.skeletonBrand {
-	height: 2.85rem;
-}
-
-.skeletonNav {
-	height: 20rem;
-	border-radius: 1.25rem;
-}
-
-.skeletonTopbar {
-	height: 4.3rem;
-}
-
-.skeletonHero {
-	height: 12rem;
-}
-
-.skeletonGrid {
-	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: 0.85rem;
-}
-
-.skeletonGrid > span {
-	height: 10rem;
-	border-radius: 1.35rem;
-}
-
 @keyframes panelIn {
 	from {
 		opacity: 0;
@@ -800,8 +766,7 @@
 	.portalHero,
 	.statusGrid,
 	.quickActions,
-	.featureBand,
-	.skeletonGrid {
+	.featureBand {
 		grid-template-columns: 1fr;
 	}
 
@@ -843,8 +808,7 @@
 		white-space: nowrap;
 	}
 
-	.statusGrid article,
-	.skeletonGrid > span {
+	.statusGrid article {
 		min-height: 7.5rem;
 	}
 }
