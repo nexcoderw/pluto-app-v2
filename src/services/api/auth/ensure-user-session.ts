@@ -1,5 +1,9 @@
 import { ApiRequestError } from "../errors";
-import { getUserAccessToken, hasKnownUserSession } from "../token-store";
+import {
+	clearUserAccessToken,
+	getUserAccessToken,
+	hasKnownUserSession,
+} from "../token-store";
 import { refreshUserSession } from "./refresh-session";
 
 // Protected user requests use short-lived access tokens stored in memory.
@@ -37,6 +41,28 @@ export async function withFreshUserSession<T>(
 			hasKnownUserSession()
 		) {
 			await refreshUserSession();
+
+			return request();
+		}
+
+		throw error;
+	}
+}
+
+// Public endpoints can return richer data for signed-in users. If the browser
+// attaches a stale token, retry anonymously instead of failing the public page.
+export async function withOptionalFreshUserSession<T>(
+	request: () => Promise<T>,
+): Promise<T> {
+	if (hasKnownUserSession()) {
+		await ensureUserAccessToken().catch(() => undefined);
+	}
+
+	try {
+		return await request();
+	} catch (error) {
+		if (error instanceof ApiRequestError && error.statusCode === 401) {
+			clearUserAccessToken();
 
 			return request();
 		}
