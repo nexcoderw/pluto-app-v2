@@ -9,7 +9,7 @@ import {
 } from '@/services/api/auth';
 import { ApiRequestError } from '@/services/api/errors';
 import { PortalForbidden, PortalSessionUnavailable } from './portal-forbidden';
-import { PortalSkeleton } from './portal-skeleton';
+import { PortalLoading } from './portal-loading';
 
 type PortalAccessBoundaryProps = {
 	allowedRole: UserRole;
@@ -76,7 +76,7 @@ export function PortalAccessBoundary({
 	}, [allowedRole]);
 
 	if (accessState.status === 'loading') {
-		return loadingFallback ?? <PortalSkeleton />;
+		return loadingFallback ?? <PortalLoading />;
 	}
 
 	if (accessState.status === 'forbidden') {
