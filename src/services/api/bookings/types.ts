@@ -58,6 +58,7 @@ export type ListingAvailabilityResponse = {
 	};
 	blockingStatuses: BookingStatus[];
 	blockedRanges: ListingAvailabilityBlockedRange[];
+	unavailableRanges?: ListingAvailabilityBlockedRange[];
 };
 
 export type CreateBookingPayload = {
@@ -177,6 +178,10 @@ export type ListBookingsResponse = {
 		orderBy: BookingOrderBy;
 		order: BookingSortOrder;
 	};
+};
+
+export type BookingDetailResponse = {
+	booking: BookingSummary;
 };
 
 export type UpdatePartnerBookingStatusResponse = {
