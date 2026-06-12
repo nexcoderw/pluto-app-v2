@@ -20,6 +20,12 @@ export type UserAuthResponse = {
   user: UserAuthProfile;
 };
 
+export type UserRegistrationResponse = {
+  message: string;
+  verificationRequired: true;
+  verificationExpiresInMinutes: number;
+};
+
 export type UserCurrentProfileResponse = {
   user: UserAuthProfile;
 };
