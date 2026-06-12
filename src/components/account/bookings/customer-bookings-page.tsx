@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import {
 	ArrowLeft,
 	ArrowRight,
@@ -10,7 +10,12 @@ import {
 	Search,
 	SlidersHorizontal,
 } from "lucide-react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+	keepPreviousData,
+	useMutation,
+	useQuery,
+	useQueryClient,
+} from "@tanstack/react-query";
 import { toast } from "sonner";
 import { CustomerPortalShell } from "@/components/account/customer-portal-shell";
 import { PortalAccessBoundary } from "@/components/portal/portal-access-boundary";
@@ -35,6 +40,11 @@ import {
 	type BookingSummary,
 	type ListBookingsResponse,
 } from "@/services/api/bookings";
+import {
+	BOOKING_QUERY_GC_TIME_MS,
+	BOOKING_QUERY_STALE_TIME_MS,
+	shouldRetryBookingQuery,
+} from "@/services/api/bookings/query-options";
 import { ApiRequestError } from "@/services/api/errors";
 import {
 	formatBookingCategory,
@@ -101,7 +111,10 @@ function CustomerBookingsContent() {
 	const bookingsQuery = useQuery({
 		queryKey: bookingQueryKeys.myList(bookingListParams),
 		queryFn: () => listMyBookings(bookingListParams),
-		staleTime: 20_000,
+		staleTime: BOOKING_QUERY_STALE_TIME_MS,
+		gcTime: BOOKING_QUERY_GC_TIME_MS,
+		retry: shouldRetryBookingQuery,
+		placeholderData: keepPreviousData,
 	});
 	const cancelMutation = useMutation({
 		mutationFn: (reason?: string) =>
@@ -198,6 +211,25 @@ function CustomerBookingsContent() {
 		() => getPaginationItems(page, totalPages),
 		[page, totalPages],
 	);
+
+	useEffect(() => {
+		if (!bookingsQuery.data?.meta.hasNextPage) {
+			return;
+		}
+
+		const nextParams = { ...bookingListParams, page: page + 1 };
+
+		void queryClient.prefetchQuery({
+			queryKey: bookingQueryKeys.myList(nextParams),
+			queryFn: () => listMyBookings(nextParams),
+			staleTime: BOOKING_QUERY_STALE_TIME_MS,
+		});
+	}, [
+		bookingListParams,
+		bookingsQuery.data?.meta.hasNextPage,
+		page,
+		queryClient,
+	]);
 
 	function handleSearch(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
