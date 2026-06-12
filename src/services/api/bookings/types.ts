@@ -68,6 +68,7 @@ export type CreateBookingPayload = {
 	guests?: number;
 	quantity?: number;
 	customerNote?: string;
+	idempotencyKey?: string;
 };
 
 export type CancelBookingPayload = {
