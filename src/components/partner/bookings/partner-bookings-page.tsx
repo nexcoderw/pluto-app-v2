@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import {
 	ArrowLeft,
 	ArrowRight,
@@ -9,7 +9,12 @@ import {
 	Search,
 	ShieldCheck,
 } from "lucide-react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+	keepPreviousData,
+	useMutation,
+	useQuery,
+	useQueryClient,
+} from "@tanstack/react-query";
 import { toast } from "sonner";
 import { PortalShell } from "@/components/portal/portal-shell";
 import {
@@ -43,6 +48,11 @@ import {
 	type ListBookingsResponse,
 	type UpdatePartnerBookingStatusPayload,
 } from "@/services/api/bookings";
+import {
+	BOOKING_QUERY_GC_TIME_MS,
+	BOOKING_QUERY_STALE_TIME_MS,
+	shouldRetryBookingQuery,
+} from "@/services/api/bookings/query-options";
 import { ApiRequestError } from "@/services/api/errors";
 import {
 	formatBookingCategory,
@@ -135,7 +145,10 @@ function PartnerBookingsContent({
 	const bookingsQuery = useQuery({
 		queryKey: bookingQueryKeys.partnerList(bookingListParams),
 		queryFn: () => listPartnerBookings(bookingListParams),
-		staleTime: 20_000,
+		staleTime: BOOKING_QUERY_STALE_TIME_MS,
+		gcTime: BOOKING_QUERY_GC_TIME_MS,
+		retry: shouldRetryBookingQuery,
+		placeholderData: keepPreviousData,
 	});
 	const updateMutation = useMutation({
 		mutationFn: (payload: UpdatePartnerBookingStatusPayload) =>
@@ -238,6 +251,25 @@ function PartnerBookingsContent({
 		() => getPaginationItems(page, totalPages),
 		[page, totalPages],
 	);
+
+	useEffect(() => {
+		if (!bookingsQuery.data?.meta.hasNextPage) {
+			return;
+		}
+
+		const nextParams = { ...bookingListParams, page: page + 1 };
+
+		void queryClient.prefetchQuery({
+			queryKey: bookingQueryKeys.partnerList(nextParams),
+			queryFn: () => listPartnerBookings(nextParams),
+			staleTime: BOOKING_QUERY_STALE_TIME_MS,
+		});
+	}, [
+		bookingListParams,
+		bookingsQuery.data?.meta.hasNextPage,
+		page,
+		queryClient,
+	]);
 
 	function handleSearch(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
