@@ -35,7 +35,7 @@ http://localhost:4000
 - Category-specific listing cards, filters, maps, pagination, and detail pages.
 - Listing reviews and review dialogs.
 - Listing favorite interactions and customer favorite page.
-- Auth pages for login, registration, partner registration, forgot password, reset password, Google callback, and phone completion.
+- Auth pages for login, registration, email verification and resend, partner registration, forgot password, reset password, Google callback, and phone completion.
 - Customer portal pages for dashboard, bookings, favorites, payments, profile, and audit logs.
 - Partner onboarding and partner workspace pages.
 - Partner listing create, edit, detail, delete, image upload, and status flows.
@@ -173,6 +173,7 @@ Do not run full `npm run build` or full `npm run lint` automatically for the use
 /login
 /register
 /partner-register
+/verify-email
 /complete-phone
 /forgot-password
 /reset-password
@@ -299,6 +300,8 @@ DELETE /favorites/:productId
 GET    /me/audit-logs
 
 POST   /auth/users/register
+POST   /auth/users/email-verification/confirm
+POST   /auth/users/email-verification/resend
 POST   /auth/users/login
 POST   /auth/users/refresh
 POST   /auth/users/logout
@@ -337,6 +340,10 @@ This app must not use `/admin/...` endpoints.
 
 ## Authentication Behavior
 
+- Email/password registration redirects to `/verify-email` and does not create a local authenticated session before confirmation.
+- Verification links require an explicit user action, then create the account and secure session.
+- Expired or invalid links expose a resend form with cooldown-aware feedback.
+- Password login redirects unverified users to the verification recovery page.
 - All successful user logins redirect to the homepage.
 - Public navbar shows auth buttons when logged out.
 - Public navbar shows logged-in user information and a sign-out action when logged in.
