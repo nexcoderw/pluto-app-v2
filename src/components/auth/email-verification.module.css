@@ -1,0 +1,303 @@
+.panel {
+  width: min(100%, 25rem);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1.1rem;
+  padding: 0.3rem 0;
+  animation: panelIn 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.stateIcon {
+  width: 3.4rem;
+  height: 3.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  border: 1px solid rgba(2, 0, 108, 0.12);
+  border-radius: 999px;
+  background: rgba(2, 0, 108, 0.07);
+  color: #02006c;
+  box-shadow: 0 0.9rem 2.2rem rgba(2, 0, 108, 0.12);
+}
+
+.stateIcon[data-error="true"] {
+  border-color: rgba(190, 18, 60, 0.2);
+  background: rgba(190, 18, 60, 0.08);
+  color: #be123c;
+  box-shadow: 0 0.9rem 2.2rem rgba(190, 18, 60, 0.1);
+}
+
+.stateIcon svg {
+  width: 1.45rem;
+  height: 1.45rem;
+}
+
+.panel[data-state="success"] .stateIcon {
+  border-color: rgba(20, 138, 84, 0.2);
+  background: rgba(20, 138, 84, 0.08);
+  color: #148a54;
+  box-shadow: 0 0.9rem 2.2rem rgba(20, 138, 84, 0.12);
+}
+
+.heading {
+  display: grid;
+  justify-items: center;
+  gap: 0.45rem;
+  text-align: center;
+}
+
+.heading > span {
+  color: #02006c;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.heading h1 {
+  margin: 0;
+  color: #17171f;
+  font-size: clamp(1.8rem, 4vw, 2.45rem);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: 0;
+}
+
+.heading p {
+  max-width: 22rem;
+  margin: 0;
+  color: rgba(23, 23, 31, 0.62);
+  font-size: 0.86rem;
+  font-weight: 500;
+  line-height: 1.55;
+}
+
+.primaryFlow,
+.resendFlow {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.securityNote {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(2, 0, 108, 0.1);
+  border-radius: 0.9rem;
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.securityNote > svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex: 0 0 auto;
+  color: #02006c;
+}
+
+.securityNote span {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.securityNote strong {
+  color: #17171f;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.securityNote small {
+  color: rgba(23, 23, 31, 0.56);
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.fieldGroup {
+  display: grid;
+  gap: 0.38rem;
+}
+
+.fieldGroup label {
+  padding-left: 1.2rem;
+  color: rgba(23, 23, 31, 0.62);
+  font-size: 0.74rem;
+  font-weight: 500;
+}
+
+.inputShell {
+  display: flex;
+  align-items: center;
+  min-height: 3.15rem;
+  padding: 0 0.8rem 0 1rem;
+  border: 1px solid rgba(2, 0, 108, 0.3);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.74);
+  box-shadow: 0 0.8rem 2rem rgba(16, 22, 33, 0.06);
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.inputShell:focus-within {
+  border-color: #02006c;
+  box-shadow: 0 0 0 0.22rem rgba(2, 0, 108, 0.11);
+}
+
+.inputShell[data-invalid="true"] {
+  border-color: rgba(190, 18, 60, 0.66);
+  box-shadow: 0 0 0 0.2rem rgba(190, 18, 60, 0.09);
+}
+
+.inputShell > svg {
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 auto;
+  color: rgba(2, 0, 108, 0.66);
+}
+
+.inputShell input {
+  height: 3rem;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 0 0.7rem;
+  color: #17171f;
+  font-size: 0.86rem;
+  font-weight: 500;
+}
+
+.inputShell input:focus-visible {
+  border: 0;
+  outline: 0;
+  box-shadow: none;
+}
+
+.inlineError {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: #be123c;
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.primaryButton {
+  width: 100%;
+  height: 3.65rem;
+  min-height: 3.65rem;
+  border-radius: 999px;
+  background: #02006c;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 500;
+  box-shadow: 0 1rem 2.4rem rgba(2, 0, 108, 0.22);
+  transition:
+    transform 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.primaryButton:hover {
+  background: #09068f;
+  transform: translateY(-2px);
+  box-shadow: 0 1.2rem 2.8rem rgba(2, 0, 108, 0.27);
+}
+
+.primaryButton:disabled {
+  transform: none;
+}
+
+.primaryButton svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.spinner {
+  animation: spin 760ms linear infinite;
+}
+
+.secondaryLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  align-self: center;
+  color: #02006c;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.secondaryLink:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.18rem;
+}
+
+.secondaryLink svg {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.redirectStatus {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: #02006c;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.redirectStatus svg {
+  width: 1rem;
+  height: 1rem;
+  animation: spin 760ms linear infinite;
+}
+
+@keyframes panelIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 520px) {
+  .panel {
+    width: 100%;
+  }
+
+  .heading {
+    justify-items: start;
+    text-align: left;
+  }
+
+  .heading p {
+    max-width: none;
+  }
+
+  .stateIcon {
+    align-self: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .primaryButton,
+  .spinner,
+  .redirectStatus svg {
+    animation: none;
+    transition: none;
+  }
+}
