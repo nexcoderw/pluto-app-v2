@@ -4,9 +4,10 @@ import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { addMonths } from "date-fns";
 import type { DateRange } from "react-day-picker";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useUserSession } from "@/hooks/use-user-session";
 import {
+	bookingQueryKeys,
 	createBooking,
 	getListingAvailability,
 	type BookingSummary,
@@ -75,15 +76,19 @@ export function useListingBookingFlow({
 	const [bookingError, setBookingError] = useState<string | undefined>();
 	const [booking, setBooking] = useState<BookingSummary | undefined>();
 	const currentUser = useUserSession();
+	const queryClient = useQueryClient();
 	const canSeeUnavailableMessage = Boolean(currentUser);
+	const availabilityParams = useMemo(
+		() => ({
+			startDate: toBookingDateValue(today),
+			endDate: toBookingDateValue(addMonths(today, 12)),
+		}),
+		[today],
+	);
 
 	const availabilityQuery = useQuery({
-		queryKey: ["listing-booking-availability", listing.id],
-		queryFn: () =>
-			getListingAvailability(listing.id, {
-				startDate: toBookingDateValue(today),
-				endDate: toBookingDateValue(addMonths(today, 12)),
-			}),
+		queryKey: bookingQueryKeys.availability(listing.id, availabilityParams),
+		queryFn: () => getListingAvailability(listing.id, availabilityParams),
 		staleTime: 30_000,
 	});
 
@@ -119,7 +124,16 @@ export function useListingBookingFlow({
 		onSuccess: (response) => {
 			setBooking(response.booking);
 			setDialogMode("success");
-			void availabilityQuery.refetch();
+			queryClient.setQueryData(bookingQueryKeys.myDetail(response.booking.id), {
+				booking: response.booking,
+			});
+			void queryClient.invalidateQueries({
+				queryKey: bookingQueryKeys.myLists(),
+			});
+			void queryClient.invalidateQueries({
+				queryKey: bookingQueryKeys.availabilityLists(),
+				predicate: (query) => query.queryKey.includes(listing.id),
+			});
 		},
 		onError: (error) => {
 			const message =
@@ -129,7 +143,10 @@ export function useListingBookingFlow({
 
 			setBookingError(message);
 			setDialogMode("error");
-			void availabilityQuery.refetch();
+			void queryClient.invalidateQueries({
+				queryKey: bookingQueryKeys.availabilityLists(),
+				predicate: (query) => query.queryKey.includes(listing.id),
+			});
 		},
 	});
 
@@ -195,7 +212,10 @@ export function useListingBookingFlow({
 			);
 			setDialogMode("error");
 			setIsDialogOpen(true);
-			void availabilityQuery.refetch();
+			void queryClient.invalidateQueries({
+				queryKey: bookingQueryKeys.availabilityLists(),
+				predicate: (query) => query.queryKey.includes(listing.id),
+			});
 			return;
 		}
 
