@@ -33,12 +33,14 @@ import {
 	type PartnerProfile,
 } from "@/services/api/partner-profile";
 import {
+	bookingQueryKeys,
 	listPartnerBookings,
 	updatePartnerBookingStatus,
 	type BookingOrderBy,
 	type BookingSortOrder,
 	type BookingStatus,
 	type BookingSummary,
+	type ListBookingsResponse,
 	type UpdatePartnerBookingStatusPayload,
 } from "@/services/api/bookings";
 import { ApiRequestError } from "@/services/api/errors";
@@ -55,7 +57,6 @@ import { PartnerBookingStatusDialog } from "./partner-booking-status-dialog";
 import styles from "./partner-bookings-page.module.css";
 
 const PARTNER_BOOKINGS_LIMIT = 12;
-const PARTNER_BOOKINGS_QUERY_KEY = ["partner-bookings"] as const;
 
 export function PartnerBookingsPage() {
 	return (
@@ -120,20 +121,21 @@ function PartnerBookingsContent({
 	const [selectedBooking, setSelectedBooking] = useState<BookingSummary | null>(
 		null,
 	);
+	const bookingListParams = useMemo(
+		() => ({
+			page,
+			limit: PARTNER_BOOKINGS_LIMIT,
+			search: search || undefined,
+			status: status === "ALL" ? undefined : status,
+			orderBy,
+			order,
+		}),
+		[order, orderBy, page, search, status],
+	);
 	const bookingsQuery = useQuery({
-		queryKey: [
-			...PARTNER_BOOKINGS_QUERY_KEY,
-			{ page, search, status, orderBy, order },
-		],
-		queryFn: () =>
-			listPartnerBookings({
-				page,
-				limit: PARTNER_BOOKINGS_LIMIT,
-				search: search || undefined,
-				status: status === "ALL" ? undefined : status,
-				orderBy,
-				order,
-			}),
+		queryKey: bookingQueryKeys.partnerList(bookingListParams),
+		queryFn: () => listPartnerBookings(bookingListParams),
+		staleTime: 20_000,
 	});
 	const updateMutation = useMutation({
 		mutationFn: (payload: UpdatePartnerBookingStatusPayload) =>
@@ -141,22 +143,92 @@ function PartnerBookingsContent({
 				bookingId: selectedBooking?.id ?? "",
 				payload,
 			}),
+		onMutate: async (payload) => {
+			const target = selectedBooking;
+
+			if (!target) {
+				return { previousLists: [] };
+			}
+
+			await queryClient.cancelQueries({
+				queryKey: bookingQueryKeys.partnerLists(),
+			});
+
+			const previousLists =
+				queryClient.getQueriesData<ListBookingsResponse>({
+					queryKey: bookingQueryKeys.partnerLists(),
+				});
+
+			queryClient.setQueriesData<ListBookingsResponse>(
+				{ queryKey: bookingQueryKeys.partnerLists() },
+				(existing) =>
+					existing
+						? {
+								...existing,
+								items: existing.items.map((booking) =>
+									booking.id === target.id
+										? {
+												...booking,
+												status: payload.status,
+												cancellationReason: payload.reason ?? null,
+												cancelledAt: payload.status.startsWith("CANCELLED")
+													? new Date().toISOString()
+													: booking.cancelledAt,
+												completedAt:
+													payload.status === "COMPLETED"
+														? new Date().toISOString()
+														: booking.completedAt,
+											}
+										: booking,
+								),
+							}
+						: existing,
+			);
+
+			return { previousLists };
+		},
 		onSuccess: (response) => {
 			toast.success(response.message, {
 				description: "The booking timeline has been updated.",
 			});
 			setSelectedBooking(null);
+			queryClient.setQueriesData<ListBookingsResponse>(
+				{ queryKey: bookingQueryKeys.partnerLists() },
+				(existing) =>
+					existing
+						? {
+								...existing,
+								items: existing.items.map((booking) =>
+									booking.id === response.booking.id
+										? response.booking
+										: booking,
+								),
+							}
+						: existing,
+			);
 			void queryClient.invalidateQueries({
-				queryKey: PARTNER_BOOKINGS_QUERY_KEY,
+				queryKey: bookingQueryKeys.availabilityLists(),
+				predicate: (query) =>
+					query.queryKey.includes(response.booking.productId),
 			});
 		},
-		onError: (error) => {
+		onError: (error, _payload, context) => {
+			context?.previousLists.forEach(([queryKey, data]) => {
+				queryClient.setQueryData(queryKey, data);
+			});
+
 			const message =
 				error instanceof ApiRequestError
 					? error.message
 					: "Booking status could not be updated.";
 
 			toast.error("Status update failed", { description: message });
+		},
+		onSettled: () => {
+			void queryClient.invalidateQueries({
+				queryKey: bookingQueryKeys.partnerLists(),
+				refetchType: "inactive",
+			});
 		},
 	});
 	const bookings = bookingsQuery.data?.items ?? [];
