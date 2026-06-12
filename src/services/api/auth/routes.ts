@@ -1,5 +1,7 @@
 export const USER_AUTH_ROUTES = {
   register: "/auth/users/register",
+  confirmEmailVerification: "/auth/users/email-verification/confirm",
+  resendEmailVerification: "/auth/users/email-verification/resend",
   login: "/auth/users/login",
   refreshSession: "/auth/users/refresh",
   logout: "/auth/users/logout",
