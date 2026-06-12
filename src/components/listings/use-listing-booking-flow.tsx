@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { addMonths } from "date-fns";
 import type { DateRange } from "react-day-picker";
@@ -75,6 +75,7 @@ export function useListingBookingFlow({
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const [bookingError, setBookingError] = useState<string | undefined>();
 	const [booking, setBooking] = useState<BookingSummary | undefined>();
+	const bookingRequestKeyRef = useRef<string | null>(null);
 	const currentUser = useUserSession();
 	const queryClient = useQueryClient();
 	const canSeeUnavailableMessage = Boolean(currentUser);
@@ -115,6 +116,7 @@ export function useListingBookingFlow({
 				startDate: toBookingDateValue(fromDate),
 				endDate: toBookingDateValue(toDate),
 				quantity: 1,
+				idempotencyKey: getBookingRequestKey(bookingRequestKeyRef),
 			});
 		},
 		onMutate: () => {
@@ -122,6 +124,7 @@ export function useListingBookingFlow({
 			setDialogMode("progress");
 		},
 		onSuccess: (response) => {
+			bookingRequestKeyRef.current = null;
 			setBooking(response.booking);
 			setDialogMode("success");
 			queryClient.setQueryData(bookingQueryKeys.myDetail(response.booking.id), {
@@ -172,6 +175,7 @@ export function useListingBookingFlow({
 	]);
 
 	function handleDateRangeChange(nextRange: DateRange | undefined) {
+		bookingRequestKeyRef.current = null;
 		const overlap = findOverlappingBlockedRange(nextRange, blockedRanges);
 
 		if (overlap?.isOwnBooking && canSeeUnavailableMessage) {
@@ -197,6 +201,7 @@ export function useListingBookingFlow({
 
 	function openBookingDialog() {
 		if (!fromDate || !toDate) {
+			bookingRequestKeyRef.current = null;
 			setBookingError("Choose your start and end date before booking.");
 			setDialogMode("error");
 			setIsDialogOpen(true);
@@ -221,6 +226,7 @@ export function useListingBookingFlow({
 
 		setBookingError(undefined);
 		setBooking(undefined);
+		bookingRequestKeyRef.current = createBookingRequestKey();
 		setDialogMode("confirm");
 		setIsDialogOpen(true);
 	}
@@ -259,6 +265,20 @@ export function useListingBookingFlow({
 		openBookingDialog,
 		bookingDialog,
 	};
+}
+
+function getBookingRequestKey(ref: { current: string | null }): string {
+	ref.current ??= createBookingRequestKey();
+
+	return ref.current;
+}
+
+function createBookingRequestKey(): string {
+	if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+		return `booking_${crypto.randomUUID()}`;
+	}
+
+	return `booking_${Date.now()}_${Math.random().toString(36).slice(2)}`;
 }
 
 function buildAvailabilityMessage(
