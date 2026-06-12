@@ -56,12 +56,12 @@ import {
 	isValidInternationalPhoneNumber,
 	normalizePhoneNumber,
 } from '@/lib/phone-number';
-import { getUserPortalPath } from '@/lib/user-portal';
 import { ApiRequestError } from '@/services/api/errors';
 import {
 	isUserGoogleLoginEnabled,
 	redirectToUserGoogleLogin,
 	registerUser,
+	storePendingVerificationEmail,
 	type PublicUserRole,
 } from '@/services/api/auth';
 import styles from './auth-form.module.css';
@@ -201,17 +201,12 @@ export function RegisterForm({
 				deviceName,
 			}),
 		onSuccess: (response) => {
+			storePendingVerificationEmail(form.getValues('email'));
 			toast.success(response.message, {
 				description:
-					response.user.role === 'PARTNER'
-						? 'Your partner account is ready for onboarding.'
-						: 'Your customer account is ready.',
+					'Open the secure link in your inbox to finish creating your account.',
 			});
-			router.replace(
-				response.user.role === 'CUSTOMER'
-					? '/account?registered=success'
-					: getUserPortalPath(response.user),
-			);
+			router.replace('/verify-email');
 		},
 		onError: (error) => {
 			const apiError =
