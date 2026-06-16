@@ -1,0 +1,634 @@
+.page {
+  display: grid;
+  gap: clamp(1rem, 2vw, 1.25rem);
+  color: #17171f;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(20rem, 0.58fr);
+  gap: clamp(1rem, 2vw, 1.25rem);
+  align-items: end;
+  padding: clamp(1.2rem, 3vw, 1.8rem);
+  border: 1px solid rgba(2, 0, 108, 0.08);
+  border-radius: 1.6rem;
+  background: #ffffff;
+  box-shadow: 0 1.3rem 3rem rgba(16, 22, 33, 0.07);
+}
+
+.heroCopy {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.eyebrow,
+.panelHeader span {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #02006c;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.eyebrow svg,
+.panelHeader svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.hero h1 {
+  margin: 0;
+  color: #17171f;
+  font-size: clamp(2.25rem, 5vw, 4rem);
+  font-weight: 950;
+  line-height: 0.95;
+  letter-spacing: 0;
+}
+
+.hero p {
+  max-width: 45rem;
+  margin: 0;
+  color: rgba(23, 23, 31, 0.62);
+  font-size: 0.95rem;
+  font-weight: 650;
+  line-height: 1.65;
+}
+
+.searchPanel {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.75rem;
+  border: 1px solid rgba(2, 0, 108, 0.08);
+  border-radius: 1.25rem;
+  background: rgba(246, 247, 251, 0.82);
+}
+
+.searchPanel label,
+.filterControl > span {
+  color: rgba(23, 23, 31, 0.56);
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.searchPanel > div {
+  min-height: var(--pluto-button-height);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.2rem 0.25rem 0.2rem 0.9rem;
+  border: 1px solid rgba(2, 0, 108, 0.14);
+  border-radius: 999px;
+  background: #ffffff;
+}
+
+.searchPanel svg {
+  width: 1rem;
+  height: 1rem;
+  color: #02006c;
+}
+
+.searchPanel input {
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #17171f;
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 650;
+}
+
+.searchPanel input::placeholder {
+  color: rgba(23, 23, 31, 0.42);
+}
+
+.searchPanel button,
+.resetButton,
+.activityPanel button,
+.errorState button {
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.filterBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 0.7rem;
+  padding: 0.75rem;
+  border: 1px solid rgba(2, 0, 108, 0.08);
+  border-radius: 1.35rem;
+  background: rgba(255, 255, 255, 0.84);
+  box-shadow: 0 1rem 2.5rem rgba(16, 22, 33, 0.06);
+}
+
+.filterControl {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.selectTrigger {
+  min-width: 9.5rem;
+  color: #17171f;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.selectContent {
+  border-radius: 1rem;
+  background: #ffffff;
+}
+
+.resetButton {
+  margin-left: auto;
+  border-color: rgba(2, 0, 108, 0.14);
+  color: #02006c;
+}
+
+.overviewGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(20rem, 0.65fr);
+  gap: 1rem;
+}
+
+.salesPanel,
+.metricCard,
+.statusPanel,
+.categoryPanel,
+.tripsPanel,
+.activityPanel {
+  border: 1px solid rgba(2, 0, 108, 0.08);
+  background: #ffffff;
+  box-shadow: 0 1.25rem 3rem rgba(16, 22, 33, 0.07);
+}
+
+.salesPanel {
+  min-height: 25rem;
+  display: grid;
+  align-content: space-between;
+  gap: 1rem;
+  padding: clamp(1rem, 2vw, 1.25rem);
+  border-radius: 1.5rem;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.panelHeader small {
+  color: rgba(23, 23, 31, 0.52);
+  font-size: 0.74rem;
+  font-weight: 850;
+}
+
+.panelHeader a,
+.panelHeader button {
+  min-height: 2.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0 0.8rem;
+  border: 1px solid rgba(2, 0, 108, 0.12);
+  border-radius: 999px;
+  background: #ffffff;
+  color: #02006c;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.panelHeader button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.panelHeader a svg,
+.panelHeader button svg {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.valueLine {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.valueLine strong {
+  color: #02006c;
+  font-size: clamp(2.7rem, 7vw, 5rem);
+  font-weight: 950;
+  line-height: 0.95;
+  letter-spacing: 0;
+}
+
+.valueLine span {
+  color: rgba(23, 23, 31, 0.55);
+  font-size: 0.86rem;
+  font-weight: 750;
+}
+
+.trendChart {
+  height: 12rem;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-items: end;
+  gap: 0.55rem;
+  padding: 1rem;
+  border-radius: 1.2rem;
+  background: #f7f8fc;
+}
+
+.trendChart > span {
+  min-width: 0;
+  height: 100%;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 0.4rem;
+}
+
+.trendChart i {
+  width: 100%;
+  height: max(0.45rem, var(--bar-size));
+  display: block;
+  border-radius: 999px 999px 0.35rem 0.35rem;
+  background: #02006c;
+  box-shadow: 0 0.8rem 1.3rem rgba(2, 0, 108, 0.14);
+}
+
+.trendChart small {
+  overflow: hidden;
+  color: rgba(23, 23, 31, 0.48);
+  font-size: 0.64rem;
+  font-weight: 850;
+  text-align: center;
+  text-overflow: ellipsis;
+}
+
+.noChartData {
+  grid-column: 1 / -1;
+  align-self: center;
+  color: rgba(23, 23, 31, 0.52);
+  font-size: 0.86rem;
+  font-weight: 750;
+  text-align: center;
+}
+
+.metricGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.metricCard {
+  min-height: 12rem;
+  display: grid;
+  align-content: end;
+  gap: 0.45rem;
+  padding: 1rem;
+  border-radius: 1.35rem;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.metricCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 1.5rem 3.4rem rgba(16, 22, 33, 0.1);
+}
+
+.metricCard > span {
+  width: 2.8rem;
+  height: 2.8rem;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(2, 0, 108, 0.08);
+  color: #02006c;
+}
+
+.metricCard svg {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+.metricCard small {
+  color: rgba(23, 23, 31, 0.54);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.metricCard strong {
+  color: #17171f;
+  font-size: clamp(1.65rem, 4vw, 2.45rem);
+  font-weight: 950;
+  line-height: 1;
+}
+
+.metricCard p {
+  margin: 0;
+  color: rgba(23, 23, 31, 0.56);
+  font-size: 0.74rem;
+  font-weight: 720;
+  line-height: 1.4;
+}
+
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 0.85fr) minmax(22rem, 1fr);
+  gap: 1rem;
+}
+
+.statusPanel,
+.categoryPanel,
+.tripsPanel,
+.activityPanel {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+  padding: 1rem;
+  border-radius: 1.35rem;
+}
+
+.activityPanel {
+  grid-column: span 2;
+}
+
+.statusList,
+.categoryBars,
+.tripList,
+.activityList {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.statusList > span,
+.categoryBars > span {
+  display: grid;
+  grid-template-columns: minmax(5.5rem, 0.45fr) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.statusList small,
+.categoryBars small {
+  color: rgba(23, 23, 31, 0.64);
+  font-size: 0.76rem;
+  font-weight: 820;
+}
+
+.statusList i,
+.categoryBars i {
+  height: 0.55rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(2, 0, 108, 0.08);
+}
+
+.statusList b,
+.categoryBars b {
+  width: var(--progress);
+  height: 100%;
+  display: block;
+  border-radius: inherit;
+  background: #02006c;
+}
+
+.statusList strong,
+.categoryBars strong {
+  color: #17171f;
+  font-size: 0.82rem;
+  font-weight: 920;
+}
+
+.tripList a,
+.activityList > span {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem;
+  border: 1px solid rgba(2, 0, 108, 0.07);
+  border-radius: 1rem;
+  background: #f8f9fd;
+  color: #17171f;
+  text-decoration: none;
+}
+
+.tripImage {
+  width: 3.4rem;
+  height: 3.4rem;
+  border-radius: 0.85rem;
+  background:
+    var(--trip-image, none) center / cover no-repeat,
+    rgba(2, 0, 108, 0.08);
+}
+
+.tripList strong,
+.activityList strong {
+  display: block;
+  overflow: hidden;
+  color: #17171f;
+  font-size: 0.84rem;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tripList small,
+.activityList small {
+  display: block;
+  overflow: hidden;
+  color: rgba(23, 23, 31, 0.54);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tripList b,
+.activityList b {
+  color: #02006c;
+  font-size: 0.8rem;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
+.activityList i {
+  width: 2.25rem;
+  height: 2.25rem;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: #02006c;
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-style: normal;
+  font-weight: 950;
+}
+
+.emptyMini {
+  min-height: 11rem;
+  display: grid;
+  place-items: center;
+  gap: 0.4rem;
+  align-content: center;
+  padding: 1rem;
+  border: 1px dashed rgba(2, 0, 108, 0.16);
+  border-radius: 1rem;
+  background: #f8f9fd;
+  text-align: center;
+}
+
+.emptyMini svg {
+  width: 1.3rem;
+  height: 1.3rem;
+  color: #02006c;
+}
+
+.emptyMini strong {
+  color: #17171f;
+  font-size: 0.9rem;
+  font-weight: 930;
+}
+
+.emptyMini p {
+  max-width: 17rem;
+  margin: 0;
+  color: rgba(23, 23, 31, 0.55);
+  font-size: 0.75rem;
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+.errorState {
+  min-height: 28rem;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 0.8rem;
+  padding: 2rem;
+  border: 1px solid rgba(2, 0, 108, 0.08);
+  border-radius: 1.5rem;
+  background: #ffffff;
+  text-align: center;
+  box-shadow: 0 1.25rem 3rem rgba(16, 22, 33, 0.07);
+}
+
+.errorState > span {
+  width: 3.4rem;
+  height: 3.4rem;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(2, 0, 108, 0.08);
+  color: #02006c;
+}
+
+.errorState h1 {
+  max-width: 28rem;
+  margin: 0;
+  color: #17171f;
+  font-size: clamp(1.8rem, 4vw, 2.7rem);
+  font-weight: 950;
+  line-height: 1;
+}
+
+.errorState p {
+  max-width: 34rem;
+  margin: 0;
+  color: rgba(23, 23, 31, 0.58);
+  font-size: 0.9rem;
+  font-weight: 650;
+  line-height: 1.6;
+}
+
+@media (max-width: 1180px) {
+  .overviewGrid,
+  .dashboardGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .activityPanel {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 820px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .filterBar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .filterControl,
+  .selectTrigger,
+  .resetButton {
+    width: 100%;
+  }
+
+  .resetButton {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 620px) {
+  .hero,
+  .salesPanel,
+  .statusPanel,
+  .categoryPanel,
+  .tripsPanel,
+  .activityPanel {
+    border-radius: 1.1rem;
+  }
+
+  .searchPanel > div {
+    grid-template-columns: auto minmax(0, 1fr);
+    border-radius: 1.1rem;
+  }
+
+  .searchPanel button {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .filterBar,
+  .metricGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .trendChart {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    height: 13rem;
+  }
+
+  .statusList > span,
+  .categoryBars > span,
+  .tripList a,
+  .activityList > span {
+    grid-template-columns: 1fr;
+  }
+
+  .tripImage,
+  .activityList i {
+    display: none;
+  }
+}
