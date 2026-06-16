@@ -1,0 +1,407 @@
+.page {
+  display: grid;
+  gap: 1rem;
+}
+
+.header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: clamp(1.15rem, 3vw, 1.65rem);
+  border: 1px solid rgba(2, 0, 108, 0.08);
+  border-radius: 1.45rem;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 1.15rem 2.8rem rgba(16, 22, 33, 0.07);
+}
+
+.header > div {
+  width: min(100%, 44rem);
+  display: grid;
+  gap: 0.7rem;
+}
+
+.eyebrow {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+}
+
+.eyebrow i {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.eyebrow b {
+  width: 8.8rem;
+  height: 0.72rem;
+}
+
+.title {
+  width: min(100%, 20rem);
+  height: clamp(1.8rem, 4vw, 3rem);
+  margin-top: -0.25rem;
+}
+
+.description {
+  width: min(100%, 40rem);
+  height: 0.92rem;
+}
+
+.savedCount {
+  width: 5.9rem;
+  height: var(--pluto-button-height);
+  min-width: 5.9rem;
+}
+
+.toolbar {
+  display: grid;
+  grid-template-columns: minmax(17rem, 0.95fr) auto;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem;
+  border: 1px solid rgba(2, 0, 108, 0.08);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 1rem 2.2rem rgba(16, 22, 33, 0.06);
+}
+
+.searchInput {
+  width: 100%;
+  height: var(--pluto-button-height);
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.6rem;
+}
+
+.selectControl {
+  min-width: 9.25rem;
+  display: grid;
+  gap: 0.18rem;
+}
+
+.selectControl i {
+  width: 3.8rem;
+  height: 0.62rem;
+  margin-left: 0.85rem;
+}
+
+.selectControl b {
+  width: 100%;
+  height: var(--pluto-button-height);
+}
+
+.filterButton,
+.resetButton {
+  width: 6.6rem;
+  height: var(--pluto-button-height);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.card {
+  overflow: hidden;
+  display: grid;
+  gap: 0.85rem;
+  padding: 0.95rem;
+  border: 1px solid rgba(2, 0, 108, 0.1);
+  border-radius: 2rem;
+  background: #ffffff;
+  box-shadow: 0 1.4rem 3.2rem rgba(16, 22, 33, 0.09);
+}
+
+.favoriteMediaFrame {
+  position: relative;
+}
+
+.media {
+  position: relative;
+  aspect-ratio: 1 / 0.9;
+  display: block;
+  overflow: hidden;
+  border-radius: 1.45rem;
+  background: #eef0f6;
+  text-decoration: none;
+}
+
+.image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+}
+
+.categoryPill {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  width: 6.8rem;
+  height: 2rem;
+}
+
+.removeButton {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 2rem;
+  height: 2rem;
+}
+
+.imageCaption {
+  position: absolute;
+  right: 0.85rem;
+  bottom: 0.85rem;
+  left: 0.85rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 5.2rem;
+  align-items: end;
+  gap: 0.8rem;
+}
+
+.imageCaption span {
+  display: grid;
+  gap: 0.42rem;
+}
+
+.imageCaption span i {
+  width: 82%;
+  height: 1rem;
+}
+
+.imageCaption span b {
+  width: 58%;
+  height: 0.72rem;
+}
+
+.imageCaption em {
+  width: 100%;
+  height: 2.55rem;
+}
+
+.cardBody {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.cardMeta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.72rem;
+}
+
+.cardMeta span {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.cardMeta i {
+  width: 84%;
+  height: 0.9rem;
+}
+
+.cardMeta b {
+  width: 68%;
+  height: 0.64rem;
+}
+
+.savedPanel {
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr) 5rem;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 4.4rem;
+  padding: 0.72rem;
+  border: 1px solid rgba(2, 0, 108, 0.08);
+  border-radius: 1.25rem;
+  background: #f7f8fc;
+}
+
+.savedPanel > i {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+.savedPanel span {
+  display: grid;
+  gap: 0.38rem;
+}
+
+.savedPanel b {
+  width: 44%;
+  height: 0.78rem;
+}
+
+.savedPanel em {
+  width: 86%;
+  height: 0.68rem;
+}
+
+.savedPanel strong {
+  height: 2.55rem;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem;
+  padding: 0.75rem;
+  border: 1px solid rgba(2, 0, 108, 0.08);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.paginationArrow {
+  width: 7.2rem;
+  height: var(--pluto-button-height);
+}
+
+.pageNumbers {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.pageNumbers i {
+  width: 2.45rem;
+  height: 2.45rem;
+}
+
+.eyebrow i,
+.eyebrow b,
+.title,
+.description,
+.savedCount,
+.searchInput,
+.selectControl i,
+.selectControl b,
+.filterButton,
+.resetButton,
+.image,
+.categoryPill,
+.removeButton,
+.imageCaption span i,
+.imageCaption span b,
+.imageCaption em,
+.cardMeta i,
+.cardMeta b,
+.savedPanel > i,
+.savedPanel b,
+.savedPanel em,
+.savedPanel strong,
+.paginationArrow,
+.pageNumbers i {
+  display: block;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba(2, 0, 108, 0.055),
+    rgba(2, 0, 108, 0.105),
+    rgba(2, 0, 108, 0.055)
+  );
+  background-size: 220% 100%;
+  animation: favoritesSkeletonPulse 1.45s ease-in-out infinite;
+}
+
+.image {
+  border-radius: 0;
+}
+
+@keyframes favoritesSkeletonPulse {
+  0% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: -100% 50%;
+  }
+}
+
+@media (max-width: 1180px) {
+  .toolbar {
+    grid-template-columns: 1fr;
+    border-radius: 1.35rem;
+  }
+
+  .controls {
+    justify-content: stretch;
+    flex-wrap: wrap;
+  }
+
+  .selectControl {
+    flex: 1 1 10rem;
+  }
+
+  .filterButton,
+  .resetButton {
+    flex: 1 1 9rem;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .header {
+    display: grid;
+  }
+
+  .savedCount {
+    justify-self: start;
+  }
+
+  .controls {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pagination {
+    display: grid;
+    grid-template-columns: 1fr;
+    border-radius: 1.35rem;
+  }
+
+  .imageCaption {
+    grid-template-columns: 1fr;
+  }
+
+  .imageCaption em,
+  .filterButton,
+  .resetButton,
+  .paginationArrow {
+    width: 100%;
+  }
+
+  .cardMeta {
+    grid-template-columns: 1fr;
+  }
+
+  .savedPanel {
+    grid-template-columns: 2.25rem minmax(0, 1fr);
+  }
+
+  .savedPanel strong {
+    grid-column: 1 / -1;
+  }
+
+  .pageNumbers {
+    order: -1;
+    flex-wrap: wrap;
+  }
+}
