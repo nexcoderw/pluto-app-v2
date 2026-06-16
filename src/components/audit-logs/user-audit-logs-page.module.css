@@ -367,196 +367,6 @@
   box-shadow: 0 0.75rem 1.5rem rgba(2, 0, 108, 0.18);
 }
 
-.skeletonTableHeader,
-.skeletonTableRow {
-  min-width: 62rem;
-  display: grid;
-  grid-template-columns: 1.6fr 1.1fr 1.2fr 1.25fr 1.25fr 0.9fr;
-  gap: 1rem;
-  align-items: center;
-  padding: 0.95rem 1rem;
-  border-bottom: 1px solid rgba(2, 0, 108, 0.06);
-}
-
-.skeletonTableHeader {
-  background: rgba(2, 0, 108, 0.035);
-}
-
-.skeletonTableHeader span {
-  color: rgba(23, 23, 31, 0.34);
-  font-size: 0.68rem;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.skeletonTableRow:last-child {
-  border-bottom: 0;
-}
-
-.skeletonEventCell,
-.skeletonTextCell,
-.skeletonRequestCell,
-.skeletonTimeCell {
-  min-width: 0;
-  display: grid;
-  gap: 0.35rem;
-}
-
-.skeletonEventCell span,
-.skeletonTextCell span,
-.skeletonRequestCell span,
-.skeletonTimeCell span,
-.skeletonBadgeStack span,
-.skeletonPagination span,
-.skeletonHeader span span,
-.skeletonHeader div > span:nth-child(2),
-.skeletonHeader div > span:nth-child(3),
-.skeletonHeader > span,
-.skeletonToolbar > span,
-.skeletonControls span {
-  border-radius: 999px;
-  background: linear-gradient(
-    90deg,
-    rgba(2, 0, 108, 0.055),
-    rgba(2, 0, 108, 0.105),
-    rgba(2, 0, 108, 0.055)
-  );
-  background-size: 220% 100%;
-  animation: auditSkeletonPulse 1.45s ease-in-out infinite;
-}
-
-.skeletonHeader span:first-child {
-  width: 9.5rem;
-  height: 1rem;
-  display: block;
-}
-
-.skeletonHeader div > span:nth-child(2) {
-  width: min(100%, 24rem);
-  height: clamp(1.8rem, 4vw, 3rem);
-  display: block;
-  margin-top: 0.72rem;
-}
-
-.skeletonHeader div > span:nth-child(3) {
-  width: min(100%, 42rem);
-  height: 0.95rem;
-  display: block;
-  margin-top: 0.85rem;
-}
-
-.skeletonHeader > span {
-  width: 6.6rem;
-  height: var(--pluto-button-height);
-  display: block;
-}
-
-.skeletonToolbar > span {
-  width: 100%;
-  height: var(--pluto-button-height);
-  display: block;
-}
-
-.skeletonControls {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.6rem;
-}
-
-.skeletonControls span {
-  width: 9.75rem;
-  height: var(--pluto-button-height);
-  display: block;
-}
-
-.skeletonControls span:nth-last-child(-n + 2) {
-  width: 6.4rem;
-}
-
-.skeletonEventCell span:first-child,
-.skeletonTextCell span:first-child,
-.skeletonRequestCell span:first-child {
-  width: min(100%, 12rem);
-  height: 0.92rem;
-}
-
-.skeletonEventCell span:last-child {
-  width: min(100%, 18rem);
-  height: 0.76rem;
-}
-
-.skeletonTextCell span:last-child,
-.skeletonRequestCell span:last-child {
-  width: min(100%, 9.5rem);
-  height: 0.72rem;
-}
-
-.skeletonTimeCell span:first-child {
-  width: 6.75rem;
-  height: 0.84rem;
-}
-
-.skeletonTimeCell span:last-child {
-  width: 4.5rem;
-  height: 0.72rem;
-}
-
-.skeletonBadgeStack {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 0.35rem;
-}
-
-.skeletonBadgeStack span {
-  width: 4.75rem;
-  height: 2rem;
-}
-
-.skeletonBadgeStack span:last-child {
-  width: 3.85rem;
-}
-
-.skeletonPagination {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.85rem;
-  padding: 0.75rem;
-  border: 1px solid rgba(2, 0, 108, 0.08);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.82);
-}
-
-.skeletonPagination > span {
-  width: 7.2rem;
-  height: var(--pluto-button-height);
-}
-
-.skeletonPagination div {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
-}
-
-.skeletonPagination div span {
-  width: 2.45rem;
-  height: 2.45rem;
-}
-
-@keyframes auditSkeletonPulse {
-  0% {
-    background-position: 100% 50%;
-  }
-
-  100% {
-    background-position: -100% 50%;
-  }
-}
-
 @media (max-width: 1180px) {
   .toolbar {
     grid-template-columns: 1fr;
@@ -568,16 +378,7 @@
     flex-wrap: wrap;
   }
 
-  .skeletonControls {
-    justify-content: stretch;
-    flex-wrap: wrap;
-  }
-
   .controls label {
-    flex: 1 1 10rem;
-  }
-
-  .skeletonControls span {
     flex: 1 1 10rem;
   }
 
@@ -603,32 +404,7 @@
     grid-template-columns: 1fr;
   }
 
-  .skeletonControls {
-    display: grid;
-    grid-template-columns: 1fr;
-  }
-
-  .skeletonHeader > span {
-    justify-self: start;
-  }
-
-  .skeletonControls span,
-  .skeletonControls span:nth-last-child(-n + 2) {
-    width: 100%;
-  }
-
   .pageNumbers {
-    order: -1;
-    flex-wrap: wrap;
-  }
-
-  .skeletonPagination {
-    display: grid;
-    grid-template-columns: 1fr;
-    border-radius: 1.35rem;
-  }
-
-  .skeletonPagination div {
     order: -1;
     flex-wrap: wrap;
   }
@@ -636,10 +412,6 @@
   .paginationButton,
   .primaryButton,
   .secondaryButton {
-    width: 100%;
-  }
-
-  .skeletonPagination > span {
     width: 100%;
   }
 }
