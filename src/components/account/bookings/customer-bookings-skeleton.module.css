@@ -1,0 +1,260 @@
+.page {
+  display: grid;
+  gap: 1rem;
+}
+
+.header,
+.toolbar,
+.tablePanel {
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 1.35rem;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 1.4rem 3.6rem rgba(16, 22, 33, 0.08);
+  backdrop-filter: blur(18px);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: clamp(1rem, 3vw, 1.25rem);
+}
+
+.header div {
+  width: min(100%, 42rem);
+  display: grid;
+  gap: 0.35rem;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: fit-content;
+}
+
+.eyebrow i {
+  width: 1rem;
+  height: 1rem;
+}
+
+.eyebrow b {
+  width: 10.25rem;
+  height: 0.72rem;
+}
+
+.title {
+  width: min(100%, 10rem);
+  height: clamp(1.45rem, 4vw, 2.25rem);
+}
+
+.description {
+  width: min(100%, 38rem);
+  height: 0.86rem;
+}
+
+.countBadge {
+  align-self: start;
+  width: 7.35rem;
+  height: 2.6rem;
+}
+
+.toolbar {
+  display: grid;
+  grid-template-columns: minmax(16rem, 0.9fr) auto;
+  gap: 0.8rem;
+  align-items: center;
+  padding: 0.8rem;
+}
+
+.searchInput {
+  width: 100%;
+  height: var(--pluto-button-height);
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.55rem;
+}
+
+.selectControl {
+  width: 10rem;
+  height: var(--pluto-button-height);
+}
+
+.primaryButton,
+.secondaryButton,
+.paginationButton {
+  height: var(--pluto-button-height);
+}
+
+.primaryButton,
+.secondaryButton {
+  width: 6.6rem;
+}
+
+.tablePanel {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  min-width: 58rem;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 0.95rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(2, 0, 108, 0.08);
+}
+
+.table th {
+  color: rgba(23, 23, 31, 0.34);
+  font-size: 0.7rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.table td span {
+  display: block;
+}
+
+.primaryLine,
+.dateLine,
+.amountLine {
+  width: min(100%, 12rem);
+  height: 0.84rem;
+}
+
+.secondaryLine {
+  width: min(100%, 10rem);
+  height: 0.72rem;
+  margin-top: 0.42rem;
+}
+
+.shortLine {
+  width: 4.35rem;
+  height: 0.72rem;
+  margin-top: 0.42rem;
+}
+
+.amountLine {
+  width: 6.2rem;
+}
+
+.statusPill {
+  width: 7rem;
+  height: 1.9rem;
+}
+
+.paymentLine {
+  width: 6.75rem;
+  height: 0.84rem;
+}
+
+.actionButton {
+  width: 6.5rem;
+  height: var(--pluto-button-height);
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.paginationButton {
+  width: 7.2rem;
+}
+
+.pageNumbers {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.pageNumbers i {
+  width: 2.2rem;
+  height: 2.2rem;
+}
+
+.eyebrow i,
+.eyebrow b,
+.title,
+.description,
+.countBadge,
+.searchInput,
+.selectControl,
+.primaryButton,
+.secondaryButton,
+.primaryLine,
+.dateLine,
+.amountLine,
+.secondaryLine,
+.shortLine,
+.statusPill,
+.paymentLine,
+.actionButton,
+.paginationButton,
+.pageNumbers i {
+  display: block;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba(2, 0, 108, 0.055),
+    rgba(2, 0, 108, 0.105),
+    rgba(2, 0, 108, 0.055)
+  );
+  background-size: 220% 100%;
+  animation: bookingsSkeletonPulse 1.45s ease-in-out infinite;
+}
+
+@keyframes bookingsSkeletonPulse {
+  0% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: -100% 50%;
+  }
+}
+
+@media (max-width: 920px) {
+  .toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .controls {
+    justify-content: stretch;
+  }
+
+  .selectControl,
+  .primaryButton,
+  .secondaryButton {
+    flex: 1 1 10rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .header,
+  .pagination {
+    flex-direction: column;
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .countBadge {
+    align-self: stretch;
+  }
+}
