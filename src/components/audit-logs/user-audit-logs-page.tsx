@@ -109,6 +109,10 @@ export function UserAuditLogsPage({
     setPage(1);
   }
 
+  if (auditLogsQuery.isPending) {
+    return <UserAuditLogsSkeleton />;
+  }
+
   return (
     <section className={styles.page} aria-labelledby="user-audit-logs-title">
       <header className={styles.header}>
@@ -201,9 +205,7 @@ export function UserAuditLogsPage({
         </div>
       </form>
 
-      {auditLogsQuery.isPending ? (
-        <UserAuditLogsSkeleton />
-      ) : auditLogsQuery.isError ? (
+      {auditLogsQuery.isError ? (
         <UserAuditLogsState
           icon={<RefreshCcw aria-hidden="true" />}
           title="Audit logs could not load"
@@ -385,7 +387,32 @@ function UserAuditLogsState({
 
 function UserAuditLogsSkeleton() {
   return (
-    <div className={styles.skeletonLayout} aria-label="Loading audit logs">
+    <section
+      className={styles.page}
+      aria-label="Loading customer audit logs"
+      aria-busy="true"
+    >
+      <header className={`${styles.header} ${styles.skeletonHeader}`}>
+        <div>
+          <span>
+            <Skeleton />
+          </span>
+          <Skeleton />
+          <Skeleton />
+        </div>
+        <Skeleton />
+      </header>
+
+      <div className={`${styles.toolbar} ${styles.skeletonToolbar}`}>
+        <Skeleton />
+        <div className={styles.skeletonControls}>
+          <Skeleton />
+          <Skeleton />
+          <Skeleton />
+          <Skeleton />
+        </div>
+      </div>
+
       <section className={styles.tablePanel}>
         <div className={styles.skeletonTableHeader}>
           {["Event", "Status", "Entity", "Request", "Context", "Time"].map(
@@ -432,7 +459,7 @@ function UserAuditLogsSkeleton() {
         </div>
         <Skeleton />
       </nav>
-    </div>
+    </section>
   );
 }
 
