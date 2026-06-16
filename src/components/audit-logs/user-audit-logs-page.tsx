@@ -22,7 +22,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -38,6 +37,7 @@ import {
   type UserAuditOrder,
   type UserAuditOrderBy,
 } from "@/services/api/audit-logs";
+import { UserAuditLogsSkeleton } from "./user-audit-logs-skeleton";
 import styles from "./user-audit-logs-page.module.css";
 
 type UserAuditLogsPageProps = {
@@ -381,84 +381,6 @@ function UserAuditLogsState({
       <h2>{title}</h2>
       <p>{description}</p>
       {action}
-    </section>
-  );
-}
-
-function UserAuditLogsSkeleton() {
-  return (
-    <section
-      className={styles.page}
-      aria-label="Loading customer audit logs"
-      aria-busy="true"
-    >
-      <header className={`${styles.header} ${styles.skeletonHeader}`}>
-        <div>
-          <span>
-            <Skeleton />
-          </span>
-          <Skeleton />
-          <Skeleton />
-        </div>
-        <Skeleton />
-      </header>
-
-      <div className={`${styles.toolbar} ${styles.skeletonToolbar}`}>
-        <Skeleton />
-        <div className={styles.skeletonControls}>
-          <Skeleton />
-          <Skeleton />
-          <Skeleton />
-          <Skeleton />
-        </div>
-      </div>
-
-      <section className={styles.tablePanel}>
-        <div className={styles.skeletonTableHeader}>
-          {["Event", "Status", "Entity", "Request", "Context", "Time"].map(
-            (label) => (
-              <span key={label}>{label}</span>
-            ),
-          )}
-        </div>
-        {Array.from({ length: AUDIT_LOG_LIMIT }).map((_, rowIndex) => (
-          <div key={rowIndex} className={styles.skeletonTableRow}>
-            <div className={styles.skeletonEventCell}>
-              <Skeleton />
-              <Skeleton />
-            </div>
-            <div className={styles.skeletonBadgeStack}>
-              <Skeleton />
-              <Skeleton />
-            </div>
-            <div className={styles.skeletonTextCell}>
-              <Skeleton />
-              <Skeleton />
-            </div>
-            <div className={styles.skeletonRequestCell}>
-              <Skeleton />
-              <Skeleton />
-            </div>
-            <div className={styles.skeletonTextCell}>
-              <Skeleton />
-              <Skeleton />
-            </div>
-            <div className={styles.skeletonTimeCell}>
-              <Skeleton />
-              <Skeleton />
-            </div>
-          </div>
-        ))}
-      </section>
-      <nav className={styles.skeletonPagination} aria-hidden="true">
-        <Skeleton />
-        <div>
-          {Array.from({ length: 5 }).map((_, index) => (
-            <Skeleton key={index} />
-          ))}
-        </div>
-        <Skeleton />
-      </nav>
     </section>
   );
 }
