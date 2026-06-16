@@ -2,7 +2,7 @@
 
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { AccountWelcomePage } from "@/components/account/account-welcome-page";
+import { CustomerDashboardPage } from "@/components/account/dashboard/customer-dashboard-page";
 import { CustomerPortalShell } from "@/components/account/customer-portal-shell";
 import { PortalAccessBoundary } from "@/components/portal/portal-access-boundary";
 import type { UserAuthProfile } from "@/services/api/auth";
@@ -41,7 +41,7 @@ function CustomerPortalContent({
   return (
     <>
       <CustomerPortalShell user={user}>
-        <AccountWelcomePage user={user} />
+        <CustomerDashboardPage user={user} />
       </CustomerPortalShell>
 
       <RegistrationSuccessDialog open={showRegistrationDialog} user={user} />
