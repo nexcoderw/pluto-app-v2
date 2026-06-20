@@ -98,7 +98,7 @@ export function ApartmentListingCard({
 					/>
 				</Link>
 
-				<span className={styles.statusPill}>Verified stay</span>
+				<span className={styles.statusPill}>Verified</span>
 
 				{gallery.length > 1 ? (
 					<>
@@ -142,11 +142,6 @@ export function ApartmentListingCard({
 				</Link>
 
 				<p className={styles.summary}>{listing.shortDescription}</p>
-
-				<p className={styles.location}>
-					{details?.bedrooms ?? "-"} bedrooms · {details?.bathrooms ?? "-"}{" "}
-					baths · {guestCount ?? "-"} guests
-				</p>
 
 				<ul className={styles.specs} aria-label="Apartment highlights">
 					<li>

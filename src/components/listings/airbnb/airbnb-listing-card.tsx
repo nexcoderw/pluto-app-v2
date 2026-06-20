@@ -105,7 +105,7 @@ export function AirbnbListingCard({
 				</Link>
 				<span className={styles.statusPill}>
 					<ShieldCheck aria-hidden="true" />
-					Verified stay
+					Verified
 				</span>
 
 				{gallery.length > 1 ? (
