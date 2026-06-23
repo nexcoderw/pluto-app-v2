@@ -1,0 +1,422 @@
+.page {
+  min-height: 100vh;
+  display: grid;
+  gap: clamp(1rem, 2vw, 1.5rem);
+  padding: clamp(1rem, 3vw, 2rem);
+  background: #f6f7fb;
+  color: #17171f;
+}
+
+.hero,
+.requestShell {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(20rem, 0.75fr);
+  gap: clamp(1rem, 3vw, 1.4rem);
+  align-items: stretch;
+}
+
+.heroCopy,
+.journeyCard,
+.sidePanel,
+.formCard {
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  border-radius: 1.65rem;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 1.4rem 3.6rem rgba(16, 22, 33, 0.08);
+  backdrop-filter: blur(18px);
+}
+
+.heroCopy {
+  min-height: 26rem;
+  display: grid;
+  align-content: end;
+  gap: 1rem;
+  padding: clamp(1.2rem, 4vw, 2.2rem);
+}
+
+.heroCopy > span,
+.formCard header span,
+.sidePanel > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #02006c;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.heroCopy svg,
+.formCard header svg,
+.sidePanel svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.heroCopy h1,
+.formCard h2,
+.sidePanel h2 {
+  margin: 0;
+  color: #17171f;
+  font-size: clamp(2rem, 6vw, 4.2rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 0.95;
+}
+
+.formCard h2,
+.sidePanel h2 {
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  line-height: 1;
+}
+
+.heroCopy p,
+.formCard header p,
+.sidePanel p,
+.formFooter p,
+.journeyCard small {
+  margin: 0;
+  color: rgba(23, 23, 31, 0.62);
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.65;
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.heroActions a,
+.heroActions strong,
+.submitButton {
+  min-height: var(--pluto-button-height);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.heroActions a,
+.submitButton {
+  border: 0;
+  background: #02006c;
+  color: #ffffff;
+  box-shadow: 0 1rem 2rem rgba(2, 0, 108, 0.18);
+}
+
+.heroActions a {
+  padding-inline: 1rem;
+}
+
+.heroActions strong {
+  padding-inline: 0.9rem;
+  background: rgba(2, 0, 108, 0.07);
+  color: #02006c;
+}
+
+.journeyCard {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.routePreview {
+  min-height: 13rem;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1rem;
+  border-radius: 1.25rem;
+  background: #17171f;
+  color: #ffffff;
+}
+
+.routePreview span {
+  display: grid;
+  place-items: center;
+  min-height: 4rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: clamp(1.6rem, 4vw, 2.6rem);
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+.routePreview i {
+  width: 3.2rem;
+  height: 3.2rem;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #02006c;
+}
+
+.journeyCard ul {
+  display: grid;
+  gap: 0.65rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.journeyCard li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.7rem;
+  align-items: start;
+  padding: 0.85rem;
+  border: 1px solid rgba(2, 0, 108, 0.08);
+  border-radius: 1.05rem;
+  background: #ffffff;
+}
+
+.journeyCard li > svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  color: #02006c;
+}
+
+.journeyCard strong {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 900;
+}
+
+.requestShell {
+  display: grid;
+  grid-template-columns: minmax(17rem, 0.38fr) minmax(0, 1fr);
+  gap: clamp(1rem, 3vw, 1.4rem);
+  align-items: start;
+}
+
+.sidePanel {
+  position: sticky;
+  top: 5.2rem;
+  display: grid;
+  gap: 0.85rem;
+  padding: 1.2rem;
+}
+
+.notice {
+  display: flex;
+  gap: 0.65rem;
+  align-items: flex-start;
+  padding: 0.9rem;
+  border-radius: 1rem;
+  background: rgba(2, 0, 108, 0.06);
+  color: #02006c;
+  font-size: 0.82rem;
+  font-weight: 750;
+  line-height: 1.45;
+}
+
+.formCard {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1rem, 3vw, 1.35rem);
+}
+
+.formCard header {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.segmented,
+.toggleGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.segmented button,
+.toggleGrid label {
+  min-height: 2.85rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0 1rem;
+  border: 1px solid rgba(2, 0, 108, 0.12);
+  border-radius: 999px;
+  background: #ffffff;
+  color: rgba(23, 23, 31, 0.72);
+  font-size: 0.78rem;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.segmented button[data-active="true"] {
+  background: #02006c;
+  color: #ffffff;
+}
+
+.toggleGrid input {
+  accent-color: #02006c;
+}
+
+.gridTwo,
+.gridThree {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.gridTwo {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.gridThree {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.field {
+  min-width: 0;
+  display: grid;
+  gap: 0.38rem;
+}
+
+.field > span {
+  color: rgba(23, 23, 31, 0.66);
+  font-size: 0.72rem;
+  font-weight: 850;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.field[data-disabled="true"] {
+  opacity: 0.55;
+}
+
+.field select {
+  width: 100%;
+  min-height: 3.15rem;
+  border: 1px solid rgba(2, 0, 108, 0.34);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.74);
+  color: #17171f;
+  padding: 0 1rem;
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 650;
+  outline: none;
+}
+
+.textarea {
+  min-height: 7rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(2, 0, 108, 0.18);
+  border-radius: 1rem;
+  background: #ffffff;
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+.formFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 0.35rem;
+}
+
+.formFooter p {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.formFooter p svg {
+  width: 1rem;
+  height: 1rem;
+  color: #02006c;
+}
+
+.submitButton {
+  min-width: 13rem;
+  cursor: pointer;
+}
+
+.submitButton:disabled {
+  opacity: 0.68;
+  cursor: not-allowed;
+}
+
+.spinner {
+  animation: spin 800ms linear infinite;
+}
+
+.loginDialog {
+  max-width: 34rem;
+  border-radius: 1.6rem;
+  background: #ffffff;
+}
+
+.loginHeader {
+  text-align: center;
+  align-items: center;
+}
+
+.loginHeader span {
+  width: 3rem;
+  height: 3rem;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(2, 0, 108, 0.07);
+  color: #02006c;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 980px) {
+  .hero,
+  .requestShell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidePanel {
+    position: static;
+  }
+}
+
+@media (max-width: 680px) {
+  .page {
+    padding: 0.75rem;
+  }
+
+  .heroCopy {
+    min-height: 22rem;
+  }
+
+  .gridTwo,
+  .gridThree {
+    grid-template-columns: 1fr;
+  }
+
+  .formFooter {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .submitButton {
+    width: 100%;
+  }
+}
