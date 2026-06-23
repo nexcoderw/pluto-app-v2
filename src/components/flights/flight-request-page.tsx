@@ -5,29 +5,19 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import {
   ArrowRight,
-  CalendarCheck2,
   CheckCircle2,
-  Clock3,
+  CalendarDays,
   LoaderCircle,
   LockKeyhole,
   Mail,
-  MessageSquareText,
   PlaneTakeoff,
   ShieldCheck,
-  Sparkles,
   UserRound,
 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { LoginForm } from "@/components/auth/login-form";
+import { ListingLoginDialog } from "@/components/listings/listing-login-dialog";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useUserSession } from "@/hooks/use-user-session";
@@ -84,32 +74,16 @@ const defaultFormState: FlightRequestFormState = {
   baggagePreference: "",
 };
 
+const tripTypeOptions: Array<{ value: FlightTripType; label: string }> = [
+  { value: "ROUND_TRIP", label: "Round trip" },
+  { value: "ONE_WAY", label: "One way" },
+];
+
 const cabinOptions: Array<{ value: FlightCabinClass; label: string }> = [
   { value: "ECONOMY", label: "Economy" },
   { value: "PREMIUM_ECONOMY", label: "Premium economy" },
   { value: "BUSINESS", label: "Business" },
   { value: "FIRST", label: "First" },
-];
-
-const journeySteps = [
-  {
-    icon: ShieldCheck,
-    title: "Secure request",
-    description:
-      "Your trip details are stored privately for Pluto travel staff.",
-  },
-  {
-    icon: MessageSquareText,
-    title: "Human review",
-    description:
-      "We search manually and update you by email and account inbox.",
-  },
-  {
-    icon: CalendarCheck2,
-    title: "Payment later",
-    description:
-      "You only receive a payment link when a matching flight is ready.",
-  },
 ];
 
 export function FlightRequestPage() {
@@ -213,79 +187,51 @@ export function FlightRequestPage() {
       <main className={styles.page}>
         <section className={styles.hero}>
           <div className={styles.heroCopy}>
-            <span>
+            <span className={styles.eyebrow}>
               <PlaneTakeoff aria-hidden="true" />
-              Managed flight booking
+              Flight request
             </span>
-            <h1>Tell us your route. We will handle the flight search.</h1>
+            <h1>Tell us where you are flying.</h1>
             <p>
-              Flight booking is handled as a secure request because availability
-              changes quickly. Submit the journey once, then track every update
-              from your Pluto Booking account.
+              Submit your preferred route and travel details. Pluto Booking will
+              review options manually and update you by email and in your
+              account.
             </p>
             <div className={styles.heroActions}>
               <Link href="/account/flight-requests">
-                View my flight requests
+                My requests
                 <ArrowRight aria-hidden="true" />
               </Link>
-              <strong>Customer-only service</strong>
+              <span>
+                <ShieldCheck aria-hidden="true" />
+                Customers only
+              </span>
             </div>
           </div>
 
-          <div className={styles.journeyCard}>
-            <div className={styles.routePreview}>
+          <aside className={styles.routeCard} aria-label="Route preview">
+            <span className={styles.routeLabel}>Route preview</span>
+            <div>
               <span>{form.originAirportCode || "KGL"}</span>
               <i aria-hidden="true">
                 <PlaneTakeoff />
               </i>
               <span>{form.destinationAirportCode || "DST"}</span>
             </div>
-            <ul>
-              {journeySteps.map((step) => {
-                const Icon = step.icon;
-
-                return (
-                  <li key={step.title}>
-                    <Icon aria-hidden="true" />
-                    <span>
-                      <strong>{step.title}</strong>
-                      <small>{step.description}</small>
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
+            <p>No payment is requested until a flight option is ready.</p>
+          </aside>
         </section>
 
         <section className={styles.requestShell}>
-          <aside className={styles.sidePanel}>
-            <span>
-              <Clock3 aria-hidden="true" />
-              How it works
-            </span>
-            <h2>Request now, pay only after confirmation.</h2>
-            <p>
-              Our team reviews your route, budget, dates, baggage preferences,
-              and passenger details before sending a quote or asking for more
-              information.
-            </p>
-            <div className={styles.notice}>
-              <Sparkles aria-hidden="true" />
-              Every status change is sent by email and saved in your account.
-            </div>
-          </aside>
-
           <form className={styles.formCard} onSubmit={handleSubmit}>
             <header>
-              <span>
+              <span className={styles.eyebrow}>
                 <UserRound aria-hidden="true" />
-                Flight request form
+                Request details
               </span>
-              <h2>Journey details</h2>
+              <h2>Build your flight request</h2>
               <p>
-                Use airport codes for now. Example: KGL for Kigali, NBO for
-                Nairobi, DXB for Dubai.
+                Use three-letter airport codes for now. Example: KGL, NBO, DXB.
               </p>
             </header>
 
@@ -294,230 +240,256 @@ export function FlightRequestPage() {
               role="group"
               aria-label="Trip type"
             >
-              {(["ROUND_TRIP", "ONE_WAY"] as const).map((tripType) => (
+              {tripTypeOptions.map((option) => (
                 <button
-                  key={tripType}
+                  key={option.value}
                   type="button"
-                  data-active={form.tripType === tripType}
-                  onClick={() => update("tripType", tripType)}
+                  data-active={form.tripType === option.value}
+                  onClick={() => update("tripType", option.value)}
                 >
-                  {tripType === "ROUND_TRIP" ? "Round trip" : "One way"}
+                  {option.label}
                 </button>
               ))}
             </div>
 
-            <div className={styles.gridTwo}>
-              <label className={styles.field}>
-                <span>From airport</span>
-                <Input
-                  value={form.originAirportCode}
-                  maxLength={3}
-                  placeholder="KGL"
-                  onChange={(event) =>
-                    update(
-                      "originAirportCode",
-                      event.target.value.toUpperCase(),
-                    )
-                  }
-                />
-              </label>
-              <label className={styles.field}>
-                <span>To airport</span>
-                <Input
-                  value={form.destinationAirportCode}
-                  maxLength={3}
-                  placeholder="NBO"
-                  onChange={(event) =>
-                    update(
-                      "destinationAirportCode",
-                      event.target.value.toUpperCase(),
-                    )
-                  }
-                />
-              </label>
-            </div>
-
-            <div className={styles.gridTwo}>
-              <label className={styles.field}>
-                <span>Departure</span>
-                <Input
-                  type="date"
-                  min={today}
-                  value={form.departureDate}
-                  onChange={(event) =>
-                    update("departureDate", event.target.value)
-                  }
-                />
-              </label>
-              <label
-                className={styles.field}
-                data-disabled={form.tripType === "ONE_WAY"}
-              >
-                <span>Return</span>
-                <Input
-                  type="date"
-                  min={form.departureDate || today}
-                  value={form.returnDate}
-                  disabled={form.tripType === "ONE_WAY"}
-                  onChange={(event) => update("returnDate", event.target.value)}
-                />
-              </label>
-            </div>
-
-            <div className={styles.gridThree}>
-              <label className={styles.field}>
-                <span>Cabin</span>
-                <select
-                  value={form.cabinClass}
-                  onChange={(event) =>
-                    update("cabinClass", event.target.value as FlightCabinClass)
-                  }
+            <div className={styles.formSection}>
+              <span className={styles.sectionTitle}>
+                <PlaneTakeoff aria-hidden="true" />
+                Route and dates
+              </span>
+              <div className={styles.routeGrid}>
+                <label className={styles.field}>
+                  <span>From</span>
+                  <Input
+                    value={form.originAirportCode}
+                    maxLength={3}
+                    placeholder="KGL"
+                    onChange={(event) =>
+                      update(
+                        "originAirportCode",
+                        event.target.value.toUpperCase(),
+                      )
+                    }
+                  />
+                </label>
+                <label className={styles.field}>
+                  <span>To</span>
+                  <Input
+                    value={form.destinationAirportCode}
+                    maxLength={3}
+                    placeholder="NBO"
+                    onChange={(event) =>
+                      update(
+                        "destinationAirportCode",
+                        event.target.value.toUpperCase(),
+                      )
+                    }
+                  />
+                </label>
+                <label className={styles.field}>
+                  <span>Departure</span>
+                  <Input
+                    type="date"
+                    min={today}
+                    value={form.departureDate}
+                    onChange={(event) =>
+                      update("departureDate", event.target.value)
+                    }
+                  />
+                </label>
+                <label
+                  className={styles.field}
+                  data-disabled={form.tripType === "ONE_WAY"}
                 >
-                  {cabinOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className={styles.field}>
-                <span>Travelers</span>
-                <Input
-                  type="number"
-                  min={1}
-                  max={12}
-                  value={form.travelersCount}
-                  onChange={(event) =>
-                    update("travelersCount", event.target.value)
-                  }
-                />
-              </label>
-              <label className={styles.field}>
-                <span>Budget currency</span>
-                <select
-                  value={form.currency}
-                  onChange={(event) =>
-                    update("currency", event.target.value as "RWF" | "USD")
-                  }
-                >
-                  <option value="RWF">RWF</option>
-                  <option value="USD">USD</option>
-                </select>
-              </label>
+                  <span>Return</span>
+                  <Input
+                    type="date"
+                    min={form.departureDate || today}
+                    value={form.returnDate}
+                    disabled={form.tripType === "ONE_WAY"}
+                    onChange={(event) =>
+                      update("returnDate", event.target.value)
+                    }
+                  />
+                </label>
+              </div>
             </div>
 
-            <label className={styles.field}>
-              <span>Maximum budget</span>
-              <Input
-                type="number"
-                min={0}
-                value={form.maxBudget}
-                placeholder={form.currency === "RWF" ? "800000" : "650"}
-                onChange={(event) => update("maxBudget", event.target.value)}
-              />
-            </label>
+            <div className={styles.formSection}>
+              <span className={styles.sectionTitle}>
+                <CalendarDays aria-hidden="true" />
+                Flight preferences
+              </span>
+              <div className={styles.preferenceGrid}>
+                <label className={styles.field}>
+                  <span>Cabin</span>
+                  <select
+                    value={form.cabinClass}
+                    onChange={(event) =>
+                      update(
+                        "cabinClass",
+                        event.target.value as FlightCabinClass,
+                      )
+                    }
+                  >
+                    {cabinOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className={styles.field}>
+                  <span>Travelers</span>
+                  <Input
+                    type="number"
+                    min={1}
+                    max={12}
+                    value={form.travelersCount}
+                    onChange={(event) =>
+                      update("travelersCount", event.target.value)
+                    }
+                  />
+                </label>
+                <label className={styles.field}>
+                  <span>Currency</span>
+                  <select
+                    value={form.currency}
+                    onChange={(event) =>
+                      update("currency", event.target.value as "RWF" | "USD")
+                    }
+                  >
+                    <option value="RWF">RWF</option>
+                    <option value="USD">USD</option>
+                  </select>
+                </label>
+                <label className={styles.field}>
+                  <span>Maximum budget</span>
+                  <Input
+                    type="number"
+                    min={0}
+                    value={form.maxBudget}
+                    placeholder={form.currency === "RWF" ? "800000" : "650"}
+                    onChange={(event) =>
+                      update("maxBudget", event.target.value)
+                    }
+                  />
+                </label>
+              </div>
+              <div className={styles.toggleGrid}>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={form.flexibleDates}
+                    onChange={(event) =>
+                      update("flexibleDates", event.target.checked)
+                    }
+                  />
+                  Flexible by 3 days
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={form.directFlightPreferred}
+                    onChange={(event) =>
+                      update("directFlightPreferred", event.target.checked)
+                    }
+                  />
+                  Prefer direct flights
+                </label>
+              </div>
+            </div>
 
-            <div className={styles.gridThree}>
+            <div className={styles.formSection}>
+              <span className={styles.sectionTitle}>
+                <UserRound aria-hidden="true" />
+                Lead traveler
+              </span>
+              <div className={styles.travelerGrid}>
+                <label className={styles.field}>
+                  <span>Legal name</span>
+                  <Input
+                    value={form.travelerName}
+                    placeholder="Full name as on ID"
+                    onChange={(event) =>
+                      update("travelerName", event.target.value)
+                    }
+                  />
+                </label>
+                <label className={styles.field}>
+                  <span>Date of birth</span>
+                  <Input
+                    type="date"
+                    value={form.travelerDateOfBirth}
+                    onChange={(event) =>
+                      update("travelerDateOfBirth", event.target.value)
+                    }
+                  />
+                </label>
+                <label className={styles.field}>
+                  <span>Nationality</span>
+                  <Input
+                    value={form.travelerNationality}
+                    placeholder="Rwandan"
+                    onChange={(event) =>
+                      update("travelerNationality", event.target.value)
+                    }
+                  />
+                </label>
+              </div>
+            </div>
+
+            <div className={styles.formSection}>
+              <span className={styles.sectionTitle}>
+                <Mail aria-hidden="true" />
+                Contact and notes
+              </span>
+              <div className={styles.gridTwo}>
+                <label className={styles.field}>
+                  <span>Email</span>
+                  <Input
+                    type="email"
+                    value={form.contactEmail}
+                    placeholder="you@example.com"
+                    onChange={(event) =>
+                      update("contactEmail", event.target.value)
+                    }
+                  />
+                </label>
+                <label className={styles.field}>
+                  <span>Phone</span>
+                  <Input
+                    value={form.contactPhone}
+                    placeholder="+250..."
+                    onChange={(event) =>
+                      update("contactPhone", event.target.value)
+                    }
+                  />
+                </label>
+              </div>
               <label className={styles.field}>
-                <span>Passenger legal name</span>
-                <Input
-                  value={form.travelerName}
-                  placeholder="Full name as on ID"
+                <span>Baggage</span>
+                <Textarea
+                  value={form.baggagePreference}
+                  placeholder="Example: one checked bag and one carry-on"
+                  className={styles.textarea}
                   onChange={(event) =>
-                    update("travelerName", event.target.value)
+                    update("baggagePreference", event.target.value)
                   }
                 />
               </label>
               <label className={styles.field}>
-                <span>Date of birth</span>
-                <Input
-                  type="date"
-                  value={form.travelerDateOfBirth}
+                <span>Notes</span>
+                <Textarea
+                  value={form.customerNote}
+                  placeholder="Preferred airlines, visa constraints, arrival time, special assistance..."
+                  className={styles.textarea}
                   onChange={(event) =>
-                    update("travelerDateOfBirth", event.target.value)
-                  }
-                />
-              </label>
-              <label className={styles.field}>
-                <span>Nationality</span>
-                <Input
-                  value={form.travelerNationality}
-                  placeholder="Rwandan"
-                  onChange={(event) =>
-                    update("travelerNationality", event.target.value)
+                    update("customerNote", event.target.value)
                   }
                 />
               </label>
             </div>
-
-            <div className={styles.gridTwo}>
-              <label className={styles.field}>
-                <span>Contact email</span>
-                <Input
-                  type="email"
-                  value={form.contactEmail}
-                  placeholder="you@example.com"
-                  onChange={(event) =>
-                    update("contactEmail", event.target.value)
-                  }
-                />
-              </label>
-              <label className={styles.field}>
-                <span>Contact phone</span>
-                <Input
-                  value={form.contactPhone}
-                  placeholder="+250..."
-                  onChange={(event) =>
-                    update("contactPhone", event.target.value)
-                  }
-                />
-              </label>
-            </div>
-
-            <div className={styles.toggleGrid}>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={form.flexibleDates}
-                  onChange={(event) =>
-                    update("flexibleDates", event.target.checked)
-                  }
-                />
-                Flexible by 3 days
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={form.directFlightPreferred}
-                  onChange={(event) =>
-                    update("directFlightPreferred", event.target.checked)
-                  }
-                />
-                Prefer direct flights
-              </label>
-            </div>
-
-            <label className={styles.field}>
-              <span>Baggage preference</span>
-              <Textarea
-                value={form.baggagePreference}
-                placeholder="Example: one checked bag and one carry-on"
-                className={styles.textarea}
-                onChange={(event) =>
-                  update("baggagePreference", event.target.value)
-                }
-              />
-            </label>
-
-            <label className={styles.field}>
-              <span>Anything else we should know?</span>
-              <Textarea
-                value={form.customerNote}
-                placeholder="Preferred airlines, visa constraints, arrival time, special assistance..."
-                className={styles.textarea}
-                onChange={(event) => update("customerNote", event.target.value)}
-              />
-            </label>
 
             <div className={styles.formFooter}>
               {!currentUser ? (
@@ -560,26 +532,13 @@ export function FlightRequestPage() {
         </section>
       </main>
 
-      <Dialog open={isLoginDialogOpen} onOpenChange={setIsLoginDialogOpen}>
-        <DialogContent className={styles.loginDialog}>
-          <DialogHeader className={styles.loginHeader}>
-            <span aria-hidden="true">
-              <LockKeyhole />
-            </span>
-            <DialogTitle>Sign in to request a flight</DialogTitle>
-            <DialogDescription>
-              Use your customer account so we can save the request, email
-              updates, and keep every status change in your account.
-            </DialogDescription>
-          </DialogHeader>
-          <LoginForm
-            title="Welcome back"
-            description="Sign in to continue your managed flight request."
-            successDescription="You can now submit your flight request."
-            onSuccess={handleLoginSuccess}
-          />
-        </DialogContent>
-      </Dialog>
+      <ListingLoginDialog
+        open={isLoginDialogOpen}
+        onOpenChange={setIsLoginDialogOpen}
+        listingTitle="your flight request"
+        intent="reserve"
+        onAuthenticated={handleLoginSuccess}
+      />
     </>
   );
 }
