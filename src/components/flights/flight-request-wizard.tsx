@@ -74,7 +74,7 @@ const cabinOptions: Array<{ value: FlightCabinClass; label: string }> = [
 export function FlightRequestWizard() {
   const router = useRouter();
   const currentUser = useUserSession();
-  const [step, setStep] = useState<FlightWizardStep>("route");
+  const [step, setStep] = useState<FlightWizardStep>("trip");
   const [form, setForm] = useState<FlightRequestFormState>(
     defaultFlightRequestForm,
   );
@@ -215,20 +215,12 @@ export function FlightRequestWizard() {
         </aside>
 
         <form className={styles.formCard} onSubmit={handleSubmit}>
-          {step === "route" ? (
-            <RouteStep form={form} today={today} update={update} />
-          ) : null}
-
-          {step === "preferences" ? (
-            <PreferencesStep form={form} update={update} />
+          {step === "trip" ? (
+            <TripStep form={form} today={today} update={update} />
           ) : null}
 
           {step === "traveler" ? (
             <TravelerStep form={form} today={today} update={update} />
-          ) : null}
-
-          {step === "contact" ? (
-            <ContactStep form={form} update={update} />
           ) : null}
 
           <div className={styles.formFooter}>
@@ -312,15 +304,15 @@ type StepProps = {
   ) => void;
 };
 
-function RouteStep({ form, today, update }: StepProps & { today: string }) {
+function TripStep({ form, today, update }: StepProps & { today: string }) {
   return (
     <div className={styles.stepPanel}>
       <header>
         <span className={styles.eyebrow}>
           <PlaneTakeoff aria-hidden="true" />
-          Route
+          Trip details
         </span>
-        <h3>Where should we search?</h3>
+        <h3>Where, when, and how should we search?</h3>
       </header>
 
       <div className={styles.segmented} role="group" aria-label="Trip type">
@@ -375,20 +367,6 @@ function RouteStep({ form, today, update }: StepProps & { today: string }) {
           onChange={(value) => update("returnDate", value)}
         />
       </div>
-    </div>
-  );
-}
-
-function PreferencesStep({ form, update }: StepProps) {
-  return (
-    <div className={styles.stepPanel}>
-      <header>
-        <span className={styles.eyebrow}>
-          <CalendarDays aria-hidden="true" />
-          Preferences
-        </span>
-        <h3>Set the cabin, budget, and flexibility.</h3>
-      </header>
 
       <div className={styles.preferenceGrid}>
         <label className={styles.field}>
@@ -486,9 +464,9 @@ function TravelerStep({ form, today, update }: StepProps & { today: string }) {
       <header>
         <span className={styles.eyebrow}>
           <UserRound aria-hidden="true" />
-          Lead traveler
+          Traveler and contact
         </span>
-        <h3>Add the main passenger information.</h3>
+        <h3>Add traveler details and contact preferences.</h3>
       </header>
 
       <div className={styles.travelerGrid}>
@@ -538,20 +516,6 @@ function TravelerStep({ form, today, update }: StepProps & { today: string }) {
           </Select>
         </label>
       </div>
-    </div>
-  );
-}
-
-function ContactStep({ form, update }: StepProps) {
-  return (
-    <div className={styles.stepPanel}>
-      <header>
-        <span className={styles.eyebrow}>
-          <Mail aria-hidden="true" />
-          Contact
-        </span>
-        <h3>Where should we send updates?</h3>
-      </header>
 
       <div className={styles.gridTwo}>
         <label className={styles.field}>
@@ -573,24 +537,28 @@ function ContactStep({ form, update }: StepProps) {
           />
         </label>
       </div>
-      <label className={styles.field}>
-        <span>Baggage</span>
-        <Textarea
-          value={form.baggagePreference}
-          placeholder="Example: one checked bag and one carry-on"
-          className={styles.textarea}
-          onChange={(event) => update("baggagePreference", event.target.value)}
-        />
-      </label>
-      <label className={styles.field}>
-        <span>Notes</span>
-        <Textarea
-          value={form.customerNote}
-          placeholder="Preferred airlines, visa constraints, arrival time, special assistance..."
-          className={styles.textarea}
-          onChange={(event) => update("customerNote", event.target.value)}
-        />
-      </label>
+      <div className={styles.gridTwo}>
+        <label className={styles.field}>
+          <span>Baggage</span>
+          <Textarea
+            value={form.baggagePreference}
+            placeholder="Example: one checked bag and one carry-on"
+            className={styles.textarea}
+            onChange={(event) =>
+              update("baggagePreference", event.target.value)
+            }
+          />
+        </label>
+        <label className={styles.field}>
+          <span>Notes</span>
+          <Textarea
+            value={form.customerNote}
+            placeholder="Preferred airlines, visa constraints, arrival time, special assistance..."
+            className={styles.textarea}
+            onChange={(event) => update("customerNote", event.target.value)}
+          />
+        </label>
+      </div>
     </div>
   );
 }
@@ -657,7 +625,7 @@ function buildPayload(form: FlightRequestFormState): SaveFlightRequestPayload {
 }
 
 function validateStep(step: FlightWizardStep, form: FlightRequestFormState) {
-  if (step === "route") {
+  if (step === "trip") {
     const originAirportCode = form.originAirportCode.trim().toUpperCase();
     const destinationAirportCode = form.destinationAirportCode
       .trim()
@@ -681,9 +649,7 @@ function validateStep(step: FlightWizardStep, form: FlightRequestFormState) {
     if (form.tripType === "ROUND_TRIP" && !form.returnDate) {
       return "Choose a return date for a round trip.";
     }
-  }
 
-  if (step === "preferences") {
     const travelersCount = Number.parseInt(form.travelersCount, 10);
 
     if (!Number.isFinite(travelersCount) || travelersCount < 1) {
@@ -695,9 +661,7 @@ function validateStep(step: FlightWizardStep, form: FlightRequestFormState) {
     if (!form.travelerName.trim() || !form.travelerDateOfBirth) {
       return "Add the lead traveler legal name and date of birth.";
     }
-  }
 
-  if (step === "contact") {
     if (!form.contactEmail.includes("@")) {
       return "Enter a valid contact email.";
     }
