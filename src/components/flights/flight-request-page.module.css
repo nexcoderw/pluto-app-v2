@@ -1,8 +1,8 @@
 .page {
-  min-height: 100vh;
+  min-height: calc(100vh - 8rem);
   display: grid;
-  gap: clamp(1rem, 3vw, 1.8rem);
-  padding: clamp(0.85rem, 3vw, 2rem);
+  gap: clamp(1.2rem, 3vw, 2rem);
+  padding: clamp(2rem, 5vw, 4rem) max(1rem, calc((100vw - 95%) / 2));
   background:
     radial-gradient(circle at 8% 10%, rgba(2, 0, 108, 0.08), transparent 24rem),
     #f6f7fb;
@@ -11,8 +11,8 @@
 
 .hero,
 .requestShell {
-  width: min(1180px, 100%);
-  margin-inline: auto;
+  width: 100%;
+  margin-inline: 0;
 }
 
 .hero {
@@ -704,10 +704,6 @@
 }
 
 @media (max-width: 720px) {
-  .page {
-    padding: 0.75rem;
-  }
-
   .heroCopy {
     min-height: 20rem;
   }
@@ -754,6 +750,12 @@
   .submitButton {
     flex: 1 1 10rem;
     width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .page {
+    padding-inline: 0.7rem;
   }
 }
 
