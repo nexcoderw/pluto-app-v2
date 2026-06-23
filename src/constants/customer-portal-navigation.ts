@@ -3,6 +3,7 @@ import {
 	CreditCard,
 	Heart,
 	LayoutDashboard,
+	PlaneTakeoff,
 	ShieldCheck,
 	UserRound,
 	type LucideIcon,
@@ -29,6 +30,11 @@ export const CUSTOMER_PORTAL_NAVIGATION: CustomerPortalNavigationItem[] = [
 		href: "/account/favorites",
 		label: "Favorites",
 		icon: Heart,
+	},
+	{
+		href: "/account/flight-requests",
+		label: "Flight Requests",
+		icon: PlaneTakeoff,
 	},
 	{
 		href: "/account/payments",
