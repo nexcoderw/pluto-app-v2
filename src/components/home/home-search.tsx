@@ -121,10 +121,9 @@ const searchCategories: SearchCategory[] = [
 		id: "flight",
 		label: "Flight",
 		shortLabel: "Flights",
-		route: "/",
-		placeholder: "Flight booking is coming soon",
+		route: "/flights",
+		placeholder: "Start a managed flight request",
 		icon: Plane,
-		comingSoon: true,
 		maxBudget: 0,
 	},
 ];
@@ -252,7 +251,11 @@ export function HomeSearch() {
 				<div className={styles.primaryFields} data-category={activeCategory}>
 					<label className={styles.searchField}>
 						<span>
-							{activeCategory === "cars" ? "Search" : "Location or address"}
+							{activeCategory === "cars"
+								? "Search"
+								: activeCategory === "flight"
+									? "Route"
+									: "Location or address"}
 						</span>
 						<strong>{activeSearchCategory.shortLabel}</strong>
 						<input
