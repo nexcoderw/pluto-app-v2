@@ -5,7 +5,7 @@ import type {
 } from "@/services/api/flight-requests";
 import { RWANDA_PHONE_COUNTRY } from "@/constants/phone-countries";
 
-export type FlightWizardStep = "route" | "preferences" | "traveler" | "contact";
+export type FlightWizardStep = "trip" | "traveler";
 
 export type FlightRequestFormState = {
   tripType: FlightTripType;
