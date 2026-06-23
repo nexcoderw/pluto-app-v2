@@ -685,7 +685,7 @@
   }
 
   .stepper {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .stepper li {
@@ -699,7 +699,7 @@
   }
 
   .travelerGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -736,6 +736,7 @@
 
   .routeGrid,
   .preferenceGrid,
+  .travelerGrid,
   .gridTwo {
     grid-template-columns: 1fr;
   }
