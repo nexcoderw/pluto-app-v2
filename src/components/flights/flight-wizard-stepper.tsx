@@ -4,24 +4,14 @@ import styles from "./flight-request-page.module.css";
 
 export const flightWizardSteps = [
   {
-    id: "route",
-    label: "Route",
-    description: "Airports and dates",
-  },
-  {
-    id: "preferences",
-    label: "Preferences",
-    description: "Cabin and budget",
+    id: "trip",
+    label: "Trip",
+    description: "Route, dates, and budget",
   },
   {
     id: "traveler",
     label: "Traveler",
-    description: "Passenger identity",
-  },
-  {
-    id: "contact",
-    label: "Contact",
-    description: "Phone and notes",
+    description: "Passenger and contact",
   },
 ] as const satisfies readonly {
   id: FlightWizardStep;
