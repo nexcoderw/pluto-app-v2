@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { format } from "date-fns";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, CheckCircle2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -38,6 +38,7 @@ export function FlightDatePicker({
 }: FlightDatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const selectedDate = useMemo(() => parseIsoDate(value), [value]);
+  const [draftDate, setDraftDate] = useState<Date | undefined>(selectedDate);
   const min = useMemo(() => parseIsoDate(minDate), [minDate]);
   const max = useMemo(() => parseIsoDate(maxDate), [maxDate]);
   const disabledRules = [
@@ -45,12 +46,30 @@ export function FlightDatePicker({
     max ? { after: max } : null,
   ].filter((rule): rule is { before: Date } | { after: Date } => Boolean(rule));
 
+  useEffect(() => {
+    if (isOpen) {
+      setDraftDate(selectedDate);
+    }
+  }, [isOpen, selectedDate]);
+
   function handleSelect(date: Date | undefined) {
     if (!date) {
       return;
     }
 
-    onChange(toIsoDate(date));
+    setDraftDate(date);
+  }
+
+  function handleClearDate() {
+    setDraftDate(undefined);
+    onChange("");
+  }
+
+  function handleUseDate() {
+    if (draftDate) {
+      onChange(toIsoDate(draftDate));
+    }
+
     setIsOpen(false);
   }
 
@@ -80,7 +99,7 @@ export function FlightDatePicker({
           <div className={styles.dialogCalendarShell}>
             <Calendar
               mode="single"
-              selected={selectedDate}
+              selected={draftDate}
               onSelect={handleSelect}
               disabled={disabledRules}
               showOutsideDays={false}
@@ -92,11 +111,18 @@ export function FlightDatePicker({
             <Button
               type="button"
               variant="outline"
-              onClick={() => onChange("")}
+              className={styles.dateDialogButton}
+              onClick={handleClearDate}
             >
+              <XCircle aria-hidden="true" />
               Clear date
             </Button>
-            <Button type="button" onClick={() => setIsOpen(false)}>
+            <Button
+              type="button"
+              className={styles.dateDialogButton}
+              onClick={handleUseDate}
+            >
+              <CheckCircle2 aria-hidden="true" />
               Use date
             </Button>
           </DialogFooter>

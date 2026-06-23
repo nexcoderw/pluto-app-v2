@@ -6,13 +6,21 @@ import type { CountryCode } from "libphonenumber-js";
 import {
   ArrowLeft,
   ArrowRight,
+  Armchair,
   CalendarDays,
   CheckCircle2,
+  CircleDollarSign,
+  Flag,
+  Luggage,
   LoaderCircle,
   LockKeyhole,
   Mail,
+  MapPin,
+  MessageSquareText,
+  PlaneLanding,
   PlaneTakeoff,
   UserRound,
+  UsersRound,
 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -204,85 +212,92 @@ export function FlightRequestWizard() {
 
   return (
     <section className={styles.requestShell}>
-      <div className={styles.wizardFrame}>
-        <aside className={styles.wizardSidebar}>
-          <span className={styles.eyebrow}>
-            <PlaneTakeoff aria-hidden="true" />
-            Request builder
-          </span>
-          <h2>Complete one step at a time.</h2>
-          <FlightWizardStepper currentStep={step} />
-        </aside>
+      <div className={styles.requestLayout}>
+        <div className={styles.wizardFrame}>
+          <aside className={styles.wizardSidebar}>
+            <span className={styles.eyebrow}>
+              <PlaneTakeoff aria-hidden="true" />
+              Request builder
+            </span>
+            <h2>Complete one step at a time.</h2>
+            <FlightWizardStepper currentStep={step} />
+          </aside>
 
-        <form className={styles.formCard} onSubmit={handleSubmit}>
-          {step === "trip" ? (
-            <TripStep form={form} today={today} update={update} />
-          ) : null}
+          <form className={styles.formCard} onSubmit={handleSubmit}>
+            {step === "trip" ? (
+              <TripStep form={form} today={today} update={update} />
+            ) : null}
 
-          {step === "traveler" ? (
-            <TravelerStep form={form} today={today} update={update} />
-          ) : null}
+            {step === "traveler" ? (
+              <TravelerStep form={form} today={today} update={update} />
+            ) : null}
 
-          <div className={styles.formFooter}>
-            <div className={styles.footerStatus}>
-              {!currentUser ? (
-                <p>
-                  <LockKeyhole aria-hidden="true" />
-                  Sign in as a customer before submitting this request.
-                </p>
-              ) : !isCustomer ? (
-                <p>
-                  <LockKeyhole aria-hidden="true" />
-                  Only customer accounts can request flights.
-                </p>
-              ) : submittedRequestNo ? (
-                <p>
-                  <CheckCircle2 aria-hidden="true" />
-                  Submitted as {submittedRequestNo}. Track it in your account.
-                </p>
-              ) : (
-                <p>
-                  <Mail aria-hidden="true" />
-                  We will email confirmation after submission.
-                </p>
-              )}
-            </div>
-
-            <div className={styles.wizardActions}>
-              {currentStepIndex > 0 ? (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={goToPreviousStep}
-                >
-                  <ArrowLeft aria-hidden="true" />
-                  Back
-                </Button>
-              ) : null}
-              <Button
-                type="submit"
-                className={styles.submitButton}
-                disabled={
-                  submitMutation.isPending ||
-                  Boolean(isLastStep && currentUser && !canSubmit)
-                }
-              >
-                {submitMutation.isPending ? (
-                  <LoaderCircle aria-hidden="true" className={styles.spinner} />
-                ) : isLastStep ? (
-                  <PlaneTakeoff aria-hidden="true" />
+            <div className={styles.formFooter}>
+              <div className={styles.footerStatus}>
+                {!currentUser ? (
+                  <p>
+                    <LockKeyhole aria-hidden="true" />
+                    Sign in as a customer before submitting this request.
+                  </p>
+                ) : !isCustomer ? (
+                  <p>
+                    <LockKeyhole aria-hidden="true" />
+                    Only customer accounts can request flights.
+                  </p>
+                ) : submittedRequestNo ? (
+                  <p>
+                    <CheckCircle2 aria-hidden="true" />
+                    Submitted as {submittedRequestNo}. Track it in your account.
+                  </p>
                 ) : (
-                  <ArrowRight aria-hidden="true" />
+                  <p>
+                    <Mail aria-hidden="true" />
+                    We will email confirmation after submission.
+                  </p>
                 )}
-                {isLastStep
-                  ? currentUser
-                    ? "Submit request"
-                    : "Sign in to continue"
-                  : "Continue"}
-              </Button>
+              </div>
+
+              <div className={styles.wizardActions}>
+                {currentStepIndex > 0 ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={goToPreviousStep}
+                  >
+                    <ArrowLeft aria-hidden="true" />
+                    Back
+                  </Button>
+                ) : null}
+                <Button
+                  type="submit"
+                  className={styles.submitButton}
+                  disabled={
+                    submitMutation.isPending ||
+                    Boolean(isLastStep && currentUser && !canSubmit)
+                  }
+                >
+                  {submitMutation.isPending ? (
+                    <LoaderCircle
+                      aria-hidden="true"
+                      className={styles.spinner}
+                    />
+                  ) : isLastStep ? (
+                    <PlaneTakeoff aria-hidden="true" />
+                  ) : (
+                    <ArrowRight aria-hidden="true" />
+                  )}
+                  {isLastStep
+                    ? currentUser
+                      ? "Submit request"
+                      : "Sign in to continue"
+                    : "Continue"}
+                </Button>
+              </div>
             </div>
-          </div>
-        </form>
+          </form>
+        </div>
+
+        <FlightRequestOverview form={form} />
       </div>
 
       <ListingLoginDialog
@@ -328,6 +343,37 @@ function TripStep({ form, today, update }: StepProps & { today: string }) {
         ))}
       </div>
 
+      <div className={styles.contactGrid}>
+        <label className={styles.field}>
+          <span>Legal name</span>
+          <Input
+            value={form.travelerName}
+            placeholder="Full name as on ID"
+            icon={<UserRound aria-hidden="true" />}
+            onChange={(event) => update("travelerName", event.target.value)}
+          />
+        </label>
+        <label className={styles.field}>
+          <span>Email</span>
+          <Input
+            type="email"
+            value={form.contactEmail}
+            placeholder="you@example.com"
+            icon={<Mail aria-hidden="true" />}
+            onChange={(event) => update("contactEmail", event.target.value)}
+          />
+        </label>
+        <label className={styles.field}>
+          <span>Phone</span>
+          <FlightPhoneInput
+            country={form.phoneCountry}
+            value={form.contactPhone}
+            onCountryChange={(country) => update("phoneCountry", country)}
+            onValueChange={(value) => update("contactPhone", value)}
+          />
+        </label>
+      </div>
+
       <div className={styles.routeGrid}>
         <label className={styles.field}>
           <span>From</span>
@@ -335,6 +381,7 @@ function TripStep({ form, today, update }: StepProps & { today: string }) {
             value={form.originAirportCode}
             maxLength={3}
             placeholder="KGL"
+            icon={<PlaneTakeoff aria-hidden="true" />}
             onChange={(event) =>
               update("originAirportCode", event.target.value.toUpperCase())
             }
@@ -346,6 +393,7 @@ function TripStep({ form, today, update }: StepProps & { today: string }) {
             value={form.destinationAirportCode}
             maxLength={3}
             placeholder="NBO"
+            icon={<PlaneLanding aria-hidden="true" />}
             onChange={(event) =>
               update("destinationAirportCode", event.target.value.toUpperCase())
             }
@@ -367,6 +415,20 @@ function TripStep({ form, today, update }: StepProps & { today: string }) {
           onChange={(value) => update("returnDate", value)}
         />
       </div>
+    </div>
+  );
+}
+
+function TravelerStep({ form, today, update }: StepProps & { today: string }) {
+  return (
+    <div className={styles.stepPanel}>
+      <header>
+        <span className={styles.eyebrow}>
+          <UserRound aria-hidden="true" />
+          Traveler and contact
+        </span>
+        <h3>Add traveler details and contact preferences.</h3>
+      </header>
 
       <div className={styles.preferenceGrid}>
         <label className={styles.field}>
@@ -377,8 +439,13 @@ function TripStep({ form, today, update }: StepProps & { today: string }) {
               update("cabinClass", value as FlightCabinClass)
             }
           >
-            <SelectTrigger>
-              <SelectValue>{getCabinLabel(form.cabinClass)}</SelectValue>
+            <SelectTrigger className={styles.fieldSelectTrigger}>
+              <SelectValue>
+                <span className={styles.selectValueWithIcon}>
+                  <Armchair aria-hidden="true" />
+                  {getCabinLabel(form.cabinClass)}
+                </span>
+              </SelectValue>
             </SelectTrigger>
             <SelectContent align="start">
               {cabinOptions.map((option) => (
@@ -396,6 +463,7 @@ function TripStep({ form, today, update }: StepProps & { today: string }) {
             min={1}
             max={12}
             value={form.travelersCount}
+            icon={<UsersRound aria-hidden="true" />}
             onChange={(event) => update("travelersCount", event.target.value)}
           />
         </label>
@@ -407,8 +475,13 @@ function TripStep({ form, today, update }: StepProps & { today: string }) {
               update("currency", value as "RWF" | "USD")
             }
           >
-            <SelectTrigger>
-              <SelectValue>{form.currency}</SelectValue>
+            <SelectTrigger className={styles.fieldSelectTrigger}>
+              <SelectValue>
+                <span className={styles.selectValueWithIcon}>
+                  <CircleDollarSign aria-hidden="true" />
+                  {form.currency}
+                </span>
+              </SelectValue>
             </SelectTrigger>
             <SelectContent align="start">
               <SelectItem value="RWF">RWF</SelectItem>
@@ -423,12 +496,13 @@ function TripStep({ form, today, update }: StepProps & { today: string }) {
             min={0}
             value={form.maxBudget}
             placeholder={form.currency === "RWF" ? "800000" : "650"}
+            icon={<CircleDollarSign aria-hidden="true" />}
             onChange={(event) => update("maxBudget", event.target.value)}
           />
         </label>
       </div>
 
-      <div className={styles.toggleGrid}>
+      <div className={styles.optionGrid}>
         <label>
           <Checkbox
             checked={form.flexibleDates}
@@ -453,39 +527,6 @@ function TripStep({ form, today, update }: StepProps & { today: string }) {
             <small>We will prioritize fewer stops.</small>
           </span>
         </label>
-      </div>
-    </div>
-  );
-}
-
-function TravelerStep({ form, today, update }: StepProps & { today: string }) {
-  return (
-    <div className={styles.stepPanel}>
-      <header>
-        <span className={styles.eyebrow}>
-          <UserRound aria-hidden="true" />
-          Traveler and contact
-        </span>
-        <h3>Add traveler details and contact preferences.</h3>
-      </header>
-
-      <div className={styles.travelerGrid}>
-        <label className={styles.field}>
-          <span>Legal name</span>
-          <Input
-            value={form.travelerName}
-            placeholder="Full name as on ID"
-            onChange={(event) => update("travelerName", event.target.value)}
-          />
-        </label>
-        <FlightDatePicker
-          label="Date of birth"
-          value={form.travelerDateOfBirth}
-          placeholder="Choose date"
-          maxDate={today}
-          description="Choose the date of birth on the lead traveler's document."
-          onChange={(value) => update("travelerDateOfBirth", value)}
-        />
         <label className={styles.field}>
           <span>Nationality</span>
           <Select
@@ -494,9 +535,12 @@ function TravelerStep({ form, today, update }: StepProps & { today: string }) {
               update("travelerNationality", value as CountryCode)
             }
           >
-            <SelectTrigger>
+            <SelectTrigger className={styles.fieldSelectTrigger}>
               <SelectValue>
-                {getPhoneCountryOption(form.travelerNationality).name}
+                <span className={styles.selectValueWithIcon}>
+                  <Flag aria-hidden="true" />
+                  {getPhoneCountryOption(form.travelerNationality).name}
+                </span>
               </SelectValue>
             </SelectTrigger>
             <SelectContent
@@ -515,51 +559,91 @@ function TravelerStep({ form, today, update }: StepProps & { today: string }) {
             </SelectContent>
           </Select>
         </label>
+        <FlightDatePicker
+          label="Date of birth"
+          value={form.travelerDateOfBirth}
+          placeholder="Choose date"
+          maxDate={today}
+          description="Choose the date of birth on the lead traveler's document."
+          onChange={(value) => update("travelerDateOfBirth", value)}
+        />
       </div>
 
-      <div className={styles.gridTwo}>
-        <label className={styles.field}>
-          <span>Email</span>
-          <Input
-            type="email"
-            value={form.contactEmail}
-            placeholder="you@example.com"
-            onChange={(event) => update("contactEmail", event.target.value)}
-          />
-        </label>
-        <label className={styles.field}>
-          <span>Phone</span>
-          <FlightPhoneInput
-            country={form.phoneCountry}
-            value={form.contactPhone}
-            onCountryChange={(country) => update("phoneCountry", country)}
-            onValueChange={(value) => update("contactPhone", value)}
-          />
-        </label>
-      </div>
-      <div className={styles.gridTwo}>
+      <div className={styles.notesGrid}>
         <label className={styles.field}>
           <span>Baggage</span>
-          <Textarea
-            value={form.baggagePreference}
-            placeholder="Example: one checked bag and one carry-on"
-            className={styles.textarea}
-            onChange={(event) =>
-              update("baggagePreference", event.target.value)
-            }
-          />
+          <span className={styles.textareaShell}>
+            <Luggage aria-hidden="true" />
+            <Textarea
+              value={form.baggagePreference}
+              placeholder="Example: one checked bag and one carry-on"
+              className={styles.textarea}
+              onChange={(event) =>
+                update("baggagePreference", event.target.value)
+              }
+            />
+          </span>
         </label>
         <label className={styles.field}>
           <span>Notes</span>
-          <Textarea
-            value={form.customerNote}
-            placeholder="Preferred airlines, visa constraints, arrival time, special assistance..."
-            className={styles.textarea}
-            onChange={(event) => update("customerNote", event.target.value)}
-          />
+          <span className={styles.textareaShell}>
+            <MessageSquareText aria-hidden="true" />
+            <Textarea
+              value={form.customerNote}
+              placeholder="Preferred airlines, visa constraints, arrival time, special assistance..."
+              className={styles.textarea}
+              onChange={(event) => update("customerNote", event.target.value)}
+            />
+          </span>
         </label>
       </div>
     </div>
+  );
+}
+
+function FlightRequestOverview({ form }: { form: FlightRequestFormState }) {
+  const route = `${form.originAirportCode || "From"} to ${
+    form.destinationAirportCode || "To"
+  }`;
+
+  return (
+    <aside className={styles.overviewCard} aria-label="Flight request overview">
+      <span className={styles.eyebrow}>
+        <CalendarDays aria-hidden="true" />
+        Request overview
+      </span>
+      <h2>{route}</h2>
+      <dl>
+        <div>
+          <dt>
+            <UserRound aria-hidden="true" />
+            Name
+          </dt>
+          <dd>{form.travelerName.trim() || "Traveler name"}</dd>
+        </div>
+        <div>
+          <dt>
+            <Mail aria-hidden="true" />
+            Email
+          </dt>
+          <dd>{form.contactEmail.trim() || "Email not added"}</dd>
+        </div>
+        <div>
+          <dt>
+            <CalendarDays aria-hidden="true" />
+            Departure date
+          </dt>
+          <dd>{formatOverviewDate(form.departureDate)}</dd>
+        </div>
+        <div>
+          <dt>
+            <MapPin aria-hidden="true" />
+            Trip type
+          </dt>
+          <dd>{form.tripType === "ROUND_TRIP" ? "Round trip" : "One way"}</dd>
+        </div>
+      </dl>
+    </aside>
   );
 }
 
@@ -631,6 +715,21 @@ function validateStep(step: FlightWizardStep, form: FlightRequestFormState) {
       .trim()
       .toUpperCase();
 
+    if (!form.travelerName.trim()) {
+      return "Add the lead traveler legal name.";
+    }
+
+    if (!form.contactEmail.includes("@")) {
+      return "Enter a valid contact email.";
+    }
+
+    if (
+      form.contactPhone.trim() &&
+      !isValidInternationalPhoneNumber(form.phoneCountry, form.contactPhone)
+    ) {
+      return "Use a valid phone number for the selected country code.";
+    }
+
     if (
       !/^[A-Z]{3}$/.test(originAirportCode) ||
       !/^[A-Z]{3}$/.test(destinationAirportCode)
@@ -649,28 +748,17 @@ function validateStep(step: FlightWizardStep, form: FlightRequestFormState) {
     if (form.tripType === "ROUND_TRIP" && !form.returnDate) {
       return "Choose a return date for a round trip.";
     }
+  }
 
+  if (step === "traveler") {
     const travelersCount = Number.parseInt(form.travelersCount, 10);
 
     if (!Number.isFinite(travelersCount) || travelersCount < 1) {
       return "Add at least one traveler.";
     }
-  }
 
-  if (step === "traveler") {
-    if (!form.travelerName.trim() || !form.travelerDateOfBirth) {
-      return "Add the lead traveler legal name and date of birth.";
-    }
-
-    if (!form.contactEmail.includes("@")) {
-      return "Enter a valid contact email.";
-    }
-
-    if (
-      form.contactPhone.trim() &&
-      !isValidInternationalPhoneNumber(form.phoneCountry, form.contactPhone)
-    ) {
-      return "Use a valid phone number for the selected country code.";
+    if (!form.travelerDateOfBirth) {
+      return "Add the lead traveler date of birth.";
     }
   }
 
@@ -698,4 +786,16 @@ function createIdempotencyKey() {
 
 function getCabinLabel(value: FlightCabinClass) {
   return cabinOptions.find((option) => option.value === value)?.label ?? value;
+}
+
+function formatOverviewDate(value: string) {
+  if (!value) {
+    return "Choose departure";
+  }
+
+  return new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(`${value}T00:00:00`));
 }

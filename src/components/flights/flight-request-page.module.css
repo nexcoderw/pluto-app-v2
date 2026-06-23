@@ -236,6 +236,13 @@
   color: #02006c;
 }
 
+.requestLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.28fr);
+  gap: clamp(0.85rem, 2vw, 1rem);
+  align-items: start;
+}
+
 .wizardFrame {
   display: grid;
   grid-template-columns: minmax(15rem, 0.32fr) minmax(0, 1fr);
@@ -368,7 +375,7 @@
 }
 
 .segmented,
-.toggleGrid {
+.optionGrid {
   display: flex;
   flex-wrap: wrap;
   gap: 0.62rem;
@@ -397,26 +404,32 @@
 
 .routeGrid,
 .preferenceGrid,
-.travelerGrid,
-.gridTwo {
+.contactGrid,
+.optionGrid,
+.notesGrid {
   display: grid;
   gap: 0.85rem;
 }
 
+.contactGrid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .routeGrid {
-  grid-template-columns: 0.72fr 0.72fr 1fr 1fr;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .preferenceGrid {
-  grid-template-columns: 1.15fr 0.68fr 0.68fr 1fr;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
-.travelerGrid {
-  grid-template-columns: minmax(0, 1.3fr) minmax(11rem, 0.9fr) minmax(0, 1fr);
+.optionGrid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: end;
 }
 
-.gridTwo {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+.notesGrid {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .field {
@@ -480,40 +493,81 @@
   color: #02006c;
 }
 
-.toggleGrid label {
-  min-width: min(100%, 16rem);
+.fieldSelectTrigger {
+  width: 100%;
+}
+
+.selectValueWithIcon {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.selectValueWithIcon svg {
+  width: 1rem;
+  height: 1rem;
+  color: #02006c;
+}
+
+.optionGrid > label:not(.field) {
+  min-width: 0;
+  min-height: 3.15rem;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.78rem 0.9rem;
-  border: 1px solid rgba(2, 0, 108, 0.1);
-  border-radius: 1.05rem;
-  background: #f8f9fd;
+  gap: 0.68rem;
+  padding: 0.58rem 0.72rem;
+  border: 1px solid rgba(2, 0, 108, 0.14);
+  border-radius: 999px;
+  background: rgba(248, 249, 253, 0.9);
   cursor: pointer;
 }
 
-.toggleGrid label > span {
+.optionGrid > label:not(.field) > span {
+  min-width: 0;
   display: grid;
   gap: 0.1rem;
 }
 
-.toggleGrid strong {
-  font-size: 0.82rem;
+.optionGrid strong {
+  overflow: hidden;
+  font-size: 0.74rem;
   font-weight: 900;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.toggleGrid small {
+.optionGrid small {
   color: rgba(23, 23, 31, 0.56);
-  font-size: 0.74rem;
+  font-size: 0.66rem;
   font-weight: 600;
+}
+
+.textareaShell {
+  min-height: 6.3rem;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.65rem;
+  align-items: start;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(2, 0, 108, 0.16);
+  border-radius: 1.05rem;
+  background: #f8f9fd;
+}
+
+.textareaShell > svg {
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.25rem;
+  color: #02006c;
 }
 
 .textarea {
   min-height: 6.3rem;
-  padding: 0.95rem 1rem;
-  border: 1px solid rgba(2, 0, 108, 0.16);
-  border-radius: 1.05rem;
-  background: #f8f9fd;
+  padding: 0;
+  border: 0;
+  background: transparent;
   font-size: 0.88rem;
   font-weight: 500;
   line-height: 1.55;
@@ -668,6 +722,74 @@
   align-items: stretch;
 }
 
+.dateDialogButton {
+  border-radius: 999px;
+}
+
+.overviewCard {
+  position: sticky;
+  top: 5.4rem;
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1rem, 2vw, 1.25rem);
+  border: 1px solid rgba(2, 0, 108, 0.1);
+  border-radius: clamp(1.25rem, 2vw, 1.85rem);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 1.5rem 4rem rgba(16, 22, 33, 0.08);
+}
+
+.overviewCard h2 {
+  margin: 0;
+  color: #17171f;
+  font-size: clamp(1.35rem, 2.4vw, 2rem);
+  font-weight: 950;
+  letter-spacing: -0.035em;
+  line-height: 1;
+}
+
+.overviewCard dl {
+  display: grid;
+  gap: 0.7rem;
+  margin: 0;
+}
+
+.overviewCard dl div {
+  display: grid;
+  gap: 0.24rem;
+  padding: 0.78rem;
+  border: 1px solid rgba(2, 0, 108, 0.08);
+  border-radius: 1rem;
+  background: #f8f9fd;
+}
+
+.overviewCard dt {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  color: rgba(23, 23, 31, 0.58);
+  font-size: 0.68rem;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.overviewCard dt svg {
+  width: 0.92rem;
+  height: 0.92rem;
+  color: #02006c;
+}
+
+.overviewCard dd {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  color: #17171f;
+  font-size: 0.88rem;
+  font-weight: 850;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
@@ -676,11 +798,13 @@
 
 @media (max-width: 1040px) {
   .hero,
+  .requestLayout,
   .wizardFrame {
     grid-template-columns: 1fr;
   }
 
-  .wizardSidebar {
+  .wizardSidebar,
+  .overviewCard {
     position: static;
   }
 
@@ -693,12 +817,10 @@
     align-items: start;
   }
 
+  .contactGrid,
   .routeGrid,
-  .preferenceGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .travelerGrid {
+  .preferenceGrid,
+  .optionGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -732,8 +854,8 @@
 
   .routeGrid,
   .preferenceGrid,
-  .travelerGrid,
-  .gridTwo {
+  .contactGrid,
+  .optionGrid {
     grid-template-columns: 1fr;
   }
 
@@ -764,7 +886,8 @@
   .flightDeskCard,
   .wizardFrame,
   .formCard,
-  .wizardSidebar {
+  .wizardSidebar,
+  .overviewCard {
     border-radius: 1.1rem;
   }
 
@@ -773,7 +896,7 @@
   }
 
   .segmented button,
-  .toggleGrid label {
+  .optionGrid > label:not(.field) {
     width: 100%;
   }
 
