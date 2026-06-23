@@ -15,6 +15,7 @@ import { getCachedPartnerProfileStatus } from "@/services/api/token-store";
 import styles from "./public-navbar.module.css";
 
 const navigationLinks = [
+	{ href: "/flights", label: "Flight" },
 	{ href: "/listings/cars", label: "Cars" },
 	{ href: "/listings/apartments", label: "Apartments" },
 	{ href: "/listings/hotel-rooms", label: "Hotel Rooms" },
