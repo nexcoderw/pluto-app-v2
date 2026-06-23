@@ -1,14 +1,10 @@
 .page {
   min-height: 100vh;
   display: grid;
-  gap: clamp(1rem, 2.6vw, 1.6rem);
+  gap: clamp(1rem, 3vw, 1.8rem);
   padding: clamp(0.85rem, 3vw, 2rem);
   background:
-    radial-gradient(
-      circle at top left,
-      rgba(2, 0, 108, 0.08),
-      transparent 28rem
-    ),
+    radial-gradient(circle at 8% 10%, rgba(2, 0, 108, 0.08), transparent 24rem),
     #f6f7fb;
   color: #17171f;
 }
@@ -21,31 +17,29 @@
 
 .hero {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.52fr);
-  gap: clamp(0.85rem, 2vw, 1rem);
+  grid-template-columns: minmax(0, 1fr) minmax(19rem, 0.5fr);
+  gap: clamp(0.85rem, 2vw, 1.1rem);
   align-items: stretch;
 }
 
 .heroCopy,
-.routeCard,
-.formCard {
+.flightDeskCard,
+.wizardFrame {
   border: 1px solid rgba(2, 0, 108, 0.1);
-  border-radius: clamp(1.25rem, 2vw, 1.8rem);
-  background: rgba(255, 255, 255, 0.93);
+  border-radius: clamp(1.25rem, 2vw, 1.85rem);
+  background: rgba(255, 255, 255, 0.94);
   box-shadow: 0 1.5rem 4rem rgba(16, 22, 33, 0.08);
 }
 
 .heroCopy {
-  min-height: clamp(20rem, 38vw, 30rem);
+  min-height: clamp(21rem, 38vw, 31rem);
   display: grid;
   align-content: end;
   gap: 1rem;
-  padding: clamp(1.25rem, 4vw, 2.6rem);
+  padding: clamp(1.25rem, 4vw, 2.8rem);
 }
 
-.eyebrow,
-.sectionTitle,
-.routeLabel {
+.eyebrow {
   display: inline-flex;
   width: max-content;
   align-items: center;
@@ -57,33 +51,25 @@
   text-transform: uppercase;
 }
 
-.eyebrow svg,
-.sectionTitle svg {
+.eyebrow svg {
   width: 1rem;
   height: 1rem;
 }
 
-.heroCopy h1,
-.formCard h2 {
-  max-width: 13ch;
+.heroCopy h1 {
+  max-width: 12.5ch;
   margin: 0;
   color: #17171f;
-  font-size: clamp(2.35rem, 7vw, 5.4rem);
+  font-size: clamp(2.35rem, 7vw, 5.35rem);
   font-weight: 950;
   letter-spacing: -0.045em;
   line-height: 0.92;
 }
 
-.formCard h2 {
-  max-width: none;
-  font-size: clamp(1.55rem, 4vw, 2.5rem);
-  line-height: 1;
-}
-
 .heroCopy p,
+.flightDeskCard p,
 .formCard header p,
-.routeCard p,
-.formFooter p {
+.footerStatus p {
   max-width: 44rem;
   margin: 0;
   color: rgba(23, 23, 31, 0.64);
@@ -102,7 +88,8 @@
 
 .heroActions a,
 .heroActions span,
-.submitButton {
+.submitButton,
+.wizardActions :global(button) {
   min-height: var(--pluto-button-height);
   display: inline-flex;
   align-items: center;
@@ -133,89 +120,266 @@
   color: #02006c;
 }
 
-.heroActions svg {
+.heroActions svg,
+.submitButton svg,
+.wizardActions svg {
   width: 1rem;
   height: 1rem;
 }
 
-.routeCard {
+.flightDeskCard {
+  position: relative;
+  overflow: hidden;
   display: grid;
   align-content: space-between;
-  gap: 1rem;
+  gap: 1.15rem;
   padding: clamp(1rem, 2.4vw, 1.35rem);
+  background: linear-gradient(180deg, #ffffff, #f7f8fc), #ffffff;
 }
 
-.routeCard > div {
+.flightDeskCard::before {
+  content: "";
+  position: absolute;
+  inset: 1rem 1rem auto auto;
+  width: 8.5rem;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  background: rgba(2, 0, 108, 0.06);
+}
+
+.flightDeskTop {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.flightDeskTop > span {
+  width: 3rem;
+  height: 3rem;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: #02006c;
+  color: #ffffff;
+  box-shadow: 0 0.9rem 2rem rgba(2, 0, 108, 0.22);
+}
+
+.flightDeskTop strong {
+  color: rgba(23, 23, 31, 0.74);
+  font-size: 0.74rem;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+}
+
+.flightPath {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-  gap: 0.72rem;
+  gap: 0.65rem;
   align-items: center;
-  min-height: 13.5rem;
-  padding: 0.9rem;
-  border-radius: 1.3rem;
+  min-height: 12rem;
+  padding: 0.95rem;
+  border-radius: 1.35rem;
   background: #17171f;
   color: #ffffff;
 }
 
-.routeCard > div span {
-  min-width: 0;
+.flightPath span {
   display: grid;
   place-items: center;
-  min-height: 5rem;
+  min-height: 4.8rem;
   border-radius: 1rem;
   background: rgba(255, 255, 255, 0.1);
-  font-size: clamp(1.45rem, 4vw, 2.65rem);
+  font-size: clamp(1.35rem, 4vw, 2.4rem);
   font-weight: 950;
-  letter-spacing: 0.05em;
-  overflow-wrap: anywhere;
+  letter-spacing: 0.04em;
 }
 
-.routeCard i {
-  width: 3.1rem;
-  height: 3.1rem;
+.flightPath i {
+  width: 3rem;
+  height: 0.18rem;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow:
+    -1.15rem 0 0 rgba(255, 255, 255, 0.3),
+    1.15rem 0 0 rgba(255, 255, 255, 0.3);
+}
+
+.flightDeskCard ul {
+  position: relative;
+  display: grid;
+  gap: 0.55rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.flightDeskCard li {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2.6rem;
+  padding: 0.2rem 0.75rem;
+  border: 1px solid rgba(2, 0, 108, 0.08);
+  border-radius: 999px;
+  background: #ffffff;
+  color: rgba(23, 23, 31, 0.78);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.flightDeskCard li svg {
+  width: 0.95rem;
+  height: 0.95rem;
+  color: #02006c;
+}
+
+.wizardFrame {
+  display: grid;
+  grid-template-columns: minmax(15rem, 0.32fr) minmax(0, 1fr);
+  gap: clamp(0.85rem, 2vw, 1rem);
+  padding: clamp(0.8rem, 2vw, 1rem);
+}
+
+.wizardSidebar {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+  padding: clamp(1rem, 2vw, 1.25rem);
+  border-radius: 1.35rem;
+  background: #f8f9fd;
+}
+
+.wizardSidebar h2 {
+  max-width: 11ch;
+  margin: 0;
+  color: #17171f;
+  font-size: clamp(1.45rem, 3vw, 2.15rem);
+  font-weight: 950;
+  letter-spacing: -0.035em;
+  line-height: 1;
+}
+
+.stepper {
+  display: grid;
+  gap: 0.65rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.stepper li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.72rem;
+  align-items: center;
+  min-height: 4.65rem;
+  padding: 0.75rem;
+  border: 1px solid rgba(2, 0, 108, 0.08);
+  border-radius: 1rem;
+  background: #ffffff;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.stepper li[data-active="true"] {
+  border-color: rgba(2, 0, 108, 0.18);
+  background: #02006c;
+  color: #ffffff;
+  box-shadow: 0 1rem 2rem rgba(2, 0, 108, 0.2);
+}
+
+.stepNumber {
+  width: 2.25rem;
+  height: 2.25rem;
   display: grid;
   place-items: center;
   border-radius: 999px;
-  background: #ffffff;
+  background: rgba(2, 0, 108, 0.07);
   color: #02006c;
-  box-shadow: 0 0.9rem 2rem rgba(0, 0, 0, 0.22);
+  font-size: 0.78rem;
+  font-weight: 950;
 }
 
-.routeCard i svg {
-  width: 1.25rem;
-  height: 1.25rem;
+.stepper li[data-active="true"] .stepNumber,
+.stepper li[data-complete="true"] .stepNumber {
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
 }
 
-.requestShell {
+.stepNumber svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.stepCopy {
   display: grid;
+  gap: 0.18rem;
+}
+
+.stepCopy strong {
+  font-size: 0.86rem;
+  font-weight: 900;
+}
+
+.stepCopy small {
+  color: rgba(23, 23, 31, 0.56);
+  font-size: 0.72rem;
+  font-weight: 650;
+}
+
+.stepper li[data-active="true"] .stepCopy small {
+  color: rgba(255, 255, 255, 0.72);
 }
 
 .formCard {
   display: grid;
-  gap: clamp(1rem, 2vw, 1.25rem);
-  padding: clamp(1rem, 3vw, 1.45rem);
+  gap: 1rem;
+  padding: clamp(0.85rem, 2vw, 1.1rem);
+  border-radius: 1.35rem;
+  background: #ffffff;
 }
 
-.formCard header {
+.stepPanel {
   display: grid;
-  gap: 0.45rem;
-  padding: clamp(0.2rem, 1vw, 0.4rem);
+  gap: clamp(0.95rem, 2vw, 1.15rem);
+  align-content: start;
+  min-height: 30rem;
+}
+
+.stepPanel header {
+  display: grid;
+  gap: 0.42rem;
+  padding: 0.2rem;
+}
+
+.stepPanel h3 {
+  max-width: 17ch;
+  margin: 0;
+  color: #17171f;
+  font-size: clamp(1.75rem, 4vw, 3.2rem);
+  font-weight: 950;
+  letter-spacing: -0.04em;
+  line-height: 0.98;
 }
 
 .segmented,
 .toggleGrid {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.6rem;
+  gap: 0.62rem;
 }
 
-.segmented button,
-.toggleGrid label {
-  min-height: 2.8rem;
+.segmented button {
+  min-height: 2.9rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.45rem;
+  padding-inline: 1rem;
   border: 1px solid rgba(2, 0, 108, 0.12);
   border-radius: 999px;
   background: #ffffff;
@@ -225,23 +389,10 @@
   cursor: pointer;
 }
 
-.segmented button {
-  padding: 0 1rem;
-}
-
 .segmented button[data-active="true"] {
   background: #02006c;
   color: #ffffff;
   box-shadow: 0 0.85rem 1.8rem rgba(2, 0, 108, 0.18);
-}
-
-.formSection {
-  display: grid;
-  gap: 0.8rem;
-  padding: clamp(0.85rem, 2vw, 1rem);
-  border: 1px solid rgba(2, 0, 108, 0.08);
-  border-radius: 1.25rem;
-  background: #ffffff;
 }
 
 .routeGrid,
@@ -249,19 +400,19 @@
 .travelerGrid,
 .gridTwo {
   display: grid;
-  gap: 0.8rem;
+  gap: 0.85rem;
 }
 
 .routeGrid {
-  grid-template-columns: 0.7fr 0.7fr 1fr 1fr;
+  grid-template-columns: 0.72fr 0.72fr 1fr 1fr;
 }
 
 .preferenceGrid {
-  grid-template-columns: 1.15fr 0.65fr 0.65fr 1fr;
+  grid-template-columns: 1.15fr 0.68fr 0.68fr 1fr;
 }
 
 .travelerGrid {
-  grid-template-columns: minmax(0, 1.35fr) minmax(10rem, 0.85fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.3fr) minmax(11rem, 0.9fr) minmax(0, 1fr);
 }
 
 .gridTwo {
@@ -271,10 +422,11 @@
 .field {
   min-width: 0;
   display: grid;
-  gap: 0.38rem;
+  gap: 0.4rem;
 }
 
-.field > span {
+.field > span,
+.dateTrigger > span {
   color: rgba(23, 23, 31, 0.66);
   font-size: 0.7rem;
   font-weight: 850;
@@ -282,35 +434,82 @@
   text-transform: uppercase;
 }
 
-.field[data-disabled="true"] {
-  opacity: 0.56;
+.dateTrigger {
+  min-width: 0;
+  min-height: 3.15rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "label icon"
+    "value icon";
+  align-items: center;
+  gap: 0.12rem 0.75rem;
+  padding: 0.55rem 0.95rem;
+  border: 1px solid rgba(2, 0, 108, 0.22);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #17171f;
+  text-align: left;
+  box-shadow: 0 0.85rem 2rem rgba(16, 22, 33, 0.07);
+  cursor: pointer;
 }
 
-.field select {
-  width: 100%;
-  min-height: 3.15rem;
-  border: 1px solid rgba(2, 0, 108, 0.34);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.84);
-  color: #17171f;
-  padding: 0 1rem;
-  font: inherit;
-  font-size: 0.86rem;
-  font-weight: 650;
-  outline: none;
-  box-shadow: 0 0.8rem 2rem rgba(16, 22, 33, 0.06);
+.dateTrigger:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.dateTrigger > span {
+  grid-area: label;
+}
+
+.dateTrigger strong {
+  grid-area: value;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 0.88rem;
+  font-weight: 850;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dateTrigger svg {
+  grid-area: icon;
+  width: 1.05rem;
+  height: 1.05rem;
+  color: #02006c;
 }
 
 .toggleGrid label {
-  padding: 0 0.95rem;
+  min-width: min(100%, 16rem);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.78rem 0.9rem;
+  border: 1px solid rgba(2, 0, 108, 0.1);
+  border-radius: 1.05rem;
+  background: #f8f9fd;
+  cursor: pointer;
 }
 
-.toggleGrid input {
-  accent-color: #02006c;
+.toggleGrid label > span {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.toggleGrid strong {
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.toggleGrid small {
+  color: rgba(23, 23, 31, 0.56);
+  font-size: 0.74rem;
+  font-weight: 600;
 }
 
 .textarea {
-  min-height: 6.4rem;
+  min-height: 6.3rem;
   padding: 0.95rem 1rem;
   border: 1px solid rgba(2, 0, 108, 0.16);
   border-radius: 1.05rem;
@@ -320,39 +519,153 @@
   line-height: 1.55;
 }
 
+.phoneInputShell {
+  min-height: 3.15rem;
+  display: grid;
+  grid-template-columns: auto auto auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.6rem;
+  border: 1px solid rgba(2, 0, 108, 0.22);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0.25rem 0.8rem 0.25rem 0.25rem;
+  box-shadow: 0 0.85rem 2rem rgba(16, 22, 33, 0.07);
+}
+
+.phoneInputShell > svg {
+  width: 1rem;
+  height: 1rem;
+  color: #02006c;
+}
+
+.phoneInputShell :global(input) {
+  height: 2.65rem;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.countryCodeTrigger {
+  min-width: 6.4rem;
+  border: 0;
+  background: rgba(2, 0, 108, 0.07);
+  box-shadow: none;
+}
+
+.countryCodeTrigger span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.countryCodeTrigger strong {
+  color: #02006c;
+  font-weight: 900;
+}
+
+.countryCodeMenu {
+  width: min(22rem, calc(100vw - 2rem));
+  max-height: min(20rem, calc(100vh - 8rem));
+}
+
+.countryOption {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.countryOption strong {
+  color: #02006c;
+}
+
+.countryOption span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.countryOption small {
+  color: rgba(23, 23, 31, 0.52);
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.phoneDivider {
+  width: 1px;
+  height: 1.55rem;
+  background: rgba(2, 0, 108, 0.12);
+}
+
 .formFooter {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 1rem;
   align-items: center;
-  padding: 0.25rem 0.25rem 0;
+  padding-top: 0.35rem;
+  border-top: 1px solid rgba(2, 0, 108, 0.08);
 }
 
-.formFooter p {
+.footerStatus p {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.formFooter p svg {
+.footerStatus svg {
   width: 1rem;
   height: 1rem;
   flex: 0 0 auto;
   color: #02006c;
 }
 
+.wizardActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.65rem;
+}
+
 .submitButton {
-  min-width: 13.5rem;
+  min-width: 11.5rem;
   cursor: pointer;
 }
 
 .submitButton:disabled {
-  opacity: 0.68;
   cursor: not-allowed;
+  opacity: 0.68;
 }
 
 .spinner {
   animation: spin 800ms linear infinite;
+}
+
+.dateDialog {
+  width: min(100%, 34rem);
+  border: 1px solid rgba(2, 0, 108, 0.12);
+  border-radius: 1.55rem;
+  background: #ffffff;
+  box-shadow: 0 1.6rem 4rem rgba(16, 22, 33, 0.18);
+}
+
+.dialogCalendarShell {
+  display: grid;
+  place-items: center;
+  padding: 0.55rem;
+  border: 1px solid rgba(2, 0, 108, 0.08);
+  border-radius: 1.25rem;
+  background: #f8f9fd;
+  overflow-x: auto;
+}
+
+.dialogCalendar {
+  background: transparent;
+}
+
+.dateDialogFooter {
+  align-items: stretch;
 }
 
 @keyframes spin {
@@ -362,12 +675,22 @@
 }
 
 @media (max-width: 1040px) {
-  .hero {
+  .hero,
+  .wizardFrame {
     grid-template-columns: 1fr;
   }
 
-  .routeCard > div {
-    min-height: 10rem;
+  .wizardSidebar {
+    position: static;
+  }
+
+  .stepper {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .stepper li {
+    min-height: auto;
+    align-items: start;
   }
 
   .routeGrid,
@@ -386,11 +709,29 @@
   }
 
   .heroCopy {
-    min-height: 18rem;
+    min-height: 20rem;
   }
 
   .heroCopy h1 {
     font-size: clamp(2.25rem, 13vw, 3.65rem);
+  }
+
+  .flightPath {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .flightPath i {
+    width: 0.18rem;
+    height: 2.5rem;
+    justify-self: center;
+    box-shadow:
+      0 -0.9rem 0 rgba(255, 255, 255, 0.3),
+      0 0.9rem 0 rgba(255, 255, 255, 0.3);
+  }
+
+  .stepper {
+    grid-template-columns: 1fr 1fr;
   }
 
   .routeGrid,
@@ -404,29 +745,56 @@
     align-items: stretch;
   }
 
+  .wizardActions {
+    justify-content: stretch;
+  }
+
+  .wizardActions :global(button),
   .submitButton {
+    flex: 1 1 10rem;
     width: 100%;
   }
 }
 
 @media (max-width: 480px) {
   .heroCopy,
-  .routeCard,
-  .formCard {
+  .flightDeskCard,
+  .wizardFrame,
+  .formCard,
+  .wizardSidebar {
     border-radius: 1.1rem;
   }
 
-  .routeCard > div {
+  .stepper {
     grid-template-columns: 1fr;
-    justify-items: center;
-  }
-
-  .routeCard i {
-    transform: rotate(90deg);
   }
 
   .segmented button,
   .toggleGrid label {
     width: 100%;
+  }
+
+  .phoneInputShell {
+    grid-template-columns: 1fr auto;
+    border-radius: 1.2rem;
+    padding: 0.45rem;
+  }
+
+  .phoneDivider,
+  .phoneInputShell > svg {
+    display: none;
+  }
+
+  .countryCodeTrigger {
+    width: 100%;
+  }
+
+  .phoneInputShell :global(input) {
+    grid-column: 1 / -1;
+    width: 100%;
+    padding-inline: 0.9rem;
+    border: 1px solid rgba(2, 0, 108, 0.12);
+    border-radius: 999px;
+    background: #ffffff;
   }
 }
