@@ -902,70 +902,6 @@
   border-radius: 999px;
 }
 
-.overviewCard {
-  position: sticky;
-  top: 5.4rem;
-  display: grid;
-  gap: 1rem;
-  padding: clamp(1rem, 2vw, 1.25rem);
-  border: 1px solid rgba(2, 0, 108, 0.1);
-  border-radius: clamp(1.25rem, 2vw, 1.85rem);
-  background: rgba(255, 255, 255, 0.94);
-  box-shadow: 0 1.5rem 4rem rgba(16, 22, 33, 0.08);
-}
-
-.overviewCard h2 {
-  margin: 0;
-  color: #17171f;
-  font-size: clamp(1.35rem, 2.4vw, 2rem);
-  font-weight: 950;
-  letter-spacing: -0.035em;
-  line-height: 1;
-}
-
-.overviewCard dl {
-  display: grid;
-  gap: 0.7rem;
-  margin: 0;
-}
-
-.overviewCard dl div {
-  display: grid;
-  gap: 0.24rem;
-  padding: 0.78rem;
-  border: 1px solid rgba(2, 0, 108, 0.08);
-  border-radius: 1rem;
-  background: #f8f9fd;
-}
-
-.overviewCard dt {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.38rem;
-  color: rgba(23, 23, 31, 0.58);
-  font-size: 0.68rem;
-  font-weight: 850;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.overviewCard dt svg {
-  width: 0.92rem;
-  height: 0.92rem;
-  color: #02006c;
-}
-
-.overviewCard dd {
-  min-width: 0;
-  margin: 0;
-  overflow: hidden;
-  color: #17171f;
-  font-size: 0.88rem;
-  font-weight: 850;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 @keyframes spin {
   to {
     transform: rotate(360deg);
@@ -979,8 +915,7 @@
     grid-template-columns: 1fr;
   }
 
-  .wizardSidebar,
-  .overviewCard {
+  .wizardSidebar {
     position: static;
   }
 
@@ -1064,8 +999,7 @@
   .flightDeskCard,
   .wizardFrame,
   .formCard,
-  .wizardSidebar,
-  .overviewCard {
+  .wizardSidebar {
     border-radius: 1.1rem;
   }
 
