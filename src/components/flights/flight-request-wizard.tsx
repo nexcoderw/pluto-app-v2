@@ -7,7 +7,6 @@ import {
   ArrowLeft,
   ArrowRight,
   Armchair,
-  CalendarDays,
   CheckCircle2,
   CircleDollarSign,
   Flag,
@@ -15,7 +14,6 @@ import {
   LoaderCircle,
   LockKeyhole,
   Mail,
-  MapPin,
   MessageSquareText,
   PlaneLanding,
   PlaneTakeoff,
@@ -57,6 +55,7 @@ import type { UserLoginResponse } from "@/services/api/auth";
 import { FlightAirportCombobox } from "./flight-airport-combobox";
 import { FlightDatePicker } from "./flight-date-picker";
 import { FlightPhoneInput } from "./flight-phone-input";
+import { FlightRequestOverview } from "./flight-request-overview";
 import {
   defaultFlightRequestForm,
   type FlightRequestFormState,
@@ -602,53 +601,6 @@ function TravelerStep({ form, today, update }: StepProps & { today: string }) {
   );
 }
 
-function FlightRequestOverview({ form }: { form: FlightRequestFormState }) {
-  const origin = form.originAirportName || form.originAirportCode || "From";
-  const destination =
-    form.destinationAirportName || form.destinationAirportCode || "To";
-  const route = `${origin} to ${destination}`;
-
-  return (
-    <aside className={styles.overviewCard} aria-label="Flight request overview">
-      <span className={styles.eyebrow}>
-        <CalendarDays aria-hidden="true" />
-        Request overview
-      </span>
-      <h2>{route}</h2>
-      <dl>
-        <div>
-          <dt>
-            <UserRound aria-hidden="true" />
-            Name
-          </dt>
-          <dd>{form.travelerName.trim() || "Traveler name"}</dd>
-        </div>
-        <div>
-          <dt>
-            <Mail aria-hidden="true" />
-            Email
-          </dt>
-          <dd>{form.contactEmail.trim() || "Email not added"}</dd>
-        </div>
-        <div>
-          <dt>
-            <CalendarDays aria-hidden="true" />
-            Departure date
-          </dt>
-          <dd>{formatOverviewDate(form.departureDate)}</dd>
-        </div>
-        <div>
-          <dt>
-            <MapPin aria-hidden="true" />
-            Trip type
-          </dt>
-          <dd>{form.tripType === "ROUND_TRIP" ? "Round trip" : "One way"}</dd>
-        </div>
-      </dl>
-    </aside>
-  );
-}
-
 function buildPayload(form: FlightRequestFormState): SaveFlightRequestPayload {
   const originAirportCode = form.originAirportCode.trim().toUpperCase();
   const destinationAirportCode = form.destinationAirportCode
@@ -788,16 +740,4 @@ function createIdempotencyKey() {
 
 function getCabinLabel(value: FlightCabinClass) {
   return cabinOptions.find((option) => option.value === value)?.label ?? value;
-}
-
-function formatOverviewDate(value: string) {
-  if (!value) {
-    return "Choose departure";
-  }
-
-  return new Intl.DateTimeFormat("en", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  }).format(new Date(`${value}T00:00:00`));
 }
