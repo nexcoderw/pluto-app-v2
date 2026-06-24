@@ -22,10 +22,11 @@ type FlightAirportComboboxProps = {
   value: string;
   placeholder: string;
   icon: ReactNode;
-  onChange: (airportCode: string) => void;
+  onChange: (airportCode: string, airport?: AirportSuggestion) => void;
 };
 
 const SEARCH_DELAY_MS = 220;
+const airportSearchCache = new Map<string, AirportSuggestion[]>();
 
 export function FlightAirportCombobox({
   label,
@@ -87,9 +88,18 @@ export function FlightAirportCombobox({
     }
 
     const query = searchText || value;
+    const cacheKey = query.trim().toLowerCase();
 
     if (query.trim().length < 2) {
       setItems([]);
+      setErrorMessage("");
+      return;
+    }
+
+    const cachedItems = airportSearchCache.get(cacheKey);
+
+    if (cachedItems) {
+      setItems(cachedItems);
       setErrorMessage("");
       return;
     }
@@ -100,12 +110,16 @@ export function FlightAirportCombobox({
       setErrorMessage("");
 
       try {
-        const response = await searchAirports({
-          search: query,
-          limit: 8,
-        });
+        const response = await searchAirports(
+          {
+            search: query,
+            limit: 8,
+          },
+          abortController.signal,
+        );
 
         if (!abortController.signal.aborted) {
+          airportSearchCache.set(cacheKey, response.items);
           setItems(response.items);
         }
       } catch (error) {
@@ -140,9 +154,14 @@ export function FlightAirportCombobox({
   }
 
   function handleSelect(airport: AirportSuggestion) {
-    const code = airport.iataCode ?? airport.airportCode;
+    const code = airport.iataCode;
 
-    onChange(code);
+    if (!code) {
+      setErrorMessage("Choose an airport with a valid IATA code.");
+      return;
+    }
+
+    onChange(code, airport);
     setInputValue(`${code} - ${airport.name}`);
     setItems([]);
     setIsOpen(false);
