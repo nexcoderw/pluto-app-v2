@@ -25,9 +25,8 @@ export function FlightRequestHero() {
         </span>
         <h1>Request a flight without chasing fares.</h1>
         <p>
-          Share the route, dates, traveler details, and budget. Pluto Booking
-          reviews the options manually and keeps every update inside your
-          account.
+          Share the route, dates, and traveler details. Pluto Booking reviews
+          the options manually and keeps every update inside your account.
         </p>
         <div className={styles.heroActions}>
           <Link href="/account/flight-requests">
