@@ -54,6 +54,7 @@ import {
   type SaveFlightRequestPayload,
 } from "@/services/api/flight-requests";
 import type { UserLoginResponse } from "@/services/api/auth";
+import { FlightAirportCombobox } from "./flight-airport-combobox";
 import { FlightDatePicker } from "./flight-date-picker";
 import { FlightPhoneInput } from "./flight-phone-input";
 import {
@@ -375,30 +376,20 @@ function TripStep({ form, today, update }: StepProps & { today: string }) {
       </div>
 
       <div className={styles.routeGrid}>
-        <label className={styles.field}>
-          <span>From</span>
-          <Input
-            value={form.originAirportCode}
-            maxLength={3}
-            placeholder="KGL"
-            icon={<PlaneTakeoff aria-hidden="true" />}
-            onChange={(event) =>
-              update("originAirportCode", event.target.value.toUpperCase())
-            }
-          />
-        </label>
-        <label className={styles.field}>
-          <span>To</span>
-          <Input
-            value={form.destinationAirportCode}
-            maxLength={3}
-            placeholder="NBO"
-            icon={<PlaneLanding aria-hidden="true" />}
-            onChange={(event) =>
-              update("destinationAirportCode", event.target.value.toUpperCase())
-            }
-          />
-        </label>
+        <FlightAirportCombobox
+          label="From"
+          value={form.originAirportCode}
+          placeholder="Search origin airport"
+          icon={<PlaneTakeoff aria-hidden="true" />}
+          onChange={(value) => update("originAirportCode", value)}
+        />
+        <FlightAirportCombobox
+          label="To"
+          value={form.destinationAirportCode}
+          placeholder="Search destination airport"
+          icon={<PlaneLanding aria-hidden="true" />}
+          onChange={(value) => update("destinationAirportCode", value)}
+        />
         <FlightDatePicker
           label="Departure"
           value={form.departureDate}
