@@ -458,38 +458,37 @@
 }
 
 .airportCombobox :global([data-slot="input-shell"]) {
-  min-height: 4.45rem;
+  min-height: 3.15rem;
   align-items: center;
-  padding: 0.55rem 0.65rem;
-  border-color: rgba(2, 0, 108, 0.18);
-  border-radius: 1.35rem;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 249, 253, 0.92)),
-    #ffffff;
-  box-shadow: 0 1rem 2.6rem rgba(16, 22, 33, 0.08);
+  padding-inline: 0.75rem;
+  border-color: rgba(2, 0, 108, 0.34);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.74);
+  box-shadow: 0 0.8rem 2rem rgba(16, 22, 33, 0.06);
 }
 
 .airportCombobox :global([data-slot="input-shell"]:focus-within) {
   border-color: #02006c;
   box-shadow:
-    0 0 0 0.22rem rgba(2, 0, 108, 0.1),
-    0 1.2rem 2.8rem rgba(16, 22, 33, 0.1);
+    0 0 0 0.22rem rgba(2, 0, 108, 0.12),
+    0 1rem 2rem rgba(16, 22, 33, 0.08);
+  transform: translateY(-1px);
 }
 
 .airportCombobox :global([data-slot="input-icon"]) {
-  width: 2.45rem;
-  height: 2.45rem;
-  display: grid;
-  place-items: center;
-  border-radius: 999px;
-  background: rgba(2, 0, 108, 0.07);
-  color: #02006c;
+  width: auto;
+  height: auto;
+  display: flex;
+  place-items: initial;
+  border-radius: 0;
+  background: transparent;
+  color: rgba(2, 0, 108, 0.66);
 }
 
 .airportCombobox :global(input) {
-  height: 3rem;
-  font-size: 0.9rem;
-  font-weight: 750;
+  height: 2.95rem;
+  font-size: 0.875rem;
+  font-weight: 500;
 }
 
 .airportInputStatus {
@@ -606,8 +605,7 @@
   color: #02006c;
 }
 
-.field > span,
-.dateTrigger > span {
+.field > span {
   color: rgba(23, 23, 31, 0.66);
   font-size: 0.7rem;
   font-weight: 850;
@@ -617,23 +615,19 @@
 
 .dateTrigger {
   min-width: 0;
-  min-height: 4.45rem;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-areas:
-    "label icon"
-    "value icon";
+  min-height: 3.15rem;
+  width: 100%;
+  display: flex;
   align-items: center;
-  gap: 0.16rem 0.85rem;
-  padding: 0.72rem 0.82rem 0.72rem 1.05rem;
-  border: 1px solid rgba(2, 0, 108, 0.18);
-  border-radius: 1.35rem;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 249, 253, 0.92)),
-    #ffffff;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.55rem 0.75rem 0.55rem 1rem;
+  border: 1px solid rgba(2, 0, 108, 0.34);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.74);
   color: #17171f;
   text-align: left;
-  box-shadow: 0 1rem 2.6rem rgba(16, 22, 33, 0.08);
+  box-shadow: 0 0.8rem 2rem rgba(16, 22, 33, 0.06);
   cursor: pointer;
   transition:
     border-color 180ms ease,
@@ -645,8 +639,8 @@
 .dateTrigger:focus-visible {
   border-color: #02006c;
   box-shadow:
-    0 0 0 0.22rem rgba(2, 0, 108, 0.1),
-    0 1.2rem 2.8rem rgba(16, 22, 33, 0.1);
+    0 0 0 0.22rem rgba(2, 0, 108, 0.12),
+    0 1rem 2rem rgba(16, 22, 33, 0.08);
   transform: translateY(-1px);
   outline: none;
 }
@@ -656,28 +650,23 @@
   opacity: 0.55;
 }
 
-.dateTrigger > span {
-  grid-area: label;
-}
-
 .dateTrigger strong {
-  grid-area: value;
   min-width: 0;
   overflow: hidden;
-  font-size: 0.88rem;
-  font-weight: 850;
+  font-size: 0.875rem;
+  font-weight: 500;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .dateTrigger svg {
-  grid-area: icon;
-  width: 2.45rem;
-  height: 2.45rem;
-  padding: 0.72rem;
-  border-radius: 999px;
-  background: rgba(2, 0, 108, 0.07);
-  color: #02006c;
+  width: 1.08rem;
+  height: 1.08rem;
+  flex: 0 0 auto;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: rgba(2, 0, 108, 0.66);
 }
 
 .fieldSelectTrigger {
