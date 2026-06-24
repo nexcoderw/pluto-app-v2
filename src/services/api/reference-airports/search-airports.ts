@@ -8,11 +8,12 @@ import type { SearchAirportsRequest, SearchAirportsResponse } from "./types";
 // Error handling: normalize transport and API failures for form-level messaging.
 export async function searchAirports(
   params: SearchAirportsRequest = {},
+  signal?: AbortSignal,
 ): Promise<SearchAirportsResponse> {
   try {
     const response = await apiClient.get<SearchAirportsResponse>(
       REFERENCE_AIRPORT_ROUTES.search,
-      { params },
+      { params, signal },
     );
 
     return response.data;
