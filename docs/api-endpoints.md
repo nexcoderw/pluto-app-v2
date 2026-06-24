@@ -20,6 +20,8 @@ src/services/api/
 	bookings/
 		create-booking.ts
 		list-my-bookings.ts
+	reference-airports/
+		search-airports.ts
 	client.ts
 ```
 

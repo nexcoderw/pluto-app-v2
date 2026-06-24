@@ -248,6 +248,7 @@ src/
       partner-profile/
       places/
       products/
+      reference-airports/
   types/
 ```
 
@@ -276,6 +277,7 @@ src/services/api/client.ts
 
 ```txt
 GET    /listing-options
+GET    /reference/airports
 
 GET    /listings/cars
 GET    /listings/cars/:productId
