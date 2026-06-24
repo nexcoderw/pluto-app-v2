@@ -392,8 +392,7 @@ function FlightRequestCard({
       </span>
       <strong>{request.requestNo}</strong>
       <span className={styles.routeLine}>
-        {firstSegment?.originAirportCode ?? "KGL"} to{" "}
-        {firstSegment?.destinationAirportCode ?? "Pending"}
+        {formatSegmentRoute(firstSegment)}
       </span>
       <small>
         {formatDate(firstSegment?.departureDate)}{" "}
@@ -456,10 +455,7 @@ function FlightRequestDetailPanel({
         <h2>{request.requestNo}</h2>
         <p>
           {request.segments
-            .map(
-              (segment) =>
-                `${segment.originAirportCode} to ${segment.destinationAirportCode}`,
-            )
+            .map((segment) => formatSegmentRoute(segment))
             .join(" / ")}
         </p>
       </header>
@@ -476,8 +472,8 @@ function FlightRequestDetailPanel({
           <small>Travelers</small>
         </span>
         <span>
-          <strong>{formatMoney(request.maxBudget, request.currency)}</strong>
-          <small>Budget</small>
+          <strong>{request.currency}</strong>
+          <small>Currency</small>
         </span>
       </div>
 
@@ -621,6 +617,29 @@ function formatDate(value?: string | null) {
   }).format(new Date(value));
 }
 
+function formatSegmentRoute(
+  segment?: Pick<
+    FlightRequestSummary["segments"][number],
+    | "originAirportCode"
+    | "originAirportName"
+    | "destinationAirportCode"
+    | "destinationAirportName"
+  >,
+) {
+  if (!segment) {
+    return "Route pending";
+  }
+
+  const origin = segment.originAirportName
+    ? `${segment.originAirportName} (${segment.originAirportCode})`
+    : segment.originAirportCode;
+  const destination = segment.destinationAirportName
+    ? `${segment.destinationAirportName} (${segment.destinationAirportCode})`
+    : segment.destinationAirportCode;
+
+  return `${origin} to ${destination}`;
+}
+
 function formatDateTime(value: string) {
   return new Intl.DateTimeFormat("en", {
     month: "short",
@@ -628,16 +647,4 @@ function formatDateTime(value: string) {
     hour: "2-digit",
     minute: "2-digit",
   }).format(new Date(value));
-}
-
-function formatMoney(value: string | null, currency: string) {
-  if (!value) {
-    return "Flexible";
-  }
-
-  return new Intl.NumberFormat("en", {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 0,
-  }).format(Number(value));
 }
