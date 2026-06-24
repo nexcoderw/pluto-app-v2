@@ -1,0 +1,121 @@
+.card {
+  position: sticky;
+  top: 5.4rem;
+  display: grid;
+  gap: 0.9rem;
+  padding: clamp(1rem, 2vw, 1.2rem);
+  border: 1px solid rgba(2, 0, 108, 0.12);
+  border-radius: clamp(1.25rem, 2vw, 1.75rem);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 1.5rem 4rem rgba(16, 22, 33, 0.08);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.icon {
+  width: 2.6rem;
+  height: 2.6rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(2, 0, 108, 0.12);
+  border-radius: 999px;
+  background: #ffffff;
+  color: #02006c;
+  box-shadow: 0 0.8rem 1.8rem rgba(16, 22, 33, 0.07);
+}
+
+.icon svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.eyebrow,
+.route small,
+.summary dt {
+  color: #02006c;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.route {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.85rem;
+  border: 1px solid rgba(2, 0, 108, 0.08);
+  border-radius: 1.15rem;
+  background: #f8f9fd;
+}
+
+.route h2 {
+  margin: 0;
+  color: #17171f;
+  font-size: clamp(1rem, 1.5vw, 1.28rem);
+  font-weight: 900;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+}
+
+.summary {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0;
+}
+
+.summary div {
+  display: grid;
+  grid-template-columns: minmax(6.6rem, 0.42fr) minmax(0, 1fr);
+  gap: 0.65rem;
+  align-items: center;
+  min-height: 3.15rem;
+  padding: 0.62rem 0.75rem;
+  border: 1px solid rgba(2, 0, 108, 0.08);
+  border-radius: 999px;
+  background: #ffffff;
+}
+
+.summary dt {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  color: rgba(2, 0, 108, 0.78);
+}
+
+.summary dt svg {
+  width: 0.92rem;
+  height: 0.92rem;
+}
+
+.summary dd {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  color: #17171f;
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 1040px) {
+  .card {
+    position: static;
+  }
+}
+
+@media (max-width: 520px) {
+  .summary div {
+    grid-template-columns: 1fr;
+    border-radius: 1rem;
+  }
+
+  .summary dd {
+    text-align: left;
+  }
+}
