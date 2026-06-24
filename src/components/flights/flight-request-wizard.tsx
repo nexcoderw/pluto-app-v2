@@ -18,7 +18,6 @@ import {
   PlaneLanding,
   PlaneTakeoff,
   UserRound,
-  UsersRound,
 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -53,6 +52,7 @@ import {
 } from "@/services/api/flight-requests";
 import type { UserLoginResponse } from "@/services/api/auth";
 import { FlightAirportCombobox } from "./flight-airport-combobox";
+import { FlightCompanionsSection } from "./flight-companions-section";
 import { FlightDatePicker } from "./flight-date-picker";
 import { FlightPhoneInput } from "./flight-phone-input";
 import { FlightRequestOverview } from "./flight-request-overview";
@@ -457,17 +457,6 @@ function TravelerStep({ form, today, update }: StepProps & { today: string }) {
           </Select>
         </label>
         <label className={styles.field}>
-          <span>Travelers</span>
-          <Input
-            type="number"
-            min={1}
-            max={12}
-            value={form.travelersCount}
-            icon={<UsersRound aria-hidden="true" />}
-            onChange={(event) => update("travelersCount", event.target.value)}
-          />
-        </label>
-        <label className={styles.field}>
           <span>Currency</span>
           <Select
             value={form.currency}
@@ -489,18 +478,14 @@ function TravelerStep({ form, today, update }: StepProps & { today: string }) {
             </SelectContent>
           </Select>
         </label>
-        <label className={styles.field}>
-          <span>Maximum budget</span>
-          <Input
-            type="number"
-            min={0}
-            value={form.maxBudget}
-            placeholder={form.currency === "RWF" ? "800000" : "650"}
-            icon={<CircleDollarSign aria-hidden="true" />}
-            onChange={(event) => update("maxBudget", event.target.value)}
-          />
-        </label>
       </div>
+
+      <FlightCompanionsSection
+        enabled={form.hasAdditionalTravelers}
+        companions={form.companions}
+        onEnabledChange={(enabled) => update("hasAdditionalTravelers", enabled)}
+        onCompanionsChange={(companions) => update("companions", companions)}
+      />
 
       <div className={styles.optionGrid}>
         <label>
@@ -606,20 +591,28 @@ function buildPayload(form: FlightRequestFormState): SaveFlightRequestPayload {
   const destinationAirportCode = form.destinationAirportCode
     .trim()
     .toUpperCase();
-  const travelersCount = Math.min(
-    12,
-    Math.max(1, Number.parseInt(form.travelersCount, 10) || 1),
-  );
   const nationality = getPhoneCountryOption(form.travelerNationality).name;
-  const travelers = Array.from({ length: travelersCount }, (_, index) => ({
-    type: "ADULT" as const,
-    legalName:
-      index === 0
-        ? form.travelerName.trim()
-        : `${form.travelerName.trim()} traveler ${index + 1}`,
-    dateOfBirth: form.travelerDateOfBirth,
-    nationality,
-  }));
+  const companions = form.hasAdditionalTravelers ? form.companions : [];
+  const travelers = [
+    {
+      type: "ADULT" as const,
+      legalName: form.travelerName.trim(),
+      dateOfBirth: form.travelerDateOfBirth,
+      nationality,
+    },
+    ...companions.map((companion) => ({
+      type:
+        companion.relationship === "CHILD"
+          ? ("CHILD" as const)
+          : ("ADULT" as const),
+      relationship: companion.relationship || undefined,
+      legalName: companion.legalName.trim(),
+      contactEmail: companion.contactEmail.trim() || undefined,
+      contactPhone: companion.contactPhone.trim()
+        ? normalizePhoneNumber(companion.phoneCountry, companion.contactPhone)
+        : undefined,
+    })),
+  ];
   const segments = [
     {
       originAirportCode,
@@ -650,7 +643,6 @@ function buildPayload(form: FlightRequestFormState): SaveFlightRequestPayload {
     flexibleDates: form.flexibleDates,
     flexibilityDays: form.flexibleDates ? 3 : undefined,
     directFlightPreferred: form.directFlightPreferred,
-    maxBudget: form.maxBudget ? Number(form.maxBudget) : undefined,
     currency: form.currency,
     contactEmail: form.contactEmail.trim(),
     contactPhone: form.contactPhone.trim()
@@ -705,14 +697,41 @@ function validateStep(step: FlightWizardStep, form: FlightRequestFormState) {
   }
 
   if (step === "traveler") {
-    const travelersCount = Number.parseInt(form.travelersCount, 10);
-
-    if (!Number.isFinite(travelersCount) || travelersCount < 1) {
-      return "Add at least one traveler.";
-    }
-
     if (!form.travelerDateOfBirth) {
       return "Add the lead traveler date of birth.";
+    }
+
+    if (form.hasAdditionalTravelers) {
+      if (!form.companions.length) {
+        return "Add at least one companion or turn off companion travelers.";
+      }
+
+      for (const [index, companion] of form.companions.entries()) {
+        if (!companion.relationship) {
+          return `Choose a relationship for companion ${index + 1}.`;
+        }
+
+        if (!companion.legalName.trim()) {
+          return `Add the full name for companion ${index + 1}.`;
+        }
+
+        if (
+          companion.contactEmail.trim() &&
+          !companion.contactEmail.includes("@")
+        ) {
+          return `Enter a valid email for companion ${index + 1}.`;
+        }
+
+        if (
+          companion.contactPhone.trim() &&
+          !isValidInternationalPhoneNumber(
+            companion.phoneCountry,
+            companion.contactPhone,
+          )
+        ) {
+          return `Use a valid phone number for companion ${index + 1}.`;
+        }
+      }
     }
   }
 
