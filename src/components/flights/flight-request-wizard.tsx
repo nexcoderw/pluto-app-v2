@@ -375,36 +375,46 @@ function TripStep({ form, today, update }: StepProps & { today: string }) {
         </label>
       </div>
 
-      <div className={styles.routeGrid}>
-        <FlightAirportCombobox
-          label="From"
-          value={form.originAirportCode}
-          placeholder="Search origin airport"
-          icon={<PlaneTakeoff aria-hidden="true" />}
-          onChange={(value) => update("originAirportCode", value)}
-        />
-        <FlightAirportCombobox
-          label="To"
-          value={form.destinationAirportCode}
-          placeholder="Search destination airport"
-          icon={<PlaneLanding aria-hidden="true" />}
-          onChange={(value) => update("destinationAirportCode", value)}
-        />
-        <FlightDatePicker
-          label="Departure"
-          value={form.departureDate}
-          placeholder="Choose date"
-          minDate={today}
-          onChange={(value) => update("departureDate", value)}
-        />
-        <FlightDatePicker
-          label="Return"
-          value={form.returnDate}
-          placeholder="Choose date"
-          minDate={form.departureDate || today}
-          disabled={form.tripType === "ONE_WAY"}
-          onChange={(value) => update("returnDate", value)}
-        />
+      <div className={styles.routeFieldsGroup}>
+        <div className={styles.routeAirportRow}>
+          <FlightAirportCombobox
+            label="From"
+            value={form.originAirportCode}
+            placeholder="Search origin airport"
+            icon={<PlaneTakeoff aria-hidden="true" />}
+            onChange={(value, airport) => {
+              update("originAirportCode", value);
+              update("originAirportName", airport?.name ?? "");
+            }}
+          />
+          <FlightAirportCombobox
+            label="To"
+            value={form.destinationAirportCode}
+            placeholder="Search destination airport"
+            icon={<PlaneLanding aria-hidden="true" />}
+            onChange={(value, airport) => {
+              update("destinationAirportCode", value);
+              update("destinationAirportName", airport?.name ?? "");
+            }}
+          />
+        </div>
+        <div className={styles.routeDateRow}>
+          <FlightDatePicker
+            label="Departure"
+            value={form.departureDate}
+            placeholder="Choose date"
+            minDate={today}
+            onChange={(value) => update("departureDate", value)}
+          />
+          <FlightDatePicker
+            label="Return"
+            value={form.returnDate}
+            placeholder="Choose date"
+            minDate={form.departureDate || today}
+            disabled={form.tripType === "ONE_WAY"}
+            onChange={(value) => update("returnDate", value)}
+          />
+        </div>
       </div>
     </div>
   );
@@ -593,9 +603,10 @@ function TravelerStep({ form, today, update }: StepProps & { today: string }) {
 }
 
 function FlightRequestOverview({ form }: { form: FlightRequestFormState }) {
-  const route = `${form.originAirportCode || "From"} to ${
-    form.destinationAirportCode || "To"
-  }`;
+  const origin = form.originAirportName || form.originAirportCode || "From";
+  const destination =
+    form.destinationAirportName || form.destinationAirportCode || "To";
+  const route = `${origin} to ${destination}`;
 
   return (
     <aside className={styles.overviewCard} aria-label="Flight request overview">
