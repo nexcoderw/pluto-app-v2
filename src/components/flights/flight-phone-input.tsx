@@ -31,6 +31,8 @@ export function FlightPhoneInput({
   onValueChange,
 }: FlightPhoneInputProps) {
   const selectedCountry = getPhoneCountryOption(country);
+  const displayValue = stripSelectedCallingCode(value, selectedCountry.callingCode);
+  const placeholder = getLocalPhonePlaceholder(country, selectedCountry.callingCode);
 
   return (
     <div className={styles.phoneInputShell}>
@@ -69,10 +71,24 @@ export function FlightPhoneInput({
       <Phone aria-hidden="true" />
       <Input
         type="tel"
-        value={value}
-        placeholder={getPhonePlaceholder(country)}
+        value={displayValue}
+        placeholder={placeholder}
         onChange={(event) => onValueChange(event.target.value)}
       />
     </div>
   );
+}
+
+function stripSelectedCallingCode(value: string, callingCode: string) {
+  const trimmedValue = value.trim();
+
+  if (!trimmedValue.startsWith(callingCode)) {
+    return value;
+  }
+
+  return trimmedValue.slice(callingCode.length).trimStart();
+}
+
+function getLocalPhonePlaceholder(country: CountryCode, callingCode: string) {
+  return getPhonePlaceholder(country).replace(callingCode, "").trim();
 }
