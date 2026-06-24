@@ -8,6 +8,15 @@ export type FlightCabinClass =
 
 export type FlightTravelerType = "ADULT" | "CHILD" | "INFANT";
 
+export type FlightTravelerRelationship =
+  | "PARENT"
+  | "SIBLING"
+  | "CHILD"
+  | "SPOUSE"
+  | "FRIEND"
+  | "COLLEAGUE"
+  | "OTHER";
+
 export type FlightRequestStatus =
   | "DRAFT"
   | "SUBMITTED"
@@ -49,9 +58,12 @@ export type FlightTripSegmentPayload = {
 
 export type FlightTravelerPayload = {
   type: FlightTravelerType;
+  relationship?: FlightTravelerRelationship;
   legalName: string;
-  dateOfBirth: string;
-  nationality: string;
+  dateOfBirth?: string;
+  nationality?: string;
+  contactEmail?: string;
+  contactPhone?: string;
   gender?: string;
 };
 
@@ -64,7 +76,6 @@ export type SaveFlightRequestPayload = {
   flexibilityDays?: number;
   directFlightPreferred?: boolean;
   preferredAirlines?: string[];
-  maxBudget?: number;
   currency?: "USD" | "RWF";
   contactEmail: string;
   contactPhone?: string;
@@ -88,7 +99,9 @@ export type FlightTripSegment = {
   id: string;
   sequence: number;
   originAirportCode: string;
+  originAirportName: string | null;
   destinationAirportCode: string;
+  destinationAirportName: string | null;
   departureDate: string;
   latestDepartureDate: string | null;
 };
@@ -97,9 +110,12 @@ export type FlightTraveler = {
   id: string;
   sequence: number;
   type: FlightTravelerType;
+  relationship: FlightTravelerRelationship | null;
   legalName: string;
-  dateOfBirth: string;
-  nationality: string;
+  dateOfBirth: string | null;
+  nationality: string | null;
+  contactEmail: string | null;
+  contactPhone: string | null;
   gender: string | null;
 };
 
@@ -155,7 +171,6 @@ export type FlightRequestSummary = {
   flexibleDates: boolean;
   flexibilityDays: number | null;
   directFlightPreferred: boolean;
-  maxBudget: string | null;
   currency: string;
   contactEmail: string;
   contactPhone: string | null;
