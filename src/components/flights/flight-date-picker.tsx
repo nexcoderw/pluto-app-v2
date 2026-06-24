@@ -75,18 +75,20 @@ export function FlightDatePicker({
 
   return (
     <>
-      <button
-        type="button"
-        className={styles.dateTrigger}
-        disabled={disabled}
-        onClick={() => setIsOpen(true)}
-      >
+      <div className={styles.field}>
         <span>{label}</span>
-        <strong>
-          {selectedDate ? format(selectedDate, "MMM d, yyyy") : placeholder}
-        </strong>
-        <CalendarDays aria-hidden="true" />
-      </button>
+        <button
+          type="button"
+          className={styles.dateTrigger}
+          disabled={disabled}
+          onClick={() => setIsOpen(true)}
+        >
+          <strong>
+            {selectedDate ? format(selectedDate, "MMM d, yyyy") : placeholder}
+          </strong>
+          <CalendarDays aria-hidden="true" />
+        </button>
+      </div>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className={styles.dateDialog}>
