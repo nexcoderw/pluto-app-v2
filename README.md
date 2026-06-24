@@ -165,6 +165,7 @@ Do not run full `npm run build` or full `npm run lint` automatically for the use
 /listings/hotel-rooms/[listingId]
 /listings/airbnb
 /listings/airbnb/[listingId]
+/flights
 ```
 
 ### Auth
@@ -189,6 +190,7 @@ Do not run full `npm run build` or full `npm run lint` automatically for the use
 /account/payments
 /account/profile
 /account/audit-logs
+/account/flight-requests
 ```
 
 ### Partner Portal
@@ -393,6 +395,16 @@ Current homepage sections:
 - Partner CTA.
 
 Keep the homepage minimal, fast, and inventory-focused. Avoid heavy animations and avoid decorative gradients.
+
+## Flight Requests
+
+The public flight request wizard uses backend-controlled airport suggestions
+from `GET /reference/airports`. The form stores IATA airport codes in the
+request payload and keeps selected airport names for responsive on-page
+summaries. Customer flight request history should display stored airport names
+when the API provides them, with code fallbacks for older records. The wizard
+captures one lead traveler plus optional companion travelers with relationship,
+name, email, and phone fields. It does not collect a maximum budget.
 
 ## Partner Listing Workflow
 
