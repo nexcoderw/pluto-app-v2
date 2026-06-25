@@ -56,6 +56,7 @@ import { FlightCompanionsSection } from "./flight-companions-section";
 import { FlightDatePicker } from "./flight-date-picker";
 import { FlightPhoneInput } from "./flight-phone-input";
 import { FlightRequestOverview } from "./flight-request-overview";
+import { FlightRequestSuccessDialog } from "./flight-request-success-dialog";
 import {
   defaultFlightRequestForm,
   type FlightRequestFormState,
@@ -90,6 +91,8 @@ export function FlightRequestWizard() {
   const [submittedRequestNo, setSubmittedRequestNo] = useState<string | null>(
     null,
   );
+  const [successMessage, setSuccessMessage] = useState("");
+  const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
   const currentStepIndex = flightWizardSteps.findIndex(
     (item) => item.id === step,
@@ -106,10 +109,8 @@ export function FlightRequestWizard() {
     },
     onSuccess: (response) => {
       setSubmittedRequestNo(response.request.requestNo);
-      toast.success(response.message, {
-        description:
-          "We emailed you a confirmation and your request is now in review.",
-      });
+      setSuccessMessage(response.message);
+      setIsSuccessDialogOpen(true);
     },
     onError: (error) => {
       const message =
@@ -210,6 +211,11 @@ export function FlightRequestWizard() {
     router.refresh();
   }
 
+  function handleSuccessDialogClose() {
+    setIsSuccessDialogOpen(false);
+    router.push("/account/flight-requests");
+  }
+
   return (
     <section className={styles.requestShell}>
       <div className={styles.requestLayout}>
@@ -301,6 +307,12 @@ export function FlightRequestWizard() {
         listingTitle="your flight request"
         intent="reserve"
         onAuthenticated={handleLoginSuccess}
+      />
+      <FlightRequestSuccessDialog
+        open={isSuccessDialogOpen}
+        message={successMessage}
+        requestNo={submittedRequestNo}
+        onClose={handleSuccessDialogClose}
       />
     </section>
   );
