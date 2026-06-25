@@ -34,27 +34,32 @@ export function FlightWizardStepper({ currentStep }: FlightWizardStepperProps) {
   );
 
   return (
-    <ol
-      className={styles.stepper}
-      data-progress={currentIndex}
-      aria-label="Flight request progress"
-    >
-      {flightWizardSteps.map((step, index) => {
-        const isComplete = index < currentIndex;
-        const isActive = step.id === currentStep;
+    <header className={styles.wizardTopbar}>
+      <div className={styles.stepperIntro}>
+        <div>
+          <h2>Complete one step at a time.</h2>
+          <p>Move through the request in focused stages.</p>
+        </div>
+      </div>
 
-        return (
-          <li key={step.id} data-active={isActive} data-complete={isComplete}>
-            <span className={styles.stepNumber}>
-              {isComplete ? <CheckCircle2 aria-hidden="true" /> : index + 1}
-            </span>
-            <span className={styles.stepCopy}>
-              <strong>{step.label}</strong>
-              <small>{step.description}</small>
-            </span>
-          </li>
-        );
-      })}
-    </ol>
+      <ol className={styles.stepper} aria-label="Flight request progress">
+        {flightWizardSteps.map((step, index) => {
+          const isComplete = index < currentIndex;
+          const isActive = step.id === currentStep;
+
+          return (
+            <li key={step.id} data-active={isActive} data-complete={isComplete}>
+              <span className={styles.stepNumber}>
+                {isComplete ? <CheckCircle2 aria-hidden="true" /> : index + 1}
+              </span>
+              <span className={styles.stepCopy}>
+                <strong>{step.label}</strong>
+                <small>{step.description}</small>
+              </span>
+            </li>
+          );
+        })}
+      </ol>
+    </header>
   );
 }
