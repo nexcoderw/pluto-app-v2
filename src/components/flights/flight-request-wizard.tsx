@@ -214,14 +214,17 @@ export function FlightRequestWizard() {
     <section className={styles.requestShell}>
       <div className={styles.requestLayout}>
         <div className={styles.wizardFrame}>
-          <aside className={styles.wizardSidebar}>
+          <header className={styles.wizardTopbar}>
             <span className={styles.eyebrow}>
               <PlaneTakeoff aria-hidden="true" />
               Request builder
             </span>
-            <h2>Complete one step at a time.</h2>
+            <div>
+              <h2>Complete one step at a time.</h2>
+              <p>Move through the request in focused stages.</p>
+            </div>
             <FlightWizardStepper currentStep={step} />
-          </aside>
+          </header>
 
           <form className={styles.formCard} onSubmit={handleSubmit}>
             {step === "trip" ? (
@@ -231,6 +234,8 @@ export function FlightRequestWizard() {
             {step === "traveler" ? (
               <TravelerStep form={form} today={today} update={update} />
             ) : null}
+
+            {step === "notes" ? <NotesStep form={form} update={update} /> : null}
 
             <div className={styles.formFooter}>
               <div className={styles.footerStatus}>
@@ -430,7 +435,7 @@ function TravelerStep({ form, today, update }: StepProps & { today: string }) {
         <h3>Add traveler details and contact preferences.</h3>
       </header>
 
-      <div className={styles.preferenceGrid}>
+      <div className={styles.travelerTopGrid}>
         <label className={styles.field}>
           <span>Cabin</span>
           <Select
@@ -478,14 +483,13 @@ function TravelerStep({ form, today, update }: StepProps & { today: string }) {
             </SelectContent>
           </Select>
         </label>
+        <FlightCompanionsSection
+          enabled={form.hasAdditionalTravelers}
+          companions={form.companions}
+          onEnabledChange={(enabled) => update("hasAdditionalTravelers", enabled)}
+          onCompanionsChange={(companions) => update("companions", companions)}
+        />
       </div>
-
-      <FlightCompanionsSection
-        enabled={form.hasAdditionalTravelers}
-        companions={form.companions}
-        onEnabledChange={(enabled) => update("hasAdditionalTravelers", enabled)}
-        onCompanionsChange={(companions) => update("companions", companions)}
-      />
 
       <div className={styles.optionGrid}>
         <label>
@@ -553,7 +557,20 @@ function TravelerStep({ form, today, update }: StepProps & { today: string }) {
           onChange={(value) => update("travelerDateOfBirth", value)}
         />
       </div>
+    </div>
+  );
+}
 
+function NotesStep({ form, update }: StepProps) {
+  return (
+    <div className={styles.stepPanel}>
+      <header>
+        <span className={styles.eyebrow}>
+          <Luggage aria-hidden="true" />
+          Baggage and notes
+        </span>
+        <h3>Add anything our flight desk should know.</h3>
+      </header>
       <div className={styles.notesGrid}>
         <label className={styles.field}>
           <span>Baggage</span>
