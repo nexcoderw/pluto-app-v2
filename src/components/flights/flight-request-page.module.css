@@ -1,42 +1,21 @@
 .page {
   min-height: calc(100vh - 8rem);
   display: grid;
-  gap: clamp(1.2rem, 3vw, 2rem);
   padding: clamp(2rem, 5vw, 4rem) max(1rem, calc((100vw - 95%) / 2));
-  background:
-    radial-gradient(circle at 8% 10%, rgba(2, 0, 108, 0.08), transparent 24rem),
-    #f6f7fb;
+  background: #f6f7fb;
   color: #17171f;
 }
 
-.hero,
 .requestShell {
   width: 100%;
   margin-inline: 0;
 }
 
-.hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(19rem, 0.5fr);
-  gap: clamp(0.85rem, 2vw, 1.1rem);
-  align-items: stretch;
-}
-
-.heroCopy,
-.flightDeskCard,
 .wizardFrame {
   border: 1px solid rgba(2, 0, 108, 0.1);
   border-radius: clamp(1.25rem, 2vw, 1.85rem);
   background: rgba(255, 255, 255, 0.94);
   box-shadow: 0 1.5rem 4rem rgba(16, 22, 33, 0.08);
-}
-
-.heroCopy {
-  min-height: clamp(21rem, 38vw, 31rem);
-  display: grid;
-  align-content: end;
-  gap: 1rem;
-  padding: clamp(1.25rem, 4vw, 2.8rem);
 }
 
 .eyebrow {
@@ -56,18 +35,6 @@
   height: 1rem;
 }
 
-.heroCopy h1 {
-  max-width: 12.5ch;
-  margin: 0;
-  color: #17171f;
-  font-size: clamp(2.35rem, 7vw, 5.35rem);
-  font-weight: 950;
-  letter-spacing: -0.045em;
-  line-height: 0.92;
-}
-
-.heroCopy p,
-.flightDeskCard p,
 .formCard header p,
 .footerStatus p {
   max-width: 44rem;
@@ -78,16 +45,6 @@
   line-height: 1.65;
 }
 
-.heroActions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.7rem;
-  padding-top: 0.25rem;
-}
-
-.heroActions a,
-.heroActions span,
 .submitButton,
 .wizardActions :global(button) {
   min-height: var(--pluto-button-height);
@@ -101,7 +58,6 @@
   text-decoration: none;
 }
 
-.heroActions a,
 .submitButton {
   border: 0;
   background: #02006c;
@@ -109,131 +65,10 @@
   box-shadow: 0 1rem 2rem rgba(2, 0, 108, 0.18);
 }
 
-.heroActions a {
-  padding-inline: 1rem;
-}
-
-.heroActions span {
-  padding-inline: 0.9rem;
-  border: 1px solid rgba(2, 0, 108, 0.12);
-  background: #ffffff;
-  color: #02006c;
-}
-
-.heroActions svg,
 .submitButton svg,
 .wizardActions svg {
   width: 1rem;
   height: 1rem;
-}
-
-.flightDeskCard {
-  position: relative;
-  overflow: hidden;
-  display: grid;
-  align-content: space-between;
-  gap: 1.15rem;
-  padding: clamp(1rem, 2.4vw, 1.35rem);
-  background: linear-gradient(180deg, #ffffff, #f7f8fc), #ffffff;
-}
-
-.flightDeskCard::before {
-  content: "";
-  position: absolute;
-  inset: 1rem 1rem auto auto;
-  width: 8.5rem;
-  aspect-ratio: 1;
-  border-radius: 999px;
-  background: rgba(2, 0, 108, 0.06);
-}
-
-.flightDeskTop {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-}
-
-.flightDeskTop > span {
-  width: 3rem;
-  height: 3rem;
-  display: grid;
-  place-items: center;
-  border-radius: 999px;
-  background: #02006c;
-  color: #ffffff;
-  box-shadow: 0 0.9rem 2rem rgba(2, 0, 108, 0.22);
-}
-
-.flightDeskTop strong {
-  color: rgba(23, 23, 31, 0.74);
-  font-size: 0.74rem;
-  font-weight: 950;
-  letter-spacing: 0.1em;
-}
-
-.flightPath {
-  position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-  gap: 0.65rem;
-  align-items: center;
-  min-height: 12rem;
-  padding: 0.95rem;
-  border-radius: 1.35rem;
-  background: #17171f;
-  color: #ffffff;
-}
-
-.flightPath span {
-  display: grid;
-  place-items: center;
-  min-height: 4.8rem;
-  border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.1);
-  font-size: clamp(1.35rem, 4vw, 2.4rem);
-  font-weight: 950;
-  letter-spacing: 0.04em;
-}
-
-.flightPath i {
-  width: 3rem;
-  height: 0.18rem;
-  border-radius: 999px;
-  background: #ffffff;
-  box-shadow:
-    -1.15rem 0 0 rgba(255, 255, 255, 0.3),
-    1.15rem 0 0 rgba(255, 255, 255, 0.3);
-}
-
-.flightDeskCard ul {
-  position: relative;
-  display: grid;
-  gap: 0.55rem;
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-
-.flightDeskCard li {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  min-height: 2.6rem;
-  padding: 0.2rem 0.75rem;
-  border: 1px solid rgba(2, 0, 108, 0.08);
-  border-radius: 999px;
-  background: #ffffff;
-  color: rgba(23, 23, 31, 0.78);
-  font-size: 0.78rem;
-  font-weight: 800;
-}
-
-.flightDeskCard li svg {
-  width: 0.95rem;
-  height: 0.95rem;
-  color: #02006c;
 }
 
 .requestLayout {
@@ -962,7 +797,6 @@
 }
 
 @media (max-width: 1040px) {
-  .hero,
   .requestLayout,
   .wizardFrame,
   .wizardTopbar {
@@ -979,28 +813,6 @@
 }
 
 @media (max-width: 720px) {
-  .heroCopy {
-    min-height: 20rem;
-  }
-
-  .heroCopy h1 {
-    font-size: clamp(2.25rem, 13vw, 3.65rem);
-  }
-
-  .flightPath {
-    grid-template-columns: 1fr;
-    min-height: auto;
-  }
-
-  .flightPath i {
-    width: 0.18rem;
-    height: 2.5rem;
-    justify-self: center;
-    box-shadow:
-      0 -0.9rem 0 rgba(255, 255, 255, 0.3),
-      0 0.9rem 0 rgba(255, 255, 255, 0.3);
-  }
-
   .stepper {
     justify-content: flex-start;
   }
@@ -1036,8 +848,6 @@
 }
 
 @media (max-width: 480px) {
-  .heroCopy,
-  .flightDeskCard,
   .wizardFrame,
   .formCard,
   .wizardTopbar {
