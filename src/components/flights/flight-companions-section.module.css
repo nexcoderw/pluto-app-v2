@@ -2,6 +2,20 @@
   display: contents;
 }
 
+.toggleField {
+  min-width: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.toggleField > span {
+  color: rgba(23, 23, 31, 0.66);
+  font-size: 0.7rem;
+  font-weight: 850;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
 .toggle {
   min-height: 3.15rem;
   display: flex;
