@@ -71,9 +71,13 @@ export function FlightPhoneInput({
       <Phone aria-hidden="true" />
       <Input
         type="tel"
+        inputMode="numeric"
+        pattern="[0-9 ]*"
         value={displayValue}
         placeholder={placeholder}
-        onChange={(event) => onValueChange(event.target.value)}
+        onChange={(event) =>
+          onValueChange(event.target.value.replace(/[^\d\s]/g, ""))
+        }
       />
     </div>
   );
