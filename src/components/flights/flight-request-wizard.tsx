@@ -214,17 +214,7 @@ export function FlightRequestWizard() {
     <section className={styles.requestShell}>
       <div className={styles.requestLayout}>
         <div className={styles.wizardFrame}>
-          <header className={styles.wizardTopbar}>
-            <span className={styles.eyebrow}>
-              <PlaneTakeoff aria-hidden="true" />
-              Request builder
-            </span>
-            <div>
-              <h2>Complete one step at a time.</h2>
-              <p>Move through the request in focused stages.</p>
-            </div>
-            <FlightWizardStepper currentStep={step} />
-          </header>
+          <FlightWizardStepper currentStep={step} />
 
           <form className={styles.formCard} onSubmit={handleSubmit}>
             {step === "trip" ? (
