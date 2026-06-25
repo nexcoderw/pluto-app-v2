@@ -77,17 +77,20 @@ export function FlightCompanionsSection({
 
   return (
     <section className={styles.section}>
-      <label className={styles.toggle} data-enabled={enabled}>
-        <span>
-          <strong>Traveling with others?</strong>
-          <small>Add companion details only when someone joins this trip.</small>
-        </span>
-        <Switch
-          checked={enabled}
-          onCheckedChange={(checked) => handleToggle(Boolean(checked))}
-          aria-label="Add companion travelers"
-        />
-      </label>
+      <div className={styles.toggleField}>
+        <span>Companions</span>
+        <label className={styles.toggle} data-enabled={enabled}>
+          <span>
+            <strong>Traveling with others?</strong>
+            <small>Add companion details only when someone joins this trip.</small>
+          </span>
+          <Switch
+            checked={enabled}
+            onCheckedChange={(checked) => handleToggle(Boolean(checked))}
+            aria-label="Add companion travelers"
+          />
+        </label>
+      </div>
 
       {enabled ? (
         <div className={styles.companions}>
