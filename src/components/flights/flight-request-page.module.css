@@ -238,7 +238,7 @@
 
 .requestLayout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.28fr);
+  grid-template-columns: minmax(0, 3fr) minmax(18rem, 2fr);
   gap: clamp(0.85rem, 2vw, 1rem);
   align-items: start;
 }
