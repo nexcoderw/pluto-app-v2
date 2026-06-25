@@ -6,12 +6,17 @@ export const flightWizardSteps = [
   {
     id: "trip",
     label: "Trip",
-    description: "Route, dates, and budget",
+    description: "Route and dates",
   },
   {
     id: "traveler",
     label: "Traveler",
     description: "Passenger and contact",
+  },
+  {
+    id: "notes",
+    label: "Notes",
+    description: "Baggage and requests",
   },
 ] as const satisfies readonly {
   id: FlightWizardStep;
@@ -29,7 +34,11 @@ export function FlightWizardStepper({ currentStep }: FlightWizardStepperProps) {
   );
 
   return (
-    <ol className={styles.stepper} aria-label="Flight request progress">
+    <ol
+      className={styles.stepper}
+      data-progress={currentIndex}
+      aria-label="Flight request progress"
+    >
       {flightWizardSteps.map((step, index) => {
         const isComplete = index < currentIndex;
         const isActive = step.id === currentStep;
