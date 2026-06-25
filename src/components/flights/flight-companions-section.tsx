@@ -3,7 +3,6 @@
 import type { CountryCode } from "libphonenumber-js";
 import { Mail, Plus, Trash2, UserRound, UsersRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -12,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { RWANDA_PHONE_COUNTRY } from "@/constants/phone-countries";
 import type { FlightTravelerRelationship } from "@/services/api/flight-requests";
 import { FlightPhoneInput } from "./flight-phone-input";
@@ -77,15 +77,16 @@ export function FlightCompanionsSection({
 
   return (
     <section className={styles.section}>
-      <label className={styles.toggle}>
-        <Checkbox
-          checked={enabled}
-          onCheckedChange={(checked) => handleToggle(Boolean(checked))}
-        />
+      <label className={styles.toggle} data-enabled={enabled}>
         <span>
           <strong>Traveling with others?</strong>
           <small>Add companion details only when someone joins this trip.</small>
         </span>
+        <Switch
+          checked={enabled}
+          onCheckedChange={(checked) => handleToggle(Boolean(checked))}
+          aria-label="Add companion travelers"
+        />
       </label>
 
       {enabled ? (
