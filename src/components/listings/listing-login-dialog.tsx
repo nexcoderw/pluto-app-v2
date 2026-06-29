@@ -17,7 +17,7 @@ type ListingLoginDialogProps = {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 	listingTitle: string;
-	intent?: "reserve" | "favorite";
+	intent?: "reserve" | "favorite" | "flight";
 	onAuthenticated?: (response: UserLoginResponse) => void;
 };
 
@@ -30,6 +30,7 @@ export function ListingLoginDialog({
 }: ListingLoginDialogProps) {
 	const router = useRouter();
 	const isFavoriteIntent = intent === "favorite";
+	const isFlightIntent = intent === "flight";
 
 	function handleLoginSuccess(response: UserLoginResponse) {
 		onAuthenticated?.(response);
@@ -53,11 +54,15 @@ export function ListingLoginDialog({
 					<DialogTitle>
 						{isFavoriteIntent
 							? "Save with your account"
+							: isFlightIntent
+								? "Continue with your account"
 							: "Reserve with your account"}
 					</DialogTitle>
 					<DialogDescription>
 						{isFavoriteIntent
 							? `Sign in securely and Pluto Booking will save ${listingTitle} to your favorites automatically.`
+							: isFlightIntent
+								? `Sign in securely and continue preparing ${listingTitle} without leaving this page.`
 							: `Sign in securely and continue reserving ${listingTitle} without leaving this page.`}
 					</DialogDescription>
 				</DialogHeader>
@@ -66,11 +71,15 @@ export function ListingLoginDialog({
 					description={
 						isFavoriteIntent
 							? "Use your Pluto Booking account to save listings and keep them ready for later."
+							: isFlightIntent
+								? "Use your Pluto Booking account to unlock flight requests, saved traveler details, and flight desk replies."
 							: "Use your Pluto Booking account to unlock reservations, saved details, and faster checkout."
 					}
 					successDescription={
 						isFavoriteIntent
 							? "You are signed in. Saving this listing now."
+							: isFlightIntent
+								? "You are signed in. Your flight request form is ready."
 							: "You can now reserve this listing from the current page."
 					}
 					onSuccess={handleLoginSuccess}
