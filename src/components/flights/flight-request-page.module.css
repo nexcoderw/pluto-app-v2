@@ -7,6 +7,7 @@
 }
 
 .requestShell {
+  position: relative;
   width: 100%;
   margin-inline: 0;
 }
@@ -76,6 +77,111 @@
   grid-template-columns: minmax(0, 3fr) minmax(18rem, 2fr);
   gap: clamp(0.85rem, 2vw, 1rem);
   align-items: start;
+  transition:
+    filter 220ms ease,
+    opacity 220ms ease,
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.requestLayout[data-locked="true"] {
+  filter: blur(0.42rem);
+  opacity: 0.48;
+  pointer-events: none;
+  user-select: none;
+  transform: scale(0.992);
+}
+
+.authGate {
+  position: absolute;
+  z-index: 5;
+  top: clamp(3.4rem, 9vw, 7rem);
+  left: 50%;
+  width: min(100% - 2rem, 30rem);
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  padding: clamp(1.1rem, 3vw, 1.45rem);
+  border: 1px solid rgba(2, 0, 108, 0.14);
+  border-radius: 1.55rem;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 1.5rem 4rem rgba(16, 22, 33, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.86);
+  text-align: center;
+  backdrop-filter: blur(1.4rem);
+  transform: translateX(-50%);
+}
+
+.authGateIcon {
+  width: 3.4rem;
+  height: 3.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(2, 0, 108, 0.08);
+  color: #02006c;
+  box-shadow:
+    inset 0 0 0 1px rgba(2, 0, 108, 0.12),
+    0 0.75rem 1.8rem rgba(2, 0, 108, 0.12);
+}
+
+.authGateIcon svg {
+  width: 1.45rem;
+  height: 1.45rem;
+}
+
+.authGateCopy {
+  display: grid;
+  justify-items: center;
+  gap: 0.42rem;
+}
+
+.authGateCopy > span {
+  color: #02006c;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.authGateCopy h2 {
+  margin: 0;
+  color: #17171f;
+  font-size: clamp(1.45rem, 4vw, 2.1rem);
+  font-weight: 950;
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+.authGateCopy p {
+  max-width: 25rem;
+  margin: 0;
+  color: rgba(23, 23, 31, 0.64);
+  font-size: 0.86rem;
+  font-weight: 540;
+  line-height: 1.55;
+}
+
+.authGateButton {
+  width: min(100%, 18rem);
+  min-height: var(--pluto-button-height);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.52rem;
+  border-radius: 999px;
+  background: #02006c;
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 850;
+  cursor: pointer;
+  box-shadow: 0 1rem 2rem rgba(2, 0, 108, 0.2);
+}
+
+.authGateButton svg {
+  width: 1rem;
+  height: 1rem;
 }
 
 .wizardFrame {
@@ -813,6 +919,15 @@
 }
 
 @media (max-width: 720px) {
+  .authGate {
+    position: sticky;
+    top: 1rem;
+    width: 100%;
+    margin-bottom: 1rem;
+    transform: none;
+    left: auto;
+  }
+
   .stepper {
     justify-content: flex-start;
   }
@@ -890,6 +1005,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .requestLayout,
+  .authGate,
   .stepPanel,
   .stepper li {
     animation: none;
