@@ -217,8 +217,13 @@ export function FlightRequestWizard() {
   }
 
   return (
-    <section className={styles.requestShell}>
-      <div className={styles.requestLayout}>
+    <section className={styles.requestShell} data-locked={!currentUser}>
+      <div
+        className={styles.requestLayout}
+        data-locked={!currentUser}
+        inert={!currentUser ? true : undefined}
+        aria-hidden={!currentUser}
+      >
         <div className={styles.wizardFrame}>
           <FlightWizardStepper currentStep={step} />
 
@@ -301,11 +306,15 @@ export function FlightRequestWizard() {
         <FlightRequestOverview form={form} />
       </div>
 
+      {!currentUser ? (
+        <FlightRequestAuthGate onSignIn={() => setIsLoginDialogOpen(true)} />
+      ) : null}
+
       <ListingLoginDialog
         open={isLoginDialogOpen}
         onOpenChange={setIsLoginDialogOpen}
         listingTitle="your flight request"
-        intent="reserve"
+        intent="flight"
         onAuthenticated={handleLoginSuccess}
       />
       <FlightRequestSuccessDialog
@@ -315,6 +324,36 @@ export function FlightRequestWizard() {
         onClose={handleSuccessDialogClose}
       />
     </section>
+  );
+}
+
+function FlightRequestAuthGate({ onSignIn }: { onSignIn: () => void }) {
+  return (
+    <aside
+      className={styles.authGate}
+      aria-labelledby="flight-request-auth-title"
+    >
+      <span className={styles.authGateIcon} aria-hidden="true">
+        <LockKeyhole />
+      </span>
+      <div className={styles.authGateCopy}>
+        <span>Customer sign-in required</span>
+        <h2 id="flight-request-auth-title">Sign in to request a flight</h2>
+        <p>
+          Your account keeps traveler details, request history, and flight desk
+          replies together so you can continue without losing this page.
+        </p>
+      </div>
+      <Button
+        type="button"
+        className={styles.authGateButton}
+        aria-label="Sign in to unlock the flight request form"
+        onClick={onSignIn}
+      >
+        <LockKeyhole aria-hidden="true" />
+        Sign in to continue
+      </Button>
+    </aside>
   );
 }
 
