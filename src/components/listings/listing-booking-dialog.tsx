@@ -208,6 +208,7 @@ export function ListingBookingDialog({
 								className={styles.primaryButton}
 								onClick={() => onOpenChange(false)}
 							>
+								<ShieldCheck aria-hidden="true" />
 								I understand
 							</Button>
 						</DialogFooter>
@@ -250,9 +251,13 @@ function BookingDialogSummary({
 				</strong>
 			</div>
 			<div>
-				<span>Estimated total</span>
+				<span>Current estimate</span>
 				<strong>{formatMoney(String(totalPrice), currency)}</strong>
 			</div>
+			<p className={styles.estimateNote}>
+				Estimate only. Pluto Booking will return the final payable total from
+				a secure server quote before any payment.
+			</p>
 		</section>
 	);
 }
