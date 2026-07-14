@@ -260,6 +260,24 @@
 	gap: 0.45rem;
 }
 
+.dialogField small {
+	color: rgba(23, 23, 31, 0.58);
+	font-size: 0.72rem;
+	font-weight: 600;
+}
+
+.dialogNotice {
+	margin: 0;
+	padding: 0.8rem;
+	border: 1px solid rgba(180, 83, 9, 0.14);
+	border-radius: 1rem;
+	background: rgba(245, 158, 11, 0.07);
+	color: #92400e;
+	font-size: 0.76rem;
+	font-weight: 650;
+	line-height: 1.5;
+}
+
 .dialogFooter {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
