@@ -13,6 +13,7 @@ Before changing frontend code, read:
 - `docs/styling.md` before editing CSS.
 - `docs/feedback-and-states.md` before handling loading, success, error, or empty states.
 - `docs/listing-categories.md` before changing listing, product, public listings, or admin review flows.
+- `docs/payment-readiness.md` before changing booking, quote, payment, flight-payment, payout, or refund flows.
 - `docs/seo.md` before adding pages.
 - `docs/git.md` before reporting commit commands.
 
