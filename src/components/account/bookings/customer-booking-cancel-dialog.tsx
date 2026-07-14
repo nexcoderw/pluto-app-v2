@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CalendarX2, LoaderCircle, ShieldAlert } from "lucide-react";
+import {
+	CalendarCheck2,
+	CalendarX2,
+	LoaderCircle,
+	ShieldAlert,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -44,7 +49,8 @@ export function CustomerBookingCancelDialog({
 					</span>
 					<DialogTitle>Cancel this booking?</DialogTitle>
 					<DialogDescription>
-						This will release your selected dates for other customers.
+						If accepted, this ends the reservation and releases the selected
+						dates. Payment and refund status remain system-controlled.
 					</DialogDescription>
 				</DialogHeader>
 
@@ -58,6 +64,12 @@ export function CustomerBookingCancelDialog({
 						</small>
 					</div>
 				) : null}
+
+				<p className={styles.paymentNotice}>
+					<ShieldAlert aria-hidden="true" />
+					Cancelling does not mark a payment refunded. If money was already
+					collected, refund eligibility and progress are handled separately.
+				</p>
 
 				<label className={styles.dialogField}>
 					<span>Cancellation reason</span>
@@ -80,6 +92,7 @@ export function CustomerBookingCancelDialog({
 						disabled={isCancelling}
 						onClick={() => onOpenChange(false)}
 					>
+						<CalendarCheck2 aria-hidden="true" />
 						Keep booking
 					</Button>
 					<Button
@@ -87,14 +100,17 @@ export function CustomerBookingCancelDialog({
 						variant="destructive"
 						className={styles.cancelButton}
 						disabled={isCancelling}
+						aria-label={isCancelling ? "Cancelling booking" : undefined}
 						onClick={() => onConfirm(reason.trim() || undefined)}
 					>
 						{isCancelling ? (
 							<LoaderCircle className={styles.spinner} aria-hidden="true" />
 						) : (
-							<CalendarX2 aria-hidden="true" />
+							<>
+								<CalendarX2 aria-hidden="true" />
+								Cancel booking
+							</>
 						)}
-						Cancel booking
 					</Button>
 				</DialogFooter>
 			</DialogContent>
