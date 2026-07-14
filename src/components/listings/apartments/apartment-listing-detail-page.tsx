@@ -179,7 +179,7 @@ function ApartmentListingDetail({ listing }: { listing: PublicListing }) {
 					eyebrow="Apartment booking"
 					ctaLabel="Reserve apartment"
 					loginLabel="Sign in to reserve"
-					footerNote="You will review the final booking details before paying."
+					footerNote="Estimate only. We verify the final payable total before payment."
 					ctaIcon="door"
 					availabilityMessage={bookingFlow.availabilityMessage}
 					isBookingPending={bookingFlow.isBookingPending}
