@@ -258,7 +258,8 @@ export function FlightRequestWizard() {
                 ) : (
                   <p>
                     <Mail aria-hidden="true" />
-                    We will email confirmation after submission.
+                    No payment is taken now. We will email you when a reviewed
+                    quote is ready.
                   </p>
                 )}
               </div>
@@ -277,6 +278,11 @@ export function FlightRequestWizard() {
                 <Button
                   type="submit"
                   className={styles.submitButton}
+                  aria-label={
+                    submitMutation.isPending
+                      ? "Submitting flight request"
+                      : undefined
+                  }
                   disabled={
                     submitMutation.isPending ||
                     Boolean(isLastStep && currentUser && !canSubmit)
@@ -287,16 +293,20 @@ export function FlightRequestWizard() {
                       aria-hidden="true"
                       className={styles.spinner}
                     />
-                  ) : isLastStep ? (
-                    <PlaneTakeoff aria-hidden="true" />
                   ) : (
-                    <ArrowRight aria-hidden="true" />
+                    <>
+                      {isLastStep ? (
+                        <PlaneTakeoff aria-hidden="true" />
+                      ) : (
+                        <ArrowRight aria-hidden="true" />
+                      )}
+                      {isLastStep
+                        ? currentUser
+                          ? "Submit request"
+                          : "Sign in to continue"
+                        : "Continue"}
+                    </>
                   )}
-                  {isLastStep
-                    ? currentUser
-                      ? "Submit request"
-                      : "Sign in to continue"
-                    : "Continue"}
                 </Button>
               </div>
             </div>
@@ -503,7 +513,7 @@ function TravelerStep({ form, today, update }: StepProps & { today: string }) {
           </Select>
         </label>
         <label className={styles.field}>
-          <span>Currency</span>
+          <span>Preferred quote currency</span>
           <Select
             value={form.currency}
             onValueChange={(value) =>
