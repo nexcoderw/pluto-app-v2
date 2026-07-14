@@ -406,6 +406,31 @@ when the API provides them, with code fallbacks for older records. The wizard
 captures one lead traveler plus optional companion travelers with relationship,
 name, email, and phone fields. It does not collect a maximum budget.
 
+Submitting a flight request does not take payment. Staff first prepares a
+versioned, expiring server quote. The customer must accept that exact quote
+before a payment attempt can be created, and verified payment success leads to
+ticketing rather than implying a ticket has already been issued.
+
+## Authoritative Booking and Payment Readiness
+
+Browser-calculated listing totals are estimates only. The backend must check
+availability, create a short-lived hold or provisional booking reference, and
+return a versioned quote with line items, currency, final payable total, and
+expiry before checkout. The frontend must never send its calculated total as
+the amount to charge.
+
+A booking becomes confirmed only after the required approval path and verified
+payment state are complete. Redirect parameters and client callbacks are not
+payment proof. `PAID`, failure, reversal, and refund states come only from the
+Pluto Booking API after verified provider processing or reconciliation.
+
+Checkout is intentionally deferred until the backend supports idempotent
+payment attempts, canonical status retrieval, duplicate-charge protection,
+verified webhooks, reconciliation, dedicated refunds, safe error codes, and
+durable notifications. XentriPay credentials and privileged payloads remain
+server-side. See `docs/payment-readiness.md` for the full readiness gate,
+customer state copy, error ownership, and email boundary.
+
 ## Partner Listing Workflow
 
 Partner listing create/edit pages use a reusable wizard form.
@@ -503,6 +528,7 @@ docs/design-system.md
 docs/feedback-and-states.md
 docs/git.md
 docs/listing-categories.md
+docs/payment-readiness.md
 docs/seo.md
 docs/styling.md
 ```
