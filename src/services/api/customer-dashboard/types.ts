@@ -117,9 +117,9 @@ export type CustomerDashboardMetricsResponse = {
       currency: CurrencyCode;
       currentAmount: string;
       previousAmount: string;
-      current: number;
-      previous: number;
-      change: number;
+      current: string;
+      previous: string;
+      change: string;
       percentChange: number | null;
     }>;
   } | null;
