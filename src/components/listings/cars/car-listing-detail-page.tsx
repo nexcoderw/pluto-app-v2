@@ -321,9 +321,9 @@ function CarListingDetail({ listing }: { listing: PublicListing }) {
 					toLabel="Return"
 					ctaLabel="Book this car"
 					loginLabel="Sign in to unlock booking"
-					footerNote="You will not be charged yet."
+					footerNote="Estimate only. We verify the final payable total before payment."
 					ctaIcon="calendar"
-					notice="Your price is calculated from the selected dates."
+					notice="Selected dates shape this estimate; the secure server quote controls the final amount."
 					availabilityMessage={bookingFlow.availabilityMessage}
 					isBookingPending={bookingFlow.isBookingPending}
 					onReserve={bookingFlow.openBookingDialog}
