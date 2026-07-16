@@ -39,6 +39,7 @@ import type {
   BookingStatus,
 } from "@/services/api/bookings";
 import type { CurrencyCode } from "@/services/api/listing-options";
+import { formatMoney } from "@/components/listings/listing-formatters";
 import type { UserAuthProfile } from "@/services/api/auth";
 import { CustomerDashboardSkeleton } from "./customer-dashboard-skeleton";
 import styles from "./customer-dashboard-page.module.css";
@@ -626,23 +627,6 @@ function statusRows(data: CustomerDashboardMetricsResponse) {
   }));
 }
 
-function formatMoney(amount: string | number, currency: CurrencyCode) {
-  const value = Number(amount);
-
-  if (!Number.isFinite(value)) {
-    return currency === "USD" ? "US$0" : "RF 0";
-  }
-
-  if (currency === "USD") {
-    return `US$${value.toLocaleString("en-US", {
-      maximumFractionDigits: 0,
-    })}`;
-  }
-
-  return `RF ${value.toLocaleString("en-US", {
-    maximumFractionDigits: 0,
-  })}`;
-}
 
 function comparisonLabel(
   value:
