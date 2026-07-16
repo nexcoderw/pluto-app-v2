@@ -8,9 +8,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useUserSession } from "@/hooks/use-user-session";
 import {
 	bookingQueryKeys,
-	createBooking,
 	getListingAvailability,
-	type BookingSummary,
 	type ListingAvailabilityBlockedRange,
 } from "@/services/api/bookings";
 import {
@@ -20,6 +18,18 @@ import {
 } from "@/services/api/bookings/query-options";
 import { ApiRequestError } from "@/services/api/errors";
 import type { PublicListing } from "@/services/api/listings";
+import {
+	createCheckout,
+	createListingQuote,
+	getPaymentIntent,
+	initiatePaymentAttempt,
+	reconcilePaymentIntent,
+	type CheckoutSession,
+	type PaymentIntent,
+	type PaymentNetwork,
+	type PriceQuote,
+} from "@/services/api/payments";
+import { paymentQueryKeys } from "@/services/api/payments/query-keys";
 import {
 	doesDateRangeOverlapBlockedRange,
 	findOverlappingBlockedRange,
@@ -50,7 +60,7 @@ type UseListingBookingFlowResult = {
 	isAvailabilityLoading: boolean;
 	isBookingPending: boolean;
 	handleDateRangeChange: (range: DateRange | undefined) => void;
-	rejectUnavailableDateRange: (message?: string) => void;
+	rejectUnavailableDateRange: (message?: string | null) => void;
 	openBookingDialog: () => void;
 	bookingDialog: ReactNode;
 };
@@ -76,11 +86,17 @@ export function useListingBookingFlow({
 		null,
 	);
 	const [dialogMode, setDialogMode] =
-		useState<ListingBookingDialogMode>("confirm");
+		useState<ListingBookingDialogMode>("quote-loading");
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
-	const [bookingError, setBookingError] = useState<string | undefined>();
-	const [booking, setBooking] = useState<BookingSummary | undefined>();
-	const bookingRequestKeyRef = useRef<string | null>(null);
+	const [checkoutError, setCheckoutError] = useState<string>();
+	const [supportReference, setSupportReference] = useState<string>();
+	const [quote, setQuote] = useState<PriceQuote>();
+	const [checkout, setCheckout] = useState<CheckoutSession>();
+	const [payment, setPayment] = useState<PaymentIntent>();
+	const quoteKeyRef = useRef<string | undefined>(undefined);
+	const checkoutKeyRef = useRef<string | undefined>(undefined);
+	const attemptKeyRef = useRef<string | undefined>(undefined);
+	const paymentIntentIdRef = useRef<string | undefined>(undefined);
 	const currentUser = useUserSession();
 	const queryClient = useQueryClient();
 	const canSeeUnavailableMessage = Boolean(currentUser);
@@ -100,7 +116,6 @@ export function useListingBookingFlow({
 		retry: shouldRetryBookingQuery,
 		refetchOnReconnect: true,
 	});
-
 	const blockedRanges = useMemo(
 		() => availabilityQuery.data?.blockedRanges ?? [],
 		[availabilityQuery.data?.blockedRanges],
@@ -110,7 +125,7 @@ export function useListingBookingFlow({
 		[blockedRanges, dateRange],
 	);
 
-	const createBookingMutation = useMutation({
+	const quoteMutation = useMutation({
 		mutationFn: () => {
 			if (!fromDate || !toDate) {
 				throw new ApiRequestError({
@@ -119,71 +134,178 @@ export function useListingBookingFlow({
 				});
 			}
 
-			return createBooking({
+			return createListingQuote({
 				productId: listing.id,
 				startDate: toBookingDateValue(fromDate),
 				endDate: toBookingDateValue(toDate),
 				quantity: 1,
-				idempotencyKey: getBookingRequestKey(bookingRequestKeyRef),
+				idempotencyKey: getRequestKey(quoteKeyRef, "quote"),
 			});
 		},
 		onMutate: () => {
-			setBookingError(undefined);
-			setDialogMode("progress");
+			setCheckoutError(undefined);
+			setSupportReference(undefined);
+			setDialogMode("quote-loading");
 		},
 		onSuccess: (response) => {
-			bookingRequestKeyRef.current = null;
-			setBooking(response.booking);
-			setDialogMode("success");
-			queryClient.setQueryData(bookingQueryKeys.myDetail(response.booking.id), {
-				booking: response.booking,
-			});
-			void queryClient.invalidateQueries({
-				queryKey: bookingQueryKeys.myLists(),
-			});
+			setQuote(response.quote);
+			setDialogMode("quote");
 			void queryClient.invalidateQueries({
 				queryKey: bookingQueryKeys.availabilityLists(),
-				predicate: (query) => query.queryKey.includes(listing.id),
 			});
 		},
 		onError: (error) => {
-			const message =
-				error instanceof ApiRequestError
-					? error.message
-					: "We could not create this booking. Please try again.";
-
-			setBookingError(message);
-			setDialogMode("error");
+			applyCheckoutError(error, "We could not reserve these dates.");
+			setDialogMode(isExpiredError(error) ? "expired" : "error");
 			void queryClient.invalidateQueries({
 				queryKey: bookingQueryKeys.availabilityLists(),
-				predicate: (query) => query.queryKey.includes(listing.id),
 			});
 		},
 	});
 
-	useEffect(() => {
-		const overlap = findOverlappingBlockedRange(dateRange, blockedRanges);
+	const paymentMutation = useMutation({
+		mutationFn: async (input: {
+			network: PaymentNetwork;
+			phoneNumber: string;
+		}) => {
+			if (!quote) {
+				throw new ApiRequestError({
+					message: "Request a fresh secure quote before payment.",
+					code: "QUOTE_REQUIRED",
+				});
+			}
 
-		if (overlap?.isOwnBooking && canSeeUnavailableMessage) {
-			setAvailabilityMessage(buildAvailabilityMessage(overlap));
+			const activeCheckout =
+				checkout ??
+				(
+					await createCheckout({
+						priceQuoteId: quote.id,
+						idempotencyKey: getRequestKey(checkoutKeyRef, "checkout"),
+					})
+				).checkout;
+			setCheckout(activeCheckout);
+			paymentIntentIdRef.current = activeCheckout.paymentIntent.id;
+
+			return initiatePaymentAttempt(activeCheckout.paymentIntent.id, {
+				method: "MOBILE_MONEY",
+				network: input.network,
+				phoneNumber: input.phoneNumber,
+				idempotencyKey: getRequestKey(attemptKeyRef, "attempt"),
+			});
+		},
+		onMutate: () => {
+			setCheckoutError(undefined);
+			setSupportReference(undefined);
+			setDialogMode("payment-submitting");
+		},
+		onSuccess: (response) => applyPayment(response.payment),
+		onError: async (error) => {
+			const paymentIntentId = paymentIntentIdRef.current;
+			if (paymentIntentId) {
+				try {
+					const response = await getPaymentIntent(paymentIntentId);
+					applyPayment(response.payment);
+					return;
+				} catch {
+					// The safe API error below remains the primary recovery guidance.
+				}
+			}
+
+			applyCheckoutError(error, "Payment could not be started safely.");
+			setDialogMode(isExpiredError(error) ? "expired" : "error");
+		},
+	});
+
+	const paymentStatusQuery = useQuery({
+		queryKey: paymentQueryKeys.detail(payment?.id ?? "pending"),
+		queryFn: () => getPaymentIntent(payment?.id ?? ""),
+		enabled: Boolean(payment?.id && isPaymentPending(payment.status)),
+		refetchInterval: (query) => {
+			const status = query.state.data?.payment.status ?? payment?.status;
+			if (!status || !isPaymentPending(status)) return false;
+			return status === "UNKNOWN" ? 12_000 : 5_000;
+		},
+		retry: (failureCount, error) =>
+			error instanceof ApiRequestError && error.statusCode
+				? error.statusCode >= 500 && failureCount < 2
+				: failureCount < 2,
+	});
+
+	const reconcileMutation = useMutation({
+		mutationFn: () => reconcilePaymentIntent(payment?.id ?? ""),
+		onSuccess: (response) => applyPayment(response.payment),
+		onError: (error) =>
+			applyCheckoutError(error, "Payment status could not be refreshed."),
+	});
+
+	const canonicalPayment = paymentStatusQuery.data?.payment ?? payment;
+	const canonicalDialogMode =
+		canonicalPayment && ["processing", "unknown"].includes(dialogMode)
+			? modeForPayment(canonicalPayment.status)
+			: dialogMode;
+	const selectedAvailabilityMessage =
+		selectedBlockedRange &&
+		canSeeUnavailableMessage &&
+		!quote
+			? buildAvailabilityMessage(selectedBlockedRange)
+			: null;
+
+	useEffect(() => {
+		if (canonicalPayment?.status !== "SUCCEEDED") return;
+		void queryClient.invalidateQueries({ queryKey: bookingQueryKeys.myLists() });
+		void queryClient.invalidateQueries({
+			queryKey: bookingQueryKeys.availabilityLists(),
+		});
+		void queryClient.invalidateQueries({ queryKey: paymentQueryKeys.lists() });
+	}, [canonicalPayment?.status, queryClient]);
+
+	function applyPayment(nextPayment: PaymentIntent) {
+		setPayment(nextPayment);
+		queryClient.setQueryData(paymentQueryKeys.detail(nextPayment.id), {
+			message: paymentStatusMessage(nextPayment.status),
+			payment: nextPayment,
+		});
+
+		if (nextPayment.status === "SUCCEEDED") {
+			setDialogMode("success");
+			void queryClient.invalidateQueries({ queryKey: bookingQueryKeys.myLists() });
+			void queryClient.invalidateQueries({
+				queryKey: bookingQueryKeys.availabilityLists(),
+			});
+			void queryClient.invalidateQueries({ queryKey: paymentQueryKeys.lists() });
 			return;
 		}
-
-		if (overlap) {
-			setAvailabilityMessage(
-				canSeeUnavailableMessage ? buildAvailabilityMessage(overlap) : null,
-			);
-			onDateRangeChange(undefined);
+		if (nextPayment.status === "FAILED") {
+			setDialogMode("failed");
+			return;
 		}
-	}, [
-		blockedRanges,
-		canSeeUnavailableMessage,
-		dateRange,
-		onDateRangeChange,
-	]);
+		if (nextPayment.status === "EXPIRED" || nextPayment.status === "CANCELLED") {
+			setDialogMode("expired");
+			return;
+		}
+		setDialogMode(nextPayment.status === "UNKNOWN" ? "unknown" : "processing");
+	}
+
+	function applyCheckoutError(error: unknown, fallback: string) {
+		const apiError = error instanceof ApiRequestError ? error : undefined;
+		setCheckoutError(apiError?.message ?? fallback);
+		setSupportReference(apiError?.requestId);
+	}
+
+	function resetCheckoutState() {
+		setQuote(undefined);
+		setCheckout(undefined);
+		setPayment(undefined);
+		setCheckoutError(undefined);
+		setSupportReference(undefined);
+		quoteKeyRef.current = undefined;
+		checkoutKeyRef.current = undefined;
+		attemptKeyRef.current = undefined;
+		paymentIntentIdRef.current = undefined;
+	}
 
 	function handleDateRangeChange(nextRange: DateRange | undefined) {
-		bookingRequestKeyRef.current = null;
+		resetCheckoutState();
 		const overlap = findOverlappingBlockedRange(nextRange, blockedRanges);
 
 		if (overlap?.isOwnBooking && canSeeUnavailableMessage) {
@@ -191,34 +313,48 @@ export function useListingBookingFlow({
 			onDateRangeChange(nextRange);
 			return;
 		}
-
 		if (overlap) {
 			rejectUnavailableDateRange(
 				canSeeUnavailableMessage ? buildAvailabilityMessage(overlap) : null,
 			);
 			return;
 		}
-
 		setAvailabilityMessage(null);
 		onDateRangeChange(nextRange);
 	}
 
-	function rejectUnavailableDateRange(message: string | null = unavailableMessage) {
+	function rejectUnavailableDateRange(
+		message: string | null = unavailableMessage,
+	) {
 		setAvailabilityMessage(canSeeUnavailableMessage ? message : null);
 	}
 
 	function openBookingDialog() {
 		if (!fromDate || !toDate) {
-			bookingRequestKeyRef.current = null;
-			setBookingError("Choose your start and end date before booking.");
+			setCheckoutError("Choose your start and end date before booking.");
 			setDialogMode("error");
 			setIsDialogOpen(true);
 			return;
 		}
-
+		if (canonicalPayment) {
+			setIsDialogOpen(true);
+			applyPayment(canonicalPayment);
+			return;
+		}
+		if (quote && new Date(quote.expiresAt).getTime() > Date.now()) {
+			setIsDialogOpen(true);
+			setDialogMode("quote");
+			return;
+		}
+		if (quote) {
+			setIsDialogOpen(true);
+			resetCheckoutState();
+			quoteMutation.mutate();
+			return;
+		}
 		if (doesDateRangeOverlapBlockedRange(dateRange, blockedRanges)) {
 			const overlap = findOverlappingBlockedRange(dateRange, blockedRanges);
-			setBookingError(
+			setCheckoutError(
 				canSeeUnavailableMessage
 					? buildAvailabilityMessage(overlap)
 					: "Sign in to check listing availability and continue booking.",
@@ -227,32 +363,44 @@ export function useListingBookingFlow({
 			setIsDialogOpen(true);
 			void queryClient.invalidateQueries({
 				queryKey: bookingQueryKeys.availabilityLists(),
-				predicate: (query) => query.queryKey.includes(listing.id),
 			});
 			return;
 		}
 
-		setBookingError(undefined);
-		setBooking(undefined);
-		bookingRequestKeyRef.current = createBookingRequestKey();
-		setDialogMode("confirm");
 		setIsDialogOpen(true);
+		resetCheckoutState();
+		quoteMutation.mutate();
+	}
+
+	function retryPayment() {
+		attemptKeyRef.current = undefined;
+		setCheckoutError(undefined);
+		setDialogMode("quote");
 	}
 
 	const bookingDialog = (
 		<ListingBookingDialog
 			open={isDialogOpen}
-			mode={dialogMode}
+			mode={canonicalDialogMode}
 			listingTitle={listing.title}
 			formattedRange={formattedRange}
 			durationCount={durationCount}
 			durationLabel={durationLabel}
-			totalPrice={totalPrice}
-			currency={listing.currency}
-			errorMessage={bookingError}
-			booking={booking}
+			estimatedTotal={totalPrice}
+			quote={quote}
+			payment={canonicalPayment}
+			defaultPhone={currentUser?.phone ?? ""}
+			errorMessage={checkoutError}
+			supportReference={supportReference}
+			isCheckingStatus={reconcileMutation.isPending}
 			onOpenChange={setIsDialogOpen}
-			onConfirm={() => createBookingMutation.mutate()}
+			onPay={(input) => paymentMutation.mutate(input)}
+			onCheckStatus={() => reconcileMutation.mutate()}
+			onRetryPayment={retryPayment}
+			onRefreshQuote={() => {
+				resetCheckoutState();
+				quoteMutation.mutate();
+			}}
 			onRetryDates={() => {
 				setIsDialogOpen(false);
 				setAvailabilityMessage(
@@ -264,10 +412,10 @@ export function useListingBookingFlow({
 
 	return {
 		blockedRanges,
-		availabilityMessage,
+		availabilityMessage: selectedAvailabilityMessage ?? availabilityMessage,
 		selectedBlockedRange,
 		isAvailabilityLoading: availabilityQuery.isPending,
-		isBookingPending: createBookingMutation.isPending,
+		isBookingPending: quoteMutation.isPending || paymentMutation.isPending,
 		handleDateRangeChange,
 		rejectUnavailableDateRange,
 		openBookingDialog,
@@ -275,27 +423,56 @@ export function useListingBookingFlow({
 	};
 }
 
-function getBookingRequestKey(ref: { current: string | null }): string {
-	ref.current ??= createBookingRequestKey();
-
+function getRequestKey(
+	ref: { current?: string },
+	prefix: "quote" | "checkout" | "attempt",
+): string {
+	ref.current ??= createRequestKey(prefix);
 	return ref.current;
 }
 
-function createBookingRequestKey(): string {
+function createRequestKey(prefix: string): string {
 	if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
-		return `booking_${crypto.randomUUID()}`;
+		return `${prefix}_${crypto.randomUUID()}`;
 	}
+	return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+}
 
-	return `booking_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+function isPaymentPending(status: PaymentIntent["status"]): boolean {
+	return ["CREATED", "ACTION_REQUIRED", "PROCESSING", "UNKNOWN"].includes(
+		status,
+	);
+}
+
+function isExpiredError(error: unknown): boolean {
+	return (
+		error instanceof ApiRequestError &&
+		["HOLD_EXPIRED", "QUOTE_EXPIRED"].includes(error.code)
+	);
+}
+
+function paymentStatusMessage(status: PaymentIntent["status"]): string {
+	if (status === "SUCCEEDED") return "Payment confirmed. Your booking is ready.";
+	if (status === "FAILED") return "Payment was not completed.";
+	if (status === "UNKNOWN") return "Payment is still being confirmed.";
+	return "Payment is processing.";
+}
+
+function modeForPayment(
+	status: PaymentIntent["status"],
+): ListingBookingDialogMode {
+	if (status === "SUCCEEDED") return "success";
+	if (["FAILED", "REVERSED"].includes(status)) return "failed";
+	if (["PARTIALLY_REFUNDED", "REFUNDED"].includes(status)) return "success";
+	if (status === "EXPIRED" || status === "CANCELLED") return "expired";
+	if (status === "UNKNOWN") return "unknown";
+	return "processing";
 }
 
 function buildAvailabilityMessage(
 	blockedRange?: ListingAvailabilityBlockedRange,
 ): string {
-	if (!blockedRange?.isOwnBooking) {
-		return unavailableMessage;
-	}
-
+	if (!blockedRange?.isOwnBooking) return unavailableMessage;
 	return blockedRange.bookingNo
 		? `${ownBookingMessage} Booking ${blockedRange.bookingNo} covers the selected dates.`
 		: ownBookingMessage;
