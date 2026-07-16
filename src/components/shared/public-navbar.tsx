@@ -12,6 +12,7 @@ import { useUserSession } from "@/hooks/use-user-session";
 import { getUserPortalPath } from "@/lib/user-portal";
 import { logoutUser, type UserAuthProfile } from "@/services/api/auth";
 import { getCachedPartnerProfileStatus } from "@/services/api/token-store";
+import { CurrencySelector } from "./currency-selector";
 import styles from "./public-navbar.module.css";
 
 const navigationLinks = [
@@ -145,6 +146,10 @@ function PublicNavbarContent() {
 							onLogout={handleLogout}
 						/>
 					</div>
+				</div>
+
+				<div className={styles.currencyArea}>
+					<CurrencySelector />
 				</div>
 
 				<div className={styles.authArea}>
