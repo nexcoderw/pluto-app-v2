@@ -35,7 +35,7 @@ export function buildListingGallery(
 	});
 }
 
-export function formatMoney(value: string, currency: string) {
+export function formatMoney(value: string | number, currency: string) {
 	const amount = Number(value);
 
 	if (!Number.isFinite(amount)) {
@@ -45,7 +45,8 @@ export function formatMoney(value: string, currency: string) {
 	return new Intl.NumberFormat("en-RW", {
 		style: "currency",
 		currency,
-		maximumFractionDigits: 0,
+		minimumFractionDigits: currency === "USD" ? 2 : 0,
+		maximumFractionDigits: currency === "USD" ? 2 : 0,
 	}).format(amount);
 }
 
