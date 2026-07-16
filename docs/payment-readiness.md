@@ -4,8 +4,11 @@ This document defines the customer and partner frontend contract for booking
 quotes, payment progress, and refunds. It prepares the app for XentriPay while
 keeping provider details behind the Pluto Booking API.
 
-The current milestone does not add checkout controls. It establishes the
-ownership and user-experience rules that checkout must follow later.
+Milestone 4 implements listing checkout controls against the canonical payment
+API. It covers authoritative listing quotes, inventory holds, idempotent
+mobile-money initiation, canonical status recovery, and verified paid-booking
+confirmation. Flight payment, provider webhooks, and refund controls are not
+part of this milestone.
 
 ## Non-Negotiable Ownership
 
@@ -42,8 +45,9 @@ The safe sequence is:
 4. The customer reviews and explicitly accepts that server quote.
 5. The backend creates one idempotent payment attempt for the accepted quote.
 6. The frontend displays the returned payment instructions and a pending state.
-7. The backend verifies XentriPay's signed event and, when needed, reconciles
-   the transaction directly with the provider.
+7. The backend reconciles the transaction through XentriPay's authenticated
+   status API. A signed provider event may supplement this only after XentriPay
+   documents an authenticated webhook contract.
 8. Only verified success confirms the booking. Failure or expiry releases the
    hold safely; an unknown result remains `confirming` until reconciliation.
 
@@ -129,20 +133,27 @@ requested amount, reason, current state, and expected timing returned by the
 backend. A refund request remains processing until the backend verifies the
 provider result.
 
-## Checkout Readiness Gate
+## Implemented Listing Checkout Boundary
 
-Do not build the checkout milestone until the backend contract provides:
+The customer checkout may be exposed only while the backend provides:
 
 - a server quote identifier, version, line items, currency, total, and expiry;
 - an inventory hold or provisional booking reference and expiry behavior;
 - idempotent payment-attempt creation without accepting a client amount;
 - safe payment status retrieval and a canonical unknown/processing state;
-- verified webhook handling and provider reconciliation;
+- authenticated provider reconciliation with exact stored-reference matching;
 - retry rules that cannot create duplicate charges;
-- dedicated refund request and refund status resources;
 - sanitized customer error codes and support references; and
 - durable, deduplicated notification events.
 
-When these exist, add checkout as a separate, reviewable milestone. Do not call
-XentriPay directly from React components or expose provider-specific payloads
-through shared UI state.
+The supplied XentriPay contract does not define signed webhooks or an
+original-instrument refund API. The frontend therefore exposes neither a
+webhook-derived state nor refund commands, and the backend keeps those
+capabilities fail-closed. Do not call XentriPay directly from React components,
+persist phone numbers or payment identifiers in browser storage, or expose
+provider-specific payloads through shared UI state.
+
+The listing dialog must always show the exact server quote and expiry before
+payment. `PROCESSING` and `UNKNOWN` remain recoverable through the account
+Payments page, which polls canonical state and may request a rate-limited
+authenticated reconciliation without creating another charge.
