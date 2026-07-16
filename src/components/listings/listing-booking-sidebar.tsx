@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUserSession } from "@/hooks/use-user-session";
 import type { PublicListing } from "@/services/api/listings";
-import { formatMoney } from "./listing-formatters";
+import { useCurrency } from "@/providers/currency-provider";
 import { ListingFavoriteButton } from "./listing-favorite-button";
 import { ListingLoginDialog } from "./listing-login-dialog";
 import {
@@ -59,6 +59,7 @@ export function ListingBookingSidebar({
 	isBookingPending = false,
 	onReserve,
 }: ListingBookingSidebarProps) {
+	const { formatMoney } = useCurrency();
 	const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
 	const currentUser = useUserSession();
 	const ActionIcon = ctaIcon === "calendar" ? CalendarDays : DoorOpen;
