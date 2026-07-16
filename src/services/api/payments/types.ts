@@ -135,10 +135,7 @@ export type PaymentIntent = {
 		| "serviceFeeMinor"
 		| "taxMinor"
 		| "discountMinor"
-		| "sourceSubtotalMinor"
-		| "sourceCurrency"
 		| "exchangeRateId"
-		| "exchangeRateValue"
 		| "exchangeRate"
 		| "inventoryHold"
 	> & {
