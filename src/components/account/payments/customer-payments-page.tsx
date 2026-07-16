@@ -283,6 +283,17 @@ function PaymentCard({
 			<div className={styles.amount}>
 				<span>Canonical amount</span>
 				<strong>{formatMoney(payment.amountMinor, payment.currency)}</strong>
+				{payment.priceQuote.sourceSubtotalMinor && payment.priceQuote.sourceCurrency ? (
+					<small>
+						Original listing amount: {formatMinorMoney(
+							payment.priceQuote.sourceSubtotalMinor,
+							payment.priceQuote.sourceCurrency,
+						)}
+						{payment.priceQuote.exchangeRateValue
+							? ` · 1 USD = ${formatRate(payment.priceQuote.exchangeRateValue)} RWF`
+							: ""}
+					</small>
+				) : null}
 			</div>
 			<div className={styles.details}>
 				<div>
@@ -430,6 +441,24 @@ function formatDate(value: string): string {
 		dateStyle: "medium",
 		timeStyle: "short",
 	}).format(new Date(value));
+}
+
+function formatMinorMoney(value: string, currency: string) {
+	const amount = Number(value);
+	const divisor = currency === "USD" ? 100 : 1;
+	return new Intl.NumberFormat("en-RW", {
+		style: "currency",
+		currency,
+		minimumFractionDigits: currency === "USD" ? 2 : 0,
+		maximumFractionDigits: currency === "USD" ? 2 : 0,
+	}).format(amount / divisor);
+}
+
+function formatRate(value: string) {
+	return new Intl.NumberFormat("en-RW", {
+		minimumFractionDigits: 3,
+		maximumFractionDigits: 8,
+	}).format(Number(value));
 }
 
 function formatRange(start: string | null, end: string | null): string {
