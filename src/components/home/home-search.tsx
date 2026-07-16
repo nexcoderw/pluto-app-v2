@@ -628,8 +628,7 @@ function PriceSlider({
 	onBudgetChange: (value: number) => void;
 	onClear: () => void;
 }) {
-	const { rate } = useCurrency();
-	const numericRate = rate ? Number(rate) : null;
+	const { formatMoney, isRateReady } = useCurrency();
 	return (
 		<div className={styles.priceField}>
 			<div className={styles.priceHeader}>
@@ -637,7 +636,9 @@ function PriceSlider({
 					<CircleDollarSign aria-hidden="true" />
 					Max price
 				</span>
-				<strong>{formatBudgetLabel(selectedBudget, hasBudgetFilter)}</strong>
+				<strong>
+					{hasBudgetFilter ? formatMoney(selectedBudget, "RWF") : "Any price"}
+				</strong>
 			</div>
 			<input
 				type="range"
@@ -649,20 +650,10 @@ function PriceSlider({
 				onChange={(event) => onBudgetChange(Number(event.target.value))}
 				aria-label="Maximum listing price"
 			/>
-			<div className={styles.exchangePanel}>
-				<span>
-					<small>Current display rate</small>
-					<strong>
-						{numericRate
-							? `$1 = RWF ${formatPlainNumber(numericRate)}`
-							: "Rate temporarily unavailable"}
-					</strong>
-				</span>
-			</div>
 			<p className={styles.budgetHint}>
-				{hasBudgetFilter && numericRate
-					? `Budget equivalent: ${formatUsdEquivalent(selectedBudget, numericRate)}. The server applies the current rate to USD listing filters.`
-					: "Set a RWF budget to filter both RWF and USD listings fairly."}
+				{isRateReady
+					? "Shown in your selected currency. The server uses the active rate to compare RWF and USD listings fairly."
+					: "The exchange rate is temporarily unavailable; the budget remains safely shown in RWF."}
 			</p>
 			<button type="button" onClick={onClear}>
 				Clear budget
@@ -793,28 +784,6 @@ function appendParam(params: URLSearchParams, key: string, value: string) {
 	if (normalizedValue) {
 		params.set(key, normalizedValue);
 	}
-}
-
-function formatBudgetLabel(value: number, hasBudgetFilter: boolean) {
-	if (!hasBudgetFilter) {
-		return "Any price";
-	}
-
-	return `RWF ${formatPlainNumber(value)}`;
-}
-
-function formatUsdEquivalent(value: number, rate: number) {
-	return new Intl.NumberFormat("en-US", {
-		style: "currency",
-		currency: "USD",
-		maximumFractionDigits: 0,
-	}).format(value / rate);
-}
-
-function formatPlainNumber(value: number) {
-	return new Intl.NumberFormat("en-US", {
-		maximumFractionDigits: 0,
-	}).format(value);
 }
 
 function countActiveFilters(filters: HomeSearchFilters) {
