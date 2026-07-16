@@ -61,6 +61,7 @@ type ListingBookingDialogProps = {
 	durationLabel: string;
 	estimatedTotal: number;
 	quote?: PriceQuote;
+	rateChangedFrom?: string;
 	payment?: PaymentIntent;
 	defaultPhone: string;
 	errorMessage?: string;
@@ -74,6 +75,7 @@ type ListingBookingDialogProps = {
 	onCheckStatus: () => void;
 	onRetryPayment: () => void;
 	onRefreshQuote: () => void;
+	onAcknowledgeRateChange: () => void;
 	onRetryDates: () => void;
 };
 
@@ -86,6 +88,7 @@ export function ListingBookingDialog({
 	durationLabel,
 	estimatedTotal,
 	quote,
+	rateChangedFrom,
 	payment,
 	defaultPhone,
 	errorMessage,
@@ -96,6 +99,7 @@ export function ListingBookingDialog({
 	onCheckStatus,
 	onRetryPayment,
 	onRefreshQuote,
+	onAcknowledgeRateChange,
 	onRetryDates,
 }: ListingBookingDialogProps) {
 	const [network, setNetwork] = useState<PaymentNetwork>("MTN_MOMO");
@@ -156,7 +160,11 @@ export function ListingBookingDialog({
 							<span className={styles.iconWrap} data-tone="confirm">
 								<ShieldCheck aria-hidden="true" />
 							</span>
-							<DialogTitle>Review your secure quote</DialogTitle>
+							<DialogTitle>
+								{rateChangedFrom
+									? "Exchange rate changed—review required"
+									: "Review your secure quote"}
+							</DialogTitle>
 							<DialogDescription>
 								Pluto Booking reserved these dates temporarily. Confirm the exact
 								amount below before starting mobile-money payment.
@@ -170,6 +178,19 @@ export function ListingBookingDialog({
 							estimatedTotal={estimatedTotal}
 							quote={quote}
 						/>
+						{rateChangedFrom && quote.exchangeRateValue ? (
+							<section className={styles.rateChangeWarning} role="alert">
+								<AlertCircle aria-hidden="true" />
+								<div>
+									<strong>A fresh quote uses a different exchange rate</strong>
+									<p>
+										Previous: 1 USD = {formatRate(rateChangedFrom)} RWF. New: 1
+										USD = {formatRate(quote.exchangeRateValue)} RWF. Review the
+										converted amount before payment.
+									</p>
+								</div>
+							</section>
+						) : null}
 						<div className={styles.expiry} data-expiring={secondsRemaining < 120}>
 							<Clock3 aria-hidden="true" />
 							<span>
@@ -178,7 +199,18 @@ export function ListingBookingDialog({
 									: `Reserved for ${formatCountdown(secondsRemaining)}`}
 							</span>
 						</div>
-						{quoteExpired ? (
+						{rateChangedFrom ? (
+							<DialogFooter className={styles.footerSingle}>
+								<Button
+									type="button"
+									className={styles.primaryButton}
+									onClick={onAcknowledgeRateChange}
+								>
+									<ShieldCheck aria-hidden="true" />
+									I reviewed the new rate
+								</Button>
+							</DialogFooter>
+						) : quoteExpired ? (
 							<DialogFooter className={styles.footerSingle}>
 								<Button
 									type="button"
@@ -525,10 +557,10 @@ function QuoteSummary({
 			["Duration", `${durationCount} ${durationLabel}`],
 			["Browser estimate", formatMoney(String(estimatedTotal), sourceCurrency)],
 			...(quote.sourceSubtotalMinor
-				? [["Original listing subtotal", formatMinorMoney(quote.sourceSubtotalMinor, sourceCurrency)]]
+				? [["Listing price", formatMinorMoney(quote.sourceSubtotalMinor, sourceCurrency)]]
 				: []),
 			...(rateLabel ? [["Locked exchange rate", rateLabel]] : []),
-			["Server subtotal", formatMoney(quote.subtotalMinor, quote.currency)],
+			["Converted subtotal", formatMoney(quote.subtotalMinor, quote.currency)],
 			["Service fee", formatMoney(quote.serviceFeeMinor, quote.currency)],
 			["Tax", formatMoney(quote.taxMinor, quote.currency)],
 		],
@@ -553,15 +585,23 @@ function QuoteSummary({
 				</div>
 			))}
 			<div className={styles.totalRow}>
-				<span>Exact amount to pay</span>
+				<span>Amount to pay</span>
 				<strong>{formatMoney(quote.totalMinor, quote.currency)}</strong>
 			</div>
 			<p className={styles.estimateNote}>
-				Quote {quote.quoteNo}. Only this server-owned RWF total can be charged. The
-				navbar currency changes display prices only.
+				Your payment will be collected in Rwandan francs. This exchange rate is
+				locked until {formatExpiryTime(quote.expiresAt)}. A fresh quote may use a
+				different exchange rate. Quote {quote.quoteNo}.
 			</p>
 		</section>
 	);
+}
+
+function formatExpiryTime(value: string) {
+	return new Intl.DateTimeFormat("en-RW", {
+		hour: "numeric",
+		minute: "2-digit",
+	}).format(new Date(value));
 }
 
 function formatMinorMoney(value: string, currency: string) {
