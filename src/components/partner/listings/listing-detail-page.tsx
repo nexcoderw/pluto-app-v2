@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { formatMoney } from "@/components/listings/listing-formatters";
 import { NotFoundState } from "@/components/shared/not-found-state";
 import { PortalShell } from "@/components/portal/portal-shell";
 import { partnerPortalNavigation } from "@/constants/partner-portal-navigation";
@@ -619,20 +620,6 @@ function buildStatusTimeline(product: Product) {
 			icon: Eye,
 		},
 	] as const;
-}
-
-function formatMoney(value: string, currency: string) {
-	const numericValue = Number(value);
-
-	if (!Number.isFinite(numericValue)) {
-		return `${currency} ${value}`;
-	}
-
-	return new Intl.NumberFormat("en-RW", {
-		style: "currency",
-		currency,
-		maximumFractionDigits: 0,
-	}).format(numericValue);
 }
 
 function formatDate(value?: string | null) {
