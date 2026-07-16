@@ -20,6 +20,13 @@ src/services/api/
 	bookings/
 		create-booking.ts
 		list-my-bookings.ts
+	payments/
+		create-listing-quote.ts
+		create-checkout.ts
+		initiate-payment-attempt.ts
+		get-payment-intent.ts
+		list-payment-intents.ts
+		reconcile-payment-intent.ts
 	reference-airports/
 		search-airports.ts
 	client.ts
@@ -34,3 +41,19 @@ src/services/api/
 - Use typed request and response shapes.
 - Never expose backend secrets, refresh tokens, reset tokens, or provider credentials in frontend code.
 - Add short section comments in endpoint files to explain request shape, response shape, and error normalization.
+
+## Customer Checkout Endpoints
+
+```txt
+POST /quotes/listings
+POST /checkouts
+GET  /payments/intents
+GET  /payments/intents/:paymentIntentId
+POST /payments/intents/:paymentIntentId/attempts
+POST /payments/intents/:paymentIntentId/reconcile
+```
+
+Quote and checkout requests must never contain a browser-calculated amount.
+Payment attempts send only the canonical intent identifier, mobile-money method,
+network, phone number, and an idempotency key. XentriPay is never called from
+the browser.
