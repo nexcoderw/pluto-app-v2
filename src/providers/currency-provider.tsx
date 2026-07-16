@@ -38,9 +38,11 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
 	const exchangeRateQuery = useQuery({
 		queryKey: currentExchangeRateQueryKey,
 		queryFn: getCurrentExchangeRate,
-		staleTime: 5 * 60 * 1000,
+		staleTime: 30 * 1000,
 		gcTime: 30 * 60 * 1000,
 		retry: 1,
+		refetchInterval: 60 * 1000,
+		refetchOnWindowFocus: true,
 	});
 
 	const setCurrency = useCallback((nextCurrency: DisplayCurrency) => {
