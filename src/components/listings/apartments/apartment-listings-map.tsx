@@ -12,6 +12,7 @@ import {
 	useMap,
 } from "@/components/ui/map";
 import type { PublicListing } from "@/services/api/listings";
+import { useCurrency } from "@/providers/currency-provider";
 import styles from "./apartment-listings-map.module.css";
 
 type ApartmentListingsMapProps = {
@@ -97,12 +98,13 @@ export function ApartmentListingsMap({
 	summarySingular = "mapped apartment",
 	summaryPlural = "mapped apartments",
 }: ApartmentListingsMapProps) {
+	const { formatMoney } = useCurrency();
 	const markers = useMemo(
 		() =>
 			listings
-				.map((listing) => toListingMarker(listing, detailBaseHref))
+				.map((listing) => toListingMarker(listing, detailBaseHref, formatMoney))
 				.filter((marker): marker is ListingMapMarker => Boolean(marker)),
-		[listings, detailBaseHref],
+		[listings, detailBaseHref, formatMoney],
 	);
 	const [selectedId, setSelectedId] = useState<string | null>(null);
 	const selectedMarker =
@@ -352,6 +354,7 @@ function maxZoomForMarkerCount(count: number) {
 function toListingMarker(
 	listing: PublicListing,
 	detailBaseHref: string,
+	formatMoney: (value: string | number, currency: string) => string,
 ): ListingMapMarker | null {
 	const latitude = Number(listing.location?.latitude);
 	const longitude = Number(listing.location?.longitude);
@@ -457,18 +460,4 @@ function summaryLabel(
 	}
 
 	return `${exactCount} exact · ${total - exactCount} approximate`;
-}
-
-function formatMoney(value: string, currency: string) {
-	const amount = Number(value);
-
-	if (!Number.isFinite(amount)) {
-		return `${currency} ${value}`;
-	}
-
-	return new Intl.NumberFormat("en-RW", {
-		style: "currency",
-		currency,
-		maximumFractionDigits: 0,
-	}).format(amount);
 }
