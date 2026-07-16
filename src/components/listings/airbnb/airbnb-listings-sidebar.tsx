@@ -19,6 +19,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { useListingOptions } from "@/hooks/use-listing-options";
+import { useCurrency } from "@/providers/currency-provider";
 import type { ListingListRequest } from "@/services/api/listings";
 import { normalizeAirbnbPropertyType } from "@/services/api/listing-options";
 import type { ListingSidebarRenderProps } from "../category-listings-page";
@@ -39,6 +40,7 @@ export function AirbnbListingsSidebar({
 }: ListingSidebarRenderProps & {
 	variant?: "sidebar" | "dialog";
 }) {
+	const { formatMoney, isRateReady } = useCurrency();
 	const { options: listingOptions } = useListingOptions();
 	const selectedBudget =
 		typeof draftFilters.maxPrice === "number"
@@ -208,7 +210,9 @@ export function AirbnbListingsSidebar({
 					<div className={styles.priceHeader}>
 						<span>Max budget</span>
 						<strong>
-							{hasBudgetFilter ? formatBudget(selectedBudget) : "Any budget"}
+							{hasBudgetFilter
+								? formatMoney(selectedBudget, "RWF")
+								: "Any budget"}
 						</strong>
 					</div>
 					<input
@@ -223,6 +227,11 @@ export function AirbnbListingsSidebar({
 						}
 						aria-label="Maximum Airbnb listing price"
 					/>
+					<p className={styles.budgetHint}>
+						{isRateReady
+							? "Shown in your selected currency. The server applies the active rate to USD and RWF listings."
+							: "The exchange rate is temporarily unavailable; the budget remains safely shown in RWF."}
+					</p>
 					<button
 						type="button"
 						className={styles.clearBudget}
@@ -266,10 +275,4 @@ function optionalNumber(value: string | null) {
 
 	const numberValue = Number(value);
 	return Number.isFinite(numberValue) ? numberValue : undefined;
-}
-
-function formatBudget(value: number) {
-	return new Intl.NumberFormat("en-US", {
-		maximumFractionDigits: 0,
-	}).format(value);
 }
