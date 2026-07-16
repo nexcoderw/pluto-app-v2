@@ -164,3 +164,5 @@ authenticated reconciliation without creating another charge.
 For a USD listing, quote review also shows the original USD subtotal, locked
 USD/RWF rate, and exact RWF amount that XentriPay may collect. Changing the
 navbar currency after quote creation does not mutate the quote or payment.
+A fresh quote using a changed rate blocks payment until the customer explicitly
+reviews the previous rate, new rate, and converted total.
