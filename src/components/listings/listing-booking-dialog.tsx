@@ -514,12 +514,20 @@ function QuoteSummary({
 	estimatedTotal: number;
 	quote: PriceQuote;
 }) {
+	const sourceCurrency = quote.sourceCurrency ?? quote.currency;
+	const rateLabel = quote.exchangeRateValue
+		? `1 USD = ${formatRate(quote.exchangeRateValue)} RWF`
+		: null;
 	const lineItems = useMemo(
 		() => [
 			["Listing", listingTitle],
 			["Dates", formattedRange],
 			["Duration", `${durationCount} ${durationLabel}`],
-			["Browser estimate", formatMoney(String(estimatedTotal), quote.currency)],
+			["Browser estimate", formatMoney(String(estimatedTotal), sourceCurrency)],
+			...(quote.sourceSubtotalMinor
+				? [["Original listing subtotal", formatMinorMoney(quote.sourceSubtotalMinor, sourceCurrency)]]
+				: []),
+			...(rateLabel ? [["Locked exchange rate", rateLabel]] : []),
 			["Server subtotal", formatMoney(quote.subtotalMinor, quote.currency)],
 			["Service fee", formatMoney(quote.serviceFeeMinor, quote.currency)],
 			["Tax", formatMoney(quote.taxMinor, quote.currency)],
@@ -531,6 +539,8 @@ function QuoteSummary({
 			formattedRange,
 			listingTitle,
 			quote,
+			rateLabel,
+			sourceCurrency,
 		],
 	);
 
@@ -547,10 +557,32 @@ function QuoteSummary({
 				<strong>{formatMoney(quote.totalMinor, quote.currency)}</strong>
 			</div>
 			<p className={styles.estimateNote}>
-				Quote {quote.quoteNo}. Only this server-owned total can be charged.
+				Quote {quote.quoteNo}. Only this server-owned RWF total can be charged. The
+				navbar currency changes display prices only.
 			</p>
 		</section>
 	);
+}
+
+function formatMinorMoney(value: string, currency: string) {
+	const minor = Number(value);
+	if (!Number.isSafeInteger(minor)) return `${currency} ${value}`;
+	const fractionDigits = currency === "USD" ? 2 : 0;
+	return new Intl.NumberFormat("en-RW", {
+		style: "currency",
+		currency,
+		minimumFractionDigits: fractionDigits,
+		maximumFractionDigits: fractionDigits,
+	}).format(minor / 10 ** fractionDigits);
+}
+
+function formatRate(value: string) {
+	const rate = Number(value);
+	if (!Number.isFinite(rate)) return value;
+	return new Intl.NumberFormat("en-RW", {
+		minimumFractionDigits: 3,
+		maximumFractionDigits: 8,
+	}).format(rate);
 }
 
 function ReferenceBox({
