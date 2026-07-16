@@ -18,6 +18,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { useListingOptions } from "@/hooks/use-listing-options";
+import { useCurrency } from "@/providers/currency-provider";
 import type { ListingListRequest } from "@/services/api/listings";
 import type { ListingSidebarRenderProps } from "../category-listings-page";
 import { ListingPopularAmenityFilter } from "../listing-popular-amenity-filter";
@@ -26,8 +27,6 @@ import styles from "./apartment-listings-sidebar.module.css";
 const countries = ["Rwanda", "Kenya", "Uganda", "Tanzania", "Burundi"];
 const maxBudget = 1000000;
 const budgetStep = 10000;
-const usdToRwfSellRate = 1460;
-const rwfToUsdBuyRate = 1470;
 
 export function ApartmentListingsSidebar({
 	categoryLabel,
@@ -39,6 +38,8 @@ export function ApartmentListingsSidebar({
 }: ListingSidebarRenderProps & {
 	variant?: "sidebar" | "dialog";
 }) {
+	const { rate } = useCurrency();
+	const numericRate = rate ? Number(rate) : null;
 	const { options: listingOptions } = useListingOptions();
 	const selectedBudget =
 		typeof draftFilters.maxPrice === "number"
@@ -181,12 +182,12 @@ export function ApartmentListingsSidebar({
 					</div>
 					<div className={styles.exchangePanel}>
 						<span>
-							<small>USD sell</small>
-							<strong>$1 = RWF {formatPlainNumber(usdToRwfSellRate)}</strong>
-						</span>
-						<span>
-							<small>RWF buy</small>
-							<strong>RWF {formatPlainNumber(rwfToUsdBuyRate)} = $1</strong>
+							<small>Current display rate</small>
+							<strong>
+								{numericRate
+									? `$1 = RWF ${formatPlainNumber(numericRate)}`
+									: "Rate temporarily unavailable"}
+							</strong>
 						</span>
 					</div>
 					<input
@@ -202,8 +203,8 @@ export function ApartmentListingsSidebar({
 						aria-label="Maximum apartment listing price"
 					/>
 					<p className={styles.budgetHint}>
-						{hasBudgetFilter
-							? `Budget equivalent: ${formatUsdEquivalent(selectedBudget)} using the RWF buy rate. USD listings are filtered with the USD sell rate.`
+						{hasBudgetFilter && numericRate
+							? `Budget equivalent: ${formatUsdEquivalent(selectedBudget, numericRate)}. The server applies the current rate to USD listing filters.`
 							: "Set a RWF budget to filter both RWF and USD listings fairly."}
 					</p>
 					<button
@@ -259,12 +260,12 @@ function formatBudgetLabel(value: number, hasBudgetFilter: boolean) {
 	return `RWF ${formatPlainNumber(value)}`;
 }
 
-function formatUsdEquivalent(value: number) {
+function formatUsdEquivalent(value: number, rate: number) {
 	return new Intl.NumberFormat("en-US", {
 		style: "currency",
 		currency: "USD",
 		maximumFractionDigits: 0,
-	}).format(value / rwfToUsdBuyRate);
+	}).format(value / rate);
 }
 
 function formatPlainNumber(value: number) {
