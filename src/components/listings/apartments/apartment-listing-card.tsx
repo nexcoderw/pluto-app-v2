@@ -12,8 +12,9 @@ import {
 	Users,
 } from "lucide-react";
 import type { PublicListing } from "@/services/api/listings";
+import { useCurrency } from "@/providers/currency-provider";
 import { ListingFavoriteButton } from "../listing-favorite-button";
-import { formatAverageRating, formatMoney } from "../listing-formatters";
+import { formatAverageRating } from "../listing-formatters";
 import styles from "./apartment-listing-card.module.css";
 
 type ApartmentListingCardProps = {
@@ -35,6 +36,7 @@ export function ApartmentListingCard({
 	detailHref,
 	priorityImage = false,
 }: ApartmentListingCardProps) {
+	const { formatMoney } = useCurrency();
 	const details =
 		listing.apartmentDetails as ApartmentDetailsWithGuestAlias | null;
 	const [activeImageIndex, setActiveImageIndex] = useState(0);
