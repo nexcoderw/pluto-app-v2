@@ -5,6 +5,15 @@ export type BackendErrorPayload = {
 	statusCode?: number;
 	message?: string | string[];
 	errorCode?: string;
+	requestId?: string | null;
+	retryable?: boolean;
+	recommendedAction?:
+		| "NONE"
+		| "RETRY"
+		| "CORRECT_INPUT"
+		| "CHECK_STATUS"
+		| "CONTACT_SUPPORT";
+	retryAfterSeconds?: number;
 	timestamp?: string;
 };
 
@@ -15,6 +24,12 @@ export class ApiRequestError extends Error {
 	readonly code: string;
 	readonly fieldErrors: FieldErrorMap;
 	readonly isNetworkError: boolean;
+	readonly requestId?: string;
+	readonly retryable: boolean;
+	readonly recommendedAction: NonNullable<
+		BackendErrorPayload["recommendedAction"]
+	>;
+	readonly retryAfterSeconds?: number;
 
 	constructor(input: {
 		message: string;
@@ -22,6 +37,10 @@ export class ApiRequestError extends Error {
 		code?: string;
 		fieldErrors?: FieldErrorMap;
 		isNetworkError?: boolean;
+		requestId?: string;
+		retryable?: boolean;
+		recommendedAction?: BackendErrorPayload["recommendedAction"];
+		retryAfterSeconds?: number;
 	}) {
 		super(input.message);
 		this.name = "ApiRequestError";
@@ -29,6 +48,10 @@ export class ApiRequestError extends Error {
 		this.code = input.code ?? "REQUEST_FAILED";
 		this.fieldErrors = input.fieldErrors ?? {};
 		this.isNetworkError = input.isNetworkError ?? false;
+		this.requestId = input.requestId;
+		this.retryable = input.retryable ?? false;
+		this.recommendedAction = input.recommendedAction ?? "NONE";
+		this.retryAfterSeconds = input.retryAfterSeconds;
 	}
 }
 
@@ -60,6 +83,10 @@ export function normalizeApiError(error: unknown): ApiRequestError {
 		statusCode: payload?.statusCode ?? error.response.status,
 		code: payload?.errorCode ?? "REQUEST_FAILED",
 		fieldErrors: normalizeFieldErrors(payload?.message),
+		requestId: payload?.requestId ?? undefined,
+		retryable: payload?.retryable,
+		recommendedAction: payload?.recommendedAction,
+		retryAfterSeconds: payload?.retryAfterSeconds,
 	});
 }
 
