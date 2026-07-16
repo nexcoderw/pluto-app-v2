@@ -28,6 +28,7 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { useListingOptions } from "@/hooks/use-listing-options";
+import { useCurrency } from "@/providers/currency-provider";
 import type {
 	ListingOption,
 	NumericListingOption,
@@ -76,8 +77,6 @@ const defaultDateRange: DateRange = {
 	to: addDays(today, 3),
 };
 
-const usdToRwfSellRate = 1460;
-const rwfToUsdBuyRate = 1470;
 const budgetStep = 5000;
 
 const searchCategories: SearchCategory[] = [
@@ -629,6 +628,8 @@ function PriceSlider({
 	onBudgetChange: (value: number) => void;
 	onClear: () => void;
 }) {
+	const { rate } = useCurrency();
+	const numericRate = rate ? Number(rate) : null;
 	return (
 		<div className={styles.priceField}>
 			<div className={styles.priceHeader}>
@@ -650,17 +651,17 @@ function PriceSlider({
 			/>
 			<div className={styles.exchangePanel}>
 				<span>
-					<small>USD sell</small>
-					<strong>$1 = RWF {formatPlainNumber(usdToRwfSellRate)}</strong>
-				</span>
-				<span>
-					<small>RWF buy</small>
-					<strong>RWF {formatPlainNumber(rwfToUsdBuyRate)} = $1</strong>
+					<small>Current display rate</small>
+					<strong>
+						{numericRate
+							? `$1 = RWF ${formatPlainNumber(numericRate)}`
+							: "Rate temporarily unavailable"}
+					</strong>
 				</span>
 			</div>
 			<p className={styles.budgetHint}>
-				{hasBudgetFilter
-					? `Budget equivalent: ${formatUsdEquivalent(selectedBudget)} using the RWF buy rate. USD listings are filtered with the USD sell rate.`
+				{hasBudgetFilter && numericRate
+					? `Budget equivalent: ${formatUsdEquivalent(selectedBudget, numericRate)}. The server applies the current rate to USD listing filters.`
 					: "Set a RWF budget to filter both RWF and USD listings fairly."}
 			</p>
 			<button type="button" onClick={onClear}>
@@ -802,12 +803,12 @@ function formatBudgetLabel(value: number, hasBudgetFilter: boolean) {
 	return `RWF ${formatPlainNumber(value)}`;
 }
 
-function formatUsdEquivalent(value: number) {
+function formatUsdEquivalent(value: number, rate: number) {
 	return new Intl.NumberFormat("en-US", {
 		style: "currency",
 		currency: "USD",
 		maximumFractionDigits: 0,
-	}).format(value / rwfToUsdBuyRate);
+	}).format(value / rate);
 }
 
 function formatPlainNumber(value: number) {
