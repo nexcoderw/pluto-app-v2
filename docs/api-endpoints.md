@@ -27,6 +27,8 @@ src/services/api/
 		get-payment-intent.ts
 		list-payment-intents.ts
 		reconcile-payment-intent.ts
+	exchange-rates/
+		get-current-exchange-rate.ts
 	reference-airports/
 		search-airports.ts
 	client.ts
@@ -46,6 +48,7 @@ src/services/api/
 
 ```txt
 POST /quotes/listings
+GET  /reference/exchange-rates/current
 POST /checkouts
 GET  /payments/intents
 GET  /payments/intents/:paymentIntentId
