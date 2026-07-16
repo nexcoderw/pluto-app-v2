@@ -91,12 +91,14 @@ export function useListingBookingFlow({
 	const [checkoutError, setCheckoutError] = useState<string>();
 	const [supportReference, setSupportReference] = useState<string>();
 	const [quote, setQuote] = useState<PriceQuote>();
+	const [rateChangedFrom, setRateChangedFrom] = useState<string>();
 	const [checkout, setCheckout] = useState<CheckoutSession>();
 	const [payment, setPayment] = useState<PaymentIntent>();
 	const quoteKeyRef = useRef<string | undefined>(undefined);
 	const checkoutKeyRef = useRef<string | undefined>(undefined);
 	const attemptKeyRef = useRef<string | undefined>(undefined);
 	const paymentIntentIdRef = useRef<string | undefined>(undefined);
+	const previousRateRef = useRef<string | undefined>(undefined);
 	const currentUser = useUserSession();
 	const queryClient = useQueryClient();
 	const canSeeUnavailableMessage = Boolean(currentUser);
@@ -148,6 +150,15 @@ export function useListingBookingFlow({
 			setDialogMode("quote-loading");
 		},
 		onSuccess: (response) => {
+			const previousRate = previousRateRef.current;
+			setRateChangedFrom(
+				previousRate &&
+					response.quote.exchangeRateValue &&
+					previousRate !== response.quote.exchangeRateValue
+					? previousRate
+					: undefined,
+			);
+			previousRateRef.current = undefined;
 			setQuote(response.quote);
 			setDialogMode("quote");
 			void queryClient.invalidateQueries({
@@ -298,6 +309,7 @@ export function useListingBookingFlow({
 		setPayment(undefined);
 		setCheckoutError(undefined);
 		setSupportReference(undefined);
+		setRateChangedFrom(undefined);
 		quoteKeyRef.current = undefined;
 		checkoutKeyRef.current = undefined;
 		attemptKeyRef.current = undefined;
@@ -305,6 +317,7 @@ export function useListingBookingFlow({
 	}
 
 	function handleDateRangeChange(nextRange: DateRange | undefined) {
+		previousRateRef.current = undefined;
 		resetCheckoutState();
 		const overlap = findOverlappingBlockedRange(nextRange, blockedRanges);
 
@@ -348,6 +361,7 @@ export function useListingBookingFlow({
 		}
 		if (quote) {
 			setIsDialogOpen(true);
+			previousRateRef.current = quote.exchangeRateValue ?? undefined;
 			resetCheckoutState();
 			quoteMutation.mutate();
 			return;
@@ -388,6 +402,7 @@ export function useListingBookingFlow({
 			durationLabel={durationLabel}
 			estimatedTotal={totalPrice}
 			quote={quote}
+			rateChangedFrom={rateChangedFrom}
 			payment={canonicalPayment}
 			defaultPhone={currentUser?.phone ?? ""}
 			errorMessage={checkoutError}
@@ -398,9 +413,11 @@ export function useListingBookingFlow({
 			onCheckStatus={() => reconcileMutation.mutate()}
 			onRetryPayment={retryPayment}
 			onRefreshQuote={() => {
+				previousRateRef.current = quote?.exchangeRateValue ?? undefined;
 				resetCheckoutState();
 				quoteMutation.mutate();
 			}}
+			onAcknowledgeRateChange={() => setRateChangedFrom(undefined)}
 			onRetryDates={() => {
 				setIsDialogOpen(false);
 				setAvailabilityMessage(
