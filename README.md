@@ -303,6 +303,13 @@ DELETE /favorites/:productId
 
 GET    /me/audit-logs
 
+POST   /quotes/listings
+POST   /checkouts
+GET    /payments/intents
+GET    /payments/intents/:paymentIntentId
+POST   /payments/intents/:paymentIntentId/attempts
+POST   /payments/intents/:paymentIntentId/reconcile
+
 POST   /auth/users/register
 POST   /auth/users/email-verification/confirm
 POST   /auth/users/email-verification/resend
@@ -424,12 +431,13 @@ payment state are complete. Redirect parameters and client callbacks are not
 payment proof. `PAID`, failure, reversal, and refund states come only from the
 Pluto Booking API after verified provider processing or reconciliation.
 
-Checkout is intentionally deferred until the backend supports idempotent
-payment attempts, canonical status retrieval, duplicate-charge protection,
-verified webhooks, reconciliation, dedicated refunds, safe error codes, and
-durable notifications. XentriPay credentials and privileged payloads remain
-server-side. See `docs/payment-readiness.md` for the full readiness gate,
-customer state copy, error ownership, and email boundary.
+Listing checkout uses server-owned quotes, short-lived inventory holds,
+idempotent payment attempts, canonical status retrieval, duplicate-charge
+protection, authenticated reconciliation, safe error codes, and durable
+notifications. The browser never submits an amount or calls XentriPay.
+Undocumented webhooks and refunds remain unavailable and fail closed. See
+`docs/payment-readiness.md` for the customer state copy, recovery behavior,
+error ownership, and email boundary.
 
 ## Partner Listing Workflow
 
