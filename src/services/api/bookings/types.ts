@@ -39,7 +39,7 @@ export type ListingAvailabilityRequest = {
 
 export type ListingAvailabilityBlockedRange = {
 	id: string;
-	source: "BOOKING" | "MANUAL_BLOCK";
+	source: "BOOKING" | "INVENTORY_HOLD" | "MANUAL_BLOCK";
 	status?: BookingStatus;
 	reason?: string | null;
 	blocksBooking?: boolean;
