@@ -12,10 +12,10 @@ import {
 	Star,
 } from "lucide-react";
 import type { PublicListing } from "@/services/api/listings";
+import { useCurrency } from "@/providers/currency-provider";
 import { ListingFavoriteButton } from "../listing-favorite-button";
 import {
 	formatAverageRating,
-	formatMoney,
 	formatPricingUnit,
 } from "../listing-formatters";
 import styles from "./hotel-room-listing-card.module.css";
@@ -33,6 +33,7 @@ export function HotelRoomListingCard({
 	detailHref,
 	priorityImage = false,
 }: HotelRoomListingCardProps) {
+	const { formatMoney } = useCurrency();
 	const details = listing.hotelRoomDetails;
 	const [activeImageIndex, setActiveImageIndex] = useState(0);
 	const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
