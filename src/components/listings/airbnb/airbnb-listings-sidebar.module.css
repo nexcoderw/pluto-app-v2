@@ -130,6 +130,13 @@
 	font-weight: 600;
 }
 
+.budgetHint {
+	margin: 0;
+	color: rgba(23, 23, 31, 0.62);
+	font-size: 0.72rem;
+	line-height: 1.45;
+}
+
 .range {
 	width: 100%;
 	height: 0.42rem;
