@@ -307,6 +307,7 @@ POST   /quotes/listings
 POST   /checkouts
 GET    /payments/intents
 GET    /payments/intents/:paymentIntentId
+GET    /reference/exchange-rates/current
 POST   /payments/intents/:paymentIntentId/attempts
 POST   /payments/intents/:paymentIntentId/reconcile
 
