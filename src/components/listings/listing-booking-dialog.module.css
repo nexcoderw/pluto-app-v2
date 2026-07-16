@@ -135,6 +135,33 @@
 	line-height: 1.55;
 }
 
+.rateChangeWarning {
+	display: flex;
+	gap: 0.75rem;
+	padding: 0.9rem 1rem;
+	border: 1px solid rgba(180, 83, 9, 0.25);
+	border-radius: 1rem;
+	background: rgba(255, 247, 237, 0.96);
+	color: #92400e;
+}
+
+.rateChangeWarning svg {
+	width: 1.15rem;
+	height: 1.15rem;
+	flex: 0 0 auto;
+}
+
+.rateChangeWarning div {
+	display: grid;
+	gap: 0.25rem;
+}
+
+.rateChangeWarning p {
+	margin: 0;
+	font-size: 0.8rem;
+	line-height: 1.5;
+}
+
 .expiry,
 .paymentNotice {
 	display: flex;
