@@ -19,6 +19,9 @@ part of this milestone.
   expiry.
 - The frontend must render a versioned server quote before payment and submit
   only the server-issued quote identifier or acceptance token.
+- The navbar display currency defaults to USD and may be persisted as a local
+  preference. It uses the cached public USD/RWF projection for immediate visual
+  conversion, but never stores a rate or sends a client-calculated amount.
 - The backend owns payment creation, provider credentials, idempotency,
   reconciliation, booking transitions, notification delivery, and refunds.
 - A redirect or return URL is navigation only. It is never proof that a payment
@@ -157,3 +160,7 @@ The listing dialog must always show the exact server quote and expiry before
 payment. `PROCESSING` and `UNKNOWN` remain recoverable through the account
 Payments page, which polls canonical state and may request a rate-limited
 authenticated reconciliation without creating another charge.
+
+For a USD listing, quote review also shows the original USD subtotal, locked
+USD/RWF rate, and exact RWF amount that XentriPay may collect. Changing the
+navbar currency after quote creation does not mutate the quote or payment.
