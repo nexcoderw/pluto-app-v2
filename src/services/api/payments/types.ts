@@ -31,6 +31,10 @@ export type PriceQuote = {
 	endDate: string | null;
 	guests: number | null;
 	quantity: number;
+	sourceSubtotalMinor: string | null;
+	sourceCurrency: "USD" | "RWF" | null;
+	exchangeRateId: string | null;
+	exchangeRateValue: string | null;
 	subtotalMinor: string;
 	serviceFeeMinor: string;
 	taxMinor: string;
@@ -40,6 +44,16 @@ export type PriceQuote = {
 	status: string;
 	expiresAt: string;
 	createdAt: string;
+	exchangeRate: {
+		id: string;
+		baseCurrency: "USD";
+		quoteCurrency: "RWF";
+		rate: string;
+		source: "MANUAL_CONFIG" | "NATIONAL_BANK_OF_RWANDA";
+		sourceReference: string;
+		effectiveAt: string;
+		expiresAt: string | null;
+	} | null;
 	inventoryHold?: {
 		id: string;
 		holdNo: string;
@@ -121,6 +135,11 @@ export type PaymentIntent = {
 		| "serviceFeeMinor"
 		| "taxMinor"
 		| "discountMinor"
+		| "sourceSubtotalMinor"
+		| "sourceCurrency"
+		| "exchangeRateId"
+		| "exchangeRateValue"
+		| "exchangeRate"
 		| "inventoryHold"
 	> & {
 		product: {
