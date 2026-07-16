@@ -12,6 +12,7 @@ import { useUserSession } from "@/hooks/use-user-session";
 import { getUserPortalPath } from "@/lib/user-portal";
 import { logoutUser, type UserAuthProfile } from "@/services/api/auth";
 import { getCachedPartnerProfileStatus } from "@/services/api/token-store";
+import { CurrencySelector } from "@/components/shared/currency-selector";
 import { FeaturedListings } from "./featured-listings";
 import { HomeSearch } from "./home-search";
 import { PartnerCta } from "./partner-cta";
@@ -128,6 +129,10 @@ function HomeNavbar() {
 							onLogout={handleLogout}
 						/>
 					</div>
+				</div>
+
+				<div className={styles.homeCurrency}>
+					<CurrencySelector />
 				</div>
 
 				<div className={styles.homeAuth}>
