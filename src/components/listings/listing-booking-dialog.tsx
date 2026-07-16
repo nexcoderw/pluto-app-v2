@@ -1,11 +1,19 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import {
 	AlertCircle,
 	CalendarCheck,
 	CheckCircle2,
+	Clock3,
 	Loader2,
+	Phone,
+	ReceiptText,
+	RefreshCcw,
 	ShieldCheck,
+	Smartphone,
+	WalletCards,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,14 +24,32 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import type { BookingSummary } from "@/services/api/bookings";
+import { Input } from "@/components/ui/input";
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import type {
+	PaymentIntent,
+	PaymentNetwork,
+	PriceQuote,
+} from "@/services/api/payments";
 import { formatMoney } from "./listing-formatters";
 import styles from "./listing-booking-dialog.module.css";
 
 export type ListingBookingDialogMode =
-	| "confirm"
-	| "progress"
+	| "quote-loading"
+	| "quote"
+	| "payment-submitting"
+	| "processing"
+	| "unknown"
 	| "success"
+	| "failed"
+	| "expired"
 	| "error";
 
 type ListingBookingDialogProps = {
@@ -33,12 +59,21 @@ type ListingBookingDialogProps = {
 	formattedRange: string;
 	durationCount: number;
 	durationLabel: string;
-	totalPrice: number;
-	currency: string;
+	estimatedTotal: number;
+	quote?: PriceQuote;
+	payment?: PaymentIntent;
+	defaultPhone: string;
 	errorMessage?: string;
-	booking?: BookingSummary;
+	supportReference?: string;
+	isCheckingStatus: boolean;
 	onOpenChange: (open: boolean) => void;
-	onConfirm: () => void;
+	onPay: (input: {
+		network: PaymentNetwork;
+		phoneNumber: string;
+	}) => void;
+	onCheckStatus: () => void;
+	onRetryPayment: () => void;
+	onRefreshQuote: () => void;
 	onRetryDates: () => void;
 };
 
@@ -49,98 +84,204 @@ export function ListingBookingDialog({
 	formattedRange,
 	durationCount,
 	durationLabel,
-	totalPrice,
-	currency,
+	estimatedTotal,
+	quote,
+	payment,
+	defaultPhone,
 	errorMessage,
-	booking,
+	supportReference,
+	isCheckingStatus,
 	onOpenChange,
-	onConfirm,
+	onPay,
+	onCheckStatus,
+	onRetryPayment,
+	onRefreshQuote,
 	onRetryDates,
 }: ListingBookingDialogProps) {
-	const isProgress = mode === "progress";
+	const [network, setNetwork] = useState<PaymentNetwork>("MTN_MOMO");
+	const [phoneNumber, setPhoneNumber] = useState(defaultPhone);
+	const [phoneError, setPhoneError] = useState<string>();
+	const [now, setNow] = useState(() => Date.now());
+	const isBlockingProgress =
+		mode === "quote-loading" || mode === "payment-submitting";
+	const quoteExpired = Boolean(
+		quote && new Date(quote.expiresAt).getTime() <= now,
+	);
+	const secondsRemaining = quote
+		? Math.max(0, Math.ceil((new Date(quote.expiresAt).getTime() - now) / 1_000))
+		: 0;
+
+	useEffect(() => {
+		if (!open || !quote || mode !== "quote") return;
+		const timer = window.setInterval(() => setNow(Date.now()), 1_000);
+		return () => window.clearInterval(timer);
+	}, [mode, open, quote]);
+
+	function submitPayment() {
+		const normalizedPhone = phoneNumber.replace(/[\s()-]/g, "");
+		if (!/^(?:0|\+?250)7\d{8}$/.test(normalizedPhone)) {
+			setPhoneError("Enter a valid Rwanda mobile-money number.");
+			return;
+		}
+		setPhoneError(undefined);
+		onPay({ network, phoneNumber: normalizedPhone });
+	}
 
 	return (
 		<Dialog
 			open={open}
 			onOpenChange={(nextOpen) => {
-				if (isProgress) {
-					return;
-				}
-
-				onOpenChange(nextOpen);
+				if (!isBlockingProgress) onOpenChange(nextOpen);
 			}}
 		>
 			<DialogContent
 				className={styles.dialog}
-				showCloseButton={!isProgress}
-				aria-busy={isProgress}
+				showCloseButton={!isBlockingProgress}
+				aria-busy={isBlockingProgress}
 			>
-				{mode === "confirm" ? (
+				<div className={styles.liveRegion} aria-live="polite" aria-atomic="true">
+					{statusAnnouncement(mode)}
+				</div>
+
+				{mode === "quote-loading" ? (
+					<ProgressState
+						title="Securing your dates"
+						description="We are checking availability and calculating the exact server-owned price. No payment is being taken yet."
+					/>
+				) : null}
+
+				{mode === "quote" && quote ? (
 					<>
 						<DialogHeader className={styles.header}>
 							<span className={styles.iconWrap} data-tone="confirm">
-								<CalendarCheck aria-hidden="true" />
+								<ShieldCheck aria-hidden="true" />
 							</span>
-							<DialogTitle>Confirm booking request</DialogTitle>
+							<DialogTitle>Review your secure quote</DialogTitle>
 							<DialogDescription>
-								Review your selected dates before Pluto Booking sends this
-								request to the verified partner.
+								Pluto Booking reserved these dates temporarily. Confirm the exact
+								amount below before starting mobile-money payment.
 							</DialogDescription>
 						</DialogHeader>
-						<BookingDialogSummary
+						<QuoteSummary
 							listingTitle={listingTitle}
 							formattedRange={formattedRange}
 							durationCount={durationCount}
 							durationLabel={durationLabel}
-							totalPrice={totalPrice}
-							currency={currency}
+							estimatedTotal={estimatedTotal}
+							quote={quote}
 						/>
-						<DialogFooter className={styles.footer}>
-							<Button
-								type="button"
-								variant="outline"
-								className={styles.secondaryButton}
-								onClick={() => onOpenChange(false)}
-							>
-								<AlertCircle aria-hidden="true" />
-								Review dates
-							</Button>
-							<Button
-								type="button"
-								className={styles.primaryButton}
-								onClick={onConfirm}
-							>
-								<ShieldCheck aria-hidden="true" />
-								Send booking request
-							</Button>
-						</DialogFooter>
+						<div className={styles.expiry} data-expiring={secondsRemaining < 120}>
+							<Clock3 aria-hidden="true" />
+							<span>
+								{quoteExpired
+									? "This quote has expired. Request a fresh quote."
+									: `Reserved for ${formatCountdown(secondsRemaining)}`}
+							</span>
+						</div>
+						{quoteExpired ? (
+							<DialogFooter className={styles.footerSingle}>
+								<Button
+									type="button"
+									className={styles.primaryButton}
+									onClick={onRefreshQuote}
+								>
+									<RefreshCcw aria-hidden="true" />
+									Request fresh quote
+								</Button>
+							</DialogFooter>
+						) : (
+							<>
+								<div className={styles.paymentFields}>
+									<label>
+										<span>Mobile-money network</span>
+										<Select
+											value={network}
+											onValueChange={(value) =>
+												setNetwork(value as PaymentNetwork)
+											}
+										>
+											<SelectTrigger className={styles.selectTrigger}>
+												<WalletCards aria-hidden="true" />
+												<SelectValue />
+											</SelectTrigger>
+											<SelectContent align="start" alignItemWithTrigger={false}>
+												<SelectGroup>
+													<SelectItem value="MTN_MOMO">MTN MoMo</SelectItem>
+													<SelectItem value="AIRTEL_MONEY">
+														Airtel Money
+													</SelectItem>
+												</SelectGroup>
+											</SelectContent>
+										</Select>
+									</label>
+									<label>
+										<span>Payment phone number</span>
+										<Input
+											type="tel"
+											inputMode="tel"
+											autoComplete="tel"
+											icon={<Phone aria-hidden="true" />}
+											value={phoneNumber}
+											placeholder="0780 123 456"
+											aria-invalid={Boolean(phoneError)}
+											aria-describedby={phoneError ? "payment-phone-error" : undefined}
+											onChange={(event) => {
+												setPhoneNumber(event.target.value);
+												setPhoneError(undefined);
+											}}
+										/>
+										{phoneError ? (
+											<small id="payment-phone-error" className={styles.fieldError}>
+												{phoneError}
+											</small>
+										) : null}
+									</label>
+								</div>
+								<p className={styles.paymentNotice}>
+									<Smartphone aria-hidden="true" />
+									After continuing, approve the prompt on this phone. Never share
+									your PIN with Pluto Booking or support.
+								</p>
+								<DialogFooter className={styles.footer}>
+									<Button
+										type="button"
+										variant="outline"
+										className={styles.secondaryButton}
+										onClick={() => onOpenChange(false)}
+									>
+										<CalendarCheck aria-hidden="true" />
+										Review dates
+									</Button>
+									<Button
+										type="button"
+										className={styles.primaryButton}
+										onClick={submitPayment}
+									>
+										<ShieldCheck aria-hidden="true" />
+										Pay {formatMoney(quote.totalMinor, quote.currency)}
+									</Button>
+								</DialogFooter>
+							</>
+						)}
 					</>
 				) : null}
 
-				{mode === "progress" ? (
-					<>
-						<DialogHeader className={styles.header}>
-							<span className={styles.iconWrap} data-tone="progress">
-								<Loader2 aria-hidden="true" />
-							</span>
-							<DialogTitle>Creating your booking</DialogTitle>
-							<DialogDescription>
-								We are checking availability again and saving your request
-								securely. Keep this window open.
-							</DialogDescription>
-						</DialogHeader>
-						<div className={styles.progressTrack} aria-hidden="true">
-							<span />
-						</div>
-						<BookingDialogSummary
-							listingTitle={listingTitle}
-							formattedRange={formattedRange}
-							durationCount={durationCount}
-							durationLabel={durationLabel}
-							totalPrice={totalPrice}
-							currency={currency}
-						/>
-					</>
+				{mode === "payment-submitting" ? (
+					<ProgressState
+						title="Starting secure payment"
+						description="We are creating one protected payment attempt for the exact quote. Keep this window open and watch your phone."
+						quote={quote}
+					/>
+				) : null}
+
+				{mode === "processing" || mode === "unknown" ? (
+					<PaymentPendingState
+						unknown={mode === "unknown"}
+						payment={payment}
+						isCheckingStatus={isCheckingStatus}
+						onCheckStatus={onCheckStatus}
+						onClose={() => onOpenChange(false)}
+					/>
 				) : null}
 
 				{mode === "success" ? (
@@ -149,16 +290,13 @@ export function ListingBookingDialog({
 							<span className={styles.iconWrap} data-tone="success">
 								<CheckCircle2 aria-hidden="true" />
 							</span>
-							<DialogTitle>Booking request received</DialogTitle>
+							<DialogTitle>Payment and booking confirmed</DialogTitle>
 							<DialogDescription>
-								Your request is now pending partner review. You can track it
-								from your customer portal.
+								Your payment was verified by Pluto Booking and your reservation is
+								now confirmed. A receipt email is being delivered separately.
 							</DialogDescription>
 						</DialogHeader>
-						<div className={styles.successBox}>
-							<span>Booking number</span>
-							<strong>{booking?.bookingNo ?? "Created"}</strong>
-						</div>
+						<ReferenceBox payment={payment} tone="success" />
 						<DialogFooter className={styles.footer}>
 							<Button
 								type="button"
@@ -166,33 +304,69 @@ export function ListingBookingDialog({
 								className={styles.secondaryButton}
 								onClick={() => onOpenChange(false)}
 							>
-								<AlertCircle aria-hidden="true" />
-								Close
-							</Button>
-							<Button
-								type="button"
-								className={styles.primaryButton}
-								onClick={() => onOpenChange(false)}
-							>
 								<CheckCircle2 aria-hidden="true" />
 								Done
+							</Button>
+							<Button className={styles.primaryButton} render={<Link href="/account/bookings" />}>
+								<ReceiptText aria-hidden="true" />
+								View booking
 							</Button>
 						</DialogFooter>
 					</>
 				) : null}
 
-				{mode === "error" ? (
+				{mode === "failed" ? (
 					<>
-						<DialogHeader className={styles.header}>
-							<span className={styles.iconWrap} data-tone="error">
-								<AlertCircle aria-hidden="true" />
-							</span>
-							<DialogTitle>Booking needs attention</DialogTitle>
-							<DialogDescription>
-								{errorMessage ??
-									"We could not create this booking. Please review the dates and try again."}
-							</DialogDescription>
-						</DialogHeader>
+						<StateHeader
+							tone="error"
+							title="Payment was not completed"
+							description="No booking was confirmed. Review the mobile-money number before starting one new attempt. If funds appear to have moved, check status instead of paying again."
+						/>
+						<ReferenceBox payment={payment} tone="error" />
+						<DialogFooter className={styles.footer}>
+							<Button
+								type="button"
+								variant="outline"
+								className={styles.secondaryButton}
+								onClick={onCheckStatus}
+								disabled={isCheckingStatus}
+							>
+								{isCheckingStatus ? (
+									<Loader2 className={styles.spin} aria-hidden="true" />
+								) : (
+									<RefreshCcw aria-hidden="true" />
+								)}
+								<span className={isCheckingStatus ? styles.srOnly : undefined}>
+									Check status
+								</span>
+							</Button>
+							<Button
+								type="button"
+								className={styles.primaryButton}
+								onClick={onRetryPayment}
+							>
+								<Smartphone aria-hidden="true" />
+								Review and retry
+							</Button>
+						</DialogFooter>
+					</>
+				) : null}
+
+				{mode === "expired" || mode === "error" ? (
+					<>
+						<StateHeader
+							tone="error"
+							title={mode === "expired" ? "Reservation hold expired" : "Checkout needs attention"}
+							description={
+								errorMessage ??
+								"We could not continue checkout safely. Review the dates and try again."
+							}
+						/>
+						{supportReference ? (
+							<p className={styles.supportReference}>
+								Support reference: <strong>{supportReference}</strong>
+							</p>
+						) : null}
 						<DialogFooter className={styles.footer}>
 							<Button
 								type="button"
@@ -201,15 +375,15 @@ export function ListingBookingDialog({
 								onClick={onRetryDates}
 							>
 								<CalendarCheck aria-hidden="true" />
-								Choose another date
+								Choose dates
 							</Button>
 							<Button
 								type="button"
 								className={styles.primaryButton}
-								onClick={() => onOpenChange(false)}
+								onClick={onRefreshQuote}
 							>
-								<ShieldCheck aria-hidden="true" />
-								I understand
+								<RefreshCcw aria-hidden="true" />
+								Try fresh quote
 							</Button>
 						</DialogFooter>
 					</>
@@ -219,45 +393,207 @@ export function ListingBookingDialog({
 	);
 }
 
-function BookingDialogSummary({
+function ProgressState({
+	title,
+	description,
+	quote,
+}: {
+	title: string;
+	description: string;
+	quote?: PriceQuote;
+}) {
+	return (
+		<>
+			<DialogHeader className={styles.header}>
+				<span className={styles.iconWrap} data-tone="progress">
+					<Loader2 aria-hidden="true" />
+				</span>
+				<DialogTitle>{title}</DialogTitle>
+				<DialogDescription>{description}</DialogDescription>
+			</DialogHeader>
+			<div className={styles.progressTrack} aria-hidden="true">
+				<span />
+			</div>
+			{quote ? (
+				<p className={styles.progressAmount}>
+					Exact amount: <strong>{formatMoney(quote.totalMinor, quote.currency)}</strong>
+				</p>
+			) : null}
+		</>
+	);
+}
+
+function PaymentPendingState({
+	unknown,
+	payment,
+	isCheckingStatus,
+	onCheckStatus,
+	onClose,
+}: {
+	unknown: boolean;
+	payment?: PaymentIntent;
+	isCheckingStatus: boolean;
+	onCheckStatus: () => void;
+	onClose: () => void;
+}) {
+	return (
+		<>
+			<StateHeader
+				tone={unknown ? "warning" : "progress"}
+				title={unknown ? "Still confirming your payment" : "Approve payment on your phone"}
+				description={
+					unknown
+						? "The provider has not returned a final result. Do not pay again. We will keep checking safely and email you when the status changes."
+						: "Complete the mobile-money prompt. This screen updates from Pluto Booking's verified payment status, not from the browser."
+				}
+			/>
+			<ReferenceBox payment={payment} tone={unknown ? "warning" : "pending"} />
+			<DialogFooter className={styles.footer}>
+				<Button
+					type="button"
+					variant="outline"
+					className={styles.secondaryButton}
+					onClick={onClose}
+				>
+					<ReceiptText aria-hidden="true" />
+					Check later
+				</Button>
+				<Button
+					type="button"
+					className={styles.primaryButton}
+					onClick={onCheckStatus}
+					disabled={isCheckingStatus}
+				>
+					{isCheckingStatus ? (
+						<Loader2 className={styles.spin} aria-hidden="true" />
+					) : (
+						<RefreshCcw aria-hidden="true" />
+					)}
+					<span className={isCheckingStatus ? styles.srOnly : undefined}>
+						Refresh status
+					</span>
+				</Button>
+			</DialogFooter>
+		</>
+	);
+}
+
+function StateHeader({
+	tone,
+	title,
+	description,
+}: {
+	tone: "error" | "warning" | "progress";
+	title: string;
+	description: string;
+}) {
+	const Icon = tone === "warning" ? Clock3 : tone === "progress" ? Smartphone : AlertCircle;
+	return (
+		<DialogHeader className={styles.header}>
+			<span className={styles.iconWrap} data-tone={tone}>
+				<Icon aria-hidden="true" />
+			</span>
+			<DialogTitle>{title}</DialogTitle>
+			<DialogDescription>{description}</DialogDescription>
+		</DialogHeader>
+	);
+}
+
+function QuoteSummary({
 	listingTitle,
 	formattedRange,
 	durationCount,
 	durationLabel,
-	totalPrice,
-	currency,
+	estimatedTotal,
+	quote,
 }: {
 	listingTitle: string;
 	formattedRange: string;
 	durationCount: number;
 	durationLabel: string;
-	totalPrice: number;
-	currency: string;
+	estimatedTotal: number;
+	quote: PriceQuote;
 }) {
+	const lineItems = useMemo(
+		() => [
+			["Listing", listingTitle],
+			["Dates", formattedRange],
+			["Duration", `${durationCount} ${durationLabel}`],
+			["Browser estimate", formatMoney(String(estimatedTotal), quote.currency)],
+			["Server subtotal", formatMoney(quote.subtotalMinor, quote.currency)],
+			["Service fee", formatMoney(quote.serviceFeeMinor, quote.currency)],
+			["Tax", formatMoney(quote.taxMinor, quote.currency)],
+		],
+		[
+			durationCount,
+			durationLabel,
+			estimatedTotal,
+			formattedRange,
+			listingTitle,
+			quote,
+		],
+	);
+
 	return (
 		<section className={styles.summary}>
-			<div>
-				<span>Listing</span>
-				<strong>{listingTitle}</strong>
-			</div>
-			<div>
-				<span>Dates</span>
-				<strong>{formattedRange}</strong>
-			</div>
-			<div>
-				<span>Duration</span>
-				<strong>
-					{durationCount} {durationLabel}
-				</strong>
-			</div>
-			<div>
-				<span>Current estimate</span>
-				<strong>{formatMoney(String(totalPrice), currency)}</strong>
+			{lineItems.map(([label, value]) => (
+				<div key={label}>
+					<span>{label}</span>
+					<strong>{value}</strong>
+				</div>
+			))}
+			<div className={styles.totalRow}>
+				<span>Exact amount to pay</span>
+				<strong>{formatMoney(quote.totalMinor, quote.currency)}</strong>
 			</div>
 			<p className={styles.estimateNote}>
-				Estimate only. Pluto Booking will return the final payable total from
-				a secure server quote before any payment.
+				Quote {quote.quoteNo}. Only this server-owned total can be charged.
 			</p>
 		</section>
 	);
+}
+
+function ReferenceBox({
+	payment,
+	tone,
+}: {
+	payment?: PaymentIntent;
+	tone: "success" | "pending" | "warning" | "error";
+}) {
+	return (
+		<div className={styles.referenceBox} data-tone={tone}>
+			<span>Pluto payment reference</span>
+			<strong>{payment?.intentNo ?? "Preparing reference"}</strong>
+			{payment ? (
+				<small>
+					{formatMoney(payment.amountMinor, payment.currency)} · {formatStatus(payment.status)}
+				</small>
+			) : null}
+		</div>
+	);
+}
+
+function formatCountdown(totalSeconds: number): string {
+	const minutes = Math.floor(totalSeconds / 60);
+	const seconds = totalSeconds % 60;
+	return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+}
+
+function formatStatus(status: PaymentIntent["status"]): string {
+	return status.toLowerCase().replaceAll("_", " ");
+}
+
+function statusAnnouncement(mode: ListingBookingDialogMode): string {
+	const messages: Record<ListingBookingDialogMode, string> = {
+		"quote-loading": "Checking availability and preparing your secure quote.",
+		quote: "Your secure quote is ready for review.",
+		"payment-submitting": "Starting your secure mobile-money payment.",
+		processing: "Payment is processing. Approve the prompt on your phone.",
+		unknown: "Payment is still being confirmed. Do not pay again.",
+		success: "Payment verified and booking confirmed.",
+		failed: "Payment was not completed.",
+		expired: "The reservation hold has expired.",
+		error: "Checkout needs your attention.",
+	};
+	return messages[mode];
 }
