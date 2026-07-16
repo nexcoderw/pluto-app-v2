@@ -12,9 +12,9 @@ import {
 	Users,
 } from "lucide-react";
 import type { PublicListing } from "@/services/api/listings";
+import { useCurrency } from "@/providers/currency-provider";
 import { ListingFavoriteButton } from "../listing-favorite-button";
 import {
-	formatMoney,
 	formatPricingUnit,
 	getListingCoverImage,
 } from "../listing-formatters";
@@ -26,6 +26,7 @@ type CarListingCardProps = {
 };
 
 export function CarListingCard({ listing, detailHref }: CarListingCardProps) {
+	const { formatMoney } = useCurrency();
 	const details = listing.carDetails;
 	const coverImage = getListingCoverImage(listing);
 	const coverUrl = coverImage?.file.publicUrl;
