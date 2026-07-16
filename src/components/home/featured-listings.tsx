@@ -25,9 +25,9 @@ import {
 } from "@/services/api/listings";
 import {
 	buildListingGallery,
-	formatMoney,
 } from "@/components/listings/listing-formatters";
 import { ListingFavoriteButton } from "@/components/listings/listing-favorite-button";
+import { useCurrency } from "@/providers/currency-provider";
 import styles from "./featured-listings.module.css";
 
 type FeaturedCategory = ListingCategorySlug | "all";
@@ -251,6 +251,7 @@ function FeaturedListingCard({
 	listing: PublicListing;
 	source: FeaturedSource;
 }) {
+	const { formatMoney } = useCurrency();
 	const Icon = source.icon;
 	const gallery = buildListingGallery(listing, listing.title);
 	const cover = gallery[0];
