@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { formatMoney } from "@/components/listings/listing-formatters";
 import {
 	Dialog,
 	DialogContent,
@@ -748,20 +749,6 @@ function StatusPill({ status }: { status: ProductStatus }) {
 			{status.toLowerCase().replace("_", " ")}
 		</span>
 	);
-}
-
-function formatMoney(value: string, currency: string) {
-	const numericValue = Number(value);
-
-	if (!Number.isFinite(numericValue)) {
-		return `${currency} ${value}`;
-	}
-
-	return new Intl.NumberFormat("en-RW", {
-		style: "currency",
-		currency,
-		maximumFractionDigits: 0,
-	}).format(numericValue);
 }
 
 function formatDate(value?: string) {
