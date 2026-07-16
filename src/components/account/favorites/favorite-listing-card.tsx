@@ -15,8 +15,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { FavoriteListingSummary } from "@/services/api/favorites";
+import { useCurrency } from "@/providers/currency-provider";
 import {
-	formatMoney,
 	formatPricingUnit,
 } from "@/components/listings/listing-formatters";
 import styles from "./customer-favorites-page.module.css";
@@ -53,6 +53,7 @@ export function FavoriteListingCard({
 	favorite,
 	onRemove,
 }: FavoriteListingCardProps) {
+	const { formatMoney } = useCurrency();
 	const product = favorite.product;
 	const category = categoryConfig[product.category];
 	const CategoryIcon = category.icon;
