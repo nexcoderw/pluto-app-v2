@@ -43,8 +43,7 @@ export function CarListingsSidebar({
 }: ListingSidebarRenderProps & {
 	variant?: "sidebar" | "dialog";
 }) {
-	const { rate } = useCurrency();
-	const numericRate = rate ? Number(rate) : null;
+	const { formatMoney, isRateReady } = useCurrency();
 	const { options: listingOptions } = useListingOptions();
 	const selectedBudget =
 		typeof draftFilters.maxPrice === "number"
@@ -231,18 +230,10 @@ export function CarListingsSidebar({
 					<div className={styles.priceHeader}>
 						<span>Max budget</span>
 						<strong>
-							{formatBudgetLabel(selectedBudget, hasBudgetFilter)}
+							{hasBudgetFilter
+								? formatMoney(selectedBudget, "RWF")
+								: "Any budget"}
 						</strong>
-					</div>
-					<div className={styles.exchangePanel}>
-						<span>
-							<small>Current display rate</small>
-							<strong>
-								{numericRate
-									? `$1 = RWF ${formatPlainNumber(numericRate)}`
-									: "Rate temporarily unavailable"}
-							</strong>
-						</span>
 					</div>
 					<input
 						type="range"
@@ -257,9 +248,9 @@ export function CarListingsSidebar({
 						aria-label="Maximum car listing price"
 					/>
 					<p className={styles.budgetHint}>
-						{hasBudgetFilter && numericRate
-							? `Budget equivalent: ${formatUsdEquivalent(selectedBudget, numericRate)}. The server applies the current rate to USD listing filters.`
-							: "Set a RWF budget to filter both RWF and USD car listings fairly."}
+						{isRateReady
+							? "Shown in your selected currency. The server applies the active rate to USD and RWF listings."
+							: "The exchange rate is temporarily unavailable; the budget remains safely shown in RWF."}
 					</p>
 					<button
 						type="button"
@@ -304,26 +295,4 @@ function optionalNumber(value: string | null) {
 
 	const numberValue = Number(value);
 	return Number.isFinite(numberValue) ? numberValue : undefined;
-}
-
-function formatBudgetLabel(value: number, hasBudgetFilter: boolean) {
-	if (!hasBudgetFilter) {
-		return "Any budget";
-	}
-
-	return `RWF ${formatPlainNumber(value)}`;
-}
-
-function formatUsdEquivalent(value: number, rate: number) {
-	return new Intl.NumberFormat("en-US", {
-		style: "currency",
-		currency: "USD",
-		maximumFractionDigits: 0,
-	}).format(value / rate);
-}
-
-function formatPlainNumber(value: number) {
-	return new Intl.NumberFormat("en-US", {
-		maximumFractionDigits: 0,
-	}).format(value);
 }
