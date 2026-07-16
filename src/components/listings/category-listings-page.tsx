@@ -27,6 +27,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useCurrency } from "@/providers/currency-provider";
 import type {
 	ListingCategorySlug,
 	ListingListRequest,
@@ -487,6 +488,7 @@ function DefaultListingCard({
 	listing: PublicListing;
 	detailHref: string;
 }) {
+	const { formatMoney } = useCurrency();
 	const coverImage =
 		listing.images.find((image) => image.isCover) ?? listing.images[0];
 	const coverUrl = coverImage?.file.publicUrl;
@@ -784,18 +786,4 @@ function getMapListingLabel(
 
 function sentenceCase(value: string) {
 	return value.charAt(0).toUpperCase() + value.slice(1);
-}
-
-function formatMoney(value: string, currency: string) {
-	const amount = Number(value);
-
-	if (!Number.isFinite(amount)) {
-		return `${currency} ${value}`;
-	}
-
-	return new Intl.NumberFormat("en-RW", {
-		style: "currency",
-		currency,
-		maximumFractionDigits: 0,
-	}).format(amount);
 }
