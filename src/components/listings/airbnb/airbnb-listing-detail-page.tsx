@@ -21,9 +21,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { NotFoundState } from "@/components/shared/not-found-state";
 import { isApiNotFoundError } from "@/services/api/errors";
 import { getAirbnbListing, type PublicListing } from "@/services/api/listings";
+import { useCurrency } from "@/providers/currency-provider";
 import {
 	buildListingGallery,
-	formatMoney,
 	formatOptional,
 } from "../listing-formatters";
 import {
@@ -99,6 +99,7 @@ export function AirbnbListingDetailPage({ listingId }: { listingId: string }) {
 }
 
 function AirbnbListingDetail({ listing }: { listing: PublicListing }) {
+	const { formatMoney } = useCurrency();
 	const [activeTab, setActiveTab] = useState<AirbnbDetailTab>("overview");
 	const gallery = useMemo(
 		() => buildListingGallery(listing, "Pluto Booking Airbnb stay"),
