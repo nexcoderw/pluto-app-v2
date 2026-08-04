@@ -48,9 +48,11 @@ export type PriceQuote = {
 	taxMinor: string;
 	discountMinor: string;
 	totalMinor: string;
-	providerFeeEstimateBps: number;
-	providerFeeEstimateMinor: string;
-	estimatedCustomerDebitMinor: string;
+	collectionFeeBps: number;
+	collectionFeeMinor: string;
+	taxBps: number;
+	payableTotalMinor: string;
+	providerChargesIncluded: boolean;
 	currency: string;
 	status: string;
 	expiresAt: string;
@@ -142,10 +144,6 @@ export type PaymentIntent = {
 	};
 	priceQuote: Omit<
 		PriceQuote,
-		| "subtotalMinor"
-		| "serviceFeeMinor"
-		| "taxMinor"
-		| "discountMinor"
 		| "exchangeRateId"
 		| "exchangeRate"
 		| "inventoryHold"
