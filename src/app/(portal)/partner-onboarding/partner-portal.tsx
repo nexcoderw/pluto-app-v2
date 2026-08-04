@@ -267,46 +267,50 @@ function PartnerProfileForm({
 	const [isStartFreshDialogOpen, setIsStartFreshDialogOpen] = useState(false);
 	const isCompany = profile.partnerType === "COMPANY";
 
+	async function saveCurrentProfile() {
+		const validationErrors = validateForm(form, isCompany);
+		const businessPhone = normalizePhoneNumber(
+			form.businessPhoneCountry,
+			form.businessPhone,
+		);
+
+		if (Object.keys(validationErrors).length) {
+			setErrors(validationErrors);
+			throw new Error("Please complete the highlighted fields.");
+		}
+
+		setErrors({});
+
+		return isCompany
+			? saveCompanyPartnerProfile({
+					businessName: form.businessName.trim(),
+					registrationNumber: form.registrationNumber.trim(),
+					taxIdentification: form.taxIdentification.trim(),
+					businessEmail: form.businessEmail.trim(),
+					businessPhone,
+					representativeName: form.representativeName.trim(),
+					representativeIdNumber: form.representativeIdNumber.trim(),
+					description: form.description.trim(),
+					addressLine: form.addressLine.trim(),
+					city: form.city.trim() || "Kigali",
+					country: getPhoneCountryOption(form.country).name,
+					websiteUrl: normalizeOptional(form.websiteUrl),
+				})
+			: saveIndividualPartnerProfile({
+					legalName: form.legalName.trim(),
+					nationalIdNumber: normalizeOptional(form.nationalIdNumber),
+					businessEmail: form.businessEmail.trim(),
+					businessPhone,
+					description: form.description.trim(),
+					addressLine: normalizeOptional(form.addressLine),
+					city: form.city.trim() || "Kigali",
+					country: getPhoneCountryOption(form.country).name,
+					websiteUrl: normalizeOptional(form.websiteUrl),
+				});
+	}
+
 	const saveMutation = useMutation({
-		mutationFn: async () => {
-			const validationErrors = validateForm(form, isCompany);
-			const businessPhone = normalizePhoneNumber(
-				form.businessPhoneCountry,
-				form.businessPhone,
-			);
-
-			if (Object.keys(validationErrors).length) {
-				setErrors(validationErrors);
-				throw new Error("Please complete the highlighted fields.");
-			}
-
-			return isCompany
-				? saveCompanyPartnerProfile({
-						businessName: form.businessName.trim(),
-						registrationNumber: form.registrationNumber.trim(),
-						taxIdentification: form.taxIdentification.trim(),
-						businessEmail: form.businessEmail.trim(),
-						businessPhone,
-						representativeName: form.representativeName.trim(),
-						representativeIdNumber: form.representativeIdNumber.trim(),
-						description: form.description.trim(),
-						addressLine: form.addressLine.trim(),
-						city: form.city.trim() || "Kigali",
-						country: getPhoneCountryOption(form.country).name,
-						websiteUrl: normalizeOptional(form.websiteUrl),
-					})
-				: saveIndividualPartnerProfile({
-						legalName: form.legalName.trim(),
-						nationalIdNumber: normalizeOptional(form.nationalIdNumber),
-						businessEmail: form.businessEmail.trim(),
-						businessPhone,
-						description: form.description.trim(),
-						addressLine: normalizeOptional(form.addressLine),
-						city: form.city.trim() || "Kigali",
-						country: getPhoneCountryOption(form.country).name,
-						websiteUrl: normalizeOptional(form.websiteUrl),
-					});
-		},
+		mutationFn: saveCurrentProfile,
 		onSuccess: (response) => {
 			queryClient.setQueryData(["partner-profile"], response);
 			toast.success("Partner profile saved.", {
@@ -319,7 +323,12 @@ function PartnerProfileForm({
 	});
 
 	const submitMutation = useMutation({
-		mutationFn: submitPartnerProfile,
+		mutationFn: async () => {
+			const savedProfile = await saveCurrentProfile();
+			queryClient.setQueryData(["partner-profile"], savedProfile);
+
+			return submitPartnerProfile();
+		},
 		onSuccess: (response) => {
 			queryClient.setQueryData(["partner-profile"], response);
 			setIsSubmitDialogOpen(false);
@@ -327,7 +336,10 @@ function PartnerProfileForm({
 				description: "The admin team can now review your partner application.",
 			});
 		},
-		onError: (error) => toast.error(getErrorMessage(error)),
+		onError: (error) => {
+			setIsSubmitDialogOpen(false);
+			toast.error(getErrorMessage(error));
+		},
 	});
 
 	const startFreshMutation = useMutation({
@@ -381,7 +393,7 @@ function PartnerProfileForm({
 
 	function handleSave(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
-		void saveMutation.mutateAsync();
+		saveMutation.mutate();
 	}
 
 	return (
@@ -607,7 +619,7 @@ function PartnerProfileForm({
 							disabled={submitMutation.isPending}
 							onClick={(event) => {
 								event.preventDefault();
-								void submitMutation.mutateAsync();
+								submitMutation.mutate();
 							}}
 						>
 							<Send aria-hidden="true" />
@@ -638,7 +650,7 @@ function PartnerProfileForm({
 							disabled={startFreshMutation.isPending}
 							onClick={(event) => {
 								event.preventDefault();
-								void startFreshMutation.mutateAsync();
+								startFreshMutation.mutate();
 							}}
 						>
 							<RefreshCcw aria-hidden="true" />
@@ -1086,6 +1098,31 @@ function validateForm(form: PartnerFormState, isCompany: boolean) {
 			errors[field] = "This field is required.";
 		}
 	});
+
+	const minimumLengths: Partial<Record<PartnerTextField, number>> = {
+		legalName: 2,
+		businessName: 2,
+		registrationNumber: 2,
+		taxIdentification: 2,
+		representativeName: 2,
+		representativeIdNumber: 5,
+		description: 20,
+		...(isCompany ? { addressLine: 2 } : {}),
+	};
+
+	Object.entries(minimumLengths).forEach(([field, minimum]) => {
+		const typedField = field as PartnerTextField;
+		const value = form[typedField].trim();
+
+		if (value && minimum && value.length < minimum) {
+			errors[typedField] = `Use at least ${minimum} characters.`;
+		}
+	});
+
+	const descriptionMaximum = isCompany ? 1200 : 1000;
+	if (form.description.trim().length > descriptionMaximum) {
+		errors.description = `Use no more than ${descriptionMaximum} characters.`;
+	}
 
 	if (
 		form.businessEmail &&
