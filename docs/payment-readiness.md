@@ -165,6 +165,13 @@ payment. `PROCESSING` and `UNKNOWN` remain recoverable through the account
 Payments page, which polls canonical state and may request a rate-limited
 authenticated reconciliation without creating another charge.
 
+The dialog normalizes a profile phone such as `+250781862349` to the documented
+local `cnumber` value `0781862349` and shows the paired `msisdn`
+`250781862349` before submission. It also separates Pluto's immutable
+collection amount from the configurable estimated XentriPay fee and estimated
+phone debit. Because the supplied provider contract does not publish a fee
+formula, the phone prompt remains authoritative for the actual provider fee.
+
 For a USD listing, quote review also shows the original USD subtotal, locked
 USD/RWF rate, and exact RWF amount that XentriPay may collect. Changing the
 navbar currency after quote creation does not mutate the quote or payment.
