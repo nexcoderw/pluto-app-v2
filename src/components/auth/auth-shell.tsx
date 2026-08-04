@@ -71,6 +71,15 @@ export function AuthShell({
 			</div>
 
 			<aside className={styles.visualColumn} data-tone={tone}>
+				<Image
+					src="/auth.jpg"
+					alt="Kigali Convention Centre at sunset"
+					fill
+					priority
+					sizes="(max-width: 980px) 0px, (max-width: 1280px) 52vw, 43rem"
+					className={styles.visualImage}
+				/>
+
 				<div className={styles.visualLogo}>
 					<Image src="/logo-w.png" alt="" width={873} height={276} priority />
 				</div>
