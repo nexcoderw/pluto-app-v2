@@ -147,22 +147,6 @@
 	object-position: center;
 }
 
-.visualLogo {
-	position: absolute;
-	z-index: 1;
-	left: 50%;
-	top: 48%;
-	width: min(64%, 25rem);
-	transform: translate(-50%, -50%);
-	opacity: 0.12;
-}
-
-.visualLogo img {
-	width: 100%;
-	height: auto;
-	display: block;
-}
-
 .statusCard,
 .categoryDeck,
 .metricCard {
