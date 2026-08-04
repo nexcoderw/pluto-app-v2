@@ -281,19 +281,22 @@ function PaymentCard({
 				<time dateTime={payment.createdAt}>{formatDate(payment.createdAt)}</time>
 			</header>
 			<div className={styles.amount}>
-				<span>Estimated customer debit</span>
+				<span>Exact amount paid</span>
 				<strong>
 					{formatMoney(
-						payment.priceQuote.estimatedCustomerDebitMinor,
+						payment.priceQuote.payableTotalMinor,
 						payment.currency,
 					)}
 				</strong>
 				<small>
-					Pluto collection: {formatMoney(payment.amountMinor, payment.currency)} · estimated
-					 provider fee: {formatMoney(
-						payment.priceQuote.providerFeeEstimateMinor,
+					Subtotal: {formatMoney(payment.priceQuote.subtotalMinor, payment.currency)} ·
+					 XentriPay fee: {formatMoney(
+						payment.priceQuote.collectionFeeMinor,
 						payment.currency,
-					)} ({formatBasisPoints(payment.priceQuote.providerFeeEstimateBps)})
+					)} ({formatBasisPoints(payment.priceQuote.collectionFeeBps)}) · tax: {formatMoney(
+						payment.priceQuote.taxMinor,
+						payment.currency,
+					)} ({formatBasisPoints(payment.priceQuote.taxBps)})
 				</small>
 				{payment.priceQuote.sourceSubtotalMinor && payment.priceQuote.sourceCurrency ? (
 					<small>
