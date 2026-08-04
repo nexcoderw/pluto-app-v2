@@ -610,7 +610,7 @@ function PaymentPendingState({
 			<ReferenceBox payment={payment} tone={unknown ? "warning" : "pending"} />
 			{!unknown && isCard && paymentAction ? (
 				<Button
-					className={styles.cardActionButton}
+					className={styles.primaryButton}
 					render={
 						<a
 							href={paymentAction.url}
