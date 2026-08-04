@@ -80,10 +80,6 @@ export function AuthShell({
 					className={styles.visualImage}
 				/>
 
-				<div className={styles.visualLogo}>
-					<Image src="/logo-w.png" alt="" width={873} height={276} priority />
-				</div>
-
 				<div className={styles.statusCard}>
 					<div>
 						<span>{copy.label}</span>
