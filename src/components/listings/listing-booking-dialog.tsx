@@ -16,6 +16,7 @@ import {
 	WalletCards,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
 	Dialog,
 	DialogContent,
@@ -105,12 +106,21 @@ export function ListingBookingDialog({
 	const [network, setNetwork] = useState<PaymentNetwork>("MTN_MOMO");
 	const [phoneNumber, setPhoneNumber] = useState(defaultPhone);
 	const [phoneError, setPhoneError] = useState<string>();
+	const [acceptedTermsQuoteId, setAcceptedTermsQuoteId] = useState<string>();
+	const [termsErrorQuoteId, setTermsErrorQuoteId] = useState<string>();
 	const [now, setNow] = useState(() => Date.now());
 	const isBlockingProgress =
 		mode === "quote-loading" || mode === "payment-submitting";
 	const quoteExpired = Boolean(
 		quote && new Date(quote.expiresAt).getTime() <= now,
 	);
+	const termsAccepted = Boolean(
+		quote?.id && acceptedTermsQuoteId === quote.id,
+	);
+	const termsError =
+		quote?.id && termsErrorQuoteId === quote.id
+			? "Confirm that you reviewed the booking conditions and exact amount."
+			: undefined;
 	const secondsRemaining = quote
 		? Math.max(0, Math.ceil((new Date(quote.expiresAt).getTime() - now) / 1_000))
 		: 0;
@@ -127,7 +137,12 @@ export function ListingBookingDialog({
 			setPhoneError("Enter a valid Rwanda mobile-money number.");
 			return;
 		}
+		if (!termsAccepted) {
+			setTermsErrorQuoteId(quote?.id);
+			return;
+		}
 		setPhoneError(undefined);
+		setTermsErrorQuoteId(undefined);
 		onPay({ network, phoneNumber: normalizedPhone });
 	}
 
@@ -269,10 +284,36 @@ export function ListingBookingDialog({
 										) : null}
 									</label>
 								</div>
+								<div
+									className={styles.termsAcceptance}
+									data-invalid={Boolean(termsError)}
+								>
+									<Checkbox
+										id="listing-payment-terms"
+										checked={termsAccepted}
+										aria-invalid={Boolean(termsError)}
+										onCheckedChange={(checked) => {
+											setAcceptedTermsQuoteId(
+												checked ? quote.id : undefined,
+											);
+											setTermsErrorQuoteId(undefined);
+										}}
+									/>
+									<label htmlFor="listing-payment-terms">
+										I reviewed the dates, booking and cancellation conditions,
+										and the exact amount shown above.
+									</label>
+								</div>
+								{termsError ? (
+									<small className={styles.termsError} role="alert">
+										{termsError}
+									</small>
+								) : null}
 								<p className={styles.paymentNotice}>
 									<Smartphone aria-hidden="true" />
-									After continuing, approve the prompt on this phone. Never share
-									your PIN with Pluto Booking or support.
+									The displayed amount is the exact collection request and includes
+									transaction charges. Approve the prompt on your phone, and never
+									share your PIN with Pluto Booking or support.
 								</p>
 								<DialogFooter className={styles.footer}>
 									<Button
@@ -312,7 +353,6 @@ export function ListingBookingDialog({
 						payment={payment}
 						isCheckingStatus={isCheckingStatus}
 						onCheckStatus={onCheckStatus}
-						onClose={() => onOpenChange(false)}
 					/>
 				) : null}
 
@@ -460,13 +500,11 @@ function PaymentPendingState({
 	payment,
 	isCheckingStatus,
 	onCheckStatus,
-	onClose,
 }: {
 	unknown: boolean;
 	payment?: PaymentIntent;
 	isCheckingStatus: boolean;
 	onCheckStatus: () => void;
-	onClose: () => void;
 }) {
 	return (
 		<>
@@ -482,13 +520,12 @@ function PaymentPendingState({
 			<ReferenceBox payment={payment} tone={unknown ? "warning" : "pending"} />
 			<DialogFooter className={styles.footer}>
 				<Button
-					type="button"
 					variant="outline"
 					className={styles.secondaryButton}
-					onClick={onClose}
+					render={<Link href="/account/payments" />}
 				>
 					<ReceiptText aria-hidden="true" />
-					Check later
+					View payments
 				</Button>
 				<Button
 					type="button"
