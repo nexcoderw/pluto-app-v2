@@ -22,6 +22,13 @@ export type PaymentAttemptStatus =
 	| "CANCELLED";
 
 export type PaymentNetwork = "MTN_MOMO" | "AIRTEL_MONEY";
+export type PaymentMethod = "MOBILE_MONEY" | "CARD";
+
+export type PaymentAction = {
+	type: "REDIRECT";
+	url: string;
+	expiresAt: string | null;
+};
 
 export type PriceQuote = {
 	id: string;
@@ -92,7 +99,7 @@ export type PaymentAttempt = {
 	id: string;
 	attemptNo: string;
 	sequence: number;
-	method: "MOBILE_MONEY";
+	method: PaymentMethod;
 	network: PaymentNetwork | null;
 	maskedAccount: string | null;
 	amountMinor: string;
@@ -114,7 +121,7 @@ export type PaymentIntent = {
 	bookingId: string | null;
 	gateway: "XENTRIPAY";
 	environment: "SANDBOX" | "PRODUCTION";
-	method: "MOBILE_MONEY" | null;
+	method: PaymentMethod | null;
 	network: PaymentNetwork | null;
 	amountMinor: string;
 	capturedMinor: string;
@@ -167,12 +174,18 @@ export type CreateCheckoutPayload = {
 	idempotencyKey: string;
 };
 
-export type InitiatePaymentAttemptPayload = {
-	method: "MOBILE_MONEY";
-	network: PaymentNetwork;
-	phoneNumber: string;
-	idempotencyKey: string;
-};
+export type InitiatePaymentAttemptPayload =
+	| {
+			method: "MOBILE_MONEY";
+			network: PaymentNetwork;
+			phoneNumber: string;
+			idempotencyKey: string;
+	  }
+	| {
+			method: "CARD";
+			phoneNumber: string;
+			idempotencyKey: string;
+	  };
 
 export type CreateListingQuoteResponse = {
 	message: string;
@@ -189,6 +202,7 @@ export type CreateCheckoutResponse = {
 export type PaymentIntentResponse = {
 	message: string;
 	payment: PaymentIntent;
+	paymentAction?: PaymentAction;
 };
 
 export type ListPaymentIntentsRequest = {
