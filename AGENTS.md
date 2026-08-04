@@ -29,6 +29,10 @@ Before changing frontend code, read:
 - Put page or feature-specific components in feature folders like `src/components/auth`.
 - Use `.module.css` files for component/page-specific design.
 - Keep `globals.css` limited to tokens, base styles, and reusable project primitives.
+- Treat `.env.example` and `.env.production.example` as configuration contract
+  files. Update them only when a variable is added, removed, renamed, its safe
+  default changes, or production guidance genuinely changes. Do not edit either
+  template during unrelated work, and never place real credentials in them.
 - Every input must use `src/components/ui/input.tsx`, match the login input height and rounded-full shape, and include a visible leading icon.
 - Every select trigger must use `src/components/ui/select.tsx` and match the shared input height.
 - Every button must match the shared input height and include an icon.
