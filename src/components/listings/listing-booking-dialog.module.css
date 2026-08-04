@@ -218,6 +218,37 @@
 	font-weight: 700;
 }
 
+.termsAcceptance {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.7rem;
+	padding: 0.8rem;
+	border: 1px solid rgba(2, 0, 108, 0.12);
+	border-radius: 0.95rem;
+	background: rgba(2, 0, 108, 0.025);
+}
+
+.termsAcceptance[data-invalid="true"] {
+	border-color: rgba(180, 23, 62, 0.42);
+	background: rgba(180, 23, 62, 0.04);
+}
+
+.termsAcceptance label {
+	color: rgba(23, 23, 31, 0.72);
+	font-size: 0.76rem;
+	font-weight: 650;
+	line-height: 1.5;
+	cursor: pointer;
+}
+
+.termsError {
+	margin-top: -0.45rem;
+	padding-left: 0.35rem;
+	color: #b4173e;
+	font-size: 0.7rem;
+	font-weight: 700;
+}
+
 .paymentNotice {
 	margin: 0;
 	background: rgba(22, 138, 73, 0.07);
