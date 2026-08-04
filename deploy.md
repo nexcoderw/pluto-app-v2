@@ -21,7 +21,7 @@ cd /var/www/pluto/app/app
 Create a protected backup:
 
 ```bash
-BACKUP_DIR=/home/deploy/env-backups/customer-app
+BACKUP_DIR=/home/deploy/env-backups/app
 mkdir -p "$BACKUP_DIR"
 chmod 700 "$BACKUP_DIR"
 cp -p .env.production "$BACKUP_DIR/.env.production.$(date +%Y%m%d-%H%M%S)"
@@ -32,7 +32,7 @@ Edit and validate:
 ```bash
 nano .env.production
 chmod 600 .env.production
-node --env-file=.env.production -e 'if (!process.env.NEXT_PUBLIC_APP_URL || !process.env.NEXT_PUBLIC_API_URL) throw new Error("Required public URLs are missing"); console.log("Environment file parsed successfully")'
+node --env-file=.env.production -e 'for (const name of ["NEXT_PUBLIC_APP_URL", "NEXT_PUBLIC_API_URL", "NEXT_PUBLIC_XENTRIPAY_COLLECTION_FEE_BPS", "NEXT_PUBLIC_PAYMENT_TAX_BPS"]) if (!process.env[name]) throw new Error(`${name} is required`); console.log("Environment file parsed successfully")'
 ```
 
 ## Build And Apply
@@ -43,9 +43,10 @@ Keep the currently running process online while the build runs:
 NODE_ENV=production npm run build
 pm2 reload pluto-app --update-env
 pm2 save
+chmod 600 "$HOME/.pm2/dump.pm2"
 sleep 5
 curl -fsS http://127.0.0.1:4000 >/dev/null
-curl -fsS https://plutobooking.com >/dev/null
+curl -fsS https://www.plutobooking.com >/dev/null
 pm2 logs pluto-app --lines 50 --nostream
 ```
 
@@ -55,13 +56,14 @@ Do not reload PM2 if the build fails.
 
 ```bash
 cd /var/www/pluto/app/app
-BACKUP_DIR=/home/deploy/env-backups/customer-app
+BACKUP_DIR=/home/deploy/env-backups/app
 LATEST_BACKUP="$(ls -1t "$BACKUP_DIR"/.env.production.* | head -1)"
 cp -p "$LATEST_BACKUP" .env.production
 chmod 600 .env.production
 NODE_ENV=production npm run build
 pm2 reload pluto-app --update-env
 pm2 save
+chmod 600 "$HOME/.pm2/dump.pm2"
 ```
 
 ## CI/CD
