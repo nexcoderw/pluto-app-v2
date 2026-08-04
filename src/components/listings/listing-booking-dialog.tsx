@@ -183,7 +183,7 @@ export function ListingBookingDialog({
 			}}
 		>
 			<DialogContent
-				className={styles.dialog}
+				className={`${styles.dialog} ${mode === "quote" ? styles.checkoutDialog : ""}`}
 				showCloseButton={!isBlockingProgress}
 				aria-busy={isBlockingProgress}
 			>
@@ -201,104 +201,139 @@ export function ListingBookingDialog({
 
 				{mode === "quote" && quote ? (
 					<>
-						<DialogHeader className={styles.header}>
-							<span className={styles.iconWrap} data-tone="confirm">
-								<ShieldCheck aria-hidden="true" />
-							</span>
+						<DialogHeader className={`${styles.header} ${styles.quoteHeader}`}>
+							<div className={styles.headerKicker}>
+								<span className={styles.compactIcon}>
+									<ShieldCheck aria-hidden="true" />
+								</span>
+								<span>Secure checkout</span>
+								<span className={styles.heldBadge}>Dates held</span>
+							</div>
 							<DialogTitle>
 								{rateChangedFrom
 									? "Exchange rate changed—review required"
-									: "Review your secure quote"}
+									: "Everything ready for your stay"}
 							</DialogTitle>
 							<DialogDescription>
-								Pluto Booking reserved these dates temporarily. Confirm the exact
-								amount below before starting payment.
+								Review your reservation and choose a secure way to pay. The amount
+								you approve here is the amount shown by the payment provider.
 							</DialogDescription>
 						</DialogHeader>
-						<QuoteSummary
-							listingTitle={listingTitle}
-							formattedRange={formattedRange}
-							durationCount={durationCount}
-							durationLabel={durationLabel}
-							quote={quote}
-						/>
-						{rateChangedFrom && quote.exchangeRateValue ? (
-							<section className={styles.rateChangeWarning} role="alert">
-								<AlertCircle aria-hidden="true" />
-								<div>
-									<strong>A fresh quote uses a different exchange rate</strong>
-									<p>
-										Previous: 1 USD = {formatRate(rateChangedFrom)} RWF. New: 1
-										USD = {formatRate(quote.exchangeRateValue)} RWF. Review the
-										converted amount before payment.
-									</p>
+						<div className={styles.checkoutGrid}>
+							<section className={styles.summaryPanel} aria-labelledby="booking-summary-title">
+								<div className={styles.sectionHeading}>
+									<span className={styles.sectionIcon}>
+										<ReceiptText aria-hidden="true" />
+									</span>
+									<div>
+										<span>Reservation</span>
+										<h3 id="booking-summary-title">Booking summary</h3>
+									</div>
 								</div>
+								<QuoteSummary
+									listingTitle={listingTitle}
+									formattedRange={formattedRange}
+									durationCount={durationCount}
+									durationLabel={durationLabel}
+									quote={quote}
+								/>
 							</section>
-						) : null}
-						<div className={styles.expiry} data-expiring={secondsRemaining < 120}>
-							<Clock3 aria-hidden="true" />
-							<span>
-								{quoteExpired
-									? "This quote has expired. Request a fresh quote."
-									: `Reserved for ${formatCountdown(secondsRemaining)}`}
-							</span>
-						</div>
-						{rateChangedFrom ? (
-							<DialogFooter className={styles.footerSingle}>
-								<Button
-									type="button"
-									className={styles.primaryButton}
-									onClick={onAcknowledgeRateChange}
-								>
-									<ShieldCheck aria-hidden="true" />
-									I reviewed the new rate
-								</Button>
-							</DialogFooter>
-						) : quoteExpired ? (
-							<DialogFooter className={styles.footerSingle}>
-								<Button
-									type="button"
-									className={styles.primaryButton}
-									onClick={onRefreshQuote}
-								>
-									<RefreshCcw aria-hidden="true" />
-									Request fresh quote
-								</Button>
-							</DialogFooter>
-						) : (
-							<>
-								<div
-									className={styles.paymentFields}
-									data-method={paymentMethod}
-								>
-									<label className={styles.paymentMethodField}>
-										<span>Payment method</span>
-										<Select
-											value={paymentMethod}
-											onValueChange={(value) =>
-												setPaymentMethod(value as PaymentMethod)
-											}
+
+							<section className={styles.paymentPanel} aria-labelledby="payment-method-title">
+								<div className={styles.sectionHeading}>
+									<span className={styles.sectionIcon}>
+										<WalletCards aria-hidden="true" />
+									</span>
+									<div>
+										<span>Payment</span>
+										<h3 id="payment-method-title">
+											{rateChangedFrom
+												? "Review the updated rate"
+												: quoteExpired
+													? "Refresh your reservation"
+													: "Choose how to pay"}
+										</h3>
+									</div>
+								</div>
+
+								<div className={styles.expiry} data-expiring={secondsRemaining < 120}>
+									<Clock3 aria-hidden="true" />
+									<span>
+										{quoteExpired
+											? "This quote has expired. Request a fresh quote."
+											: `Your dates are reserved for ${formatCountdown(secondsRemaining)}`}
+									</span>
+								</div>
+
+								{rateChangedFrom && quote.exchangeRateValue ? (
+									<>
+										<section className={styles.rateChangeWarning} role="alert">
+											<AlertCircle aria-hidden="true" />
+											<div>
+												<strong>A fresh quote uses a different exchange rate</strong>
+												<p>
+													Previous: 1 USD = {formatRate(rateChangedFrom)} RWF. New: 1
+													USD = {formatRate(quote.exchangeRateValue)} RWF. Review the
+													converted amount before payment.
+												</p>
+											</div>
+										</section>
+										<DialogFooter className={styles.footerSingle}>
+											<Button
+												type="button"
+												className={styles.primaryButton}
+												onClick={onAcknowledgeRateChange}
+											>
+												<ShieldCheck aria-hidden="true" />
+												I reviewed the new rate
+											</Button>
+										</DialogFooter>
+									</>
+								) : quoteExpired ? (
+									<DialogFooter className={styles.footerSingle}>
+										<Button
+											type="button"
+											className={styles.primaryButton}
+											onClick={onRefreshQuote}
 										>
-											<SelectTrigger className={styles.selectTrigger}>
-												{paymentMethod === "CARD" ? (
-													<CreditCard aria-hidden="true" />
-												) : (
-													<Smartphone aria-hidden="true" />
-												)}
-												<SelectValue />
-											</SelectTrigger>
-											<SelectContent align="start" alignItemWithTrigger={false}>
-												<SelectGroup>
-													<SelectItem value="MOBILE_MONEY">
-														Mobile money
-													</SelectItem>
-													<SelectItem value="CARD">
-														Credit or debit card
-													</SelectItem>
-												</SelectGroup>
-											</SelectContent>
-										</Select>
-									</label>
+											<RefreshCcw aria-hidden="true" />
+											Request fresh quote
+										</Button>
+									</DialogFooter>
+								) : (
+									<>
+										<div className={styles.methodGrid} role="group" aria-label="Payment method">
+											<Button
+												type="button"
+												variant="outline"
+												className={styles.methodButton}
+												data-selected={paymentMethod === "MOBILE_MONEY"}
+												aria-pressed={paymentMethod === "MOBILE_MONEY"}
+												onClick={() => setPaymentMethod("MOBILE_MONEY")}
+											>
+												<Smartphone aria-hidden="true" />
+												<span>
+													<strong>Mobile money</strong>
+													<small>Approve on your phone</small>
+												</span>
+											</Button>
+											<Button
+												type="button"
+												variant="outline"
+												className={styles.methodButton}
+												data-selected={paymentMethod === "CARD"}
+												aria-pressed={paymentMethod === "CARD"}
+												onClick={() => setPaymentMethod("CARD")}
+											>
+												<CreditCard aria-hidden="true" />
+												<span>
+													<strong>Card</strong>
+													<small>Secure hosted checkout</small>
+												</span>
+											</Button>
+										</div>
+
+										<div className={styles.paymentFields} data-method={paymentMethod}>
 									{paymentMethod === "MOBILE_MONEY" ? (
 										<label>
 											<span>Mobile-money network</span>
@@ -345,18 +380,13 @@ export function ListingBookingDialog({
 											<small id="payment-phone-error" className={styles.fieldError}>
 												{phoneError}
 											</small>
-										) : localPhonePreview ? (
-											<small id="payment-phone-format" className={styles.fieldHint}>
-												Sending as {localPhonePreview} and 250
-												{localPhonePreview.slice(1)}.
-											</small>
 										) : null}
 									</label>
-								</div>
-								<div
-									className={styles.termsAcceptance}
-									data-invalid={Boolean(termsError)}
-								>
+										</div>
+										<div
+											className={styles.termsAcceptance}
+											data-invalid={Boolean(termsError)}
+										>
 									<Checkbox
 										id="listing-payment-terms"
 										checked={termsAccepted}
@@ -372,13 +402,13 @@ export function ListingBookingDialog({
 										I reviewed the dates, booking and cancellation conditions,
 										and the exact amount shown above.
 									</label>
-								</div>
-								{termsError ? (
-									<small className={styles.termsError} role="alert">
-										{termsError}
-									</small>
-								) : null}
-								<p className={styles.paymentNotice}>
+										</div>
+										{termsError ? (
+											<small className={styles.termsError} role="alert">
+												{termsError}
+											</small>
+										) : null}
+										<p className={styles.paymentNotice}>
 									{paymentMethod === "CARD" ? (
 										<CreditCard aria-hidden="true" />
 									) : (
@@ -387,8 +417,8 @@ export function ListingBookingDialog({
 									{paymentMethod === "CARD"
 										? "Pluto never asks for card details. The exact displayed amount is sent to Urubuto with provider charges included. Enter card details only on the secure hosted page."
 										: "The exact displayed amount is sent with provider charges included, so the phone prompt must show the same total. Never share your PIN with Pluto Booking or support."}
-								</p>
-								<DialogFooter className={styles.footer}>
+										</p>
+										<DialogFooter className={styles.footer}>
 									<Button
 										type="button"
 										variant="outline"
@@ -404,13 +434,16 @@ export function ListingBookingDialog({
 										onClick={submitPayment}
 									>
 										<ShieldCheck aria-hidden="true" />
-										{paymentMethod === "CARD"
-											? "Prepare secure card payment"
-											: "Continue to MoMo"}
+										<span>
+											{paymentMethod === "CARD" ? "Continue to card" : "Continue to MoMo"}
+											<small>{formatMoney(quote.payableTotalMinor, quote.currency)}</small>
+										</span>
 									</Button>
-								</DialogFooter>
-							</>
-						)}
+										</DialogFooter>
+									</>
+								)}
+							</section>
+						</div>
 					</>
 				) : null}
 
@@ -574,6 +607,13 @@ function ProgressState({
 			<div className={styles.progressTrack} aria-hidden="true">
 				<span />
 			</div>
+			{quickAmount ? (
+				<div className={styles.skeletonPreview} aria-hidden="true">
+					<span />
+					<span />
+					<span />
+				</div>
+			) : null}
 			{quote ? (
 				<p className={styles.progressAmount}>
 					Exact amount: {" "}
@@ -707,9 +747,6 @@ function QuoteSummary({
 		: null;
 	const lineItems = useMemo(
 		() => [
-			["Listing", listingTitle],
-			["Dates", formattedRange],
-			["Duration", `${durationCount} ${durationLabel}`],
 			...(quote.sourceSubtotalMinor
 				? [["Listing price", formatMinorMoney(quote.sourceSubtotalMinor, sourceCurrency)]]
 				: []),
@@ -728,10 +765,6 @@ function QuoteSummary({
 			],
 		],
 		[
-			durationCount,
-			durationLabel,
-			formattedRange,
-			listingTitle,
 			quote,
 			rateLabel,
 			sourceCurrency,
@@ -739,26 +772,54 @@ function QuoteSummary({
 	);
 
 	return (
-		<section className={styles.summary}>
-			{lineItems.map(([label, value]) => (
-				<div key={label}>
-					<span>{label}</span>
-					<strong>{value}</strong>
+		<div className={styles.summary}>
+			<div className={styles.staySummary}>
+				<span className={styles.stayIcon}>
+					<CalendarCheck aria-hidden="true" />
+				</span>
+				<div>
+					<span>Your stay</span>
+					<strong>{listingTitle}</strong>
+					<small>
+						{formattedRange} · {durationCount} {durationLabel}
+					</small>
 				</div>
-			))}
+			</div>
+
+			<div className={styles.priceBreakdown}>
+				{lineItems.map(([label, value]) => (
+					<div key={label}>
+						<span>{label}</span>
+						<strong>{value}</strong>
+					</div>
+				))}
+			</div>
+
 			<div className={styles.totalRow}>
-				<span>Exact amount to pay</span>
+				<div>
+					<span>Exact amount to pay</span>
+					<small>Taxes and collection fee included</small>
+				</div>
 				<strong>
 					{formatMoney(quote.payableTotalMinor, quote.currency)}
 				</strong>
 			</div>
-			<p className={styles.estimateNote}>
-				Pluto sends exactly {formatMoney(quote.payableTotalMinor, quote.currency)}
-				 with XentriPay charges included. The MoMo prompt or Urubuto card page must
-				 show this same amount. This quote is locked until {formatExpiryTime(quote.expiresAt)}.
-				Quote {quote.quoteNo}.
-			</p>
-		</section>
+
+			<div className={styles.exactMatchNote}>
+				<ShieldCheck aria-hidden="true" />
+				<p>
+					<strong>Exact-price protection</strong>
+					<span>
+						Your MoMo prompt or Urubuto card page must show this same total.
+					</span>
+				</p>
+			</div>
+
+			<div className={styles.quoteReference}>
+				<span>Quote {quote.quoteNo}</span>
+				<span>Locked until {formatExpiryTime(quote.expiresAt)}</span>
+			</div>
+		</div>
 	);
 }
 
