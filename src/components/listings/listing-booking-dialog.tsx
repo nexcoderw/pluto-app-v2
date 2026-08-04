@@ -567,7 +567,8 @@ function ProgressState({
 			</div>
 			{quote ? (
 				<p className={styles.progressAmount}>
-					Exact amount: <strong>{formatMoney(quote.totalMinor, quote.currency)}</strong>
+					Estimated customer debit: {" "}
+					<strong>{formatMoney(quote.estimatedCustomerDebitMinor, quote.currency)}</strong>
 				</p>
 			) : null}
 		</>
@@ -793,7 +794,13 @@ function ReferenceBox({
 			<strong>{payment?.intentNo ?? "Preparing reference"}</strong>
 			{payment ? (
 				<small>
-					{formatMoney(payment.amountMinor, payment.currency)} · {formatStatus(payment.status)}
+					Estimated debit {formatMoney(
+						payment.priceQuote.estimatedCustomerDebitMinor,
+						payment.currency,
+					)} · collection {formatMoney(payment.amountMinor, payment.currency)} · fee {formatMoney(
+						payment.priceQuote.providerFeeEstimateMinor,
+						payment.currency,
+					)} ({formatBasisPoints(payment.priceQuote.providerFeeEstimateBps)}) · {formatStatus(payment.status)}
 				</small>
 			) : null}
 		</div>
