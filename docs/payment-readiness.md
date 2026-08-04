@@ -6,7 +6,7 @@ keeping provider details behind the Pluto Booking API.
 
 Milestone 4 implements listing checkout controls against the canonical payment
 API. It covers authoritative listing quotes, inventory holds, idempotent
-mobile-money initiation, canonical status recovery, and verified paid-booking
+mobile-money and hosted-card initiation, canonical status recovery, and verified paid-booking
 confirmation. Flight payment, provider webhooks, and refund controls are not
 part of this milestone.
 
@@ -159,6 +159,13 @@ webhook-derived state nor refund commands, and the backend keeps those
 capabilities fail-closed. Do not call XentriPay directly from React components,
 persist phone numbers or payment identifiers in browser storage, or expose
 provider-specific payloads through shared UI state.
+
+Hosted card payment redirects the customer only to the HTTPS Urubuto URL
+allowlisted and returned by the Pluto API. The browser never renders card
+number, expiry, security-code, or issuer-authentication inputs. It keeps the
+canonical payment visible while the provider page is open and treats the return
+route as navigation only; authenticated reconciliation remains the sole proof
+of payment success.
 
 The listing dialog must always show the exact server quote and expiry before
 payment. `PROCESSING` and `UNKNOWN` remain recoverable through the account
