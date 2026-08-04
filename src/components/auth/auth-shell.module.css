@@ -114,32 +114,37 @@
 .visualColumn::after {
 	content: "";
 	position: absolute;
-	border-radius: 999px;
 	pointer-events: none;
 }
 
 .visualColumn::before {
-	width: 22rem;
-	height: 22rem;
-	right: -8rem;
-	top: -7rem;
-	background: rgba(255, 255, 255, 0.12);
+	inset: 0;
+	z-index: 1;
+	background: rgba(2, 0, 108, 0.48);
 }
 
 .visualColumn::after {
+	z-index: 1;
 	width: 18rem;
 	height: 18rem;
 	left: -7rem;
 	bottom: -6rem;
+	border-radius: 999px;
 	background: rgba(247, 209, 84, 0.18);
 }
 
-.visualColumn[data-tone="partner"] {
-	background: #11105f;
+.visualColumn[data-tone="partner"]::before {
+	background: rgba(17, 16, 95, 0.52);
 }
 
-.visualColumn[data-tone="recovery"] {
-	background: #17171f;
+.visualColumn[data-tone="recovery"]::before {
+	background: rgba(23, 23, 31, 0.56);
+}
+
+.visualImage {
+	z-index: 0;
+	object-fit: cover;
+	object-position: center;
 }
 
 .visualLogo {
