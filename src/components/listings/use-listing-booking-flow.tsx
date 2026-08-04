@@ -25,7 +25,9 @@ import {
 	initiatePaymentAttempt,
 	reconcilePaymentIntent,
 	type CheckoutSession,
+	type PaymentAction,
 	type PaymentIntent,
+	type PaymentMethod,
 	type PaymentNetwork,
 	type PriceQuote,
 } from "@/services/api/payments";
@@ -94,6 +96,7 @@ export function useListingBookingFlow({
 	const [rateChangedFrom, setRateChangedFrom] = useState<string>();
 	const [checkout, setCheckout] = useState<CheckoutSession>();
 	const [payment, setPayment] = useState<PaymentIntent>();
+	const [paymentAction, setPaymentAction] = useState<PaymentAction>();
 	const quoteKeyRef = useRef<string | undefined>(undefined);
 	const checkoutKeyRef = useRef<string | undefined>(undefined);
 	const attemptKeyRef = useRef<string | undefined>(undefined);
@@ -177,7 +180,8 @@ export function useListingBookingFlow({
 
 	const paymentMutation = useMutation({
 		mutationFn: async (input: {
-			network: PaymentNetwork;
+			method: PaymentMethod;
+			network?: PaymentNetwork;
 			phoneNumber: string;
 		}) => {
 			if (!quote) {
@@ -199,19 +203,32 @@ export function useListingBookingFlow({
 			setCheckout(activeCheckout);
 			paymentIntentIdRef.current = activeCheckout.paymentIntent.id;
 
-			return initiatePaymentAttempt(activeCheckout.paymentIntent.id, {
-				method: "MOBILE_MONEY",
-				network: input.network,
-				phoneNumber: input.phoneNumber,
-				idempotencyKey: getRequestKey(attemptKeyRef, "attempt"),
-			});
+			const idempotencyKey = getRequestKey(attemptKeyRef, "attempt");
+			return initiatePaymentAttempt(
+				activeCheckout.paymentIntent.id,
+				input.method === "CARD"
+					? {
+							method: "CARD",
+							phoneNumber: input.phoneNumber,
+							idempotencyKey,
+						}
+					: {
+							method: "MOBILE_MONEY",
+							network: input.network ?? "MTN_MOMO",
+							phoneNumber: input.phoneNumber,
+							idempotencyKey,
+						},
+			);
 		},
 		onMutate: () => {
 			setCheckoutError(undefined);
 			setSupportReference(undefined);
 			setDialogMode("payment-submitting");
 		},
-		onSuccess: (response) => applyPayment(response.payment),
+		onSuccess: (response) => {
+			setPaymentAction(response.paymentAction);
+			applyPayment(response.payment);
+		},
 		onError: async (error) => {
 			const paymentIntentId = paymentIntentIdRef.current;
 			if (paymentIntentId) {
@@ -312,6 +329,7 @@ export function useListingBookingFlow({
 		setQuote(undefined);
 		setCheckout(undefined);
 		setPayment(undefined);
+		setPaymentAction(undefined);
 		setCheckoutError(undefined);
 		setSupportReference(undefined);
 		setRateChangedFrom(undefined);
@@ -394,12 +412,14 @@ export function useListingBookingFlow({
 
 	function retryPayment() {
 		attemptKeyRef.current = undefined;
+		setPaymentAction(undefined);
 		setCheckoutError(undefined);
 		setDialogMode("quote");
 	}
 
 	function submitPayment(input: {
-		network: PaymentNetwork;
+		method: PaymentMethod;
+		network?: PaymentNetwork;
 		phoneNumber: string;
 	}) {
 		if (paymentSubmissionRef.current || paymentMutation.isPending) {
@@ -422,6 +442,7 @@ export function useListingBookingFlow({
 			quote={quote}
 			rateChangedFrom={rateChangedFrom}
 			payment={canonicalPayment}
+			paymentAction={paymentAction}
 			defaultPhone={currentUser?.phone ?? ""}
 			errorMessage={checkoutError}
 			supportReference={supportReference}
