@@ -43,6 +43,7 @@ import type {
 	PaymentNetwork,
 	PriceQuote,
 } from "@/services/api/payments";
+import { quickPayableEstimate } from "@/config/payment-fees";
 import { formatMoney } from "./listing-formatters";
 import styles from "./listing-booking-dialog.module.css";
 
@@ -65,6 +66,7 @@ type ListingBookingDialogProps = {
 	durationCount: number;
 	durationLabel: string;
 	estimatedTotal: number;
+	estimatedCurrency: string;
 	quote?: PriceQuote;
 	rateChangedFrom?: string;
 	payment?: PaymentIntent;
@@ -94,6 +96,7 @@ export function ListingBookingDialog({
 	durationCount,
 	durationLabel,
 	estimatedTotal,
+	estimatedCurrency,
 	quote,
 	rateChangedFrom,
 	payment,
@@ -136,6 +139,10 @@ export function ListingBookingDialog({
 	const secondsRemaining = quote
 		? Math.max(0, Math.ceil((new Date(quote.expiresAt).getTime() - now) / 1_000))
 		: 0;
+	const quickEstimate = quickPayableEstimate(
+		estimatedTotal,
+		estimatedCurrency,
+	);
 
 	useEffect(() => {
 		if (!open || !quote || mode !== "quote") return;
@@ -188,6 +195,7 @@ export function ListingBookingDialog({
 					<ProgressState
 						title="Securing your dates"
 						description="We are checking availability and calculating the exact server-owned price. No payment is being taken yet."
+						quickAmount={formatMoney(quickEstimate, estimatedCurrency)}
 					/>
 				) : null}
 
@@ -212,7 +220,6 @@ export function ListingBookingDialog({
 							formattedRange={formattedRange}
 							durationCount={durationCount}
 							durationLabel={durationLabel}
-							estimatedTotal={estimatedTotal}
 							quote={quote}
 						/>
 						{rateChangedFrom && quote.exchangeRateValue ? (
@@ -378,8 +385,8 @@ export function ListingBookingDialog({
 										<Smartphone aria-hidden="true" />
 									)}
 									{paymentMethod === "CARD"
-										? "Pluto never asks for card details. Enter them only on the secure Urubuto-hosted page, then return here while Pluto verifies the payment."
-										: "The displayed amount is the exact Pluto collection amount. Your provider may add its transaction fee. Approve the prompt on your phone, and never share your PIN with Pluto Booking or support."}
+										? "Pluto never asks for card details. The exact displayed amount is sent to Urubuto with provider charges included. Enter card details only on the secure hosted page."
+										: "The exact displayed amount is sent with provider charges included, so the phone prompt must show the same total. Never share your PIN with Pluto Booking or support."}
 								</p>
 								<DialogFooter className={styles.footer}>
 									<Button
@@ -548,10 +555,12 @@ function ProgressState({
 	title,
 	description,
 	quote,
+	quickAmount,
 }: {
 	title: string;
 	description: string;
 	quote?: PriceQuote;
+	quickAmount?: string;
 }) {
 	return (
 		<>
@@ -567,8 +576,12 @@ function ProgressState({
 			</div>
 			{quote ? (
 				<p className={styles.progressAmount}>
-					Estimated customer debit: {" "}
-					<strong>{formatMoney(quote.estimatedCustomerDebitMinor, quote.currency)}</strong>
+					Exact amount: {" "}
+					<strong>{formatMoney(quote.payableTotalMinor, quote.currency)}</strong>
+				</p>
+			) : quickAmount ? (
+				<p className={styles.progressAmount}>
+					Quick payable estimate: <strong>{quickAmount}</strong>
 				</p>
 			) : null}
 		</>
@@ -680,14 +693,12 @@ function QuoteSummary({
 	formattedRange,
 	durationCount,
 	durationLabel,
-	estimatedTotal,
 	quote,
 }: {
 	listingTitle: string;
 	formattedRange: string;
 	durationCount: number;
 	durationLabel: string;
-	estimatedTotal: number;
 	quote: PriceQuote;
 }) {
 	const sourceCurrency = quote.sourceCurrency ?? quote.currency;
@@ -699,23 +710,26 @@ function QuoteSummary({
 			["Listing", listingTitle],
 			["Dates", formattedRange],
 			["Duration", `${durationCount} ${durationLabel}`],
-			["Browser estimate", formatMoney(String(estimatedTotal), sourceCurrency)],
 			...(quote.sourceSubtotalMinor
 				? [["Listing price", formatMinorMoney(quote.sourceSubtotalMinor, sourceCurrency)]]
 				: []),
 			...(rateLabel ? [["Locked exchange rate", rateLabel]] : []),
 			["Converted subtotal", formatMoney(quote.subtotalMinor, quote.currency)],
-			["Pluto service fee", formatMoney(quote.serviceFeeMinor, quote.currency)],
-			["Tax", formatMoney(quote.taxMinor, quote.currency)],
+			...(quote.serviceFeeMinor !== "0"
+				? [["Pluto service fee", formatMoney(quote.serviceFeeMinor, quote.currency)]]
+				: []),
 			[
-				`Estimated provider fee (${formatBasisPoints(quote.providerFeeEstimateBps)})`,
-				formatMoney(quote.providerFeeEstimateMinor, quote.currency),
+				`XentriPay collection fee (${formatBasisPoints(quote.collectionFeeBps)})`,
+				formatMoney(quote.collectionFeeMinor, quote.currency),
+			],
+			[
+				`Tax (${formatBasisPoints(quote.taxBps)})`,
+				formatMoney(quote.taxMinor, quote.currency),
 			],
 		],
 		[
 			durationCount,
 			durationLabel,
-			estimatedTotal,
 			formattedRange,
 			listingTitle,
 			quote,
@@ -733,16 +747,15 @@ function QuoteSummary({
 				</div>
 			))}
 			<div className={styles.totalRow}>
-				<span>Estimated phone debit</span>
+				<span>Exact amount to pay</span>
 				<strong>
-					{formatMoney(quote.estimatedCustomerDebitMinor, quote.currency)}
+					{formatMoney(quote.payableTotalMinor, quote.currency)}
 				</strong>
 			</div>
 			<p className={styles.estimateNote}>
-				Pluto sends {formatMoney(quote.totalMinor, quote.currency)} for collection.
-				The provider fee is a configurable estimate because XentriPay does not
-				publish its collection fee formula in the supplied contract. Your phone
-				prompt is authoritative. This quote is locked until {formatExpiryTime(quote.expiresAt)}.
+				Pluto sends exactly {formatMoney(quote.payableTotalMinor, quote.currency)}
+				 with XentriPay charges included. The MoMo prompt or Urubuto card page must
+				 show this same amount. This quote is locked until {formatExpiryTime(quote.expiresAt)}.
 				Quote {quote.quoteNo}.
 			</p>
 		</section>
@@ -794,13 +807,16 @@ function ReferenceBox({
 			<strong>{payment?.intentNo ?? "Preparing reference"}</strong>
 			{payment ? (
 				<small>
-					Estimated debit {formatMoney(
-						payment.priceQuote.estimatedCustomerDebitMinor,
+					Exact amount {formatMoney(
+						payment.priceQuote.payableTotalMinor,
 						payment.currency,
-					)} · collection {formatMoney(payment.amountMinor, payment.currency)} · fee {formatMoney(
-						payment.priceQuote.providerFeeEstimateMinor,
+					)} · fee {formatMoney(
+						payment.priceQuote.collectionFeeMinor,
 						payment.currency,
-					)} ({formatBasisPoints(payment.priceQuote.providerFeeEstimateBps)}) · {formatStatus(payment.status)}
+					)} ({formatBasisPoints(payment.priceQuote.collectionFeeBps)}) · tax {formatMoney(
+						payment.priceQuote.taxMinor,
+						payment.currency,
+					)} · {formatStatus(payment.status)}
 				</small>
 			) : null}
 		</div>
