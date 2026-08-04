@@ -60,3 +60,7 @@ Quote and checkout requests must never contain a browser-calculated amount.
 Payment attempts send only the canonical intent identifier, mobile-money method,
 network, phone number, and an idempotency key. XentriPay is never called from
 the browser.
+
+Checkout creation sends the server-issued quote identifier, the exact terms
+version displayed and accepted by the customer, and an idempotency key. It does
+not send an amount, exchange rate, fee, tax, or payment status.
