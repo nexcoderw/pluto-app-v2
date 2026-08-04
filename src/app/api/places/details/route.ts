@@ -25,14 +25,12 @@ type GooglePlaceDetailsResponse = {
 export async function GET(request: Request) {
 	const { searchParams } = new URL(request.url);
 	const placeId = searchParams.get("placeId")?.trim() ?? "";
-	const apiKey =
-		process.env.GOOGLE_MAPS_API_KEY ??
-		process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+	const apiKey = process.env.GOOGLE_MAPS_API_KEY?.trim();
 
 	if (!apiKey) {
 		return NextResponse.json(
-			{ message: "Google Places is not configured." },
-			{ status: 500 },
+			{ message: "Location search is temporarily unavailable." },
+			{ status: 503 },
 		);
 	}
 
@@ -53,9 +51,19 @@ export async function GET(request: Request) {
 		"name,formatted_address,geometry,address_component",
 	);
 
-	const response = await fetch(googleUrl, {
-		cache: "no-store",
-	});
+	let response: Response;
+
+	try {
+		response = await fetch(googleUrl, {
+			cache: "no-store",
+			signal: AbortSignal.timeout(8_000),
+		});
+	} catch {
+		return NextResponse.json(
+			{ message: "Place details could not reach Google Places." },
+			{ status: 502 },
+		);
+	}
 
 	if (!response.ok) {
 		return NextResponse.json(
