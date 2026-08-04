@@ -106,6 +106,7 @@ export function ListingBookingDialog({
 	const [network, setNetwork] = useState<PaymentNetwork>("MTN_MOMO");
 	const [phoneNumber, setPhoneNumber] = useState(defaultPhone);
 	const [phoneError, setPhoneError] = useState<string>();
+	const localPhonePreview = toLocalRwandanPhone(phoneNumber);
 	const [acceptedTermsQuoteId, setAcceptedTermsQuoteId] = useState<string>();
 	const [termsErrorQuoteId, setTermsErrorQuoteId] = useState<string>();
 	const [now, setNow] = useState(() => Date.now());
@@ -132,9 +133,9 @@ export function ListingBookingDialog({
 	}, [mode, open, quote]);
 
 	function submitPayment() {
-		const normalizedPhone = phoneNumber.replace(/[\s()-]/g, "");
-		if (!/^(?:0|\+?250)7\d{8}$/.test(normalizedPhone)) {
-			setPhoneError("Enter a valid Rwanda mobile-money number.");
+		const normalizedPhone = toLocalRwandanPhone(phoneNumber);
+		if (!normalizedPhone) {
+			setPhoneError("Enter exactly 10 digits, for example 0780371519.");
 			return;
 		}
 		if (!termsAccepted) {
@@ -143,6 +144,7 @@ export function ListingBookingDialog({
 		}
 		setPhoneError(undefined);
 		setTermsErrorQuoteId(undefined);
+		setPhoneNumber(normalizedPhone);
 		onPay({ network, phoneNumber: normalizedPhone });
 	}
 
@@ -269,9 +271,11 @@ export function ListingBookingDialog({
 											autoComplete="tel"
 											icon={<Phone aria-hidden="true" />}
 											value={phoneNumber}
-											placeholder="0780 123 456"
+											placeholder="0780371519"
 											aria-invalid={Boolean(phoneError)}
-											aria-describedby={phoneError ? "payment-phone-error" : undefined}
+											aria-describedby={
+												phoneError ? "payment-phone-error" : "payment-phone-format"
+											}
 											onChange={(event) => {
 												setPhoneNumber(event.target.value);
 												setPhoneError(undefined);
@@ -280,6 +284,11 @@ export function ListingBookingDialog({
 										{phoneError ? (
 											<small id="payment-phone-error" className={styles.fieldError}>
 												{phoneError}
+											</small>
+										) : localPhonePreview ? (
+											<small id="payment-phone-format" className={styles.fieldHint}>
+												Sending as {localPhonePreview} and 250
+												{localPhonePreview.slice(1)}.
 											</small>
 										) : null}
 									</label>
@@ -311,9 +320,9 @@ export function ListingBookingDialog({
 								) : null}
 								<p className={styles.paymentNotice}>
 									<Smartphone aria-hidden="true" />
-									The displayed amount is the exact collection request and includes
-									transaction charges. Approve the prompt on your phone, and never
-									share your PIN with Pluto Booking or support.
+									The displayed amount is the exact Pluto collection amount. Your
+									provider may add its transaction fee. Approve the prompt on your
+									phone, and never share your PIN with Pluto Booking or support.
 								</p>
 								<DialogFooter className={styles.footer}>
 									<Button
@@ -463,6 +472,12 @@ export function ListingBookingDialog({
 			</DialogContent>
 		</Dialog>
 	);
+}
+
+function toLocalRwandanPhone(value: string): string | null {
+	const compact = value.trim().replace(/[\s()-]/g, "").replace(/^\+/, "");
+	const local = compact.startsWith("250") ? `0${compact.slice(3)}` : compact;
+	return /^07\d{8}$/.test(local) ? local : null;
 }
 
 function ProgressState({
