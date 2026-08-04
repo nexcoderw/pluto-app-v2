@@ -26,6 +26,7 @@ export type PaymentNetwork = "MTN_MOMO" | "AIRTEL_MONEY";
 export type PriceQuote = {
 	id: string;
 	quoteNo: string;
+	termsVersion: string;
 	productId: string | null;
 	startDate: string | null;
 	endDate: string | null;
@@ -159,6 +160,7 @@ export type CreateListingQuotePayload = {
 
 export type CreateCheckoutPayload = {
 	priceQuoteId: string;
+	acceptedTermsVersion: string;
 	idempotencyKey: string;
 };
 
