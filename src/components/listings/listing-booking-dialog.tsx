@@ -104,7 +104,9 @@ export function ListingBookingDialog({
 	onRetryDates,
 }: ListingBookingDialogProps) {
 	const [network, setNetwork] = useState<PaymentNetwork>("MTN_MOMO");
-	const [phoneNumber, setPhoneNumber] = useState(defaultPhone);
+	const [phoneNumber, setPhoneNumber] = useState(
+		() => toLocalRwandanPhone(defaultPhone) ?? defaultPhone,
+	);
 	const [phoneError, setPhoneError] = useState<string>();
 	const localPhonePreview = toLocalRwandanPhone(phoneNumber);
 	const [acceptedTermsQuoteId, setAcceptedTermsQuoteId] = useState<string>();
@@ -131,6 +133,11 @@ export function ListingBookingDialog({
 		const timer = window.setInterval(() => setNow(Date.now()), 1_000);
 		return () => window.clearInterval(timer);
 	}, [mode, open, quote]);
+
+	useEffect(() => {
+		const normalizedProfilePhone = toLocalRwandanPhone(defaultPhone);
+		if (normalizedProfilePhone) setPhoneNumber(normalizedProfilePhone);
+	}, [defaultPhone]);
 
 	function submitPayment() {
 		const normalizedPhone = toLocalRwandanPhone(phoneNumber);
@@ -340,7 +347,7 @@ export function ListingBookingDialog({
 										onClick={submitPayment}
 									>
 										<ShieldCheck aria-hidden="true" />
-										Pay {formatMoney(quote.totalMinor, quote.currency)}
+									Continue to MoMo
 									</Button>
 								</DialogFooter>
 							</>
@@ -613,8 +620,12 @@ function QuoteSummary({
 				: []),
 			...(rateLabel ? [["Locked exchange rate", rateLabel]] : []),
 			["Converted subtotal", formatMoney(quote.subtotalMinor, quote.currency)],
-			["Service fee", formatMoney(quote.serviceFeeMinor, quote.currency)],
+			["Pluto service fee", formatMoney(quote.serviceFeeMinor, quote.currency)],
 			["Tax", formatMoney(quote.taxMinor, quote.currency)],
+			[
+				`Estimated provider fee (${formatBasisPoints(quote.providerFeeEstimateBps)})`,
+				formatMoney(quote.providerFeeEstimateMinor, quote.currency),
+			],
 		],
 		[
 			durationCount,
@@ -637,13 +648,17 @@ function QuoteSummary({
 				</div>
 			))}
 			<div className={styles.totalRow}>
-				<span>Amount to pay</span>
-				<strong>{formatMoney(quote.totalMinor, quote.currency)}</strong>
+				<span>Estimated phone debit</span>
+				<strong>
+					{formatMoney(quote.estimatedCustomerDebitMinor, quote.currency)}
+				</strong>
 			</div>
 			<p className={styles.estimateNote}>
-				Your payment will be collected in Rwandan francs. This exchange rate is
-				locked until {formatExpiryTime(quote.expiresAt)}. A fresh quote may use a
-				different exchange rate. Quote {quote.quoteNo}.
+				Pluto sends {formatMoney(quote.totalMinor, quote.currency)} for collection.
+				The provider fee is a configurable estimate because XentriPay does not
+				publish its collection fee formula in the supplied contract. Your phone
+				prompt is authoritative. This quote is locked until {formatExpiryTime(quote.expiresAt)}.
+				Quote {quote.quoteNo}.
 			</p>
 		</section>
 	);
@@ -675,6 +690,10 @@ function formatRate(value: string) {
 		minimumFractionDigits: 3,
 		maximumFractionDigits: 8,
 	}).format(rate);
+}
+
+function formatBasisPoints(value: number): string {
+	return `${(value / 100).toFixed(value % 100 === 0 ? 0 : 2)}%`;
 }
 
 function ReferenceBox({
