@@ -7,6 +7,8 @@ import {
 	CalendarCheck,
 	CheckCircle2,
 	Clock3,
+	CreditCard,
+	ExternalLink,
 	Loader2,
 	Phone,
 	ReceiptText,
@@ -35,7 +37,9 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import type {
+	PaymentAction,
 	PaymentIntent,
+	PaymentMethod,
 	PaymentNetwork,
 	PriceQuote,
 } from "@/services/api/payments";
@@ -64,13 +68,15 @@ type ListingBookingDialogProps = {
 	quote?: PriceQuote;
 	rateChangedFrom?: string;
 	payment?: PaymentIntent;
+	paymentAction?: PaymentAction;
 	defaultPhone: string;
 	errorMessage?: string;
 	supportReference?: string;
 	isCheckingStatus: boolean;
 	onOpenChange: (open: boolean) => void;
 	onPay: (input: {
-		network: PaymentNetwork;
+		method: PaymentMethod;
+		network?: PaymentNetwork;
 		phoneNumber: string;
 	}) => void;
 	onCheckStatus: () => void;
@@ -91,6 +97,7 @@ export function ListingBookingDialog({
 	quote,
 	rateChangedFrom,
 	payment,
+	paymentAction,
 	defaultPhone,
 	errorMessage,
 	supportReference,
@@ -104,6 +111,8 @@ export function ListingBookingDialog({
 	onRetryDates,
 }: ListingBookingDialogProps) {
 	const [network, setNetwork] = useState<PaymentNetwork>("MTN_MOMO");
+	const [paymentMethod, setPaymentMethod] =
+		useState<PaymentMethod>("MOBILE_MONEY");
 	const [phoneNumber, setPhoneNumber] = useState(
 		() => toLocalRwandanPhone(defaultPhone) ?? defaultPhone,
 	);
@@ -152,7 +161,11 @@ export function ListingBookingDialog({
 		setPhoneError(undefined);
 		setTermsErrorQuoteId(undefined);
 		setPhoneNumber(normalizedPhone);
-		onPay({ network, phoneNumber: normalizedPhone });
+		onPay({
+			method: paymentMethod,
+			network: paymentMethod === "MOBILE_MONEY" ? network : undefined,
+			phoneNumber: normalizedPhone,
+		});
 	}
 
 	return (
@@ -191,7 +204,7 @@ export function ListingBookingDialog({
 							</DialogTitle>
 							<DialogDescription>
 								Pluto Booking reserved these dates temporarily. Confirm the exact
-								amount below before starting mobile-money payment.
+								amount below before starting payment.
 							</DialogDescription>
 						</DialogHeader>
 						<QuoteSummary
@@ -247,29 +260,62 @@ export function ListingBookingDialog({
 							</DialogFooter>
 						) : (
 							<>
-								<div className={styles.paymentFields}>
-									<label>
-										<span>Mobile-money network</span>
+								<div
+									className={styles.paymentFields}
+									data-method={paymentMethod}
+								>
+									<label className={styles.paymentMethodField}>
+										<span>Payment method</span>
 										<Select
-											value={network}
+											value={paymentMethod}
 											onValueChange={(value) =>
-												setNetwork(value as PaymentNetwork)
+												setPaymentMethod(value as PaymentMethod)
 											}
 										>
 											<SelectTrigger className={styles.selectTrigger}>
-												<WalletCards aria-hidden="true" />
+												{paymentMethod === "CARD" ? (
+													<CreditCard aria-hidden="true" />
+												) : (
+													<Smartphone aria-hidden="true" />
+												)}
 												<SelectValue />
 											</SelectTrigger>
 											<SelectContent align="start" alignItemWithTrigger={false}>
 												<SelectGroup>
-													<SelectItem value="MTN_MOMO">MTN MoMo</SelectItem>
-													<SelectItem value="AIRTEL_MONEY">
-														Airtel Money
+													<SelectItem value="MOBILE_MONEY">
+														Mobile money
+													</SelectItem>
+													<SelectItem value="CARD">
+														Credit or debit card
 													</SelectItem>
 												</SelectGroup>
 											</SelectContent>
 										</Select>
 									</label>
+									{paymentMethod === "MOBILE_MONEY" ? (
+										<label>
+											<span>Mobile-money network</span>
+											<Select
+												value={network}
+												onValueChange={(value) =>
+													setNetwork(value as PaymentNetwork)
+												}
+											>
+												<SelectTrigger className={styles.selectTrigger}>
+													<WalletCards aria-hidden="true" />
+													<SelectValue />
+												</SelectTrigger>
+												<SelectContent align="start" alignItemWithTrigger={false}>
+													<SelectGroup>
+														<SelectItem value="MTN_MOMO">MTN MoMo</SelectItem>
+														<SelectItem value="AIRTEL_MONEY">
+															Airtel Money
+														</SelectItem>
+													</SelectGroup>
+												</SelectContent>
+											</Select>
+										</label>
+									) : null}
 									<label>
 										<span>Payment phone number</span>
 										<Input
@@ -326,10 +372,14 @@ export function ListingBookingDialog({
 									</small>
 								) : null}
 								<p className={styles.paymentNotice}>
-									<Smartphone aria-hidden="true" />
-									The displayed amount is the exact Pluto collection amount. Your
-									provider may add its transaction fee. Approve the prompt on your
-									phone, and never share your PIN with Pluto Booking or support.
+									{paymentMethod === "CARD" ? (
+										<CreditCard aria-hidden="true" />
+									) : (
+										<Smartphone aria-hidden="true" />
+									)}
+									{paymentMethod === "CARD"
+										? "Pluto never asks for card details. Enter them only on the secure Urubuto-hosted page, then return here while Pluto verifies the payment."
+										: "The displayed amount is the exact Pluto collection amount. Your provider may add its transaction fee. Approve the prompt on your phone, and never share your PIN with Pluto Booking or support."}
 								</p>
 								<DialogFooter className={styles.footer}>
 									<Button
@@ -347,7 +397,9 @@ export function ListingBookingDialog({
 										onClick={submitPayment}
 									>
 										<ShieldCheck aria-hidden="true" />
-									Continue to MoMo
+										{paymentMethod === "CARD"
+											? "Prepare secure card payment"
+											: "Continue to MoMo"}
 									</Button>
 								</DialogFooter>
 							</>
@@ -358,7 +410,11 @@ export function ListingBookingDialog({
 				{mode === "payment-submitting" ? (
 					<ProgressState
 						title="Starting secure payment"
-						description="We are creating one protected payment attempt for the exact quote. Keep this window open and watch your phone."
+						description={
+							paymentMethod === "CARD"
+								? "We are creating one protected card attempt for the exact quote. Pluto will return only a trusted hosted payment link."
+								: "We are creating one protected payment attempt for the exact quote. Keep this window open and watch your phone."
+						}
 						quote={quote}
 					/>
 				) : null}
@@ -367,6 +423,7 @@ export function ListingBookingDialog({
 					<PaymentPendingState
 						unknown={mode === "unknown"}
 						payment={payment}
+						paymentAction={paymentAction}
 						isCheckingStatus={isCheckingStatus}
 						onCheckStatus={onCheckStatus}
 					/>
@@ -408,7 +465,7 @@ export function ListingBookingDialog({
 						<StateHeader
 							tone="error"
 							title="Payment was not completed"
-							description="No booking was confirmed. Review the mobile-money number before starting one new attempt. If funds appear to have moved, check status instead of paying again."
+							description="No booking was confirmed. Review your payment details before starting one new attempt. If funds appear to have moved, check status instead of paying again."
 						/>
 						<ReferenceBox payment={payment} tone="error" />
 						<DialogFooter className={styles.footer}>
@@ -520,26 +577,52 @@ function ProgressState({
 function PaymentPendingState({
 	unknown,
 	payment,
+	paymentAction,
 	isCheckingStatus,
 	onCheckStatus,
 }: {
 	unknown: boolean;
 	payment?: PaymentIntent;
+	paymentAction?: PaymentAction;
 	isCheckingStatus: boolean;
 	onCheckStatus: () => void;
 }) {
+	const isCard = payment?.method === "CARD";
 	return (
 		<>
 			<StateHeader
 				tone={unknown ? "warning" : "progress"}
-				title={unknown ? "Still confirming your payment" : "Approve payment on your phone"}
+				title={
+					unknown
+						? "Still confirming your payment"
+						: isCard
+							? "Complete secure card payment"
+							: "Approve payment on your phone"
+				}
 				description={
 					unknown
 						? "The provider has not returned a final result. Do not pay again. We will keep checking safely and email you when the status changes."
-						: "Complete the mobile-money prompt. This screen updates from Pluto Booking's verified payment status, not from the browser."
+						: isCard
+							? "Open the secure provider page below. Card details never pass through Pluto, and this screen confirms only authenticated provider status."
+							: "Complete the mobile-money prompt. This screen updates from Pluto Booking's verified payment status, not from the browser."
 				}
 			/>
 			<ReferenceBox payment={payment} tone={unknown ? "warning" : "pending"} />
+			{!unknown && isCard && paymentAction ? (
+				<Button
+					className={styles.cardActionButton}
+					render={
+						<a
+							href={paymentAction.url}
+							target="_blank"
+							rel="noopener noreferrer"
+						/>
+					}
+				>
+					<ExternalLink aria-hidden="true" />
+					Open secure card page
+				</Button>
+			) : null}
 			<DialogFooter className={styles.footer}>
 				<Button
 					variant="outline"
@@ -578,7 +661,8 @@ function StateHeader({
 	title: string;
 	description: string;
 }) {
-	const Icon = tone === "warning" ? Clock3 : tone === "progress" ? Smartphone : AlertCircle;
+	const Icon =
+		tone === "warning" ? Clock3 : tone === "progress" ? Smartphone : AlertCircle;
 	return (
 		<DialogHeader className={styles.header}>
 			<span className={styles.iconWrap} data-tone={tone}>
