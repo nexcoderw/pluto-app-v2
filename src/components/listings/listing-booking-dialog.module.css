@@ -194,6 +194,14 @@
 	gap: 0.7rem;
 }
 
+.paymentMethodField {
+	grid-column: 1 / -1;
+}
+
+.paymentFields[data-method="CARD"] > label:last-child {
+	grid-column: 1 / -1;
+}
+
 .paymentFields label {
 	display: grid;
 	gap: 0.38rem;
@@ -260,6 +268,11 @@
 	margin: 0;
 	background: rgba(22, 138, 73, 0.07);
 	color: #126c3b;
+}
+
+.cardActionButton {
+	width: 100%;
+	cursor: pointer;
 }
 
 .progressTrack {
