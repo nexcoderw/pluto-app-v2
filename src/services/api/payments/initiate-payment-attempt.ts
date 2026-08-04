@@ -7,7 +7,7 @@ import type {
 	PaymentIntentResponse,
 } from "./types";
 
-// Starts one idempotent mobile-money attempt for the canonical intent amount.
+// Starts one idempotent mobile-money or hosted-card attempt for the canonical amount.
 export async function initiatePaymentAttempt(
 	paymentIntentId: string,
 	payload: InitiatePaymentAttemptPayload,
