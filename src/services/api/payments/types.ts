@@ -41,6 +41,9 @@ export type PriceQuote = {
 	taxMinor: string;
 	discountMinor: string;
 	totalMinor: string;
+	providerFeeEstimateBps: number;
+	providerFeeEstimateMinor: string;
+	estimatedCustomerDebitMinor: string;
 	currency: string;
 	status: string;
 	expiresAt: string;
