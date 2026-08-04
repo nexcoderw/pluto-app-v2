@@ -178,6 +178,11 @@ local `cnumber` value `0781862349` and shows the paired `msisdn`
 collection amount from the configurable estimated XentriPay fee and estimated
 phone debit. Because the supplied provider contract does not publish a fee
 formula, the phone prompt remains authoritative for the actual provider fee.
+The API snapshots that fee basis-point value and both estimated amounts on the
+quote. Every pre-payment, pending, success, history, and receipt view must use
+that stored snapshot; clients must never recompute it from current environment
+configuration or replace the customer-facing debit with the smaller canonical
+collection amount after initiation.
 
 For a USD listing, quote review also shows the original USD subtotal, locked
 USD/RWF rate, and exact RWF amount that XentriPay may collect. Changing the
