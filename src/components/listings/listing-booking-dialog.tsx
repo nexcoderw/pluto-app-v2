@@ -121,6 +121,8 @@ export function ListingBookingDialog({
 	);
 	const [phoneError, setPhoneError] = useState<string>();
 	const localPhonePreview = toLocalRwandanPhone(phoneNumber);
+	const profilePhone = toLocalRwandanPhone(defaultPhone);
+	const showPhoneField = paymentMethod === "MOBILE_MONEY" || !profilePhone;
 	const [acceptedTermsQuoteId, setAcceptedTermsQuoteId] = useState<string>();
 	const [termsErrorQuoteId, setTermsErrorQuoteId] = useState<string>();
 	const [now, setNow] = useState(() => Date.now());
@@ -156,7 +158,10 @@ export function ListingBookingDialog({
 	}, [defaultPhone]);
 
 	function submitPayment() {
-		const normalizedPhone = toLocalRwandanPhone(phoneNumber);
+		const normalizedPhone =
+			paymentMethod === "CARD"
+				? profilePhone ?? toLocalRwandanPhone(phoneNumber)
+				: toLocalRwandanPhone(phoneNumber);
 		if (!normalizedPhone) {
 			setPhoneError("Enter exactly 10 digits, for example 0780371519.");
 			return;
@@ -333,7 +338,8 @@ export function ListingBookingDialog({
 											</Button>
 										</div>
 
-										<div className={styles.paymentFields} data-method={paymentMethod}>
+										{showPhoneField ? (
+											<div className={styles.paymentFields} data-method={paymentMethod}>
 									{paymentMethod === "MOBILE_MONEY" ? (
 										<label>
 											<span>Mobile-money network</span>
@@ -359,7 +365,11 @@ export function ListingBookingDialog({
 										</label>
 									) : null}
 									<label>
-										<span>Payment phone number</span>
+										<span>
+											{paymentMethod === "CARD"
+												? "Contact phone number"
+												: "Payment phone number"}
+										</span>
 										<Input
 											type="tel"
 											inputMode="tel"
@@ -380,9 +390,16 @@ export function ListingBookingDialog({
 											<small id="payment-phone-error" className={styles.fieldError}>
 												{phoneError}
 											</small>
+										) : localPhonePreview ? (
+											<small id="payment-phone-format" className={styles.fieldHint}>
+												{paymentMethod === "CARD"
+													? "Required to create the secure hosted-card session."
+													: `Sending as ${localPhonePreview} and 250${localPhonePreview.slice(1)}.`}
+											</small>
 										) : null}
 									</label>
-										</div>
+											</div>
+										) : null}
 										<div
 											className={styles.termsAcceptance}
 											data-invalid={Boolean(termsError)}
