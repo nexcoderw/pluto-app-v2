@@ -98,6 +98,7 @@ export function useListingBookingFlow({
 	const checkoutKeyRef = useRef<string | undefined>(undefined);
 	const attemptKeyRef = useRef<string | undefined>(undefined);
 	const paymentIntentIdRef = useRef<string | undefined>(undefined);
+	const paymentSubmissionRef = useRef(false);
 	const previousRateRef = useRef<string | undefined>(undefined);
 	const currentUser = useUserSession();
 	const queryClient = useQueryClient();
@@ -191,6 +192,7 @@ export function useListingBookingFlow({
 				(
 					await createCheckout({
 						priceQuoteId: quote.id,
+						acceptedTermsVersion: quote.termsVersion,
 						idempotencyKey: getRequestKey(checkoutKeyRef, "checkout"),
 					})
 				).checkout;
@@ -224,6 +226,9 @@ export function useListingBookingFlow({
 
 			applyCheckoutError(error, "Payment could not be started safely.");
 			setDialogMode(isExpiredError(error) ? "expired" : "error");
+		},
+		onSettled: () => {
+			paymentSubmissionRef.current = false;
 		},
 	});
 
@@ -314,6 +319,7 @@ export function useListingBookingFlow({
 		checkoutKeyRef.current = undefined;
 		attemptKeyRef.current = undefined;
 		paymentIntentIdRef.current = undefined;
+		paymentSubmissionRef.current = false;
 	}
 
 	function handleDateRangeChange(nextRange: DateRange | undefined) {
@@ -392,6 +398,18 @@ export function useListingBookingFlow({
 		setDialogMode("quote");
 	}
 
+	function submitPayment(input: {
+		network: PaymentNetwork;
+		phoneNumber: string;
+	}) {
+		if (paymentSubmissionRef.current || paymentMutation.isPending) {
+			return;
+		}
+
+		paymentSubmissionRef.current = true;
+		paymentMutation.mutate(input);
+	}
+
 	const bookingDialog = (
 		<ListingBookingDialog
 			open={isDialogOpen}
@@ -409,7 +427,7 @@ export function useListingBookingFlow({
 			supportReference={supportReference}
 			isCheckingStatus={reconcileMutation.isPending}
 			onOpenChange={setIsDialogOpen}
-			onPay={(input) => paymentMutation.mutate(input)}
+			onPay={submitPayment}
 			onCheckStatus={() => reconcileMutation.mutate()}
 			onRetryPayment={retryPayment}
 			onRefreshQuote={() => {
