@@ -218,6 +218,13 @@
 	font-weight: 700;
 }
 
+.fieldHint {
+	padding-left: 0.35rem;
+	color: rgba(23, 23, 31, 0.62);
+	font-size: 0.7rem;
+	font-weight: 650;
+}
+
 .termsAcceptance {
 	display: flex;
 	align-items: flex-start;
