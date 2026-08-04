@@ -54,6 +54,10 @@ The safe sequence is:
 8. Only verified success confirms the booking. Failure or expiry releases the
    hold safely; an unknown result remains `confirming` until reconciliation.
 
+Quote acceptance includes the exact backend-issued terms version. The frontend
+must send that version when creating checkout, and a fresh quote resets the
+acceptance control so outdated terms cannot be silently reused.
+
 This gives the customer the experience of paying before a booking is final,
 without creating an untraceable payment. For request-to-book inventory, partner
 approval may happen before steps 3–5. For instant-book inventory, the hold and
