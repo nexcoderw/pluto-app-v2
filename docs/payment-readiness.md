@@ -174,15 +174,15 @@ authenticated reconciliation without creating another charge.
 
 The dialog normalizes a profile phone such as `+250781862349` to the documented
 local `cnumber` value `0781862349` and shows the paired `msisdn`
-`250781862349` before submission. It also separates Pluto's immutable
-collection amount from the configurable estimated XentriPay fee and estimated
-phone debit. Because the supplied provider contract does not publish a fee
-formula, the phone prompt remains authoritative for the actual provider fee.
-The API snapshots that fee basis-point value and both estimated amounts on the
-quote. Every pre-payment, pending, success, history, and receipt view must use
-that stored snapshot; clients must never recompute it from current environment
-configuration or replace the customer-facing debit with the smaller canonical
-collection amount after initiation.
+`250781862349` before submission. The browser loads its collection-fee and tax
+basis points only from `NEXT_PUBLIC_XENTRIPAY_COLLECTION_FEE_BPS` and
+`NEXT_PUBLIC_PAYMENT_TAX_BPS` to provide immediate, clearly labelled feedback.
+That quick estimate is never submitted. The API loads its matching private
+configuration, snapshots the exact fee, tax, and payable total on the quote,
+and that server total replaces the browser estimate before acceptance. New
+provider requests submit exactly that total with charges included, so the MoMo
+prompt and Urubuto card page must show the same amount. Every pending, success,
+history, and receipt view continues to render the stored quote total.
 
 For a USD listing, quote review also shows the original USD subtotal, locked
 USD/RWF rate, and exact RWF amount that XentriPay may collect. Changing the
