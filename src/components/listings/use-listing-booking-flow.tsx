@@ -439,6 +439,7 @@ export function useListingBookingFlow({
 			durationCount={durationCount}
 			durationLabel={durationLabel}
 			estimatedTotal={totalPrice}
+			estimatedCurrency={listing.currency}
 			quote={quote}
 			rateChangedFrom={rateChangedFrom}
 			payment={canonicalPayment}
