@@ -281,8 +281,20 @@ function PaymentCard({
 				<time dateTime={payment.createdAt}>{formatDate(payment.createdAt)}</time>
 			</header>
 			<div className={styles.amount}>
-				<span>Canonical amount</span>
-				<strong>{formatMoney(payment.amountMinor, payment.currency)}</strong>
+				<span>Estimated customer debit</span>
+				<strong>
+					{formatMoney(
+						payment.priceQuote.estimatedCustomerDebitMinor,
+						payment.currency,
+					)}
+				</strong>
+				<small>
+					Pluto collection: {formatMoney(payment.amountMinor, payment.currency)} · estimated
+					 provider fee: {formatMoney(
+						payment.priceQuote.providerFeeEstimateMinor,
+						payment.currency,
+					)} ({formatBasisPoints(payment.priceQuote.providerFeeEstimateBps)})
+				</small>
 				{payment.priceQuote.sourceSubtotalMinor && payment.priceQuote.sourceCurrency ? (
 					<small>
 						Original listing amount: {formatMinorMoney(
@@ -459,6 +471,10 @@ function formatRate(value: string) {
 		minimumFractionDigits: 3,
 		maximumFractionDigits: 8,
 	}).format(Number(value));
+}
+
+function formatBasisPoints(value: number): string {
+	return `${(value / 100).toFixed(value % 100 === 0 ? 0 : 2)}%`;
 }
 
 function formatRange(start: string | null, end: string | null): string {
