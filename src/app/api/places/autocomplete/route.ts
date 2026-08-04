@@ -18,14 +18,12 @@ type GoogleAutocompleteResponse = {
 export async function GET(request: Request) {
 	const { searchParams } = new URL(request.url);
 	const input = searchParams.get("input")?.trim() ?? "";
-	const apiKey =
-		process.env.GOOGLE_MAPS_API_KEY ??
-		process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+	const apiKey = process.env.GOOGLE_MAPS_API_KEY?.trim();
 
 	if (!apiKey) {
 		return NextResponse.json(
-			{ message: "Google Places is not configured." },
-			{ status: 500 },
+			{ message: "Location search is temporarily unavailable." },
+			{ status: 503 },
 		);
 	}
 
@@ -40,9 +38,19 @@ export async function GET(request: Request) {
 	googleUrl.searchParams.set("key", apiKey);
 	googleUrl.searchParams.set("components", "country:rw");
 
-	const response = await fetch(googleUrl, {
-		cache: "no-store",
-	});
+	let response: Response;
+
+	try {
+		response = await fetch(googleUrl, {
+			cache: "no-store",
+			signal: AbortSignal.timeout(8_000),
+		});
+	} catch {
+		return NextResponse.json(
+			{ message: "Location search could not reach Google Places." },
+			{ status: 502 },
+		);
+	}
 
 	if (!response.ok) {
 		return NextResponse.json(
