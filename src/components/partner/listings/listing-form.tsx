@@ -6,6 +6,7 @@ import {
 	type ReactNode,
 	useEffect,
 	useMemo,
+	useRef,
 	useState,
 } from "react";
 import Image from "next/image";
@@ -277,6 +278,7 @@ export function ListingForm({
 	const [progressOpen, setProgressOpen] = useState(false);
 	const [progressState, setProgressState] =
 		useState<ListingSaveProgressState>(initialProgressState);
+	const submissionInFlightRef = useRef(false);
 	const isEdit = mode === "edit" && Boolean(product);
 	const mutation = useMutation({
 		mutationFn: async () => {
@@ -306,36 +308,32 @@ export function ListingForm({
 					mediaTotal: imageFiles.length,
 				});
 
-				await Promise.all(
-					imageFiles.map(async (file, index) => {
-						const uploadedImage = await uploadProductImage({
-							productId: response.product.id,
-							file,
-							isCover: index === 0 && existingImages.length === 0,
-							sortOrder: existingImages.length + index,
-							altText: `${values.title} image ${index + 1}`,
-						});
+				for (const [index, file] of imageFiles.entries()) {
+					await uploadProductImage({
+						productId: response.product.id,
+						file,
+						isCover: index === 0 && existingImages.length === 0,
+						sortOrder: existingImages.length + index,
+						altText: `${values.title} image ${index + 1}`,
+					});
 
-						setProgressState((current) => {
-							const nextCompleted = Math.min(
-								current.mediaCompleted + 1,
-								imageFiles.length,
-							);
-							const mediaProgress =
-								48 + Math.round((nextCompleted / imageFiles.length) * 34);
+					setProgressState((current) => {
+						const nextCompleted = Math.min(
+							current.mediaCompleted + 1,
+							imageFiles.length,
+						);
+						const mediaProgress =
+							48 + Math.round((nextCompleted / imageFiles.length) * 34);
 
-							return {
-								...current,
-								phase: "uploading",
-								progress: mediaProgress,
-								mediaCompleted: nextCompleted,
-								mediaTotal: imageFiles.length,
-							};
-						});
-
-						return uploadedImage;
-					}),
-				);
+						return {
+							...current,
+							phase: "uploading",
+							progress: mediaProgress,
+							mediaCompleted: nextCompleted,
+							mediaTotal: imageFiles.length,
+						};
+					});
+				}
 			}
 
 			setProgressState({
@@ -380,6 +378,9 @@ export function ListingForm({
 			});
 			await wait(1400);
 			setProgressOpen(false);
+		},
+		onSettled: () => {
+			submissionInFlightRef.current = false;
 		},
 	});
 	const deleteImageMutation = useMutation({
@@ -530,6 +531,11 @@ export function ListingForm({
 
 	function handleSubmit(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
+
+		if (submissionInFlightRef.current || mutation.isPending) {
+			return;
+		}
+
 		const nextErrors = validateValues(values);
 
 		if (Object.keys(nextErrors).length > 0) {
@@ -545,6 +551,7 @@ export function ListingForm({
 			mediaTotal: imageFiles.length,
 		});
 		setProgressOpen(true);
+		submissionInFlightRef.current = true;
 		mutation.mutate();
 	}
 
