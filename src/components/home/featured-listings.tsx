@@ -29,6 +29,10 @@ import {
 import { ListingFavoriteButton } from "@/components/listings/listing-favorite-button";
 import { useCurrency } from "@/providers/currency-provider";
 import styles from "./featured-listings.module.css";
+import {
+	trackListingSelection,
+	useListingListAnalytics,
+} from "@/components/listings/use-listing-analytics";
 
 type FeaturedCategory = ListingCategorySlug | "all";
 const FEATURED_LISTING_LIMIT = 3;
@@ -133,6 +137,15 @@ export function FeaturedListings() {
 		activeCategory === "all"
 			? featuredItems
 			: featuredItems.filter((item) => item.source.slug === activeCategory);
+	const visibleListings = visibleItems.map(
+		({ listing }) => listing,
+	);
+
+	useListingListAnalytics({
+		list: "homepageFeatured",
+		listings: visibleListings,
+		enabled: !isLoading && !isError,
+	});
 	const activeSource =
 		activeCategory === "all"
 			? null
@@ -195,8 +208,9 @@ export function FeaturedListings() {
 				</div>
 			) : visibleItems.length ? (
 				<div className={styles.grid}>
-					{visibleItems.map(({ source, listing }) => (
+					{visibleItems.map(({ source, listing }, index) => (
 						<FeaturedListingCard
+							index={index}
 							key={`${source.slug}-${listing.id}`}
 							listing={listing}
 							source={source}
@@ -247,9 +261,11 @@ function CategoryTab({
 function FeaturedListingCard({
 	listing,
 	source,
+	index,
 }: {
 	listing: PublicListing;
 	source: FeaturedSource;
+	index: number;
 }) {
 	const { formatMoney } = useCurrency();
 	const Icon = source.icon;
@@ -266,7 +282,17 @@ function FeaturedListingCard({
 
 	return (
 		<article className={styles.card}>
-			<Link href={detailHref} className={styles.cardLink}>
+			<Link
+				href={detailHref}
+				className={styles.cardLink}
+				onClick={() =>
+					trackListingSelection(
+						listing,
+						"homepageFeatured",
+						index,
+					)
+				}
+			>
 				<span className={styles.imageWrap}>
 					<Image
 						src={cover.src}
@@ -320,7 +346,10 @@ function FeaturedListingCard({
 			<ListingFavoriteButton
 				productId={listing.id}
 				listingTitle={listing.title}
-				className={styles.favoriteIcon}
+				category={listing.category}
+				price={Number(listing.basePrice)}
+				currency={listing.currency}
+				className={styles.favoriteButton}
 				label="Save listing"
 			/>
 		</article>
