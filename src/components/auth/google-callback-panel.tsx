@@ -15,6 +15,7 @@ import {
 	readUserGoogleCallbackStatus,
 } from '@/services/api/auth';
 import styles from './auth-form.module.css';
+import { trackLogin } from '@/lib/analytics/events';
 
 export function GoogleCallbackPanel() {
 	return (
@@ -44,6 +45,9 @@ function GoogleCallbackContent() {
 
 		completeUserGoogleLogin()
 			.then((response) => {
+				trackLogin({
+					method: 'google',
+				});
 				if (
 					callbackStatus === 'phone_required' ||
 					response.user.requiresPhoneNumber
