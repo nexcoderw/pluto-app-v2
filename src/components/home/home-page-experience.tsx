@@ -3,11 +3,15 @@
 import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { LogIn, Menu, Power, UserPlus, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import {
+	isPublicNavigationLinkActive,
+	PUBLIC_NAVIGATION_LINKS,
+} from "@/constants/public-navigation";
 import { useUserSession } from "@/hooks/use-user-session";
 import { getUserPortalPath } from "@/lib/user-portal";
 import { logoutUser, type UserAuthProfile } from "@/services/api/auth";
@@ -19,15 +23,6 @@ import { PartnerCta } from "./partner-cta";
 import { PopularCategories } from "./popular-categories";
 import { WhyPlutoBooking } from "./why-pluto-booking";
 import styles from "./home-page-experience.module.css";
-
-const navigationLinks = [
-	{ href: "/flights", label: "Flight" },
-	{ href: "/listings/cars", label: "Cars" },
-	{ href: "/listings/apartments", label: "Apartments" },
-	{ href: "/listings/hotel-rooms", label: "Hotel Rooms" },
-	{ href: "/listings/airbnb", label: "AirBnB" },
-	{ href: "/#contact", label: "Contact us" },
-] as const;
 
 export function HomePageExperience() {
 	return (
@@ -55,9 +50,11 @@ export function HomePageExperience() {
 }
 
 function HomeNavbar() {
+	const pathname = usePathname();
 	const router = useRouter();
 	const [isOpen, setIsOpen] = useState(false);
 	const [isLoggingOut, setIsLoggingOut] = useState(false);
+	const [currentHash, setCurrentHash] = useState("");
 	const currentUser = useUserSession();
 	const userPortalPath = currentUser
 		? getUserPortalPath(currentUser, getCachedPartnerProfileStatus())
@@ -71,6 +68,16 @@ function HomeNavbar() {
 		() => getUserInitials(currentUser?.fullName ?? currentUser?.email ?? ""),
 		[currentUser],
 	);
+
+	useEffect(() => {
+		function updateHash() {
+			setCurrentHash(window.location.hash);
+		}
+
+		updateHash();
+		window.addEventListener("hashchange", updateHash);
+		return () => window.removeEventListener("hashchange", updateHash);
+	}, []);
 
 	function closeMenu() {
 		setIsOpen(false);
@@ -110,11 +117,31 @@ function HomeNavbar() {
 				</Link>
 
 				<div className={styles.homeLinks} data-open={isOpen}>
-					{navigationLinks.map((link) => (
-						<Link key={link.href} href={link.href} onClick={closeMenu}>
-							{link.label}
-						</Link>
-					))}
+					{PUBLIC_NAVIGATION_LINKS.map((link) => {
+						const isActive = isPublicNavigationLinkActive(
+							pathname,
+							link.href,
+							currentHash,
+						);
+
+						return (
+							<Link
+								key={link.href}
+								href={link.href}
+								data-active={isActive ? "true" : "false"}
+								aria-current={
+									isActive
+										? link.href.includes("#")
+											? "location"
+											: "page"
+										: undefined
+								}
+								onClick={closeMenu}
+							>
+								{link.label}
+							</Link>
+						);
+					})}
 					<div
 						className={styles.mobileAuth}
 						data-authenticated={Boolean(currentUser)}
