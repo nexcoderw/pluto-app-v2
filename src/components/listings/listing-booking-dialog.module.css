@@ -612,6 +612,38 @@
 	font-size: 0.66rem;
 }
 
+.promptRecoveryNote {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.55rem;
+	margin: 0;
+	border: 1px solid rgba(180, 83, 9, 0.16);
+	border-radius: 0.9rem;
+	background: #fff8ed;
+	padding: 0.72rem 0.8rem;
+	color: #7c3f08;
+	font-size: 0.68rem;
+	font-weight: 650;
+	line-height: 1.5;
+}
+
+.promptRecoveryNote svg {
+	width: 1rem;
+	height: 1rem;
+	flex: 0 0 auto;
+	margin-top: 0.08rem;
+}
+
+.promptRecoveryNote code {
+	border-radius: 0.35rem;
+	background: rgba(180, 83, 9, 0.09);
+	padding: 0.08rem 0.24rem;
+	color: inherit;
+	font-family: inherit;
+	font-weight: 850;
+	white-space: nowrap;
+}
+
 .progressTrack {
 	height: 0.42rem;
 	overflow: hidden;
