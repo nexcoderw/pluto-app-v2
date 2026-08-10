@@ -1,6 +1,9 @@
 "use client";
 
-import type { ReactNode } from "react";
+import type {
+	MouseEvent as ReactMouseEvent,
+	ReactNode,
+} from "react";
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -46,6 +49,14 @@ import {
 import { ApartmentListingsMap } from "./apartments/apartment-listings-map";
 import styles from "./category-listings-page.module.css";
 import { ListingFilterDialog } from "./listing-filter-dialog";
+import type {
+	PlutoListingListContext,
+} from "@/lib/analytics/events";
+import {
+	trackListingSelection,
+	useListingListAnalytics,
+	useListingSearchAnalytics,
+} from "./use-listing-analytics";
 
 export type ListingSidebarFilter = {
 	key: keyof ListingListRequest;
@@ -140,6 +151,29 @@ export function CategoryListingsPage({
 	});
 	const listings = listingsQuery.data?.items ?? [];
 	const meta = listingsQuery.data?.meta;
+	const listingListContext: PlutoListingListContext =
+		search.trim().length > 0
+			? "searchResults"
+			: "categoryResults";
+
+	const listingStartIndex = (page - 1) * 12;
+
+	const analyticsReady =
+		listingsQuery.isSuccess &&
+		!listingsQuery.isFetching;
+
+	useListingListAnalytics({
+		list: listingListContext,
+		listings,
+		startIndex: listingStartIndex,
+		enabled: analyticsReady,
+	});
+
+	useListingSearchAnalytics({
+		searchTerm: search,
+		categorySlug,
+		enabled: analyticsReady,
+	});
 	const usesStayMapLayout =
 		categorySlug === "apartments" ||
 		categorySlug === "hotel-rooms" ||
@@ -183,6 +217,49 @@ export function CategoryListingsPage({
 		setDraftFilter(filter.key, parseFilterValue(filter, value));
 	}
 
+	function handleListingSelect(listingId: string): void {
+		const index = listings.findIndex(
+			(listing) => listing.id === listingId,
+		);
+
+		if (index < 0) {
+			return;
+		}
+
+		trackListingSelection(
+			listings[index],
+			listingListContext,
+			listingStartIndex + index,
+		);
+	}
+
+	function handleListingResultClick(
+		event: ReactMouseEvent<HTMLElement>,
+	): void {
+		if (!(event.target instanceof Element)) {
+			return;
+		}
+
+		const href = event.target
+			.closest("a")
+			?.getAttribute("href");
+
+		if (!href) {
+			return;
+		}
+
+		const listing = listings.find(
+			(item) =>
+				href === `${detailBaseHref}/${item.id}`,
+		);
+
+		if (!listing) {
+			return;
+		}
+
+		handleListingSelect(listing.id);
+	}
+
 	function renderListingResults() {
 		if (listingsQuery.isPending) {
 			return <CategoryListingsSkeleton renderCard={renderSkeletonCard} />;
@@ -212,7 +289,10 @@ export function CategoryListingsPage({
 
 		return (
 			<>
-				<section className={styles.grid}>
+				<section
+					className={styles.grid}
+					onClickCapture={handleListingResultClick}
+				>
 					{listings.map((listing, index) => {
 						const detailHref = `${detailBaseHref}/${listing.id}`;
 
@@ -429,6 +509,7 @@ export function CategoryListingsPage({
 								listings={listings}
 								detailBaseHref={detailBaseHref}
 								isLoading={listingsQuery.isFetching}
+								onListingSelect={handleListingSelect}
 								ariaLabel={`${categoryLabel} map`}
 								emptyTitle={`No mapped ${mapListingPlural}`}
 								emptyDescription={`${sentenceCase(mapListingPlural)} with saved coordinates will appear here.`}
