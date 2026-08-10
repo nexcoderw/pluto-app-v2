@@ -6,10 +6,16 @@ import { toast } from "sonner";
 import type { UserLoginResponse } from "@/services/api/auth";
 import { ListingLoginDialog } from "./listing-login-dialog";
 import { useListingFavorite } from "./use-listing-favorite";
+import type {
+	PlutoListingCategory,
+} from '@/lib/analytics/events';
 
 type ListingFavoriteButtonProps = {
 	productId: string;
 	listingTitle: string;
+	category: PlutoListingCategory;
+	price: number;
+	currency: string;
 	label: string;
 	className: string;
 	children?: ReactNode;
@@ -21,10 +27,18 @@ export function ListingFavoriteButton({
 	label,
 	className,
 	children,
+	category,
+	price,
+	currency,
 }: ListingFavoriteButtonProps) {
 	const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
 	const { currentUser, isFavorite, isPending, saveAfterLogin, toggleFavorite } =
-		useListingFavorite(productId);
+		useListingFavorite({
+			productId,
+			category,
+			price,
+			currency,
+		});
 
 	if (currentUser && currentUser.role !== "CUSTOMER") {
 		return null;
