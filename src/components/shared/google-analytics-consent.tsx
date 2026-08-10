@@ -21,7 +21,10 @@ import {
 	subscribeToAnalyticsConsent,
 	type AnalyticsConsentChoice,
 } from '@/lib/analytics/consent';
-import { updateLoadedAnalyticsConsent } from '@/lib/analytics/analytics';
+import {
+	flushPendingAnalyticsEvents,
+	updateLoadedAnalyticsConsent,
+} from '@/lib/analytics/analytics';
 import styles from './google-analytics-consent.module.css';
 
 type GoogleAnalyticsConsentProps = {
@@ -177,6 +180,9 @@ export function GoogleAnalyticsConsent({
 							measurementId,
 						)}`}
 						strategy="afterInteractive"
+						onReady={() => {
+							flushPendingAnalyticsEvents();
+						}}
 					/>
 				</>
 			) : null}
