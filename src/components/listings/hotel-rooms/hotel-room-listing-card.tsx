@@ -141,6 +141,9 @@ export function HotelRoomListingCard({
 					<ListingFavoriteButton
 						productId={listing.id}
 						listingTitle={listing.title}
+						category={listing.category}
+						price={Number(listing.basePrice)}
+						currency={listing.currency}
 						className={styles.favoriteButton}
 						label="Save hotel room"
 					/>
