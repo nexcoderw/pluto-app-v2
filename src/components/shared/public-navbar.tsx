@@ -8,21 +8,16 @@ import { useMemo, useState, type FormEvent } from "react";
 import { LogIn, Menu, Power, Search, UserPlus, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import {
+	isPublicNavigationLinkActive,
+	PUBLIC_NAVIGATION_LINKS,
+} from "@/constants/public-navigation";
 import { useUserSession } from "@/hooks/use-user-session";
 import { getUserPortalPath } from "@/lib/user-portal";
 import { logoutUser, type UserAuthProfile } from "@/services/api/auth";
 import { getCachedPartnerProfileStatus } from "@/services/api/token-store";
 import { CurrencySelector } from "./currency-selector";
 import styles from "./public-navbar.module.css";
-
-const navigationLinks = [
-	{ href: "/flights", label: "Flight" },
-	{ href: "/listings/cars", label: "Cars" },
-	{ href: "/listings/apartments", label: "Apartments" },
-	{ href: "/listings/hotel-rooms", label: "Hotel Rooms" },
-	{ href: "/listings/airbnb", label: "AirBnB" },
-	{ href: "/#contact", label: "Contact us" },
-] as const;
 
 export function PublicNavbar() {
 	const pathname = usePathname();
@@ -31,10 +26,10 @@ export function PublicNavbar() {
 		return null;
 	}
 
-	return <PublicNavbarContent />;
+	return <PublicNavbarContent pathname={pathname} />;
 }
 
-function PublicNavbarContent() {
+function PublicNavbarContent({ pathname }: { pathname: string }) {
 	const router = useRouter();
 	const [isOpen, setIsOpen] = useState(false);
 	const [search, setSearch] = useState("");
@@ -127,11 +122,27 @@ function PublicNavbarContent() {
 							onChange={(event) => setSearch(event.target.value)}
 						/>
 					</form>
-					{navigationLinks.map((link) => (
-						<Link key={link.href} href={link.href} onClick={closeMenu}>
-							{link.label}
-						</Link>
-					))}
+					{PUBLIC_NAVIGATION_LINKS.map((link) => {
+						const isActive = isPublicNavigationLinkActive(pathname, link.href);
+
+						return (
+							<Link
+								key={link.href}
+								href={link.href}
+								data-active={isActive ? "true" : "false"}
+								aria-current={
+									isActive
+										? link.href.includes("#")
+											? "location"
+											: "page"
+										: undefined
+								}
+								onClick={closeMenu}
+							>
+								{link.label}
+							</Link>
+						);
+					})}
 					<div
 						className={styles.mobileAuth}
 						data-authenticated={Boolean(currentUser)}
