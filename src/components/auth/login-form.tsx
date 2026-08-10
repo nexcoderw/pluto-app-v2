@@ -40,6 +40,7 @@ import {
 } from '@/services/api/auth';
 import { hasKnownUserSession } from '@/services/api/token-store';
 import styles from './auth-form.module.css';
+import { trackLogin } from '@/lib/analytics/events';
 
 const loginSchema = z.object({
 	email: z.string().email('Enter a valid email address.').max(254),
@@ -94,6 +95,9 @@ export function LoginForm({
 				deviceName,
 		}),
 		onSuccess: (response) => {
+			trackLogin({
+				method: 'email',
+			});
 			toast.success(response.message, {
 				description: successDescription,
 			});
