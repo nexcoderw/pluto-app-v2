@@ -21,28 +21,13 @@ import {
 	subscribeToAnalyticsConsent,
 	type AnalyticsConsentChoice,
 } from '@/lib/analytics/consent';
+import { updateLoadedAnalyticsConsent } from '@/lib/analytics/analytics';
 import styles from './google-analytics-consent.module.css';
 
 type GoogleAnalyticsConsentProps = {
 	enabled: boolean;
 	measurementId: string;
 };
-
-type GtagFunction = (...args: unknown[]) => void;
-
-declare global {
-	interface Window {
-		dataLayer?: unknown[];
-		gtag?: GtagFunction;
-	}
-}
-
-const deniedConsentState = {
-	ad_storage: 'denied',
-	ad_user_data: 'denied',
-	ad_personalization: 'denied',
-	analytics_storage: 'denied',
-} as const;
 
 function subscribeToHydration(): () => void {
 	return () => undefined;
@@ -54,10 +39,6 @@ function getHydratedSnapshot(): boolean {
 
 function getServerHydratedSnapshot(): boolean {
 	return false;
-}
-
-function denyLoadedGoogleAnalytics(): void {
-	window.gtag?.('consent', 'update', deniedConsentState);
 }
 
 export function GoogleAnalyticsConsent({
@@ -77,7 +58,8 @@ export function GoogleAnalyticsConsent({
 		getServerHydratedSnapshot,
 	);
 
-	const [preferencesOpen, setPreferencesOpen] = useState(false);
+	const [preferencesOpen, setPreferencesOpen] =
+		useState(false);
 
 	const previousConsent =
 		useRef<AnalyticsConsentChoice | null>(consent);
@@ -106,7 +88,7 @@ export function GoogleAnalyticsConsent({
 			previousValue === 'granted' &&
 			consent === 'denied'
 		) {
-			denyLoadedGoogleAnalytics();
+			updateLoadedAnalyticsConsent('denied');
 
 			const reloadTimer = window.setTimeout(() => {
 				window.location.reload();
@@ -143,6 +125,7 @@ export function GoogleAnalyticsConsent({
 		);
 	};
 
+	// Render
 	if (!analyticsConfigured || !hydrated) {
 		return null;
 	}
@@ -234,7 +217,11 @@ export function GoogleAnalyticsConsent({
 								</p>
 
 								{consent !== null ? (
-									<p className={styles.currentChoice}>
+									<p
+										className={
+											styles.currentChoice
+										}
+									>
 										Current choice:{' '}
 										<strong>
 											{consent === 'granted'
@@ -252,11 +239,15 @@ export function GoogleAnalyticsConsent({
 								variant="outline"
 								className={styles.choiceButton}
 								onClick={() =>
-									handleConsentChoice('denied')
+									handleConsentChoice(
+										'denied',
+									)
 								}
 								aria-label="Use only necessary site features"
 							>
-								<ShieldCheck aria-hidden="true" />
+								<ShieldCheck
+									aria-hidden="true"
+								/>
 								Only necessary
 							</Button>
 
@@ -264,11 +255,15 @@ export function GoogleAnalyticsConsent({
 								type="button"
 								className={styles.choiceButton}
 								onClick={() =>
-									handleConsentChoice('granted')
+									handleConsentChoice(
+										'granted',
+									)
 								}
 								aria-label="Allow Google Analytics"
 							>
-								<BarChart3 aria-hidden="true" />
+								<BarChart3
+									aria-hidden="true"
+								/>
 								Allow analytics
 							</Button>
 						</div>
