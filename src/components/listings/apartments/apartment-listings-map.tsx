@@ -93,6 +93,7 @@ export function ApartmentListingsMap({
 	listings,
 	detailBaseHref,
 	isLoading = false,
+	onListingSelect,
 	ariaLabel = "Apartment listings map",
 	emptyTitle = "No mapped apartments",
 	emptyDescription = "Listings with saved coordinates will appear here.",
