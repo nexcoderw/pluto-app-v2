@@ -431,10 +431,13 @@ export function ListingBookingDialog({
 									) : (
 										<Smartphone aria-hidden="true" />
 									)}
-									{paymentMethod === "CARD"
-										? "Pluto never asks for card details. The exact displayed amount is sent to Urubuto with provider charges included. Enter card details only on the secure hosted page."
-										: "The exact displayed amount is sent with provider charges included, so the phone prompt must show the same total. Never share your PIN with Pluto Booking or support."}
+											{paymentMethod === "CARD"
+												? "Pluto never asks for card details. The exact displayed amount is sent to Urubuto with provider charges included. Enter card details only on the secure hosted page."
+												: "The exact displayed amount is sent with provider charges included, so the phone prompt must show the same total. Never share your PIN with Pluto Booking or support."}
 										</p>
+										{paymentMethod === "MOBILE_MONEY" ? (
+											<MobileMoneyPromptHelp network={network} />
+										) : null}
 										<DialogFooter className={styles.footer}>
 									<Button
 										type="button"
@@ -679,6 +682,7 @@ function PaymentPendingState({
 				}
 			/>
 			<ReferenceBox payment={payment} tone={unknown ? "warning" : "pending"} />
+			{!isCard ? <MobileMoneyPromptHelp network={payment?.network} /> : null}
 			{!unknown && isCard && paymentAction ? (
 				<Button
 					className={styles.primaryButton}
@@ -720,6 +724,32 @@ function PaymentPendingState({
 				</Button>
 			</DialogFooter>
 		</>
+	);
+}
+
+function MobileMoneyPromptHelp({
+	network,
+}: {
+	network?: PaymentNetwork | null;
+}) {
+	const isAirtel = network === "AIRTEL_MONEY";
+	return (
+		<aside className={styles.promptRecoveryNote} aria-label="Mobile-money prompt help">
+			<Smartphone aria-hidden="true" />
+			<span>
+				<strong>No prompt on your phone?</strong>{" "}
+				{isAirtel ? (
+					<>
+						Dial <code>*500#</code> and open <strong>Payments</strong> to review or complete
+						 the request.
+					</>
+				) : (
+					<>
+						Dial <code>*182*7*1#</code> to review pending approvals.
+					</>
+				)}
+			</span>
+		</aside>
 	);
 }
 
