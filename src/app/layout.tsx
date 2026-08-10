@@ -13,6 +13,13 @@ const outfit = Outfit({
 
 const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:4000';
 
+const googleAnalyticsMeasurementId =
+	process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim() ?? '';
+
+const googleAnalyticsEnabled =
+	process.env.NEXT_PUBLIC_ENABLE_ANALYTICS === 'true' &&
+	googleAnalyticsMeasurementId.length > 0;
+
 export const metadata: Metadata = {
 	metadataBase: new URL(appUrl),
 	title: {
@@ -55,7 +62,7 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-  children,
+	children,
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
@@ -66,18 +73,28 @@ export default function RootLayout({
 					{children}
 					<Toaster richColors position="top-right" />
 				</AppProviders>
-				<Script
-					src="https://www.googletagmanager.com/gtag/js?id=G-RTJCW9Z5CT"
-					strategy="afterInteractive"
-				/>
-				<Script id="google-analytics" strategy="afterInteractive">
-					{`
-						window.dataLayer = window.dataLayer || [];
-						function gtag(){dataLayer.push(arguments);}
-						gtag('js', new Date());
-						gtag('config', 'G-RTJCW9Z5CT');
-					`}
-				</Script>
+
+				{googleAnalyticsEnabled ? (
+					<>
+						<Script
+							src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(
+								googleAnalyticsMeasurementId,
+							)}`}
+							strategy="afterInteractive"
+						/>
+
+						<Script id="google-analytics" strategy="afterInteractive">
+							{`
+								window.dataLayer = window.dataLayer || [];
+								function gtag(){dataLayer.push(arguments);}
+								gtag('js', new Date());
+								gtag('config', ${JSON.stringify(
+									googleAnalyticsMeasurementId,
+								)});
+							`}
+						</Script>
+					</>
+				) : null}
 			</body>
 		</html>
 	);
