@@ -20,6 +20,15 @@ const MAX_EVENT_PARAMETERS = 25;
 const MAX_PARAMETER_STRING_LENGTH = 100;
 const MAX_ECOMMERCE_ITEMS = 200;
 
+const MAX_PENDING_ANALYTICS_EVENTS = 50;
+
+type PendingAnalyticsEvent = {
+	eventName: string;
+	parameters: NormalizedAnalyticsEventParameters;
+};
+
+const pendingAnalyticsEvents: PendingAnalyticsEvent[] = [];
+
 const analyticsMeasurementId =
 	process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim() ?? '';
 
@@ -181,6 +190,54 @@ function createConsentSettings(
 	};
 }
 
+function queuePendingAnalyticsEvent(
+	eventName: string,
+	parameters: NormalizedAnalyticsEventParameters,
+): void {
+	if (
+		pendingAnalyticsEvents.length >=
+		MAX_PENDING_ANALYTICS_EVENTS
+	) {
+		pendingAnalyticsEvents.shift();
+	}
+
+	pendingAnalyticsEvents.push({
+		eventName,
+		parameters,
+	});
+}
+
+export function flushPendingAnalyticsEvents(): number {
+	if (
+		!analyticsEnabled ||
+		typeof window === 'undefined' ||
+		getAnalyticsConsent() !== 'granted' ||
+		typeof window.gtag !== 'function'
+	) {
+		return 0;
+	}
+
+	let sentCount = 0;
+
+	while (pendingAnalyticsEvents.length > 0) {
+		const pendingEvent = pendingAnalyticsEvents.shift();
+
+		if (!pendingEvent) {
+			break;
+		}
+
+		window.gtag(
+			'event',
+			pendingEvent.eventName,
+			pendingEvent.parameters,
+		);
+
+		sentCount += 1;
+	}
+
+	return sentCount;
+}
+
 export function isAnalyticsTrackingAvailable(): boolean {
 	if (!analyticsEnabled || typeof window === 'undefined') {
 		return false;
@@ -196,6 +253,10 @@ export function isAnalyticsTrackingAvailable(): boolean {
 export function updateLoadedAnalyticsConsent(
 	choice: AnalyticsConsentChoice,
 ): boolean {
+	if (choice === 'denied') {
+		pendingAnalyticsEvents.length = 0;
+	}
+
 	if (
 		typeof window === 'undefined' ||
 		typeof window.gtag !== 'function'
@@ -240,7 +301,12 @@ export function trackAnalyticsEvent(
 	}
 
 	if (typeof window.gtag !== 'function') {
-		return 'tag_unavailable';
+		queuePendingAnalyticsEvent(
+			eventName,
+			normalizedParameters,
+		);
+
+		return 'queued';
 	}
 
 	window.gtag(
