@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Outfit } from 'next/font/google';
+import Script from 'next/script';
 import { AppProviders } from '@/providers/app-providers';
 import { Toaster } from '@/components/ui/sonner';
 import './globals.css';
@@ -65,6 +66,18 @@ export default function RootLayout({
 					{children}
 					<Toaster richColors position="top-right" />
 				</AppProviders>
+				<Script
+					src="https://www.googletagmanager.com/gtag/js?id=G-RTJCW9Z5CT"
+					strategy="afterInteractive"
+				/>
+				<Script id="google-analytics" strategy="afterInteractive">
+					{`
+						window.dataLayer = window.dataLayer || [];
+						function gtag(){dataLayer.push(arguments);}
+						gtag('js', new Date());
+						gtag('config', 'G-RTJCW9Z5CT');
+					`}
+				</Script>
 			</body>
 		</html>
 	);
