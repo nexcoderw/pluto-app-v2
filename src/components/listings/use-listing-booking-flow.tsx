@@ -19,6 +19,12 @@ import {
 import { ApiRequestError } from "@/services/api/errors";
 import type { PublicListing } from "@/services/api/listings";
 import {
+	trackCheckoutStarted,
+	trackPaymentInfoAdded,
+	trackVerifiedPurchase,
+	type ListingCheckoutAnalyticsInput,
+} from "@/lib/analytics/events";
+import {
 	createCheckout,
 	createListingQuote,
 	getPaymentIntent,
@@ -41,6 +47,9 @@ import {
 	ListingBookingDialog,
 	type ListingBookingDialogMode,
 } from "./listing-booking-dialog";
+import {
+	useListingViewAnalytics,
+} from "./use-listing-analytics";
 
 type UseListingBookingFlowInput = {
 	listing: PublicListing;
@@ -84,6 +93,8 @@ export function useListingBookingFlow({
 	formattedRange,
 	onDateRangeChange,
 }: UseListingBookingFlowInput): UseListingBookingFlowResult {
+	useListingViewAnalytics(listing);
+
 	const [availabilityMessage, setAvailabilityMessage] = useState<string | null>(
 		null,
 	);
@@ -103,6 +114,14 @@ export function useListingBookingFlow({
 	const paymentIntentIdRef = useRef<string | undefined>(undefined);
 	const paymentSubmissionRef = useRef(false);
 	const previousRateRef = useRef<string | undefined>(undefined);
+	const trackedQuoteIdRef =
+		useRef<string | undefined>(undefined);
+
+	const trackedAttemptIdRef =
+		useRef<string | undefined>(undefined);
+
+	const trackedPurchaseIdRef =
+		useRef<string | undefined>(undefined);
 	const currentUser = useUserSession();
 	const queryClient = useQueryClient();
 	const canSeeUnavailableMessage = Boolean(currentUser);
@@ -153,22 +172,47 @@ export function useListingBookingFlow({
 			setSupportReference(undefined);
 			setDialogMode("quote-loading");
 		},
-		onSuccess: (response) => {
-			const previousRate = previousRateRef.current;
-			setRateChangedFrom(
-				previousRate &&
-					response.quote.exchangeRateValue &&
-					previousRate !== response.quote.exchangeRateValue
-					? previousRate
-					: undefined,
-			);
-			previousRateRef.current = undefined;
-			setQuote(response.quote);
-			setDialogMode("quote");
-			void queryClient.invalidateQueries({
-				queryKey: bookingQueryKeys.availabilityLists(),
-			});
-		},
+			onSuccess: (response) => {
+				const previousRate = previousRateRef.current;
+
+				setRateChangedFrom(
+					previousRate &&
+						response.quote.exchangeRateValue &&
+						previousRate !== response.quote.exchangeRateValue
+						? previousRate
+						: undefined,
+				);
+
+				previousRateRef.current = undefined;
+
+				setQuote(response.quote);
+				setDialogMode("quote");
+
+				if (
+					trackedQuoteIdRef.current !==
+					response.quote.id
+				) {
+					const analyticsInput =
+						buildCheckoutAnalyticsInput(
+							listing,
+							response.quote,
+						);
+
+					if (analyticsInput) {
+						trackCheckoutStarted(
+							analyticsInput,
+						);
+					}
+
+					trackedQuoteIdRef.current =
+						response.quote.id;
+				}
+
+				void queryClient.invalidateQueries({
+					queryKey:
+						bookingQueryKeys.availabilityLists(),
+				});
+			},
 		onError: (error) => {
 			applyCheckoutError(error, "We could not reserve these dates.");
 			setDialogMode(isExpiredError(error) ? "expired" : "error");
@@ -225,10 +269,40 @@ export function useListingBookingFlow({
 			setSupportReference(undefined);
 			setDialogMode("payment-submitting");
 		},
-		onSuccess: (response) => {
-			setPaymentAction(response.paymentAction);
-			applyPayment(response.payment);
-		},
+			onSuccess: (response, input) => {
+				const latestAttempt =
+					response.payment.attempts[
+						response.payment.attempts.length - 1
+					];
+
+				if (
+					latestAttempt &&
+					trackedAttemptIdRef.current !==
+						latestAttempt.id
+				) {
+					const analyticsInput =
+						buildCheckoutAnalyticsInput(
+							listing,
+							response.payment.priceQuote,
+						);
+
+					if (analyticsInput) {
+						trackPaymentInfoAdded({
+							...analyticsInput,
+							paymentMethod:
+								input.method === "CARD"
+									? "hosted_card"
+									: "mobile_money",
+						});
+					}
+
+					trackedAttemptIdRef.current =
+						latestAttempt.id;
+				}
+
+				setPaymentAction(response.paymentAction);
+				applyPayment(response.payment);
+			},
 		onError: async (error) => {
 			const paymentIntentId = paymentIntentIdRef.current;
 			if (paymentIntentId) {
@@ -283,14 +357,66 @@ export function useListingBookingFlow({
 			? buildAvailabilityMessage(selectedBlockedRange)
 			: null;
 
-	useEffect(() => {
-		if (canonicalPayment?.status !== "SUCCEEDED") return;
-		void queryClient.invalidateQueries({ queryKey: bookingQueryKeys.myLists() });
-		void queryClient.invalidateQueries({
-			queryKey: bookingQueryKeys.availabilityLists(),
-		});
-		void queryClient.invalidateQueries({ queryKey: paymentQueryKeys.lists() });
-	}, [canonicalPayment?.status, queryClient]);
+		useEffect(() => {
+			if (
+				!canonicalPayment ||
+				canonicalPayment.status !== "SUCCEEDED"
+			) {
+				return;
+			}
+
+			if (
+				trackedPurchaseIdRef.current !==
+				canonicalPayment.id
+			) {
+				const analyticsInput =
+					buildCheckoutAnalyticsInput(
+						listing,
+						canonicalPayment.priceQuote,
+					);
+
+				if (analyticsInput) {
+					const serverTax =
+						minorAmountToMajor(
+							canonicalPayment.priceQuote
+								.taxMinor,
+							canonicalPayment.priceQuote
+								.currency,
+						);
+
+					trackVerifiedPurchase({
+						...analyticsInput,
+						transactionId:
+							canonicalPayment.intentNo,
+						...(serverTax === null
+							? {}
+							: { serverTax }),
+					});
+				}
+
+				trackedPurchaseIdRef.current =
+					canonicalPayment.id;
+			}
+
+			void queryClient.invalidateQueries({
+				queryKey:
+					bookingQueryKeys.myLists(),
+			});
+
+			void queryClient.invalidateQueries({
+				queryKey:
+					bookingQueryKeys.availabilityLists(),
+			});
+
+			void queryClient.invalidateQueries({
+				queryKey:
+					paymentQueryKeys.lists(),
+			});
+		}, [
+			canonicalPayment,
+			listing,
+			queryClient,
+		]);
 
 	function applyPayment(nextPayment: PaymentIntent) {
 		setPayment(nextPayment);
@@ -478,6 +604,72 @@ export function useListingBookingFlow({
 		openBookingDialog,
 		bookingDialog,
 	};
+}
+
+type AnalyticsPriceQuote = Pick<
+	PriceQuote,
+	| "productId"
+	| "subtotalMinor"
+	| "taxMinor"
+	| "currency"
+> & {
+	product?: PaymentIntent["priceQuote"]["product"];
+};
+
+function buildCheckoutAnalyticsInput(
+	listing: PublicListing,
+	quote: AnalyticsPriceQuote,
+): ListingCheckoutAnalyticsInput | null {
+	const serverSubtotal = minorAmountToMajor(
+		quote.subtotalMinor,
+		quote.currency,
+	);
+
+	if (serverSubtotal === null) {
+		return null;
+	}
+
+	return {
+		itemId:
+			quote.product?.id ??
+			quote.productId ??
+			listing.id,
+		category:
+			quote.product?.category ??
+			listing.category,
+		currency: quote.currency,
+		serverSubtotal,
+	};
+}
+
+function minorAmountToMajor(
+	amountMinor: string,
+	currency: string,
+): number | null {
+	const minorAmount = Number(amountMinor);
+
+	if (
+		!Number.isSafeInteger(minorAmount) ||
+		minorAmount < 0
+	) {
+		return null;
+	}
+
+	try {
+		const fractionDigits =
+			new Intl.NumberFormat("en", {
+				style: "currency",
+				currency,
+			}).resolvedOptions()
+				.maximumFractionDigits;
+
+		return (
+			minorAmount /
+			10 ** fractionDigits
+		);
+	} catch {
+		return null;
+	}
 }
 
 function getRequestKey(
