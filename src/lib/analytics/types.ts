@@ -28,6 +28,7 @@ export type NormalizedAnalyticsEventParameters = Record<
 
 export type AnalyticsDispatchStatus =
 	| 'sent'
+	| 'queued'
 	| 'disabled'
 	| 'consent_not_granted'
 	| 'tag_unavailable'
