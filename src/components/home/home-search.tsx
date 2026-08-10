@@ -12,7 +12,6 @@ import {
 	CircleDollarSign,
 	Filter,
 	Hotel,
-	Plane,
 	Search,
 	Users,
 } from "lucide-react";
@@ -39,8 +38,7 @@ type HomeSearchCategory =
 	| "cars"
 	| "apartments"
 	| "hotel-rooms"
-	| "airbnb"
-	| "flight";
+	| "airbnb";
 
 type SearchCategory = {
 	id: HomeSearchCategory;
@@ -115,15 +113,6 @@ const searchCategories: SearchCategory[] = [
 		placeholder: "Search location, address, city, or country",
 		icon: BedDouble,
 		maxBudget: 1500000,
-	},
-	{
-		id: "flight",
-		label: "Flight",
-		shortLabel: "Flights",
-		route: "/flights",
-		placeholder: "Start a managed flight request",
-		icon: Plane,
-		maxBudget: 0,
 	},
 ];
 
@@ -252,9 +241,7 @@ export function HomeSearch() {
 						<span>
 							{activeCategory === "cars"
 								? "Search"
-								: activeCategory === "flight"
-									? "Route"
-									: "Location or address"}
+								: "Location or address"}
 						</span>
 						<strong>{activeSearchCategory.shortLabel}</strong>
 						<input
