@@ -10,12 +10,28 @@ import {
 	saveFavoriteListing,
 	type FavoriteListingIdsResponse,
 } from "@/services/api/favorites";
+import {
+	trackListingFavoriteAdded,
+	type PlutoListingCategory,
+} from "@/lib/analytics/events";
 
 export const FAVORITE_LISTING_IDS_QUERY_KEY = ["favorite-listing-ids"] as const;
 
 type FavoriteAction = "save" | "remove";
 
-export function useListingFavorite(productId: string) {
+type UseListingFavoriteInput = {
+	productId: string;
+	category: PlutoListingCategory;
+	price: number;
+	currency: string;
+};
+
+export function useListingFavorite({
+	productId,
+	category,
+	price,
+	currency,
+}: UseListingFavoriteInput) {
 	const currentUser = useUserSession();
 	const canUseFavorites = currentUser?.role === "CUSTOMER";
 	const queryClient = useQueryClient();
@@ -96,7 +112,26 @@ export function useListingFavorite(productId: string) {
 				description: "Please try again.",
 			});
 		},
-		onSuccess: (response) => {
+		onSuccess: (response, action) => {
+			if (action === "save") {
+				const safePrice =
+					Number.isFinite(price) && price >= 0
+						? price
+						: undefined;
+
+				trackListingFavoriteAdded({
+					item: {
+						itemId: productId,
+						category,
+						price: safePrice,
+					},
+					currency:
+						safePrice === undefined
+							? undefined
+							: currency,
+				});
+			}
+
 			toast.success(response.message);
 		},
 		onSettled: () => {
