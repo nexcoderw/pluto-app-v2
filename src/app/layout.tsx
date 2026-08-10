@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { Outfit } from 'next/font/google';
-import Script from 'next/script';
-import { AppProviders } from '@/providers/app-providers';
+import { GoogleAnalyticsConsent } from '@/components/shared/google-analytics-consent';
 import { Toaster } from '@/components/ui/sonner';
+import { AppProviders } from '@/providers/app-providers';
 import './globals.css';
 
 const outfit = Outfit({
@@ -11,14 +11,16 @@ const outfit = Outfit({
 	display: 'swap',
 });
 
-const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:4000';
+const appUrl =
+	process.env.NEXT_PUBLIC_APP_URL ??
+	'http://localhost:4000';
 
 const googleAnalyticsMeasurementId =
 	process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim() ?? '';
 
 const googleAnalyticsEnabled =
 	process.env.NEXT_PUBLIC_ENABLE_ANALYTICS === 'true' &&
-	googleAnalyticsMeasurementId.length > 0;
+	/^G-[A-Z0-9]+$/i.test(googleAnalyticsMeasurementId);
 
 export const metadata: Metadata = {
 	metadataBase: new URL(appUrl),
@@ -68,33 +70,18 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en" suppressHydrationWarning>
-			<body className={`${outfit.variable} font-sans antialiased`}>
+			<body
+				className={`${outfit.variable} font-sans antialiased`}
+			>
 				<AppProviders>
 					{children}
 					<Toaster richColors position="top-right" />
 				</AppProviders>
 
-				{googleAnalyticsEnabled ? (
-					<>
-						<Script
-							src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(
-								googleAnalyticsMeasurementId,
-							)}`}
-							strategy="afterInteractive"
-						/>
-
-						<Script id="google-analytics" strategy="afterInteractive">
-							{`
-								window.dataLayer = window.dataLayer || [];
-								function gtag(){dataLayer.push(arguments);}
-								gtag('js', new Date());
-								gtag('config', ${JSON.stringify(
-									googleAnalyticsMeasurementId,
-								)});
-							`}
-						</Script>
-					</>
-				) : null}
+				<GoogleAnalyticsConsent
+					enabled={googleAnalyticsEnabled}
+					measurementId={googleAnalyticsMeasurementId}
+				/>
 			</body>
 		</html>
 	);
