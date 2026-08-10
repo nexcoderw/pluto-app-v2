@@ -663,10 +663,15 @@ function minorAmountToMajor(
 			}).resolvedOptions()
 				.maximumFractionDigits;
 
-		return (
-			minorAmount /
-			10 ** fractionDigits
-		);
+		if (
+			typeof fractionDigits !== "number" ||
+			!Number.isInteger(fractionDigits) ||
+			fractionDigits < 0
+		) {
+			return null;
+		}
+
+		return minorAmount / 10 ** fractionDigits;
 	} catch {
 		return null;
 	}
