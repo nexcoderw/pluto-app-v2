@@ -1,0 +1,201 @@
+.viewport {
+	position: fixed;
+	inset-inline: 0;
+	bottom: max(1rem, env(safe-area-inset-bottom));
+	z-index: 80;
+	padding: 0 1rem;
+	pointer-events: none;
+}
+
+.panel {
+	width: min(100%, 52rem);
+	margin: 0 auto;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	gap: 1.25rem;
+	align-items: end;
+	padding: 1.2rem;
+	border: 1px solid rgba(2, 0, 108, 0.14);
+	border-radius: 1.25rem;
+	background: rgba(255, 255, 255, 0.94);
+	box-shadow: 0 1.25rem 3.5rem rgba(23, 23, 31, 0.16);
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
+	pointer-events: auto;
+}
+
+.content {
+	min-width: 0;
+	display: flex;
+	gap: 0.9rem;
+	align-items: flex-start;
+}
+
+.icon {
+	width: 2.75rem;
+	height: 2.75rem;
+	flex: 0 0 auto;
+	display: grid;
+	place-items: center;
+	border: 1px solid rgba(2, 0, 108, 0.12);
+	border-radius: 999px;
+	background: rgba(2, 0, 108, 0.06);
+	color: #02006c;
+}
+
+.icon svg {
+	width: 1.25rem;
+	height: 1.25rem;
+}
+
+.copy {
+	min-width: 0;
+}
+
+.eyebrow {
+	margin: 0 0 0.2rem;
+	color: #02006c;
+	font-size: 0.72rem;
+	font-weight: 800;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.copy h2 {
+	margin: 0;
+	color: #17171f;
+	font-size: clamp(1rem, 2vw, 1.15rem);
+	font-weight: 800;
+	line-height: 1.25;
+}
+
+.copy > p:not(.eyebrow, .currentChoice) {
+	max-width: 42rem;
+	margin: 0.42rem 0 0;
+	color: #5c5c68;
+	font-size: 0.86rem;
+	line-height: 1.55;
+}
+
+.currentChoice {
+	margin: 0.55rem 0 0;
+	color: #4a4a55;
+	font-size: 0.8rem;
+	line-height: 1.45;
+}
+
+.currentChoice strong {
+	color: #17171f;
+}
+
+.actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.65rem;
+	justify-content: flex-end;
+}
+
+.choiceButton {
+	min-width: 10.5rem;
+	border-radius: 999px;
+	font-size: 0.76rem;
+	letter-spacing: 0.03em;
+}
+
+.settingsButton {
+	position: fixed;
+	right: max(1rem, env(safe-area-inset-right));
+	bottom: max(1rem, env(safe-area-inset-bottom));
+	z-index: 79;
+	border-color: rgba(2, 0, 108, 0.16);
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.92);
+	box-shadow: 0 0.8rem 2.4rem rgba(23, 23, 31, 0.13);
+	color: #02006c;
+	backdrop-filter: blur(16px);
+	-webkit-backdrop-filter: blur(16px);
+}
+
+@media (max-width: 760px) {
+	.panel {
+		grid-template-columns: 1fr;
+		align-items: stretch;
+	}
+
+	.actions {
+		justify-content: stretch;
+	}
+
+	.choiceButton {
+		flex: 1 1 12rem;
+	}
+}
+
+@media (max-width: 520px) {
+	.viewport {
+		bottom: max(0.65rem, env(safe-area-inset-bottom));
+		padding: 0 0.65rem;
+	}
+
+	.panel {
+		gap: 1rem;
+		padding: 1rem;
+		border-radius: 1.05rem;
+	}
+
+	.content {
+		gap: 0.75rem;
+	}
+
+	.icon {
+		width: 2.5rem;
+		height: 2.5rem;
+	}
+
+	.actions {
+		display: grid;
+		grid-template-columns: 1fr;
+	}
+
+	.choiceButton {
+		width: 100%;
+		min-width: 0;
+	}
+
+	.settingsButton {
+		right: max(0.75rem, env(safe-area-inset-right));
+		bottom: max(0.75rem, env(safe-area-inset-bottom));
+	}
+}
+
+:global(.dark) .panel {
+	border-color: rgba(255, 255, 255, 0.12);
+	background: rgba(33, 33, 38, 0.94);
+	box-shadow: 0 1.25rem 3.5rem rgba(0, 0, 0, 0.32);
+}
+
+:global(.dark) .icon {
+	border-color: rgba(255, 255, 255, 0.12);
+	background: rgba(255, 255, 255, 0.08);
+	color: #c9c8ff;
+}
+
+:global(.dark) .eyebrow {
+	color: #c9c8ff;
+}
+
+:global(.dark) .copy h2,
+:global(.dark) .currentChoice strong {
+	color: #f7f7fb;
+}
+
+:global(.dark) .copy > p:not(.eyebrow, .currentChoice),
+:global(.dark) .currentChoice {
+	color: #c4c4cd;
+}
+
+:global(.dark) .settingsButton {
+	border-color: rgba(255, 255, 255, 0.14);
+	background: rgba(33, 33, 38, 0.92);
+	color: #f7f7fb;
+}
