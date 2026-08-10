@@ -19,6 +19,7 @@ type ApartmentListingsMapProps = {
 	listings: PublicListing[];
 	detailBaseHref: string;
 	isLoading?: boolean;
+	onListingSelect?: (listingId: string) => void;
 	ariaLabel?: string;
 	emptyTitle?: string;
 	emptyDescription?: string;
@@ -202,7 +203,12 @@ export function ApartmentListingsMap({
 							<strong>{selectedMarker.title}</strong>
 							<p>{selectedMarker.priceMeta}</p>
 						</div>
-						<Link href={selectedMarker.detailHref}>
+						<Link
+							href={selectedMarker.detailHref}
+							onClick={() =>
+								onListingSelect?.(selectedMarker.id)
+							}
+						>
 							Details
 							<ArrowRight aria-hidden="true" />
 						</Link>
