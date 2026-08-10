@@ -82,6 +82,14 @@
 	transform: translateY(-1px);
 }
 
+.homeLinks > a[data-active="true"] {
+	color: #02006c;
+	font-weight: 900;
+	text-decoration: underline;
+	text-decoration-thickness: 0.16rem;
+	text-underline-offset: 0.48rem;
+}
+
 .homeAuth,
 .mobileAuth,
 .homeCurrency {
