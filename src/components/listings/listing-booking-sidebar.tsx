@@ -86,6 +86,9 @@ export function ListingBookingSidebar({
 					<ListingFavoriteButton
 						productId={listing.id}
 						listingTitle={listing.title}
+						category={listing.category}
+						price={Number(listing.basePrice)}
+						currency={listing.currency}
 						className={styles.favoriteButton}
 						label="Save listing"
 					/>
