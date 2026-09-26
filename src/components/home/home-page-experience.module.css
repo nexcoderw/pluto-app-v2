@@ -1,6 +1,4 @@
 .page {
-	--home-container-width: 118rem;
-	--home-container-gutter: 1.5rem;
 	min-height: 100vh;
 	background: #f5f6fa;
 	color: #161821;
@@ -287,10 +285,6 @@
 }
 
 @media (max-width: 940px) {
-	.page {
-		--home-container-gutter: 1rem;
-	}
-
 	.hero {
 		min-height: auto;
 	}
