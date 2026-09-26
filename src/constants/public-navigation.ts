@@ -9,7 +9,7 @@ export const PUBLIC_NAVIGATION_LINKS: readonly PublicNavigationLink[] = [
 	{ href: "/listings/hotel-rooms", label: "Hotel Rooms" },
 	{ href: "/listings/airbnb", label: "AirBnB" },
 	{ href: "/flights", label: "Flight" },
-	{ href: "/#contact", label: "Contact us" },
+	{ href: "/contact", label: "Contact us" },
 ];
 
 export function isPublicNavigationLinkActive(
