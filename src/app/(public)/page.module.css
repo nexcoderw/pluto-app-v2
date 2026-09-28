@@ -4,7 +4,7 @@
 	box-sizing: border-box;
 	width: 100%;
 	min-width: 0;
-	padding-inline: max(1rem, calc((100vw - 84rem) / 2));
+	padding-inline: max(1rem, calc((100vw - 90rem) / 2));
 	background: #f5f6fa;
 }
 

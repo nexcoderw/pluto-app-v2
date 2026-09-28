@@ -19,9 +19,7 @@ import { getCachedPartnerProfileStatus } from "@/services/api/token-store";
 import { CurrencySelector } from "@/components/shared/currency-selector";
 import { FeaturedListings } from "./featured-listings";
 import { HomeSearch } from "./home-search";
-import { PartnerCta } from "./partner-cta";
 import { PopularCategories } from "./popular-categories";
-import { WhyPlutoBooking } from "./why-pluto-booking";
 import styles from "./home-page-experience.module.css";
 
 export function HomePageExperience() {
@@ -43,8 +41,6 @@ export function HomePageExperience() {
 			</section>
 			<PopularCategories />
 			<FeaturedListings />
-			<WhyPlutoBooking />
-			<PartnerCta />
 		</main>
 	);
 }
