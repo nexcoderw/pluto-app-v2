@@ -1,0 +1,14 @@
+.container {
+	--route-container-inline-padding: 0rem;
+	box-sizing: border-box;
+	width: 100%;
+	min-width: 0;
+	padding-inline: max(1rem, calc((100vw - 84rem) / 2));
+	background: #f7f8fb;
+}
+
+@media (max-width: 640px) {
+	.container {
+		padding-inline: 0.7rem;
+	}
+}
