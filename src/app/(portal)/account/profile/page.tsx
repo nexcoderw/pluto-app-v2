@@ -9,9 +9,5 @@ export const metadata: Metadata = {
 };
 
 export default function CustomerProfileRoute() {
-	return (
-		<div className={styles.container}>
-			<AccountProfilePage />
-		</div>
-	);
+	return <AccountProfilePage formClassName={styles.formContainer} />;
 }
