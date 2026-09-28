@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { CustomerPortalShell } from "@/components/account/customer-portal-shell";
 import { PortalAccessBoundary } from "@/components/portal/portal-access-boundary";
+import { cn } from "@/lib/utils";
 import type { UserAuthProfile } from "@/services/api/auth";
 import { ProfileDetailsForm } from "./profile-details-form";
 import { ProfileImagePanel } from "./profile-image-panel";
@@ -37,15 +38,23 @@ const profileTabs: Array<{
   },
 ];
 
-export function AccountProfilePage() {
+export function AccountProfilePage({ formClassName }: { formClassName?: string }) {
   return (
     <PortalAccessBoundary allowedRole="CUSTOMER">
-      {(user) => <AccountProfileWorkspace user={user} />}
+      {(user) => (
+        <AccountProfileWorkspace user={user} formClassName={formClassName} />
+      )}
     </PortalAccessBoundary>
   );
 }
 
-function AccountProfileWorkspace({ user }: { user: UserAuthProfile }) {
+function AccountProfileWorkspace({
+  user,
+  formClassName,
+}: {
+  user: UserAuthProfile;
+  formClassName?: string;
+}) {
   const [profile, setProfile] = useState(user);
   const [activeTab, setActiveTab] = useState<ProfileTab>("details");
 
@@ -93,7 +102,7 @@ function AccountProfileWorkspace({ user }: { user: UserAuthProfile }) {
           </div>
         </aside>
 
-        <div className={styles.tabContent} role="tabpanel">
+        <div className={cn(styles.tabContent, formClassName)} role="tabpanel">
           {activeTab === "details" ? (
             <ProfileDetailsForm user={profile} onUserUpdated={setProfile} />
           ) : null}
