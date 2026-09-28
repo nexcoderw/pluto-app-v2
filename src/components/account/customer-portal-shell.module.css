@@ -11,7 +11,8 @@
   display: grid;
   grid-template-columns: 18rem minmax(0, 1fr);
   gap: clamp(1rem, 2vw, 1.4rem);
-  padding: clamp(1rem, 2.6vw, 1.8rem);
+  padding: clamp(1rem, 2.6vw, 1.8rem)
+    var(--customer-portal-frame-inline-padding, clamp(1rem, 2.6vw, 1.8rem));
 }
 
 .mobileBackdrop {
@@ -347,7 +348,11 @@
 @media (max-width: 980px) {
   .frame {
     grid-template-columns: 1fr;
-    padding: clamp(0.85rem, 3vw, 1.25rem);
+    padding: clamp(0.85rem, 3vw, 1.25rem)
+      var(
+        --customer-portal-frame-inline-padding,
+        clamp(0.85rem, 3vw, 1.25rem)
+      );
   }
 
   .mobileBackdrop {
@@ -421,7 +426,7 @@
 
 @media (max-width: 520px) {
   .frame {
-    padding: 0.7rem;
+    padding: 0.7rem var(--customer-portal-frame-inline-padding, 0.7rem);
   }
 
   .topbar,
