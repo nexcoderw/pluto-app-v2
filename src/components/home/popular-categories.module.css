@@ -1,5 +1,8 @@
 .section {
-	width: min(100% - 2rem, 112rem);
+	width: min(
+		calc(100% - var(--home-container-gutter)),
+		var(--home-container-width)
+	);
 	margin: 0 auto clamp(3rem, 7vw, 6.5rem);
 }
 
@@ -229,7 +232,6 @@
 
 @media (max-width: 720px) {
 	.section {
-		width: min(100% - 1rem, 112rem);
 		margin-bottom: 3rem;
 	}
 
