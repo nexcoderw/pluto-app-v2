@@ -3,6 +3,7 @@
   grid-template-columns: minmax(17rem, 21rem) minmax(0, 1fr);
   gap: clamp(1rem, 2.6vw, 1.4rem);
   align-items: start;
+	padding-inline: max(1rem, calc((100% - 64rem) / 2));
 }
 
 .tabsSidebar {

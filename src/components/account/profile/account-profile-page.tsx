@@ -38,7 +38,11 @@ const profileTabs: Array<{
   },
 ];
 
-export function AccountProfilePage({ formClassName }: { formClassName?: string }) {
+export function AccountProfilePage({
+  formClassName,
+}: {
+  formClassName?: string;
+}) {
   return (
     <PortalAccessBoundary allowedRole="CUSTOMER">
       {(user) => (
