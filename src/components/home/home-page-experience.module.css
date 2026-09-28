@@ -1,4 +1,6 @@
 .page {
+	--home-container-width: 118rem;
+	--home-container-gutter: 1.5rem;
 	min-height: 100vh;
 	background: #f5f6fa;
 	color: #161821;
@@ -7,7 +9,10 @@
 .hero {
 	position: relative;
 	isolation: isolate;
-	width: min(100% - 2rem, 112rem);
+	width: min(
+		calc(100% - var(--home-container-gutter)),
+		var(--home-container-width)
+	);
 	min-height: min(52rem, calc(100vh - 2rem));
 	margin: clamp(0.75rem, 1.5vw, 1.4rem) auto clamp(3rem, 6vw, 6rem);
 	overflow: hidden;
@@ -282,8 +287,11 @@
 }
 
 @media (max-width: 940px) {
+	.page {
+		--home-container-gutter: 1rem;
+	}
+
 	.hero {
-		width: min(100% - 1rem, 112rem);
 		min-height: auto;
 	}
 
