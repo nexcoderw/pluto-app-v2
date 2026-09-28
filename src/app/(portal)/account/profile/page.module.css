@@ -1,14 +1,13 @@
-.container {
-	--customer-portal-frame-inline-padding: 0rem;
+.formContainer {
 	box-sizing: border-box;
 	width: 100%;
 	min-width: 0;
-	padding-inline: max(1rem, calc((100vw - 84rem) / 2));
-	background: #f6f7fb;
+	margin-inline: auto;
+	padding-inline: max(1rem, calc((100% - 84rem) / 2));
 }
 
 @media (max-width: 640px) {
-	.container {
+	.formContainer {
 		padding-inline: 0.7rem;
 	}
 }
