@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { CategoryListingsRoute } from "@/components/listings/category-listings-route";
+import styles from "./page.module.css";
 
 export const metadata: Metadata = {
 	title: "Hotel Room Listings",
@@ -8,5 +9,9 @@ export const metadata: Metadata = {
 };
 
 export default function HotelRoomListingsPage() {
-	return <CategoryListingsRoute categorySlug="hotel-rooms" />;
+	return (
+		<div className={styles.container}>
+			<CategoryListingsRoute categorySlug="hotel-rooms" />
+		</div>
+	);
 }
