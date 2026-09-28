@@ -39,7 +39,7 @@
 
 .card {
 	position: relative;
-	min-height: clamp(24rem, 31vw, 34rem);
+	min-height: clamp(20rem, 25vw, 24rem);
 	display: flex;
 	align-items: flex-end;
 	overflow: hidden;
@@ -226,7 +226,7 @@
 	}
 
 	.card {
-		min-height: 24rem;
+		min-height: 20.5rem;
 	}
 }
 
@@ -240,7 +240,7 @@
 	}
 
 	.card {
-		min-height: 24rem;
+		min-height: 20.5rem;
 		border-width: 0.45rem;
 	}
 }
