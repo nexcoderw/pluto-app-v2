@@ -1,9 +1,10 @@
 .page {
-  min-height: calc(100vh - 8rem);
-  display: grid;
-  padding: clamp(2rem, 5vw, 4rem) max(1rem, calc((100vw - 95%) / 2));
-  background: #f6f7fb;
-  color: #17171f;
+	min-height: calc(100vh - 8rem);
+	display: grid;
+	padding: clamp(2rem, 5vw, 4rem)
+		var(--route-container-inline-padding, max(1rem, calc((100vw - 95%) / 2)));
+	background: #f6f7fb;
+	color: #17171f;
 }
 
 .requestShell {
