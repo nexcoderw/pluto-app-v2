@@ -1,526 +1,239 @@
 .page {
-	--contact-ink: #17171f;
-	--contact-muted: #626575;
-	--contact-brand: #02006c;
-	max-width: 1200px;
-	margin: 0 auto;
-	padding: clamp(1.5rem, 4vw, 3.5rem) clamp(1rem, 3vw, 2.5rem) 4rem;
-	color: var(--contact-ink);
+  --ink: #17171f;
+  --muted: #626575;
+  --brand: #02006c;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 3.5rem) clamp(1rem, 3vw, 2.5rem) 4rem;
+  color: var(--ink);
 }
-
 .hero {
-	display: grid;
-	grid-template-columns: 0.95fr 1.15fr;
-	align-items: center;
-	gap: clamp(2rem, 5vw, 4.75rem);
+  display: grid;
+  grid-template-columns: 0.9fr 1.2fr;
+  align-items: center;
+  gap: clamp(2rem, 5vw, 4.5rem);
 }
-
 .postcard {
-	position: relative;
-	align-self: stretch;
-	min-height: 620px;
-	overflow: hidden;
-	border-radius: 1.75rem 1.75rem 5rem 1.75rem;
-	background: #b67535;
-	box-shadow: 0 1.5rem 3rem rgba(72, 46, 24, 0.12);
+  position: relative;
+  align-self: stretch;
+  min-height: 680px;
+  overflow: hidden;
+  background: #b67535;
+  border-radius: 1.75rem 1.75rem 5rem 1.75rem;
+  box-shadow: 0 1.5rem 3rem rgba(72, 46, 24, 0.12);
 }
-
 .photograph {
-	object-fit: cover;
-	object-position: 43% center;
+  object-fit: cover;
+  object-position: 43% center;
 }
-
 .location {
-	position: absolute;
-	top: 1.5rem;
-	left: 1.5rem;
-	display: inline-flex;
-	align-items: center;
-	gap: 0.5rem;
-	padding: 0.65rem 0.9rem;
-	color: #ffffff;
-	font-size: 0.8rem;
-	background: rgba(35, 31, 27, 0.6);
-	border: 1px solid rgba(255, 255, 255, 0.3);
-	border-radius: 999px;
-	-webkit-backdrop-filter: blur(12px);
-	backdrop-filter: blur(12px);
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 0.9rem;
+  color: #fff;
+  font-size: 0.8rem;
+  background: rgba(35, 31, 27, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
-
 .location svg {
-	width: 0.95rem;
-	height: 0.95rem;
+  width: 0.95rem;
+  height: 0.95rem;
 }
-
 .postcardNote {
-	position: absolute;
-	right: 1.5rem;
-	bottom: 1.5rem;
-	left: 1.5rem;
-	padding: 1.65rem;
-	background: rgba(255, 255, 255, 0.82);
-	border: 1px solid rgba(255, 255, 255, 0.85);
-	border-radius: 1rem 1rem 3.5rem 1rem;
-	-webkit-backdrop-filter: blur(22px);
-	backdrop-filter: blur(22px);
+  position: absolute;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  padding: 1.65rem;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 1rem 1rem 3.5rem 1rem;
+  -webkit-backdrop-filter: blur(22px);
+  backdrop-filter: blur(22px);
 }
-
 .postcardNote > svg {
-	width: 1.6rem;
-	height: 1.6rem;
-	color: var(--contact-brand);
+  width: 1.6rem;
+  height: 1.6rem;
+  color: var(--brand);
 }
-
 .postcardNote p {
-	margin: 0.9rem 0 0.7rem;
-	font-size: clamp(1.5rem, 2.7vw, 2rem);
-	font-weight: 500;
-	line-height: 1.15;
-	letter-spacing: -0.04em;
+  margin: 0.9rem 0 0.7rem;
+  font-size: clamp(1.5rem, 2.7vw, 2rem);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.04em;
 }
-
 .postcardNote span {
-	display: block;
-	max-width: 25ch;
-	color: #4a4c58;
-	font-size: 0.85rem;
-	line-height: 1.5;
+  display: block;
+  max-width: 25ch;
+  color: #4a4c58;
+  font-size: 0.85rem;
+  line-height: 1.5;
 }
-
 .intro {
-	min-width: 0;
-	padding: 1rem 0;
+  min-width: 0;
+  padding: 1rem 0;
 }
-
 .pageLabel {
-	display: flex;
-	align-items: center;
-	gap: 0.55rem;
-	color: var(--contact-brand);
-	font-size: 0.85rem;
-	font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: var(--brand);
+  font-size: 0.85rem;
+  font-weight: 500;
 }
-
 .pageLabel svg {
-	width: 1.05rem;
-	height: 1.05rem;
+  width: 1.05rem;
+  height: 1.05rem;
 }
-
 .intro h1 {
-	max-width: 16ch;
-	margin: 1.15rem 0;
-	font-size: clamp(2.2rem, 4.25vw, 3.25rem);
-	font-weight: 500;
-	line-height: 1.08;
-	letter-spacing: -0.055em;
-	text-wrap: balance;
+  max-width: 16ch;
+  margin: 1.1rem 0;
+  font-size: clamp(2.2rem, 4.25vw, 3.25rem);
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.055em;
+  text-wrap: balance;
 }
-
 .lead {
-	max-width: 46ch;
-	margin: 0;
-	color: var(--contact-muted);
-	font-size: 1rem;
-	line-height: 1.75;
+  max-width: 46ch;
+  margin: 0;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.7;
 }
-
-.emailPanel {
-	margin-top: 2rem;
-	padding: clamp(1.25rem, 3vw, 1.75rem);
-	background: rgba(255, 255, 255, 0.72);
-	border: 1px solid #ffffff;
-	border-radius: 1.25rem;
-	box-shadow: 0 0.75rem 2rem rgba(2, 0, 108, 0.04);
-	-webkit-backdrop-filter: blur(20px);
-	backdrop-filter: blur(20px);
-}
-
-.emailHeading {
-	display: flex;
-	align-items: center;
-	gap: 0.65rem;
-}
-
-.emailHeading svg {
-	width: 1.2rem;
-	height: 1.2rem;
-	color: var(--contact-brand);
-}
-
-.emailHeading h2 {
-	margin: 0;
-	font-size: 1.15rem;
-	font-weight: 500;
-	letter-spacing: -0.025em;
-}
-
-.emailPanel > p {
-	margin: 0.65rem 0 1rem;
-	color: var(--contact-muted);
-	font-size: 0.875rem;
-	line-height: 1.6;
-}
-
-.emailAddress {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 0.65rem;
-	min-height: 2.75rem;
-	padding-bottom: 1rem;
-	color: var(--contact-brand);
-	font-size: clamp(0.95rem, 1.6vw, 1.15rem);
-	font-weight: 500;
-	overflow-wrap: anywhere;
-	border-bottom: 1px solid rgba(2, 0, 108, 0.1);
-	text-decoration: none;
-}
-
-.emailAddress svg {
-	flex-shrink: 0;
-	width: 1.1rem;
-	height: 1.1rem;
-}
-
-.primaryAction {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	gap: 0.65rem;
-	min-height: 3.15rem;
-	margin-top: 1.25rem;
-	padding: 0.6rem 1.3rem;
-	color: #ffffff;
-	font-size: 0.85rem;
-	font-weight: 500;
-	background: var(--contact-brand);
-	border-radius: 999px;
-	text-decoration: none;
-	cursor: pointer;
-	transition: background-color 160ms ease;
-}
-
-.primaryAction:hover {
-	background: #19168b;
-}
-
-.primaryAction svg {
-	width: 1rem;
-	height: 1rem;
-}
-
-.emailHint {
-	display: inline-block;
-	margin: 0.75rem 0 0.75rem 0.75rem;
-	color: var(--contact-muted);
-	font-size: 0.75rem;
-}
-
-.questionsAnchor {
-	display: inline-flex;
-	align-items: center;
-	gap: 0.75rem;
-	min-height: 2.75rem;
-	margin-top: 1rem;
-	color: var(--contact-muted);
-	font-size: 0.8rem;
-	text-decoration: none;
-}
-
-.questionsAnchor svg {
-	width: 0.95rem;
-	height: 0.95rem;
-}
-
 .shortcuts {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	margin-top: 3rem;
-	padding: 1.5rem 0;
-	border-top: 1px solid rgba(2, 0, 108, 0.1);
-	border-bottom: 1px solid rgba(2, 0, 108, 0.1);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 3rem;
+  padding: 1.5rem 0;
+  border-top: 1px solid rgba(2, 0, 108, 0.1);
+  border-bottom: 1px solid rgba(2, 0, 108, 0.1);
 }
-
 .shortcut {
-	display: flex;
-	align-items: flex-start;
-	gap: 1rem;
-	min-width: 0;
-	padding: 0.5rem 2rem 0.5rem 0;
-	color: inherit;
-	text-decoration: none;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  min-width: 0;
+  padding: 0.5rem 2rem 0.5rem 0;
+  color: inherit;
+  text-decoration: none;
 }
-
 .shortcut + .shortcut {
-	padding-left: 2rem;
-	padding-right: 0;
-	border-left: 1px solid rgba(2, 0, 108, 0.1);
+  padding-right: 0;
+  padding-left: 2rem;
+  border-left: 1px solid rgba(2, 0, 108, 0.1);
 }
-
 .shortcutIcon {
-	display: grid;
-	flex-shrink: 0;
-	width: 2.75rem;
-	height: 2.75rem;
-	place-items: center;
-	color: var(--contact-brand);
-	background: #eaeaf4;
-	border-radius: 0.9rem;
+  display: grid;
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  color: var(--brand);
+  background: #eaeaf4;
+  border-radius: 0.9rem;
 }
-
 .shortcutIcon svg {
-	width: 1.2rem;
-	height: 1.2rem;
+  width: 1.2rem;
+  height: 1.2rem;
 }
-
 .shortcut > div {
-	min-width: 0;
+  min-width: 0;
 }
-
 .shortcut h2 {
-	margin: 0;
-	font-size: 1rem;
-	font-weight: 500;
-	line-height: 1.4;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.4;
 }
-
 .shortcut p {
-	margin: 0.4rem 0 0.7rem;
-	color: var(--contact-muted);
-	font-size: 0.85rem;
-	line-height: 1.5;
+  margin: 0.4rem 0 0.7rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.5;
 }
-
 .shortcutLabel {
-	color: var(--contact-brand);
-	font-size: 0.8rem;
-	font-weight: 500;
+  color: var(--brand);
+  font-size: 0.8rem;
+  font-weight: 500;
 }
-
 .shortcutArrow {
-	flex-shrink: 0;
-	width: 1rem;
-	height: 1rem;
-	margin-left: auto;
-	color: var(--contact-brand);
-	transition: transform 160ms ease;
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+  margin-left: auto;
+  color: var(--brand);
+  transition: transform 160ms ease;
 }
-
 .shortcut:hover .shortcutArrow {
-	transform: translate(2px, -2px);
+  transform: translate(2px, -2px);
 }
-
-.shortcut:hover .shortcutLabel,
-.emailAddress:hover {
-	text-decoration: underline;
-	text-underline-offset: 4px;
+.shortcut:hover .shortcutLabel {
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
-
-.questions {
-	display: grid;
-	grid-template-columns: 0.85fr 1.25fr;
-	gap: clamp(2rem, 5vw, 4.75rem);
-	margin-top: 4rem;
-	scroll-margin-top: 8rem;
+.page a:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 5px;
+  border-radius: 0.35rem;
 }
-
-.questionsIntro h2 {
-	margin: 0 0 0.85rem;
-	font-size: clamp(1.6rem, 2.5vw, 2rem);
-	font-weight: 500;
-	line-height: 1.2;
-	letter-spacing: -0.04em;
-}
-
-.questionsIntro p {
-	max-width: 30ch;
-	margin: 0;
-	color: var(--contact-muted);
-	font-size: 0.9rem;
-	line-height: 1.65;
-}
-
-.questionList {
-	min-width: 0;
-}
-
-.question {
-	border-bottom: 1px solid rgba(2, 0, 108, 0.1);
-}
-
-.question:first-child {
-	border-top: 1px solid rgba(2, 0, 108, 0.1);
-}
-
-.question summary {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 1rem;
-	min-height: 4.25rem;
-	padding: 1rem 0;
-	font-size: 0.95rem;
-	font-weight: 500;
-	list-style: none;
-	cursor: pointer;
-}
-
-.question summary::-webkit-details-marker {
-	display: none;
-}
-
-.question summary svg {
-	flex-shrink: 0;
-	width: 1rem;
-	height: 1rem;
-	color: var(--contact-muted);
-	transition: transform 180ms ease;
-}
-
-.question[open] summary svg {
-	transform: rotate(180deg);
-}
-
-.answer {
-	padding: 0 1.75rem 1.25rem 0;
-	color: var(--contact-muted);
-	font-size: 0.875rem;
-	line-height: 1.75;
-}
-
-.answer p {
-	margin: 0;
-}
-
-.answer a {
-	display: inline-flex;
-	align-items: center;
-	gap: 0.5rem;
-	min-height: 2.75rem;
-	margin-top: 0.5rem;
-	color: var(--contact-brand);
-	font-weight: 500;
-	text-underline-offset: 4px;
-}
-
-.answer svg {
-	width: 1rem;
-	height: 1rem;
-}
-
-.page a:focus-visible,
-.question summary:focus-visible {
-	outline: 2px solid var(--contact-brand);
-	outline-offset: 5px;
-	border-radius: 0.35rem;
-}
-
 @media (max-width: 1000px) {
-	.hero {
-		gap: 2rem;
-	}
-
-	.postcard {
-		min-height: 580px;
-	}
-
-	.emailHint {
-		display: block;
-		margin: 0.75rem 0 0;
-	}
+  .hero {
+    gap: 2rem;
+  }
+  .postcard {
+    min-height: 650px;
+  }
 }
-
-@media (max-width: 760px) {
-	.hero {
-		grid-template-columns: 1fr;
-		gap: 1.5rem;
-	}
-
-	.intro {
-		grid-row: 1;
-		padding: 0;
-	}
-
-	.intro h1 {
-		max-width: 20ch;
-	}
-
-	.postcard {
-		min-height: 340px;
-		border-bottom-right-radius: 3rem;
-	}
-
-	.photograph {
-		object-position: center 60%;
-	}
-
-	.postcardNote {
-		right: 1rem;
-		bottom: 1rem;
-		left: auto;
-		max-width: calc(100% - 2rem);
-		padding: 1.25rem;
-		border-bottom-right-radius: 2rem;
-	}
-
-	.postcardNote > svg {
-		display: none;
-	}
-
-	.postcardNote p {
-		margin-top: 0;
-	}
-
-	.emailPanel {
-		margin-top: 1.5rem;
-	}
-
-	.emailHint {
-		display: inline-block;
-		margin-left: 0.75rem;
-	}
-
-	.shortcuts {
-		grid-template-columns: 1fr;
-		margin-top: 2rem;
-		padding: 0;
-	}
-
-	.shortcut,
-	.shortcut + .shortcut {
-		padding: 1.5rem 0;
-		border-left: 0;
-	}
-
-	.shortcut + .shortcut {
-		border-top: 1px solid rgba(2, 0, 108, 0.1);
-	}
-
-	.questions {
-		grid-template-columns: 1fr;
-		gap: 1.5rem;
-		margin-top: 2.5rem;
-	}
+@media (max-width: 820px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+  .postcard {
+    min-height: min(72vh, 620px);
+  }
+  .intro {
+    padding-top: 0;
+  }
+  .intro h1 {
+    max-width: 18ch;
+  }
 }
-
-@media (max-width: 380px) {
-	.emailHint {
-		display: block;
-		margin-left: 0;
-	}
+@media (max-width: 620px) {
+  .page {
+    padding-top: 1rem;
+  }
+  .postcard {
+    min-height: 520px;
+    border-radius: 1.25rem 1.25rem 3.75rem 1.25rem;
+  }
+  .postcardNote {
+    right: 1rem;
+    bottom: 1rem;
+    left: 1rem;
+  }
+  .shortcuts {
+    grid-template-columns: 1fr;
+  }
+  .shortcut {
+    padding: 0.75rem 0 1.5rem;
+  }
+  .shortcut + .shortcut {
+    padding: 1.5rem 0 0.75rem;
+    border-top: 1px solid rgba(2, 0, 108, 0.1);
+    border-left: 0;
+  }
 }
-
 @media (prefers-reduced-motion: reduce) {
-	.primaryAction,
-	.shortcutArrow,
-	.question summary svg {
-		transition: none;
-	}
-}
-
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-	.postcardNote,
-	.emailPanel {
-		background: #ffffff;
-	}
+  .shortcutArrow {
+    transition: none;
+  }
 }
