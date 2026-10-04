@@ -18,6 +18,14 @@ import {
 import { useMemo, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { Input } from "@/components/ui/input";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import {
 	Dialog,
 	DialogContent,
@@ -210,6 +218,7 @@ export function HomeSearch() {
 		<>
 			<form
 				className={styles.searchPanel}
+				aria-label="Find your next car or stay"
 				data-category={activeCategory}
 				onSubmit={submitSearch}
 			>
@@ -223,6 +232,7 @@ export function HomeSearch() {
 								type="button"
 								className={styles.categoryTab}
 								data-active={activeCategory === category.id}
+								aria-pressed={activeCategory === category.id}
 								data-coming-soon={category.comingSoon ? "true" : "false"}
 								disabled={category.comingSoon}
 								aria-disabled={category.comingSoon}
@@ -237,46 +247,68 @@ export function HomeSearch() {
 				</div>
 
 				<div className={styles.primaryFields} data-category={activeCategory}>
-					<label className={styles.searchField}>
-						<span>
+					<div className={styles.searchField}>
+						<label htmlFor="hero-search">
 							{activeCategory === "cars"
 								? "Search"
 								: "Location or address"}
-						</span>
-						<strong>{activeSearchCategory.shortLabel}</strong>
-						<input
+						</label>
+						<Input
+							id="hero-search"
+							icon={<Search aria-hidden="true" />}
+							shellClassName={styles.searchInput}
 							type="search"
 							value={search}
 							placeholder={activeSearchCategory.placeholder}
 							onChange={(event) => setSearch(event.target.value)}
 						/>
-					</label>
+					</div>
 
-					<button
-						type="button"
-						className={styles.dateField}
-						onClick={() => setIsDateDialogOpen(true)}
-					>
-						<CalendarDays aria-hidden="true" />
-						<span>Dates</span>
-						<strong>{formatDateRange(dateRange)}</strong>
-					</button>
+					<div className={styles.dateField}>
+						<span id="hero-dates-label">Travel dates</span>
+						<Button
+							type="button"
+							variant="outline"
+							className={styles.dateButton}
+							aria-label={`Travel dates: ${formatDateRange(dateRange)}`}
+							aria-haspopup="dialog"
+							onClick={() => setIsDateDialogOpen(true)}
+						>
+							<CalendarDays aria-hidden="true" />
+							<span>{formatDateRange(dateRange)}</span>
+						</Button>
+					</div>
 
 					{activeCategory !== "cars" ? (
-						<label className={styles.guestField}>
-							<Users aria-hidden="true" />
-							<span>Guests</span>
-							<select
-								value={guests}
-								onChange={(event) => setGuests(Number(event.target.value))}
+						<div className={styles.guestField}>
+							<label id="hero-guests-label" htmlFor="hero-guests">
+								Guests
+							</label>
+							<Select
+								value={String(guests)}
+								onValueChange={(value) => setGuests(Number(value ?? 1))}
+								items={[1, 2, 3, 4, 5, 6, 7, 8].map((value) => ({
+									value: String(value),
+									label: `${value} ${value === 1 ? "guest" : "guests"}`,
+								}))}
 							>
-								{[1, 2, 3, 4, 5, 6, 7, 8].map((value) => (
-									<option key={value} value={value}>
-										{value} {value === 1 ? "guest" : "guests"}
-									</option>
-								))}
-							</select>
-						</label>
+								<SelectTrigger
+									id="hero-guests"
+									aria-labelledby="hero-guests-label"
+									className={styles.guestSelect}
+								>
+									<Users aria-hidden="true" />
+									<SelectValue />
+								</SelectTrigger>
+								<SelectContent>
+									{[1, 2, 3, 4, 5, 6, 7, 8].map((value) => (
+										<SelectItem key={value} value={String(value)}>
+											{value} {value === 1 ? "guest" : "guests"}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+						</div>
 					) : null}
 
 					<div className={styles.searchActions}>
