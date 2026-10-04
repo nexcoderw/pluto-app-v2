@@ -156,7 +156,7 @@ function HomeNavbar() {
 			<nav className={styles.homeNav} aria-label="Homepage navigation">
 				<Link href="/" className={styles.homeBrand} onClick={closeMenu}>
 					<Image
-						src="/logo-w.png"
+						src="/logo-b.png"
 						alt="Pluto Booking"
 						width={430}
 						height={85}
@@ -169,7 +169,8 @@ function HomeNavbar() {
 					className={styles.homeLinks}
 					data-open={isOpen}
 				>
-					{[{ href: "/", label: "Home" }, ...PUBLIC_NAVIGATION_LINKS].map((link) => {
+					{PUBLIC_NAVIGATION_LINKS.map((link) => {
+						const Icon = link.icon;
 						const isActive = isPublicNavigationLinkActive(
 							pathname,
 							link.href,
@@ -190,6 +191,7 @@ function HomeNavbar() {
 								}
 								onClick={closeMenu}
 							>
+								<Icon aria-hidden="true" />
 								{link.label}
 							</Link>
 						);
@@ -211,7 +213,7 @@ function HomeNavbar() {
 				</div>
 
 				<div className={styles.homeCurrency}>
-					<CurrencySelector inverted />
+					<CurrencySelector />
 				</div>
 
 				<div className={styles.homeAuth}>
