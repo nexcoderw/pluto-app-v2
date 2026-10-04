@@ -4,8 +4,8 @@ import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useMemo, useState, type FormEvent } from "react";
-import { LogIn, Menu, Power, Search, UserPlus, X } from "lucide-react";
+import { useMemo, useState } from "react";
+import { LogIn, Menu, Power, UserPlus, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,7 +32,6 @@ export function PublicNavbar() {
 function PublicNavbarContent({ pathname }: { pathname: string }) {
 	const router = useRouter();
 	const [isOpen, setIsOpen] = useState(false);
-	const [search, setSearch] = useState("");
 	const [isLoggingOut, setIsLoggingOut] = useState(false);
 	const currentUser = useUserSession();
 	const userPortalPath = currentUser
@@ -51,10 +50,6 @@ function PublicNavbarContent({ pathname }: { pathname: string }) {
 	// Event handlers: keep the mobile menu local so public navigation stays reusable.
 	function closeMenu() {
 		setIsOpen(false);
-	}
-
-	function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {
-		event.preventDefault();
 	}
 
 	// Logout flow: clear the refresh cookie, remove cached session state, and return to the public homepage.
@@ -83,7 +78,7 @@ function PublicNavbarContent({ pathname }: { pathname: string }) {
 			<nav className={styles.nav} aria-label="Main navigation">
 				<Link href="/" className={styles.brand} onClick={closeMenu}>
 					<Image
-						src="/logo-b.png"
+						src="/logo-w.png"
 						alt="Pluto Booking"
 						width={430}
 						height={85}
@@ -91,38 +86,12 @@ function PublicNavbarContent({ pathname }: { pathname: string }) {
 					/>
 				</Link>
 
-				<form className={styles.searchForm} onSubmit={handleSearchSubmit}>
-					<Search aria-hidden="true" />
-					<label className="sr-only" htmlFor="public-navbar-search">
-						Search listings
-					</label>
-					<input
-						id="public-navbar-search"
-						type="search"
-						value={search}
-						placeholder="Search listings"
-						onChange={(event) => setSearch(event.target.value)}
-					/>
-				</form>
-
-				<div className={styles.links} data-open={isOpen}>
-					<form
-						className={styles.mobileSearchForm}
-						onSubmit={handleSearchSubmit}
-					>
-						<Search aria-hidden="true" />
-						<label className="sr-only" htmlFor="public-mobile-navbar-search">
-							Search listings
-						</label>
-						<input
-							id="public-mobile-navbar-search"
-							type="search"
-							value={search}
-							placeholder="Search listings"
-							onChange={(event) => setSearch(event.target.value)}
-						/>
-					</form>
-					{PUBLIC_NAVIGATION_LINKS.map((link) => {
+				<div
+					id="public-navigation-links"
+					className={styles.links}
+					data-open={isOpen}
+				>
+					{[{ href: "/", label: "Home" }, ...PUBLIC_NAVIGATION_LINKS].map((link) => {
 						const isActive = isPublicNavigationLinkActive(pathname, link.href);
 
 						return (
@@ -160,7 +129,7 @@ function PublicNavbarContent({ pathname }: { pathname: string }) {
 				</div>
 
 				<div className={styles.currencyArea}>
-					<CurrencySelector />
+					<CurrencySelector inverted />
 				</div>
 
 				<div className={styles.authArea}>
@@ -182,6 +151,7 @@ function PublicNavbarContent({ pathname }: { pathname: string }) {
 					className={styles.menuButton}
 					aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
 					aria-expanded={isOpen}
+					aria-controls="public-navigation-links"
 					onClick={() => setIsOpen((value) => !value)}
 				>
 					{isOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
