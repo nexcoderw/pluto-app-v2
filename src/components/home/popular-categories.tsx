@@ -4,7 +4,6 @@ import {
 	ArrowUpRight,
 	Building2,
 	CarFront,
-	Clock3,
 	Hotel,
 	House,
 	Plane,
@@ -17,12 +16,10 @@ type PopularCategory = {
 	title: string;
 	image: string;
 	description: string;
-	occasion: string;
-	href?: string;
+	href: string;
 	action: string;
 	icon: LucideIcon;
 	imagePosition: string;
-	isComingSoon?: boolean;
 };
 
 const categories: PopularCategory[] = [
@@ -30,8 +27,7 @@ const categories: PopularCategory[] = [
 		id: "cars",
 		title: "Car rentals",
 		image: "/services/car-rent.png",
-		description: "Find a car for your plans, from getting around the city to heading out for the weekend.",
-		occasion: "City trips and weekend escapes",
+		description: "Cars for city trips and weekend escapes.",
 		href: "/listings/cars",
 		action: "Explore cars",
 		icon: CarFront,
@@ -41,8 +37,7 @@ const categories: PopularCategory[] = [
 		id: "apartments",
 		title: "Apartments",
 		image: "/services/apartment.png",
-		description: "Settle into your own space, whether you’re visiting for a few days or staying a little longer.",
-		occasion: "Work trips and longer visits",
+		description: "Your own space for short or longer visits.",
 		href: "/listings/apartments",
 		action: "Explore apartments",
 		icon: Building2,
@@ -52,8 +47,7 @@ const categories: PopularCategory[] = [
 		id: "hotels",
 		title: "Hotel rooms",
 		image: "/services/hotel.png",
-		description: "Find a comfortable base for a quick stopover, a business trip, or a well-earned break.",
-		occasion: "Short stays and stopovers",
+		description: "A comfortable base for work or a quick break.",
 		href: "/listings/hotel-rooms",
 		action: "Explore hotel rooms",
 		icon: Hotel,
@@ -63,8 +57,7 @@ const categories: PopularCategory[] = [
 		id: "airbnb",
 		title: "Airbnb stays",
 		image: "/services/airbnb.png",
-		description: "Make yourself at home. Explore places with room to unwind and share the trip with your favourite people.",
-		occasion: "Family time and trips together",
+		description: "Welcoming homes for time away together.",
 		href: "/listings/airbnb",
 		action: "Explore Airbnb stays",
 		icon: House,
@@ -74,12 +67,11 @@ const categories: PopularCategory[] = [
 		id: "flights",
 		title: "Flight booking",
 		image: "/services/flight.png",
-		description: "Another way to plan your journey is on its way. Explore cars and stays while flight booking gets ready.",
-		occasion: "Your next destination",
-		action: "Coming soon",
+		description: "Plan your route and request your next flight.",
+		href: "/flights",
+		action: "Explore flights",
 		icon: Plane,
 		imagePosition: "center 50%",
-		isComingSoon: true,
 	},
 ];
 
@@ -90,8 +82,7 @@ export function PopularCategories() {
 				<div className={styles.introduction}>
 					<h2 id="popular-categories">Popular categories</h2>
 					<p>
-						Get around, settle in, or make yourself at home. Find the right
-						fit for the way you travel.
+						Find a car, a place to stay, or your next flight.
 					</p>
 				</div>
 				<Link href="/listings" className={styles.browseLink}>
@@ -118,7 +109,7 @@ function PopularCategoryCard({ category }: { category: PopularCategory }) {
 					src={category.image}
 					alt=""
 					fill
-					sizes="(max-width: 640px) 90vw, (max-width: 1000px) 45vw, 30vw"
+					sizes="(max-width: 540px) 88px, (max-width: 760px) 45vw, (max-width: 1100px) 30vw, 18vw"
 					style={{ objectPosition: category.imagePosition }}
 				/>
 			</div>
@@ -128,31 +119,13 @@ function PopularCategoryCard({ category }: { category: PopularCategory }) {
 					<h3>{category.title}</h3>
 				</div>
 				<p className={styles.description}>{category.description}</p>
-				<p className={styles.occasion}>{category.occasion}</p>
 				<span className={styles.action}>
 					{category.action}
-					{category.isComingSoon ? (
-						<Clock3 aria-hidden="true" />
-					) : (
-						<ArrowUpRight aria-hidden="true" />
-					)}
+					<ArrowUpRight aria-hidden="true" />
 				</span>
 			</div>
 		</>
 	);
-
-	if (category.isComingSoon || !category.href) {
-		return (
-			<article
-				className={styles.card}
-				data-category={category.id}
-				data-disabled="true"
-				aria-label={`${category.title} is coming soon`}
-			>
-				{content}
-			</article>
-		);
-	}
 
 	return (
 		<Link
