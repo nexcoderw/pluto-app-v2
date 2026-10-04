@@ -1,52 +1,33 @@
 .page {
 	min-height: 100vh;
-	background: #f5f6fa;
-	color: #161821;
+	padding-top: 1.5rem;
+	color: #121621;
+	background: #eaf2f8;
 }
 
 .hero {
 	position: relative;
-	isolation: isolate;
-	width: min(
-		calc(100% - var(--home-container-gutter)),
-		var(--home-container-width)
-	);
-	min-height: min(52rem, calc(100vh - 2rem));
-	margin: clamp(0.75rem, 1.5vw, 1.4rem) auto clamp(3rem, 6vw, 6rem);
-	overflow: hidden;
-	border: 1px solid rgba(2, 0, 108, 0.1);
-	border-radius: clamp(1.4rem, 3vw, 2.2rem);
-	background-image: url("/hero/hero.jpg");
-	background-position: center;
-	background-size: cover;
-	box-shadow: 0 2.2rem 5rem rgba(16, 22, 33, 0.14);
-}
-
-.heroBackdrop {
-	position: absolute;
-	inset: 0;
-	z-index: -1;
-	background: rgba(12, 12, 12, 0.52);
+	width: min(calc(100% - 2rem), 94rem);
+	margin: 0 auto;
+	padding: 0 1.25rem 1.25rem;
+	background: #fff;
+	box-shadow: 0 2rem 5rem rgba(55, 87, 112, 0.1);
 }
 
 .homeHeader {
 	position: relative;
-	z-index: 5;
-	padding: clamp(1rem, 2vw, 1.55rem);
+	z-index: 20;
+	padding: 0.9rem 0;
 }
 
 .homeNav {
-	min-height: 4.35rem;
 	display: grid;
-	grid-template-columns: 13rem minmax(0, 1fr) auto auto auto;
+	min-height: 4.4rem;
+	grid-template-columns: 12rem minmax(0, 1fr) auto auto auto;
 	align-items: center;
 	gap: 1rem;
-	padding: 0.55rem 0.7rem 0.55rem 1rem;
-	border: 1px solid rgba(255, 255, 255, 0.7);
-	border-radius: 999px;
-	background: rgba(255, 255, 255, 0.74);
-	box-shadow: 0 1rem 2.8rem rgba(16, 22, 33, 0.1);
-	backdrop-filter: blur(24px);
+	padding: 0 1.4rem;
+	background: #fff;
 }
 
 .homeBrand {
@@ -56,7 +37,7 @@
 }
 
 .homeBrand img {
-	width: clamp(7rem, 9vw, 9rem);
+	width: clamp(7.5rem, 9vw, 9rem);
 	height: auto;
 	object-fit: contain;
 }
@@ -65,32 +46,29 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	gap: clamp(0.85rem, 1.7vw, 1.6rem);
+	gap: clamp(1rem, 2vw, 2rem);
 }
 
 .homeLinks a {
 	color: #121621;
-	font-size: 0.82rem;
-	font-weight: 760;
+	font-size: 0.72rem;
+	font-weight: 720;
 	line-height: 1;
 	text-decoration: none;
 	white-space: nowrap;
-	transition:
-		color 160ms ease,
-		transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+	transition: color 160ms ease, transform 160ms ease;
 }
 
-.homeLinks a:hover {
+.homeLinks a:hover,
+.homeLinks > a[data-active="true"] {
 	color: #02006c;
 	transform: translateY(-1px);
 }
 
 .homeLinks > a[data-active="true"] {
-	color: #02006c;
-	font-weight: 900;
 	text-decoration: underline;
-	text-decoration-thickness: 0.16rem;
-	text-underline-offset: 0.48rem;
+	text-decoration-thickness: 0.12rem;
+	text-underline-offset: 0.42rem;
 }
 
 .homeAuth,
@@ -109,25 +87,20 @@
 .registerButton,
 .profileButton,
 .powerButton {
+	display: inline-flex;
 	height: var(--pluto-button-height);
 	min-height: var(--pluto-button-height);
-	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 	gap: 0.5rem;
-	border-radius: 999px;
-	font-size: 0.78rem;
-	font-weight: 860;
+	font-size: 0.72rem;
+	font-weight: 800;
 	line-height: 1;
 	text-decoration: none;
 	white-space: nowrap;
+	border-radius: 999px;
 	cursor: pointer;
-	transition:
-		background 160ms ease,
-		border-color 160ms ease,
-		color 160ms ease,
-		box-shadow 160ms ease,
-		transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+	transition: transform 160ms ease, background-color 160ms ease;
 }
 
 .loginButton:hover,
@@ -139,9 +112,9 @@
 
 .loginButton,
 .profileButton {
-	border: 1px solid rgba(2, 0, 108, 0.12);
-	background: rgba(255, 255, 255, 0.72);
 	color: #02006c;
+	background: #f7f7fb;
+	border: 1px solid rgba(2, 0, 108, 0.1);
 }
 
 .loginButton,
@@ -150,14 +123,13 @@
 }
 
 .registerButton {
-	border: 1px solid #02006c;
-	background: #02006c;
-	color: white;
-	box-shadow: 0 0.9rem 1.8rem rgba(2, 0, 108, 0.18);
+	color: #fff;
+	background: #121212;
+	border: 1px solid #121212;
 }
 
 .registerButton:hover {
-	background: #09068f;
+	background: #02006c;
 }
 
 .loginButton svg,
@@ -168,25 +140,25 @@
 }
 
 .profileButton {
-	max-width: 15rem;
+	max-width: 14rem;
 	justify-content: flex-start;
-	padding: 0.24rem 0.88rem 0.24rem 0.25rem;
+	padding: 0.24rem 0.8rem 0.24rem 0.25rem;
 	color: #121621;
 }
 
 .avatar {
+	display: inline-flex;
 	width: 2.35rem;
 	height: 2.35rem;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
 	flex: 0 0 auto;
 	overflow: hidden;
-	border-radius: 999px;
-	background: #02006c;
-	color: white;
+	align-items: center;
+	justify-content: center;
+	color: #fff;
 	font-size: 0.76rem;
-	font-weight: 880;
+	font-weight: 800;
+	background: #02006c;
+	border-radius: 999px;
 }
 
 .avatar[data-has-image="true"] {
@@ -196,49 +168,42 @@
 }
 
 .profileCopy {
-	min-width: 0;
 	display: grid;
+	min-width: 0;
 	gap: 0.08rem;
 	text-align: left;
 }
 
 .profileCopy strong,
 .profileCopy small {
-	max-width: 9rem;
+	max-width: 8rem;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 
 .profileCopy strong {
-	color: #121621;
-	font-size: 0.76rem;
-	font-weight: 880;
+	font-size: 0.72rem;
+	font-weight: 820;
 }
 
 .profileCopy small {
-	color: rgba(18, 22, 33, 0.58);
-	font-size: 0.64rem;
-	font-weight: 740;
+	color: rgba(18, 22, 33, 0.56);
+	font-size: 0.62rem;
+	font-weight: 650;
 }
 
 .powerButton {
 	width: var(--pluto-button-height);
 	padding: 0;
-	border: 1px solid rgba(220, 38, 38, 0.18);
+	color: #fff;
 	background: #dc2626;
-	color: white;
-	box-shadow: 0 0.85rem 1.6rem rgba(220, 38, 38, 0.2);
-}
-
-.powerButton:hover {
-	background: #b91c1c;
-	box-shadow: 0 1rem 1.8rem rgba(220, 38, 38, 0.26);
+	border: 1px solid #dc2626;
 }
 
 .powerButton:disabled {
 	cursor: not-allowed;
-	opacity: 0.68;
+	opacity: 0.65;
 	transform: none;
 }
 
@@ -247,73 +212,339 @@
 	width: var(--pluto-button-height);
 	height: var(--pluto-button-height);
 	min-height: var(--pluto-button-height);
-	border-radius: 999px;
 	color: #02006c;
+	border-radius: 999px;
+}
+
+.heroCanvas {
+	position: relative;
+	isolation: isolate;
+	min-height: clamp(38rem, 54vw, 47rem);
+	overflow: hidden;
+	background: #d8effa;
+	border-radius: 2.2rem 2.2rem 7rem 2.2rem;
+}
+
+.heroCanvas::after {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	background: linear-gradient(90deg, rgba(236, 249, 255, 0.68) 0%, rgba(236, 249, 255, 0.12) 50%, transparent 72%);
+	content: "";
+	pointer-events: none;
+}
+
+.cloudImage {
+	z-index: -2;
+	object-fit: cover;
+	object-position: center;
+}
+
+.planeImage {
+	position: absolute;
+	top: 0;
+	right: -11%;
+	z-index: 1;
+	width: min(72%, 68rem);
+	height: auto;
+	filter: drop-shadow(0 2rem 2.6rem rgba(44, 91, 120, 0.2));
+	animation: planeFloat 6s ease-in-out infinite;
+	pointer-events: none;
+}
+
+.journeyRail {
+	position: absolute;
+	top: 25%;
+	left: clamp(1rem, 4vw, 4rem);
+	z-index: 4;
+	display: grid;
+	gap: 3rem;
+	place-items: center;
+}
+
+.journeyRail::before {
+	position: absolute;
+	top: 1.6rem;
+	bottom: 1.6rem;
+	left: 50%;
+	z-index: -1;
+	width: 1px;
+	background: rgba(255, 255, 255, 0.9);
+	content: "";
+}
+
+.journeyRail span,
+.journeyRail strong {
+	display: grid;
+	width: 2.4rem;
+	height: 2.4rem;
+	place-items: center;
+	color: #fff;
+	font-size: 0.68rem;
+	font-weight: 700;
+	background: rgba(122, 181, 210, 0.25);
+	border: 1px solid rgba(255, 255, 255, 0.88);
+	border-radius: 50%;
+	-webkit-backdrop-filter: blur(12px);
+	backdrop-filter: blur(12px);
+}
+
+.journeyRail strong {
+	color: #121621;
+	background: #fff;
 }
 
 .heroContent {
 	position: relative;
-	z-index: 1;
-	width: min(48rem, 100% - clamp(2rem, 8vw, 9rem));
-	margin: clamp(4rem, 8vw, 7.5rem) 0 0 clamp(1.2rem, 6vw, 7rem);
+	z-index: 5;
+	width: min(34rem, 46%);
+	padding-top: clamp(7rem, 12vw, 11rem);
+	margin-left: clamp(5.5rem, 9vw, 9rem);
+}
+
+.heroEyebrow {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	color: #1f3440;
+	font-size: 0.7rem;
+	font-weight: 780;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.heroEyebrow svg {
+	width: 0.95rem;
+	height: 0.95rem;
+	color: #02006c;
 }
 
 .heroContent h1 {
-	max-width: 44rem;
-	margin: 0;
-	color: #fff;
-	font-size: clamp(1rem, 7vw, 3.7rem);
-	font-weight: 780;
+	max-width: 11ch;
+	margin: 1rem 0 0;
+	color: #10151b;
+	font-size: clamp(3rem, 5vw, 5.4rem);
+	font-weight: 520;
 	line-height: 0.96;
-	letter-spacing: 0;
+	letter-spacing: -0.065em;
+	text-wrap: balance;
 }
 
 .heroContent p {
-	max-width: 37rem;
-	margin: 1.15rem 0 0;
-	color: rgba(255, 255, 255, 0.72);
-	font-size: clamp(0.75rem, 1.4vw, 0.81rem);
+	max-width: 33rem;
+	margin: 1.2rem 0 0;
+	color: rgba(18, 31, 40, 0.68);
+	font-size: 0.88rem;
 	font-weight: 520;
 	line-height: 1.65;
 }
 
-@media (max-width: 1180px) {
-	.homeNav {
-		grid-template-columns: 11rem minmax(0, 1fr) auto auto auto;
-		gap: 0.75rem;
+.heroActions {
+	display: flex;
+	align-items: center;
+	gap: 0.8rem;
+	margin-top: 1.8rem;
+}
+
+.heroPrimaryAction,
+.heroPlayAction {
+	display: inline-flex;
+	min-height: 3.2rem;
+	align-items: center;
+	justify-content: center;
+	gap: 0.65rem;
+	color: #fff;
+	font-size: 0.76rem;
+	font-weight: 760;
+	text-decoration: none;
+	background: #2e91f3;
+	border-radius: 999px;
+	box-shadow: 0 1rem 2rem rgba(46, 145, 243, 0.24);
+	transition: transform 160ms ease, background-color 160ms ease;
+}
+
+.heroPrimaryAction {
+	padding: 0 1.35rem;
+}
+
+.heroPlayAction {
+	width: 3.2rem;
+	color: #2385e7;
+	background: rgba(255, 255, 255, 0.92);
+}
+
+.heroPrimaryAction:hover,
+.heroPlayAction:hover {
+	transform: translateY(-2px);
+}
+
+.heroPrimaryAction:hover {
+	background: #02006c;
+}
+
+.heroPrimaryAction svg,
+.heroPlayAction svg {
+	width: 1rem;
+	height: 1rem;
+}
+
+.discoveryCard {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	z-index: 6;
+	display: grid;
+	width: min(27rem, 38%);
+	gap: 1.1rem;
+	padding: 1.6rem 1.8rem 1.4rem 2.3rem;
+	color: #121621;
+	text-decoration: none;
+	background: rgba(255, 255, 255, 0.94);
+	border-radius: 3.2rem 0 0 0;
+	box-shadow: -1.5rem -1.5rem 3rem rgba(64, 111, 139, 0.08);
+	-webkit-backdrop-filter: blur(20px);
+	backdrop-filter: blur(20px);
+}
+
+.discoveryHeading,
+.discoveryBody {
+	display: flex;
+	align-items: center;
+}
+
+.discoveryHeading {
+	justify-content: space-between;
+	font-size: 1.05rem;
+}
+
+.discoveryHeading > svg {
+	width: 1.1rem;
+	height: 1.1rem;
+	transition: transform 160ms ease;
+}
+
+.discoveryCard:hover .discoveryHeading > svg {
+	transform: translateX(0.25rem);
+}
+
+.discoveryBody {
+	gap: 1rem;
+}
+
+.discoveryBody > span:last-child {
+	display: grid;
+	gap: 0.2rem;
+}
+
+.discoveryBody strong {
+	font-size: 0.72rem;
+}
+
+.discoveryBody small {
+	max-width: 18ch;
+	color: #717986;
+	font-size: 0.62rem;
+	line-height: 1.45;
+}
+
+.discoveryImages {
+	display: flex;
+	min-width: 6.8rem;
+}
+
+.discoveryImages img {
+	width: 2.7rem;
+	height: 2.7rem;
+	margin-right: -0.55rem;
+	object-fit: cover;
+	border: 3px solid #fff;
+	border-radius: 50%;
+}
+
+.flightBadge {
+	position: absolute;
+	bottom: 2rem;
+	left: clamp(1.5rem, 5vw, 5rem);
+	z-index: 4;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.6rem;
+	color: rgba(16, 34, 45, 0.7);
+	font-size: 0.68rem;
+	font-weight: 700;
+}
+
+.flightBadge svg {
+	width: 1rem;
+	height: 1rem;
+	color: #02006c;
+}
+
+.searchDock {
+	position: relative;
+	z-index: 10;
+	width: min(calc(100% - 2rem), 88rem);
+	margin: 0 auto;
+}
+
+.searchDock > form {
+	margin-top: -2rem;
+}
+
+@keyframes planeFloat {
+	0%,
+	100% {
+		transform: translate3d(0, 0, 0);
+	}
+	50% {
+		transform: translate3d(-0.5rem, -0.65rem, 0);
 	}
 }
 
-@media (max-width: 940px) {
-	.hero {
-		min-height: auto;
+@media (max-width: 1180px) {
+	.homeNav {
+		grid-template-columns: 10rem minmax(0, 1fr) auto auto auto;
+		gap: 0.7rem;
+		padding-inline: 0.4rem;
 	}
 
+	.homeLinks {
+		gap: 0.85rem;
+	}
+
+	.heroContent {
+		width: min(32rem, 52%);
+		margin-left: 6.5rem;
+	}
+
+	.planeImage {
+		right: -16%;
+		width: 76%;
+	}
+}
+
+@media (max-width: 960px) {
 	.homeNav {
 		grid-template-columns: minmax(0, 1fr) auto auto;
-		padding: 0.45rem 0.55rem 0.45rem 1rem;
+		padding-inline: 0.25rem;
 	}
 
 	.homeLinks {
 		position: absolute;
-		top: calc(100% + 0.65rem);
-		left: 1rem;
-		right: 1rem;
+		top: calc(100% + 0.4rem);
+		right: 0;
+		left: 0;
 		display: grid;
-		gap: 0.35rem;
-		justify-content: stretch;
+		gap: 0.3rem;
 		padding: 0.7rem;
+		background: rgba(255, 255, 255, 0.98);
 		border: 1px solid rgba(2, 0, 108, 0.1);
 		border-radius: 1.25rem;
-		background: rgba(255, 255, 255, 0.97);
 		box-shadow: 0 1.4rem 3rem rgba(16, 22, 33, 0.14);
-		backdrop-filter: blur(22px);
 		opacity: 0;
 		pointer-events: none;
 		transform: translateY(-0.35rem);
-		transition:
-			opacity 180ms ease,
-			transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+		transition: opacity 180ms ease, transform 180ms ease;
 	}
 
 	.homeLinks[data-open="true"] {
@@ -323,14 +554,15 @@
 	}
 
 	.homeLinks a {
-		min-height: 2.85rem;
+		display: flex;
+		min-height: 2.8rem;
 		align-items: center;
 		padding: 0 0.85rem;
 		border-radius: 999px;
 	}
 
 	.homeLinks a:hover {
-		background: rgba(2, 0, 108, 0.06);
+		background: rgba(2, 0, 108, 0.05);
 	}
 
 	.homeAuth {
@@ -349,11 +581,9 @@
 
 	.mobileAuth .loginButton,
 	.mobileAuth .registerButton,
-	.mobileAuth .powerButton {
-		width: 100%;
-	}
-
+	.mobileAuth .powerButton,
 	.mobileAuth .profileButton {
+		width: 100%;
 		max-width: none;
 	}
 
@@ -361,34 +591,144 @@
 		display: inline-flex;
 	}
 
+	.heroCanvas {
+		min-height: 44rem;
+	}
+
+	.planeImage {
+		top: 1rem;
+		right: -20%;
+		width: 82%;
+		opacity: 0.92;
+	}
+
 	.heroContent {
-		width: min(100% - 2rem, 44rem);
-		margin: clamp(3rem, 9vw, 5rem) auto 0;
+		width: min(31rem, 70%);
+		padding-top: 12rem;
+		margin-left: 5.5rem;
+	}
+
+	.discoveryCard {
+		width: min(26rem, 58%);
 	}
 }
 
 @media (max-width: 680px) {
+	.page {
+		padding-top: 0;
+	}
+
+	.hero {
+		width: 100%;
+		padding: 0 0.7rem 0.7rem;
+	}
+
 	.homeHeader {
-		padding: 0.75rem;
+		padding: 0.55rem 0;
+	}
+
+	.homeNav {
+		min-height: 4rem;
 	}
 
 	.homeBrand img {
-		width: 7.4rem;
+		width: 7.2rem;
+	}
+
+	.homeCurrency {
+		display: none;
+	}
+
+	.heroCanvas {
+		min-height: 45rem;
+		border-radius: 1.5rem 1.5rem 4rem 1.5rem;
+	}
+
+	.heroCanvas::after {
+		background: linear-gradient(180deg, rgba(235, 248, 254, 0.08), rgba(235, 248, 254, 0.84) 43%, rgba(235, 248, 254, 0.96) 72%);
+	}
+
+	.planeImage {
+		top: 1rem;
+		right: -28%;
+		width: 115%;
+	}
+
+	.journeyRail {
+		display: none;
+	}
+
+	.heroContent {
+		width: calc(100% - 2rem);
+		padding-top: 15.5rem;
+		margin: 0 auto;
 	}
 
 	.heroContent h1 {
-		font-size: clamp(2.45rem, 14vw, 4rem);
+		max-width: 10ch;
+		font-size: clamp(3rem, 14vw, 4.2rem);
+	}
+
+	.heroContent p {
+		max-width: 30rem;
+	}
+
+	.flightBadge {
+		display: none;
+	}
+
+	.discoveryCard {
+		right: 0;
+		width: calc(100% - 1rem);
+		padding: 1.2rem 1rem 1.1rem 1.4rem;
+		border-radius: 2.5rem 0 0 0;
+	}
+
+	.discoveryImages {
+		min-width: 5.8rem;
+	}
+
+	.discoveryImages img {
+		width: 2.35rem;
+		height: 2.35rem;
+	}
+
+	.searchDock {
+		width: calc(100% - 1rem);
+	}
+
+	.searchDock > form {
+		margin-top: 1rem;
 	}
 }
 
 @media (max-width: 420px) {
-	.hero {
-		width: 100%;
-		margin-top: 0;
-		border-radius: 0 0 1.4rem 1.4rem;
+	.heroContent {
+		padding-top: 13rem;
 	}
 
-	.homeNav {
-		border-radius: 1.2rem;
+	.heroContent h1 {
+		font-size: 2.8rem;
+	}
+
+	.heroContent p {
+		font-size: 0.8rem;
+	}
+
+	.discoveryBody small {
+		display: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.planeImage {
+		animation: none;
+	}
+
+	.homeLinks,
+	.heroPrimaryAction,
+	.heroPlayAction,
+	.discoveryHeading > svg {
+		transition: none;
 	}
 }
