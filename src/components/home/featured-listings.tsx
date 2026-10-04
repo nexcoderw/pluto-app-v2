@@ -274,11 +274,12 @@ function FeaturedListingCard({
 	const detailHref = source.listDetailHref(listing.id);
 	const location =
 		listing.location?.addressLine ?? `${listing.city}, ${listing.country}`;
-	const rating = listing.ratingAverage
-		? Number(listing.ratingAverage).toFixed(1)
+	const ratingValue = Number(listing.ratingAverage);
+	const rating = Number.isFinite(ratingValue) && ratingValue > 0
+		? ratingValue.toFixed(1)
 		: "New";
 	const formattedPrice = formatMoney(listing.basePrice, listing.currency);
-	const ownerName = listing.owner?.fullName ?? "Verified partner";
+	const ownerName = listing.owner?.fullName;
 
 	return (
 		<article className={styles.card}>
@@ -300,48 +301,42 @@ function FeaturedListingCard({
 						fill
 						sizes="(max-width: 720px) 100vw, (max-width: 1180px) 50vw, 25vw"
 					/>
-					<span className={styles.imageShade} aria-hidden="true" />
-					<span className={styles.topPills}>
-						<span>Popular</span>
-					</span>
-					<span className={styles.imageCaption}>
-						<span>
-							<strong>{listing.title}</strong>
+				</span>
+				<div className={styles.cardBody}>
+					<div className={styles.categoryRow}>
+						<span className={styles.category}>
+							<Icon aria-hidden="true" />
+							{source.label}
+						</span>
+						<span
+							className={styles.rating}
+							aria-label={rating === "New" ? "New listing" : `Rated ${rating} out of 5`}
+						>
+							{rating !== "New" ? <Star aria-hidden="true" /> : null}
+							{rating}
+						</span>
+					</div>
+					<h3 className={styles.cardTitle}>{listing.title}</h3>
+					<p className={styles.location}>
+						<MapPin aria-hidden="true" />
+						<span>{location}</span>
+					</p>
+					<p className={styles.partner}>
+						{ownerName ? `By ${ownerName}` : "Explore listing details"}
+					</p>
+					<div className={styles.cardFooter}>
+						<span className={styles.price}>
+							<strong>{formattedPrice}</strong>
 							<small>
-								<MapPin aria-hidden="true" />
-								{location}
+								{listing.pricingUnit.toLowerCase().replaceAll("_", " ")} rate
 							</small>
 						</span>
-						<span className={styles.imageAction}>
-							View listing
+						<span className={styles.viewListing}>
+							View
 							<ArrowRight aria-hidden="true" />
 						</span>
-					</span>
-				</span>
-				<span className={styles.cardMeta}>
-					<span className={styles.metric}>
-						<strong>{formattedPrice}</strong>
-						<small>{listing.pricingUnit.toLowerCase()} rate</small>
-					</span>
-					<span className={styles.metric}>
-						<strong>{source.label}</strong>
-						<small>Category</small>
-					</span>
-					<span className={styles.metric}>
-						<strong>
-							{rating}
-							{rating !== "New" ? <Star aria-hidden="true" /> : null}
-						</strong>
-						<small>Rating</small>
-					</span>
-					<span className={styles.verifiedPanel}>
-						<Icon aria-hidden="true" />
-						<span>
-							<strong>Verified</strong>
-							<small>{ownerName}</small>
-						</span>
-					</span>
-				</span>
+					</div>
+				</div>
 			</Link>
 			<ListingFavoriteButton
 				productId={listing.id}
@@ -350,7 +345,7 @@ function FeaturedListingCard({
 				price={Number(listing.basePrice)}
 				currency={listing.currency}
 				className={styles.favoriteButton}
-				label="Save listing"
+				label={`Save ${listing.title}`}
 			/>
 		</article>
 	);
@@ -359,36 +354,15 @@ function FeaturedListingCard({
 function FeaturedListingSkeleton() {
 	return (
 		<div className={styles.skeletonCard} aria-hidden="true">
-			<span className={styles.skeletonImage}>
-				<span className={styles.skeletonTopPills}>
-					<i />
-					<i />
-				</span>
-				<span className={styles.skeletonCaption}>
-					<strong />
-					<small />
-					<em />
-				</span>
-			</span>
-			<div className={styles.skeletonMeta}>
-				<span>
-					<strong />
-					<small />
-				</span>
-				<span>
-					<strong />
-					<small />
-				</span>
-				<span>
-					<strong />
-					<small />
-				</span>
-				<div>
-					<i />
-					<span>
-						<strong />
-						<small />
-					</span>
+			<span className={styles.skeletonImage} />
+			<div className={styles.cardBody}>
+				<span className={styles.skeletonCategory} />
+				<span className={styles.skeletonTitle} />
+				<span className={styles.skeletonLocation} />
+				<span className={styles.skeletonPartner} />
+				<div className={styles.cardFooter}>
+					<span className={styles.skeletonPrice} />
+					<span className={styles.skeletonAction} />
 				</div>
 			</div>
 		</div>
