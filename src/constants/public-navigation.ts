@@ -1,15 +1,28 @@
+import {
+	BedDouble,
+	Building2,
+	CarFront,
+	Hotel,
+	House,
+	Mail,
+	Plane,
+	type LucideIcon,
+} from "lucide-react";
+
 export type PublicNavigationLink = {
 	href: string;
 	label: string;
+	icon: LucideIcon;
 };
 
 export const PUBLIC_NAVIGATION_LINKS: readonly PublicNavigationLink[] = [
-	{ href: "/listings/cars", label: "Cars" },
-	{ href: "/listings/apartments", label: "Apartments" },
-	{ href: "/listings/hotel-rooms", label: "Hotel Rooms" },
-	{ href: "/listings/airbnb", label: "AirBnB" },
-	{ href: "/flights", label: "Flight" },
-	{ href: "/contact", label: "Contact us" },
+	{ href: "/", label: "Home", icon: House },
+	{ href: "/listings/cars", label: "Cars", icon: CarFront },
+	{ href: "/listings/apartments", label: "Apartments", icon: Building2 },
+	{ href: "/listings/hotel-rooms", label: "Hotel Rooms", icon: Hotel },
+	{ href: "/listings/airbnb", label: "AirBnB", icon: BedDouble },
+	{ href: "/flights", label: "Flight", icon: Plane },
+	{ href: "/contact", label: "Contact us", icon: Mail },
 ];
 
 export function isPublicNavigationLinkActive(
