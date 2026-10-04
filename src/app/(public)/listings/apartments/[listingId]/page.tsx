@@ -1,17 +1,26 @@
 import type { Metadata } from "next";
 import { ApartmentListingDetailPage } from "@/components/listings/apartments/apartment-listing-detail-page";
+import { createPublicMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-	title: "Apartment Listing Details",
-	description:
-		"Review full details for an approved Pluto Booking apartment listing.",
+type ApartmentListingDetailRouteProps = {
+	params: Promise<{ listingId: string }>;
 };
+
+export async function generateMetadata({
+	params,
+}: ApartmentListingDetailRouteProps): Promise<Metadata> {
+	const { listingId } = await params;
+	return createPublicMetadata({
+		title: "Apartment Details",
+		description:
+			"Review full details for an approved Pluto Booking apartment stay.",
+		path: `/listings/apartments/${listingId}`,
+	});
+}
 
 export default async function ApartmentListingDetailRoute({
 	params,
-}: {
-	params: Promise<{ listingId: string }>;
-}) {
+}: ApartmentListingDetailRouteProps) {
 	const { listingId } = await params;
 
 	return <ApartmentListingDetailPage listingId={listingId} />;
