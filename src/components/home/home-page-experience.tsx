@@ -9,7 +9,6 @@ import {
 	CirclePlay,
 	LogIn,
 	Menu,
-	PlaneTakeoff,
 	Power,
 	Sparkles,
 	UserPlus,
@@ -120,15 +119,11 @@ export function HomePageExperience() {
 						</div>
 					</Link>
 
-					<div className={styles.flightBadge}>
-						<PlaneTakeoff aria-hidden="true" />
-						<span>Travel, beautifully arranged.</span>
+					<div className={styles.searchDock}>
+						<HomeSearch />
 					</div>
 				</div>
 			</section>
-			<div className={styles.searchDock}>
-				<HomeSearch />
-			</div>
 			<PopularCategories />
 			<FeaturedListings />
 		</main>
