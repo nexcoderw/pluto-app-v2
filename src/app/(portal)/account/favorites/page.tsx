@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { CustomerFavoritesPage } from "@/components/account/favorites/customer-favorites-page";
 
 export const metadata: Metadata = {
-	title: "Favorites | Pluto Booking",
+	title: "Favorites",
 	description: "Review your saved Pluto Booking listings.",
 	robots: {
 		index: false,
