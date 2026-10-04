@@ -156,7 +156,7 @@ function HomeNavbar() {
 			<nav className={styles.homeNav} aria-label="Homepage navigation">
 				<Link href="/" className={styles.homeBrand} onClick={closeMenu}>
 					<Image
-						src="/logo-b.png"
+						src="/logo-w.png"
 						alt="Pluto Booking"
 						width={430}
 						height={85}
@@ -164,8 +164,12 @@ function HomeNavbar() {
 					/>
 				</Link>
 
-				<div className={styles.homeLinks} data-open={isOpen}>
-					{PUBLIC_NAVIGATION_LINKS.map((link) => {
+				<div
+					id="home-navigation-links"
+					className={styles.homeLinks}
+					data-open={isOpen}
+				>
+					{[{ href: "/", label: "Home" }, ...PUBLIC_NAVIGATION_LINKS].map((link) => {
 						const isActive = isPublicNavigationLinkActive(
 							pathname,
 							link.href,
@@ -207,7 +211,7 @@ function HomeNavbar() {
 				</div>
 
 				<div className={styles.homeCurrency}>
-					<CurrencySelector />
+					<CurrencySelector inverted />
 				</div>
 
 				<div className={styles.homeAuth}>
@@ -229,6 +233,7 @@ function HomeNavbar() {
 					className={styles.homeMenuButton}
 					aria-label={isOpen ? "Close homepage menu" : "Open homepage menu"}
 					aria-expanded={isOpen}
+					aria-controls="home-navigation-links"
 					onClick={() => setIsOpen((current) => !current)}
 				>
 					{isOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
