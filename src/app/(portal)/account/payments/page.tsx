@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { CustomerPaymentsPage as CustomerPaymentsExperience } from "@/components/account/payments/customer-payments-page";
 
 export const metadata: Metadata = {
-	title: "Payments | Pluto Booking",
+	title: "Payments",
 	description:
 		"Review canonical Pluto Booking payment status, mobile-money progress, and confirmed booking payments.",
 	openGraph: {
