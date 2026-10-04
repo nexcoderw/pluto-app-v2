@@ -3,7 +3,7 @@ import { AccountProfilePage } from "@/components/account/profile/account-profile
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
-	title: "Profile Settings | Pluto Booking",
+	title: "Profile Settings",
 	description:
 		"Update your Pluto Booking customer profile, contact information, and profile image.",
 };
