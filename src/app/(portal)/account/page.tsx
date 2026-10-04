@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { AccountCustomerPortal } from "./account-customer-portal";
 
 export const metadata: Metadata = {
-  title: "Customer Dashboard | Pluto Booking",
+  title: "Customer Dashboard",
   description: "Your Pluto Booking customer dashboard.",
   robots: {
     index: false,
