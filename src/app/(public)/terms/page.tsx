@@ -1,10 +1,12 @@
-import type { Metadata } from "next";
 import { LegalUnderConstruction } from "@/components/legal/legal-under-construction";
+import { createPublicMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-	title: "Terms of Service | Pluto Booking",
+export const metadata = createPublicMetadata({
+	title: "Terms of Service",
 	description: "Pluto Booking terms of service are currently under construction.",
-};
+	path: "/terms",
+	index: false,
+});
 
 export default function TermsPage() {
 	return <LegalUnderConstruction kind="terms" />;
