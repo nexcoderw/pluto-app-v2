@@ -222,6 +222,10 @@ export function HomeSearch() {
 				data-category={activeCategory}
 				onSubmit={submitSearch}
 			>
+				<div className={styles.searchHeading}>
+					<h1>Find your next journey.</h1>
+					<p>Choose a car or a place to stay.</p>
+				</div>
 				<div className={styles.categoryTabs} aria-label="Search category">
 					{searchCategories.map((category) => {
 						const Icon = category.icon;
@@ -250,7 +254,7 @@ export function HomeSearch() {
 					<div className={styles.searchField}>
 						<label htmlFor="hero-search">
 							{activeCategory === "cars"
-								? "Search"
+								? "Find a car"
 								: "Location or address"}
 						</label>
 						<Input
