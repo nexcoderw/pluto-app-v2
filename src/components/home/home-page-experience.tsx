@@ -6,11 +6,9 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
 	ArrowRight,
-	CirclePlay,
 	LogIn,
 	Menu,
 	Power,
-	Sparkles,
 	UserPlus,
 	X,
 } from "lucide-react";
@@ -55,35 +53,8 @@ export function HomePageExperience() {
 						className={styles.planeImage}
 					/>
 
-					<div className={styles.journeyRail} aria-hidden="true">
-						<strong>01</strong>
-						<span>02</span>
-						<span>03</span>
-					</div>
-
-					<div className={styles.heroContent}>
-						<div className={styles.heroEyebrow}>
-							<Sparkles aria-hidden="true" />
-							Elevate your travel journey
-						</div>
-						<h1>Experience the freedom to go further.</h1>
-						<p>
-							Verified stays, trusted cars, and managed flights—all brought
-							together for a smoother journey.
-						</p>
-						<div className={styles.heroActions}>
-							<Link href="/listings" className={styles.heroPrimaryAction}>
-								Explore listings
-								<ArrowRight aria-hidden="true" />
-							</Link>
-							<Link
-								href="/flights"
-								className={styles.heroPlayAction}
-								aria-label="Explore managed flight requests"
-							>
-								<CirclePlay aria-hidden="true" />
-							</Link>
-						</div>
+					<div className={styles.searchDock}>
+						<HomeSearch />
 					</div>
 
 					<Link href="/listings" className={styles.discoveryCard}>
@@ -118,10 +89,6 @@ export function HomePageExperience() {
 							</span>
 						</div>
 					</Link>
-
-					<div className={styles.searchDock}>
-						<HomeSearch />
-					</div>
 				</div>
 			</section>
 			<PopularCategories />
