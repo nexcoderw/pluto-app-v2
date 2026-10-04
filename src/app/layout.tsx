@@ -3,6 +3,12 @@ import { Outfit } from 'next/font/google';
 import { GoogleAnalyticsConsent } from '@/components/shared/google-analytics-consent';
 import { Toaster } from '@/components/ui/sonner';
 import { AppProviders } from '@/providers/app-providers';
+import {
+	DEFAULT_DESCRIPTION,
+	plutoIcons,
+	SITE_NAME,
+	siteUrl,
+} from '@/lib/seo';
 import './globals.css';
 
 const outfit = Outfit({
@@ -10,10 +16,6 @@ const outfit = Outfit({
 	subsets: ['latin'],
 	display: 'swap',
 });
-
-const appUrl =
-	process.env.NEXT_PUBLIC_APP_URL ??
-	'http://localhost:4000';
 
 const googleAnalyticsMeasurementId =
 	process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim() ?? '';
@@ -23,44 +25,58 @@ const googleAnalyticsEnabled =
 	/^G-[A-Z0-9]+$/i.test(googleAnalyticsMeasurementId);
 
 export const metadata: Metadata = {
-	metadataBase: new URL(appUrl),
+	metadataBase: siteUrl,
+	applicationName: SITE_NAME,
 	title: {
-		default: 'Pluto Booking',
-		template: '%s | Pluto Booking',
+		default: SITE_NAME,
+		template: `%s | ${SITE_NAME}`,
 	},
-	description:
-		'Book trusted cars, apartments, hotel rooms, and stays with Pluto Booking.',
-	icons: {
-		icon: [
-			{
-				url: '/favicon.png',
-				sizes: '259x259',
-				type: 'image/png',
-			},
-			{
-				url: '/favicon-w.png',
-				sizes: '127x127',
-				type: 'image/png',
-				media: '(prefers-color-scheme: dark)',
-			},
-		],
-		shortcut: '/favicon.png',
-		apple: '/favicon.png',
-	},
+	description: DEFAULT_DESCRIPTION,
+	keywords: [
+		'Pluto Booking',
+		'Rwanda travel',
+		'car rentals',
+		'apartments',
+		'hotel rooms',
+		'holiday stays',
+	],
+	icons: plutoIcons,
+	manifest: '/manifest.webmanifest',
+	referrer: 'origin-when-cross-origin',
+	formatDetection: { email: false, address: false, telephone: false },
+	creator: SITE_NAME,
+	publisher: SITE_NAME,
+	category: 'travel',
 	openGraph: {
-		title: 'Pluto Booking',
-		description:
-			'Book trusted cars, apartments, hotel rooms, and stays with Pluto Booking.',
-		siteName: 'Pluto Booking',
+		type: 'website',
+		locale: 'en_RW',
+		url: '/',
+		title: SITE_NAME,
+		description: DEFAULT_DESCRIPTION,
+		siteName: SITE_NAME,
 		images: [
 			{
 				url: '/logo-b.png',
 				width: 630,
 				height: 185,
-				alt: 'Pluto Booking',
+				alt: SITE_NAME,
 			},
 		],
 	},
+	twitter: {
+		card: 'summary_large_image',
+		title: SITE_NAME,
+		description: DEFAULT_DESCRIPTION,
+		images: ['/logo-b.png'],
+	},
+};
+
+const organizationJsonLd = {
+	'@context': 'https://schema.org',
+	'@type': 'TravelAgency',
+	name: SITE_NAME,
+	url: siteUrl.toString(),
+	logo: new URL('/logo-b.png', siteUrl).toString(),
 };
 
 export default function RootLayout({
@@ -70,6 +86,12 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en" suppressHydrationWarning>
+			<head>
+				<script
+					type="application/ld+json"
+					dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+				/>
+			</head>
 			<body
 				className={`${outfit.variable} font-sans antialiased`}
 			>
