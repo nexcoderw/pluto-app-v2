@@ -1,263 +1,198 @@
 .searchPanel {
 	position: relative;
-	z-index: 2;
-	width: min(100% - clamp(1.5rem, 6vw, 8rem), 88rem);
-	margin: clamp(3.2rem, 8vw, 6.5rem) auto clamp(1.5rem, 3vw, 2.5rem);
-	overflow: hidden;
-	border: 1px solid rgba(255, 255, 255, 0.82);
-	border-radius: 1.55rem;
-	background: rgba(255, 255, 255, 0.9);
-	box-shadow: 0 1.8rem 4.8rem rgba(16, 22, 33, 0.18);
-	backdrop-filter: blur(28px);
+	width: 100%;
+	margin: 0;
+	padding: 0.8rem;
+	border: 1px solid rgba(255, 255, 255, 0.65);
+	border-radius: 1.8rem;
+	background: transparent;
+	box-shadow: 0 1rem 3rem rgba(34, 70, 96, 0.12);
+	-webkit-backdrop-filter: blur(24px);
+	backdrop-filter: blur(24px);
 }
 
 .categoryTabs {
 	display: grid;
-	grid-template-columns: repeat(5, minmax(0, 1fr));
-	gap: 0.42rem;
-	padding: 0.62rem;
-	border-bottom: 1px solid rgba(2, 0, 108, 0.08);
-	background: rgba(250, 251, 254, 0.84);
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 0.4rem;
+	width: min(100%, 36rem);
+	margin: 0 auto 0.85rem;
 }
 
 .categoryTab {
 	min-width: 0;
-	min-height: 3.25rem;
+	min-height: 3.15rem;
 	display: inline-flex;
 	align-items: center;
-	justify-content: flex-start;
-	gap: 0.5rem;
+	justify-content: center;
+	gap: 0.45rem;
 	position: relative;
-	padding: 0 0.95rem;
-	border: 1px solid rgba(2, 0, 108, 0.08);
+	padding: 0.5rem 0.75rem;
+	border: 1px solid transparent;
 	border-radius: 999px;
-	background: #ffffff;
-	color: #151823;
-	font-family: inherit;
-	font-size: 0.72rem;
-	font-weight: 850;
+	background: transparent;
+	color: #02006c;
+	font: inherit;
+	font-size: 0.8rem;
+	font-weight: 600;
 	cursor: pointer;
-	transition:
-		background 160ms ease,
-		border-color 160ms ease,
-		color 160ms ease,
-		transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+	transition: background 160ms ease, color 160ms ease;
 }
 
 .categoryTab svg {
-	width: 0.9rem;
-	height: 0.9rem;
-	color: #02006c;
+	width: 1rem;
+	height: 1rem;
 }
 
 .categoryTab small {
-	position: absolute;
-	right: 0.8rem;
-	bottom: 0.2rem;
-	color: rgba(21, 24, 35, 0.45);
-	font-size: 0.5rem;
-	font-weight: 900;
-	letter-spacing: 0.06em;
-	text-transform: uppercase;
+	font-size: 0.6rem;
 }
 
 .categoryTab:hover:not(:disabled) {
-	border-color: rgba(2, 0, 108, 0.2);
-	background: rgba(2, 0, 108, 0.06);
-	transform: translateY(-1px);
+	background: rgba(255, 255, 255, 0.2);
 }
 
 .categoryTab[data-active="true"] {
-	border-color: #02006c;
 	background: #02006c;
-	color: white;
-	box-shadow: 0 0.85rem 1.8rem rgba(2, 0, 108, 0.18);
+	color: #ffffff;
 }
 
-.categoryTab[data-active="true"] svg {
-	color: white;
+.categoryTab:focus-visible {
+	outline: 2px solid #02006c;
+	outline-offset: 3px;
 }
 
-.categoryTab:disabled,
-.categoryTab[data-coming-soon="true"] {
+.categoryTab:disabled {
 	cursor: not-allowed;
 	opacity: 0.5;
-	transform: none;
 }
 
 .primaryFields {
 	display: grid;
-	grid-template-columns:
-		minmax(20rem, 1.35fr) minmax(12rem, 0.72fr) minmax(9.5rem, 0.5fr)
-		auto;
-	gap: 0.7rem;
-	align-items: stretch;
-	padding: 1rem;
-	background: #ffffff;
+	grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 0.7fr) auto;
+	gap: 0.75rem;
+	align-items: end;
 }
 
 .primaryFields[data-category="cars"] {
-	grid-template-columns: minmax(22rem, 1.35fr) minmax(12rem, 0.72fr) auto;
+	grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) auto;
 }
 
 .searchField,
 .dateField,
 .guestField {
 	min-width: 0;
-	min-height: 4.55rem;
 	display: grid;
-	align-content: center;
-	gap: 0.16rem;
-	padding: 0.78rem 0.96rem;
-	border: 1px solid rgba(2, 0, 108, 0.1);
-	border-radius: 1.1rem;
-	background: #ffffff;
-	color: #151823;
-	text-align: left;
-	box-shadow: 0 0.8rem 1.6rem rgba(16, 22, 33, 0.04);
+	gap: 0.4rem;
 }
 
-.searchField span,
-.dateField span,
-.guestField span {
+.searchField > label,
+.dateField > span,
+.guestField > label {
+	padding-inline: 0.9rem;
 	color: #02006c;
-	font-size: 0.58rem;
-	font-weight: 900;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
+	font-size: 0.72rem;
+	font-weight: 600;
 }
 
-.searchField strong,
-.dateField strong {
-	color: #151823;
-	font-size: 0.78rem;
-	font-weight: 850;
-}
-
-.searchField input,
-.guestField select {
+.searchInput,
+.dateButton,
+.guestSelect {
 	width: 100%;
 	min-width: 0;
-	border: 0;
+	min-height: 3.15rem;
+	border: 1px solid rgba(2, 0, 108, 0.22);
+	border-radius: 999px;
 	background: transparent;
-	color: rgba(21, 24, 35, 0.76);
-	font: inherit;
-	font-size: 0.78rem;
-	font-weight: 640;
-	outline: none;
+	color: #121621;
+	box-shadow: none;
 }
 
-.searchField input::placeholder {
-	color: rgba(21, 24, 35, 0.48);
-	opacity: 1;
+.searchInput input {
+	font-size: 0.85rem;
 }
 
-.dateField,
-.guestField {
-	cursor: pointer;
+.searchInput input::placeholder {
+	color: #475569;
 }
 
-.dateField {
-	grid-template-columns: auto minmax(0, 1fr);
-	column-gap: 0.55rem;
-	border: 1px solid rgba(2, 0, 108, 0.12);
-	font-family: inherit;
+.dateButton,
+.guestSelect {
+	justify-content: flex-start;
+	gap: 0.55rem;
+	padding-inline: 0.9rem;
+	font-size: 0.8rem;
+	font-weight: 500;
 }
 
-.dateField svg,
-.guestField svg {
-	width: 0.95rem;
-	height: 0.95rem;
+.dateButton span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.dateButton svg,
+.guestSelect svg {
+	flex-shrink: 0;
 	color: #02006c;
 }
 
-.dateField span,
-.dateField strong {
-	grid-column: 2;
-}
-
-.dateField svg {
-	grid-row: 1 / span 2;
-	align-self: center;
-}
-
-.guestField {
-	grid-template-columns: auto minmax(0, 1fr);
-	column-gap: 0.55rem;
-}
-
-.guestField svg {
-	grid-row: 1 / span 2;
-	align-self: center;
-}
-
-.guestField span,
-.guestField select {
-	grid-column: 2;
+.dateButton:hover,
+.guestSelect:hover {
+	background: rgba(255, 255, 255, 0.2);
 }
 
 .searchActions {
-	min-width: 16rem;
+	min-width: 0;
 	display: grid;
 	grid-template-columns: auto minmax(0, 1fr);
 	gap: 0.5rem;
-	align-self: stretch;
 }
 
 .filterButton,
 .searchButton {
-	height: 4.55rem;
-	min-height: 4.55rem;
-	align-self: stretch;
-	gap: 0.52rem;
+	min-height: 3.15rem;
+	height: 3.15rem;
+	gap: 0.45rem;
+	padding-inline: 1rem;
 	border-radius: 999px;
-	font-size: 0.74rem;
-	font-weight: 900;
+	font-size: 0.8rem;
+	font-weight: 600;
+	cursor: pointer;
 }
 
 .filterButton {
-	min-width: 7.25rem;
-	position: relative;
-	border-color: rgba(2, 0, 108, 0.14);
-	background: rgba(255, 255, 255, 0.92);
+	border-color: rgba(2, 0, 108, 0.22);
+	background: transparent;
 	color: #02006c;
-	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.72);
 }
 
 .filterButton small {
-	min-width: 1.25rem;
-	height: 1.25rem;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
+	min-width: 1.15rem;
+	padding: 0.1rem 0.25rem;
 	border-radius: 999px;
 	background: #02006c;
 	color: #ffffff;
-	font-size: 0.62rem;
-	font-weight: 900;
+	font-size: 0.65rem;
 }
 
 .filterButton:hover {
-	border-color: rgba(2, 0, 108, 0.28);
-	background: rgba(2, 0, 108, 0.06);
-	color: #02006c;
+	background: rgba(255, 255, 255, 0.2);
 }
 
 .searchButton {
-	min-width: 11rem;
-	border: 0;
-	background: #151823;
-	color: white;
-	box-shadow: 0 1rem 2.4rem rgba(21, 24, 35, 0.24);
+	border: 1px solid #02006c;
+	background: #02006c;
+	color: #ffffff;
 }
 
 .searchButton:hover {
-	background: #02006c;
+	background: #17158a;
 }
 
 .searchButton svg {
-	width: 0.95rem;
-	height: 0.95rem;
+	width: 1rem;
+	height: 1rem;
 }
 
 .filterDialog {
@@ -613,15 +548,15 @@
 
 @media (max-width: 1180px) {
 	.primaryFields {
-		grid-template-columns: minmax(16rem, 1.2fr) minmax(12rem, 0.8fr) minmax(
-				9rem,
-				0.6fr
-			);
+		grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 0.7fr);
+	}
+
+	.primaryFields[data-category="cars"] {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 
 	.searchActions {
 		grid-column: 1 / -1;
-		width: 100%;
 	}
 
 	.advancedGrid {
@@ -630,20 +565,13 @@
 }
 
 @media (max-width: 940px) {
-	.searchPanel {
-		width: min(100% - 1rem, 44rem);
-	}
-
-	.categoryTabs {
+	.primaryFields,
+	.primaryFields[data-category="cars"] {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 
-	.primaryFields {
-		grid-template-columns: 1fr;
-	}
-
-	.searchActions {
-		min-width: 0;
+	.guestField {
+		grid-column: 1 / -1;
 	}
 
 	.advancedGrid,
@@ -660,7 +588,6 @@
 		border-radius: 1.25rem;
 	}
 
-	.categoryTabs,
 	.advancedGrid,
 	.advancedGrid[data-category="cars"],
 	.advancedGrid[data-category="apartments"],
@@ -669,17 +596,15 @@
 		grid-template-columns: 1fr;
 	}
 
-	.categoryTab {
-		min-height: 3rem;
+	.categoryTabs {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 
-	.searchField,
-	.dateField,
-	.guestField {
-		min-height: 4.35rem;
+	.primaryFields,
+	.primaryFields[data-category="cars"] {
+		grid-template-columns: minmax(0, 1fr);
 	}
 
-	.searchActions,
 	.filterDialogFooter {
 		grid-template-columns: 1fr;
 	}
