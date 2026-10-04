@@ -2,7 +2,7 @@
 	position: relative;
 	width: 100%;
 	margin: 0;
-	padding: 0.8rem;
+	padding: 0.65rem;
 	border: 1px solid rgba(255, 255, 255, 0.65);
 	border-radius: 1.8rem;
 	background: transparent;
@@ -16,7 +16,7 @@
 	grid-template-columns: repeat(4, minmax(0, 1fr));
 	gap: 0.4rem;
 	width: min(100%, 36rem);
-	margin: 0 auto 0.85rem;
+	margin: 0 auto 0.6rem;
 }
 
 .categoryTab {
@@ -565,13 +565,16 @@
 }
 
 @media (max-width: 940px) {
-	.primaryFields,
+	.primaryFields {
+		grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 0.8fr);
+	}
+
 	.primaryFields[data-category="cars"] {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 
 	.guestField {
-		grid-column: 1 / -1;
+		grid-column: auto;
 	}
 
 	.advancedGrid,
@@ -602,7 +605,26 @@
 
 	.primaryFields,
 	.primaryFields[data-category="cars"] {
-		grid-template-columns: minmax(0, 1fr);
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.55rem;
+	}
+
+	.searchField,
+	.primaryFields[data-category="cars"] .dateField {
+		grid-column: 1 / -1;
+	}
+
+	.filterButton > span {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+	}
+
+	.searchButton > svg:last-child {
+		display: none;
 	}
 
 	.filterDialogFooter {
@@ -639,5 +661,12 @@
 
 	.calendar :global(.rdp-months) {
 		flex-direction: column;
+	}
+}
+
+@media (max-width: 480px) {
+	.dateField,
+	.guestField {
+		grid-column: 1 / -1;
 	}
 }
