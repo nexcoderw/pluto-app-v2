@@ -3,11 +3,11 @@
 import type { CSSProperties } from "react";
 import { Toaster as Sonner, type ToasterProps } from "sonner";
 import {
-	BadgeCheck,
 	CircleAlert,
+	CircleCheck,
+	CircleX,
 	Info,
 	LoaderCircle,
-	ShieldAlert,
 } from "lucide-react";
 import styles from "./sonner.module.css";
 
@@ -18,22 +18,22 @@ const Toaster = ({ ...props }: ToasterProps) => {
 			className={styles.toaster}
 			closeButton
 			duration={4500}
-			gap={14}
+			gap={12}
 			offset={16}
-			mobileOffset={8}
+			mobileOffset={12}
 			position="top-right"
 			icons={{
-				success: <BadgeCheck aria-hidden="true" />,
+				success: <CircleCheck aria-hidden="true" />,
 				info: <Info aria-hidden="true" />,
 				warning: <CircleAlert aria-hidden="true" />,
-				error: <ShieldAlert aria-hidden="true" />,
+				error: <CircleX aria-hidden="true" />,
 				loading: (
 					<LoaderCircle className={styles.loadingIcon} aria-hidden="true" />
 				),
 			}}
 			style={
 				{
-					"--width": "min(25rem, calc(100vw - 1.5rem))",
+					"--width": "min(24rem, calc(100vw - 2rem))",
 				} as CSSProperties
 			}
 			toastOptions={{
