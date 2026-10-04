@@ -2,7 +2,7 @@
 	min-height: 100vh;
 	padding-top: 1.5rem;
 	color: #121621;
-	background: #eaf2f8;
+	background: transparent;
 }
 
 .hero {
@@ -10,8 +10,7 @@
 	width: min(calc(100% - 2rem), 94rem);
 	margin: 0 auto;
 	padding: 0 1.25rem 1.25rem;
-	background: #fff;
-	box-shadow: 0 2rem 5rem rgba(55, 87, 112, 0.1);
+	background: transparent;
 }
 
 .homeHeader {
@@ -27,7 +26,7 @@
 	align-items: center;
 	gap: 1rem;
 	padding: 0 1.4rem;
-	background: #fff;
+	background: transparent;
 }
 
 .homeBrand {
@@ -219,17 +218,19 @@
 .heroCanvas {
 	position: relative;
 	isolation: isolate;
-	min-height: clamp(38rem, 54vw, 47rem);
+	display: flex;
+	flex-direction: column;
+	min-height: clamp(48rem, 60vw, 56rem);
 	overflow: hidden;
 	background: #d8effa;
-	border-radius: 2.2rem 2.2rem 7rem 2.2rem;
+	border-radius: 2.2rem;
 }
 
 .heroCanvas::after {
 	position: absolute;
 	inset: 0;
 	z-index: 0;
-	background: linear-gradient(90deg, rgba(236, 249, 255, 0.68) 0%, rgba(236, 249, 255, 0.12) 50%, transparent 72%);
+	background: rgba(236, 249, 255, 0.2);
 	content: "";
 	pointer-events: none;
 }
@@ -389,9 +390,9 @@
 }
 
 .discoveryCard {
-	position: absolute;
-	right: 0;
-	bottom: 0;
+	position: relative;
+	align-self: flex-end;
+	margin: -7rem 2rem 2rem 0;
 	z-index: 6;
 	display: grid;
 	width: min(27rem, 38%);
@@ -399,8 +400,9 @@
 	padding: 1.6rem 1.8rem 1.4rem 2.3rem;
 	color: #121621;
 	text-decoration: none;
-	background: rgba(255, 255, 255, 0.94);
-	border-radius: 3.2rem 0 0 0;
+	background: transparent;
+	border: 1px solid rgba(255, 255, 255, 0.6);
+	border-radius: 1.8rem;
 	box-shadow: -1.5rem -1.5rem 3rem rgba(64, 111, 139, 0.08);
 	-webkit-backdrop-filter: blur(20px);
 	backdrop-filter: blur(20px);
@@ -461,34 +463,12 @@
 	border-radius: 50%;
 }
 
-.flightBadge {
-	position: absolute;
-	bottom: 2rem;
-	left: clamp(1.5rem, 5vw, 5rem);
-	z-index: 4;
-	display: inline-flex;
-	align-items: center;
-	gap: 0.6rem;
-	color: rgba(16, 34, 45, 0.7);
-	font-size: 0.68rem;
-	font-weight: 700;
-}
-
-.flightBadge svg {
-	width: 1rem;
-	height: 1rem;
-	color: #02006c;
-}
-
 .searchDock {
 	position: relative;
 	z-index: 10;
-	width: min(calc(100% - 2rem), 88rem);
-	margin: 0 auto;
-}
-
-.searchDock > form {
-	margin-top: -2rem;
+	width: min(calc(100% - 3rem), 88rem);
+	margin: auto auto 1.5rem;
+	padding-top: 1.5rem;
 }
 
 @keyframes planeFloat {
@@ -502,6 +482,10 @@
 }
 
 @media (max-width: 1180px) {
+	.discoveryCard {
+		margin-top: 2rem;
+	}
+
 	.homeNav {
 		grid-template-columns: 10rem minmax(0, 1fr) auto auto auto;
 		gap: 0.7rem;
@@ -609,6 +593,7 @@
 	}
 
 	.discoveryCard {
+		margin: 2rem 1.5rem 0;
 		width: min(26rem, 58%);
 	}
 }
@@ -641,11 +626,11 @@
 
 	.heroCanvas {
 		min-height: 45rem;
-		border-radius: 1.5rem 1.5rem 4rem 1.5rem;
+		border-radius: 1.5rem;
 	}
 
 	.heroCanvas::after {
-		background: linear-gradient(180deg, rgba(235, 248, 254, 0.08), rgba(235, 248, 254, 0.84) 43%, rgba(235, 248, 254, 0.96) 72%);
+		background: rgba(235, 248, 254, 0.35);
 	}
 
 	.planeImage {
@@ -673,15 +658,11 @@
 		max-width: 30rem;
 	}
 
-	.flightBadge {
-		display: none;
-	}
-
 	.discoveryCard {
-		right: 0;
-		width: calc(100% - 1rem);
+		margin: 1.5rem 1rem 0;
+		width: calc(100% - 2rem);
 		padding: 1.2rem 1rem 1.1rem 1.4rem;
-		border-radius: 2.5rem 0 0 0;
+		border-radius: 1.5rem;
 	}
 
 	.discoveryImages {
@@ -694,11 +675,8 @@
 	}
 
 	.searchDock {
-		width: calc(100% - 1rem);
-	}
-
-	.searchDock > form {
-		margin-top: 1rem;
+		width: calc(100% - 2rem);
+		margin-bottom: 1rem;
 	}
 }
 
