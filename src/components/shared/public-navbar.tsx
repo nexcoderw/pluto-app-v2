@@ -78,7 +78,7 @@ function PublicNavbarContent({ pathname }: { pathname: string }) {
 			<nav className={styles.nav} aria-label="Main navigation">
 				<Link href="/" className={styles.brand} onClick={closeMenu}>
 					<Image
-						src="/logo-w.png"
+						src="/logo-b.png"
 						alt="Pluto Booking"
 						width={430}
 						height={85}
@@ -91,7 +91,8 @@ function PublicNavbarContent({ pathname }: { pathname: string }) {
 					className={styles.links}
 					data-open={isOpen}
 				>
-					{[{ href: "/", label: "Home" }, ...PUBLIC_NAVIGATION_LINKS].map((link) => {
+					{PUBLIC_NAVIGATION_LINKS.map((link) => {
+						const Icon = link.icon;
 						const isActive = isPublicNavigationLinkActive(pathname, link.href);
 
 						return (
@@ -108,6 +109,7 @@ function PublicNavbarContent({ pathname }: { pathname: string }) {
 								}
 								onClick={closeMenu}
 							>
+								<Icon aria-hidden="true" />
 								{link.label}
 							</Link>
 						);
@@ -129,7 +131,7 @@ function PublicNavbarContent({ pathname }: { pathname: string }) {
 				</div>
 
 				<div className={styles.currencyArea}>
-					<CurrencySelector inverted />
+					<CurrencySelector />
 				</div>
 
 				<div className={styles.authArea}>
