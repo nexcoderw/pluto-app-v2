@@ -4,7 +4,17 @@ import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LogIn, Menu, Power, UserPlus, X } from "lucide-react";
+import {
+	ArrowRight,
+	CirclePlay,
+	LogIn,
+	Menu,
+	PlaneTakeoff,
+	Power,
+	Sparkles,
+	UserPlus,
+	X,
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -26,19 +36,99 @@ export function HomePageExperience() {
 	return (
 		<main className={styles.page}>
 			<section className={styles.hero} aria-label="Pluto Booking homepage">
-				<div className={styles.heroBackdrop} aria-hidden="true" />
 				<HomeNavbar />
 
-				<div className={styles.heroContent}>
-					<h1>Find the stay or rental that fits your next move.</h1>
-					<p>
-						Search verified cars, apartments, hotel rooms, and AirBnB-style
-						stays from trusted Pluto Booking partners.
-					</p>
-				</div>
+				<div className={styles.heroCanvas}>
+					<Image
+						src="/hero/clouds-v2.png"
+						alt=""
+						fill
+						priority
+						sizes="(max-width: 760px) 100vw, 92vw"
+						className={styles.cloudImage}
+					/>
+					<Image
+						src="/hero/plane-v2.png"
+						alt="Passenger airplane climbing above the clouds"
+						width={1774}
+						height={887}
+						priority
+						className={styles.planeImage}
+					/>
 
-				<HomeSearch />
+					<div className={styles.journeyRail} aria-hidden="true">
+						<strong>01</strong>
+						<span>02</span>
+						<span>03</span>
+					</div>
+
+					<div className={styles.heroContent}>
+						<div className={styles.heroEyebrow}>
+							<Sparkles aria-hidden="true" />
+							Elevate your travel journey
+						</div>
+						<h1>Experience the freedom to go further.</h1>
+						<p>
+							Verified stays, trusted cars, and managed flights—all brought
+							together for a smoother journey.
+						</p>
+						<div className={styles.heroActions}>
+							<Link href="/listings" className={styles.heroPrimaryAction}>
+								Explore listings
+								<ArrowRight aria-hidden="true" />
+							</Link>
+							<Link
+								href="/flights"
+								className={styles.heroPlayAction}
+								aria-label="Explore managed flight requests"
+							>
+								<CirclePlay aria-hidden="true" />
+							</Link>
+						</div>
+					</div>
+
+					<Link href="/listings" className={styles.discoveryCard}>
+						<div className={styles.discoveryHeading}>
+							<strong>Know more</strong>
+							<ArrowRight aria-hidden="true" />
+						</div>
+						<div className={styles.discoveryBody}>
+							<span className={styles.discoveryImages} aria-hidden="true">
+								<Image
+									src="/services/car-rent.png"
+									alt=""
+									width={52}
+									height={52}
+								/>
+								<Image
+									src="/services/apartment.png"
+									alt=""
+									width={52}
+									height={52}
+								/>
+								<Image
+									src="/services/hotel.png"
+									alt=""
+									width={52}
+									height={52}
+								/>
+							</span>
+							<span>
+								<strong>Every trip, one place</strong>
+								<small>Discover your next car or stay with confidence.</small>
+							</span>
+						</div>
+					</Link>
+
+					<div className={styles.flightBadge}>
+						<PlaneTakeoff aria-hidden="true" />
+						<span>Travel, beautifully arranged.</span>
+					</div>
+				</div>
 			</section>
+			<div className={styles.searchDock}>
+				<HomeSearch />
+			</div>
 			<PopularCategories />
 			<FeaturedListings />
 		</main>
