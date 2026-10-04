@@ -1,12 +1,15 @@
-import type { Metadata } from "next";
 import { HomePageExperience } from "@/components/home/home-page-experience";
+import { createPublicMetadata } from "@/lib/seo";
 import styles from "./page.module.css";
 
-export const metadata: Metadata = {
-  title: "Pluto Booking | Verified Stays, Cars, and Rentals",
-  description:
-    "Search trusted cars, apartments, hotel rooms, and AirBnB-style stays from verified Pluto Booking partners.",
-};
+export const metadata = createPublicMetadata({
+	title: "Pluto Booking | Verified Stays, Cars, and Rentals",
+	description:
+		"Search trusted cars, apartments, hotel rooms, and Airbnb stays from verified Pluto Booking partners across Rwanda.",
+	path: "/",
+	absoluteTitle: true,
+	keywords: ["Rwanda stays", "Rwanda car rental", "Kigali apartments"],
+});
 
 export default function HomePage() {
 	return (
