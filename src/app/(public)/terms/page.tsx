@@ -1,13 +1,18 @@
-import { LegalUnderConstruction } from "@/components/legal/legal-under-construction";
+import { TermsContent } from "@/components/legal/terms-content";
 import { createPublicMetadata } from "@/lib/seo";
 
 export const metadata = createPublicMetadata({
-	title: "Terms of Service",
-	description: "Pluto Booking terms of service are currently under construction.",
+	title: "Terms and Conditions",
+	description:
+		"Read Pluto Booking's terms for customers making reservations and partners listing accommodations or rental vehicles.",
 	path: "/terms",
-	index: false,
+	keywords: [
+		"Pluto Booking terms",
+		"booking conditions Rwanda",
+		"partner listing agreement",
+	],
 });
 
 export default function TermsPage() {
-	return <LegalUnderConstruction kind="terms" />;
+	return <TermsContent />;
 }
