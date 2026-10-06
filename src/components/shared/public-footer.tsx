@@ -74,13 +74,13 @@ export function PublicFooter() {
 					<div className={styles.contactColumn}>
 						<div>
 							<h2>Contact us</h2>
-							<a href="tel:+250700000000">
+							<a href="tel:+250788221683">
 								<Phone aria-hidden="true" />
-								+250 700 000 000
+								+250 788 221 683
 							</a>
-							<a href="mailto:support@plutobooking.com">
+							<a href="mailto:plutobooking.info@gmail.com">
 								<Mail aria-hidden="true" />
-								support@plutobooking.com
+								plutobooking.info@gmail.com
 							</a>
 						</div>
 
