@@ -48,7 +48,7 @@
 .card,
 .skeletonCard,
 .statePanel {
-	border: 1px solid rgba(255, 255, 255, 0.74);
+	border: transparent;
 	border-radius: 1.45rem;
 	background: rgba(255, 255, 255, 0.74);
 	box-shadow: 0 1.5rem 4rem rgba(16, 22, 33, 0.08);
@@ -321,8 +321,27 @@
 	text-align: center;
 }
 
-.statePanel > svg {
+.statePanel[data-variant="empty"] {
+	background: transparent;
+	box-shadow: none;
+	backdrop-filter: none;
+}
+
+.stateIcon {
+	width: 3.25rem;
+	height: 3.25rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid rgba(2, 0, 108, 0.12);
+	border-radius: 999px;
+	background: rgba(2, 0, 108, 0.05);
 	color: #02006c;
+}
+
+.stateIcon svg {
+	width: 1.35rem;
+	height: 1.35rem;
 }
 
 .statePanel h2 {
