@@ -4,6 +4,7 @@ import {
 	InstagramIcon,
 	Linkedin01Icon,
 	NewTwitterIcon,
+	TikTokIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -58,6 +59,11 @@ const socialLinks = [
 		href: "https://www.linkedin.com/company/plutobooking-com",
 		label: "LinkedIn",
 		icon: Linkedin01Icon,
+	},
+	{
+		href: "https://www.tiktok.com/@plutobooking",
+		label: "TikTok",
+		icon: TikTokIcon,
 	},
 ] as const;
 
