@@ -1,15 +1,20 @@
 import Link from "next/link";
 import {
+	Facebook01Icon,
+	InstagramIcon,
+	Linkedin01Icon,
+	NewTwitterIcon,
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
 	ArrowRight,
 	Building2,
 	CarFront,
-	Globe,
 	Hotel,
 	House,
 	Mail,
 	Phone,
 	Send,
-	Share2,
 	type LucideIcon,
 } from "lucide-react";
 import styles from "./public-footer.module.css";
@@ -34,8 +39,26 @@ const navigationLinks = [
 ] as const;
 
 const socialLinks = [
-	{ href: "https://www.instagram.com", label: "Instagram", icon: Share2 },
-	{ href: "https://www.linkedin.com", label: "LinkedIn", icon: Globe },
+	{
+		href: "https://www.facebook.com/profile.php?id=100080010090537",
+		label: "Facebook",
+		icon: Facebook01Icon,
+	},
+	{
+		href: "https://x.com/plutobooking",
+		label: "X",
+		icon: NewTwitterIcon,
+	},
+	{
+		href: "https://www.instagram.com/plutobookingss/",
+		label: "Instagram",
+		icon: InstagramIcon,
+	},
+	{
+		href: "https://www.linkedin.com/company/plutobooking-com",
+		label: "LinkedIn",
+		icon: Linkedin01Icon,
+	},
 ] as const;
 
 export function PublicFooter() {
@@ -87,16 +110,18 @@ export function PublicFooter() {
 						<div>
 							<h2>Follow us</h2>
 							{socialLinks.map((link) => {
-								const Icon = link.icon;
-
 								return (
 									<a
 										key={link.label}
 										href={link.href}
 										target="_blank"
-										rel="noreferrer"
+										rel="noopener noreferrer"
 									>
-										<Icon aria-hidden="true" />
+										<HugeiconsIcon
+											icon={link.icon}
+											strokeWidth={2.2}
+											aria-hidden="true"
+										/>
 										{link.label}
 									</a>
 								);
