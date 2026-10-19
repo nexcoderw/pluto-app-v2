@@ -13,7 +13,7 @@
 	align-content: start;
 	gap: clamp(0.8rem, 2vw, 1.2rem);
 	padding: clamp(1rem, 2.45vw, 1.75rem) clamp(1.2rem, 4.8vw, 3.6rem)
-		clamp(4.8rem, 8.35vw, 7.35rem);
+		clamp(1.8rem, 2.35vw, 2rem);
 	border: 1px solid rgba(210, 218, 255, 0.12);
 	border-radius: 1.1rem 1.1rem 0rem 0rem;
 	background:
@@ -224,32 +224,6 @@
 	text-decoration: underline;
 }
 
-.wordmark {
-	position: absolute;
-	left: 4.5%;
-	right: 4.5%;
-	bottom: -0.20em;
-	z-index: -1;
-	overflow: hidden;
-	color: transparent;
-	font-size: clamp(4.9rem, 17.5vw, 15.4rem);
-	font-weight: 950;
-	letter-spacing: 0;
-	line-height: 0.75;
-	background: linear-gradient(
-		180deg,
-		rgba(180, 195, 255, 0.78),
-		rgba(112, 134, 255, 0.18)
-	);
-	background-clip: text;
-	-webkit-background-clip: text;
-	-webkit-text-fill-color: transparent;
-	opacity: 0.9;
-	pointer-events: none;
-	text-align: center;
-	white-space: nowrap;
-}
-
 @media (max-width: 960px) {
 	.topGrid {
 		grid-template-columns: 1fr;
@@ -271,7 +245,7 @@
 
 @media (max-width: 620px) {
 	.panel {
-		padding-bottom: clamp(6rem, 24vw, 9rem);
+		padding-bottom: 0;
 	}
 
 	.newsletter,
