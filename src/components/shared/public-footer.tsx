@@ -112,18 +112,7 @@ export function PublicFooter() {
 					<nav aria-label="Footer legal links">
 						<Link href="/terms">Terms of service</Link>
 						<Link href="/privacy">Privacy policy</Link>
-						<a
-							href="https://www.nexcode.africa"
-							target="_blank"
-							rel="noreferrer"
-						>
-							Developed by NEXCODE Africa
-						</a>
 					</nav>
-				</div>
-
-				<div className={styles.wordmark} aria-hidden="true">
-					PLUTO
 				</div>
 			</div>
 		</footer>
