@@ -1,5 +1,5 @@
 .section {
-	width: min(calc(100% - 2rem), 91.5rem);
+	width: 100%;
 	margin: 2rem auto 3rem;
 }
 
@@ -159,10 +159,6 @@
 }
 
 @media (max-width: 540px) {
-	.section {
-		width: calc(100% - 1.4rem);
-	}
-
 	.grid {
 		grid-template-columns: minmax(0, 1fr);
 		gap: 0.65rem;
