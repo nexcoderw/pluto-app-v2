@@ -17,7 +17,9 @@ import {
 	ImageIcon,
 	RefreshCcw,
 	Search,
+	SearchX,
 	SlidersHorizontal,
+	type LucideIcon,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -272,6 +274,8 @@ export function CategoryListingsPage({
 					message="Refresh this listing category before changing filters."
 					actionLabel="Retry"
 					onAction={() => listingsQuery.refetch()}
+					icon={RefreshCcw}
+					variant="error"
 				/>
 			);
 		}
@@ -283,6 +287,8 @@ export function CategoryListingsPage({
 					message="Reset filters or search a wider location to see more options."
 					actionLabel="Clear filters"
 					onAction={resetFilters}
+					icon={SearchX}
+					variant="empty"
 				/>
 			);
 		}
@@ -648,15 +654,21 @@ function CategoryListingsState({
 	message,
 	actionLabel,
 	onAction,
+	icon: Icon,
+	variant,
 }: {
 	title: string;
 	message: string;
 	actionLabel: string;
 	onAction: () => void;
+	icon: LucideIcon;
+	variant: "empty" | "error";
 }) {
 	return (
-		<section className={styles.statePanel}>
-			<RefreshCcw aria-hidden="true" />
+		<section className={styles.statePanel} data-variant={variant}>
+			<span className={styles.stateIcon} aria-hidden="true">
+				<Icon />
+			</span>
 			<h2>{title}</h2>
 			<p>{message}</p>
 			<Button type="button" onClick={onAction} className="rounded-full">
