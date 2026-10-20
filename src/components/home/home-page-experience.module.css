@@ -620,9 +620,9 @@
 
 	.heroCanvas {
 		grid-template-columns: minmax(0, 1fr);
-		grid-template-areas: "search" "discovery";
-		gap: 1rem;
-		padding: clamp(8rem, 24vw, 10rem) 1rem 1rem;
+		grid-template-areas: "search";
+		gap: 0;
+		padding: 1rem;
 		min-height: 0;
 		border-radius: 1.5rem;
 	}
@@ -631,27 +631,9 @@
 		background: rgba(235, 248, 254, 0.35);
 	}
 
-	.planeImage {
-		top: -0.75rem;
-		right: -20%;
-		width: 95%;
-	}
-
+	.planeImage,
 	.discoveryCard {
-		margin: 0;
-		width: min(100%, 26rem);
-		justify-self: center;
-		padding: 0.85rem 1rem;
-		border-radius: 1.5rem;
-	}
-
-	.discoveryImages {
-		min-width: 5.8rem;
-	}
-
-	.discoveryImages img {
-		width: 2.35rem;
-		height: 2.35rem;
+		display: none;
 	}
 
 	.searchDock {
