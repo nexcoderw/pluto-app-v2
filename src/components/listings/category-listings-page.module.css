@@ -462,11 +462,40 @@
 }
 
 .filterDialogContent {
+	display: grid;
+	grid-template-rows: auto minmax(0, 1fr);
+	gap: 1rem;
 	max-width: min(42rem, calc(100vw - 1.5rem));
 	max-height: calc(100vh - 1.5rem);
-	overflow: auto;
+	max-height: calc(100dvh - 1.5rem);
+	overflow: hidden;
 	border-radius: 1.45rem;
 	background: #ffffff;
+}
+
+.filterDialogHeader {
+	padding-right: 2.75rem;
+}
+
+.filterDialogBody {
+	min-height: 0;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	scrollbar-width: thin;
+	scrollbar-color: rgba(2, 0, 108, 0.24) transparent;
+}
+
+.filterDialogBody::-webkit-scrollbar {
+	width: 0.35rem;
+}
+
+.filterDialogBody::-webkit-scrollbar-thumb {
+	border-radius: 999px;
+	background: rgba(2, 0, 108, 0.24);
+}
+
+.filterDialogBody > [data-variant="dialog"] > :first-child {
+	display: none;
 }
 
 @media (max-width: 1280px) {
@@ -601,6 +630,53 @@
 	.page[data-category="hotel-rooms"] .apartmentMapLayout .grid,
 	.page[data-category="airbnb"] .apartmentMapLayout .grid {
 		grid-template-columns: 1fr;
+	}
+
+	.filterDialogContent {
+		top: auto;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		max-width: 100%;
+		max-height: min(92vh, 48rem);
+		max-height: min(92dvh, 48rem);
+		translate: none;
+		transform: none;
+		gap: 0.75rem;
+		padding: 1rem 1rem max(0.75rem, env(safe-area-inset-bottom));
+		border-radius: 1.25rem 1.25rem 0 0;
+	}
+
+	.filterDialogBody {
+		padding-right: 0.15rem;
+	}
+
+	.filterDialogBody > [data-variant="dialog"] {
+		gap: 0.65rem;
+	}
+
+	.filterDialogBody > [data-variant="dialog"] > :last-child {
+		position: sticky;
+		bottom: 0;
+		z-index: 2;
+		grid-template-columns: minmax(0, 1fr) auto;
+		gap: 0.5rem;
+		padding: 0.75rem 0 0.25rem;
+		background: #ffffff;
+		box-shadow: 0 -0.8rem 1.2rem rgba(255, 255, 255, 0.96);
+	}
+
+	.filterDialogBody > [data-variant="dialog"] > :last-child button {
+		width: auto;
+		min-height: 2.75rem;
+		padding-inline: 0.9rem;
+	}
+
+	.filterDialogBody
+		> [data-variant="dialog"]
+		> :last-child
+		button:first-child {
+		width: 100%;
 	}
 }
 
