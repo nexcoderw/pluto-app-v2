@@ -240,7 +240,6 @@
 		border-radius: 1.2rem;
 	}
 
-	.tabs,
 	.factGrid,
 	.amenityGrid,
 	.skeletonReviewMetrics,
@@ -249,6 +248,17 @@
 	}
 
 	.tabs {
-		border-radius: 1.25rem;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 0.2rem;
+		padding: 0.25rem;
+		border-radius: 999px;
+	}
+
+	.tabs button {
+		min-width: 0;
+		min-height: 2.75rem;
+		padding-inline: 0.25rem;
+		font-size: clamp(0.62rem, 2.6vw, 0.74rem);
+		line-height: 1.15;
 	}
 }
