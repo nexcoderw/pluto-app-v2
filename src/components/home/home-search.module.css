@@ -542,6 +542,7 @@
 
 .calendar :global(.rdp-months) {
 	width: 100%;
+	flex-direction: row;
 	justify-content: space-between;
 	gap: 1rem;
 }
@@ -583,8 +584,40 @@
 
 @media (max-width: 680px) {
 	.searchPanel {
-		padding: 0.9rem;
-		border-radius: 1.25rem;
+		padding: 0.8rem;
+		border-radius: 1.2rem;
+	}
+
+	.searchHeading {
+		margin-bottom: 0.8rem;
+	}
+
+	.searchHeading h1 {
+		font-size: 1.4rem;
+	}
+
+	.categoryTabs {
+		gap: 0.35rem;
+		margin-bottom: 0.8rem;
+	}
+
+	.categoryTab {
+		min-height: 2.75rem;
+		padding-inline: 0.5rem;
+		font-size: 0.74rem;
+	}
+
+	.primaryFields {
+		gap: 0.55rem;
+	}
+
+	.searchInput,
+	.dateButton,
+	.guestSelect,
+	.filterButton,
+	.searchButton {
+		min-height: 2.85rem;
+		height: 2.85rem;
 	}
 
 	.advancedGrid,
@@ -608,12 +641,30 @@
 		display: none;
 	}
 
-	.filterDialogFooter {
-		grid-template-columns: 1fr;
+	.filterDialog,
+	.dateDialog {
+		top: auto;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		max-width: 100%;
+		max-height: min(92dvh, 48rem);
+		translate: none;
+		transform: none;
+		gap: 0.85rem;
+		padding: 1rem 1rem max(1rem, env(safe-area-inset-bottom));
+		border-radius: 1.25rem 1.25rem 0 0;
+		overflow: hidden;
 	}
 
 	.filterDialog {
-		border-radius: 1.2rem;
+		grid-template-rows: auto minmax(0, 1fr) auto;
+	}
+
+	.filterDialogBody {
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		padding-right: 0.1rem;
 	}
 
 	.exchangePanel {
@@ -622,25 +673,76 @@
 	}
 
 	.dateDialog {
-		border-radius: 1.2rem;
+		grid-template-rows: auto auto minmax(0, 1fr) auto;
 	}
 
-	.datePreview,
-	.dateDialogFooter {
-		grid-template-columns: 1fr;
+	.datePreview div {
+		min-width: 0;
+		padding: 0.7rem 0.75rem;
 	}
 
 	.datePreview div + div {
-		border-top: 1px solid rgba(23, 23, 31, 0.16);
-		border-left: 0;
+		border-left: 1px solid rgba(23, 23, 31, 0.16);
+	}
+
+	.datePreview strong {
+		overflow: hidden;
+		font-size: 0.82rem;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.calendarShell {
+		min-height: 0;
+		overflow-x: hidden;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		padding: 0.45rem;
 	}
 
 	.calendar {
 		min-width: 0;
-		--cell-size: 2.05rem;
+		padding: 0.25rem;
+		--cell-size: clamp(2.25rem, 10.5vw, 2.65rem);
 	}
 
 	.calendar :global(.rdp-months) {
-		flex-direction: column;
+		display: block;
+	}
+
+	.calendar :global(.rdp-month),
+	.calendar :global(.rdp-month_grid) {
+		width: 100%;
+	}
+
+	.filterDialogFooter,
+	.dateDialogFooter {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.5rem;
+	}
+
+	.filterDialogFooter button,
+	.dateDialogFooter button {
+		min-height: 2.75rem;
+		padding-inline: 0.65rem;
+	}
+}
+
+@media (max-width: 360px) {
+	.categoryTab {
+		font-size: 0.7rem;
+	}
+
+	.categoryTab svg {
+		display: none;
+	}
+
+	.searchActions {
+		grid-template-columns: 2.85rem minmax(0, 1fr);
+	}
+
+	.filterDialogFooter button,
+	.dateDialogFooter button {
+		font-size: 0.72rem;
 	}
 }
