@@ -1,4 +1,5 @@
 .footer {
+	overflow-x: clip;
 	background:
 		linear-gradient(180deg, rgba(247, 248, 251, 0), rgba(2, 0, 108, 0.07)),
 		#f7f8fb;
@@ -226,11 +227,16 @@
 
 @media (max-width: 960px) {
 	.topGrid {
-		grid-template-columns: 1fr;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	}
+
+	.callout {
+		max-width: 38rem;
+		grid-column: 1 / -1;
 	}
 
 	.contactColumn {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
+		grid-template-columns: 1fr;
 	}
 
 	.bottomBar {
@@ -245,7 +251,33 @@
 
 @media (max-width: 620px) {
 	.panel {
-		padding-bottom: 0;
+		min-height: 0;
+		gap: 1.5rem;
+		padding: 1.35rem max(1rem, env(safe-area-inset-left))
+			max(1.25rem, env(safe-area-inset-bottom))
+			max(1rem, env(safe-area-inset-right));
+		border-radius: 1rem 1rem 0 0;
+	}
+
+	.topGrid {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 1.35rem;
+	}
+
+	.callout {
+		grid-column: auto;
+		gap: 0.7rem;
+		max-width: none;
+	}
+
+	.callout h2 {
+		font-size: clamp(1.25rem, 6vw, 1.55rem);
+		line-height: 1.15;
+	}
+
+	.callout p {
+		font-size: 0.82rem;
+		line-height: 1.6;
 	}
 
 	.newsletter,
@@ -253,12 +285,120 @@
 		grid-template-columns: 1fr;
 	}
 
+	.newsletter {
+		gap: 0.65rem;
+		max-width: none;
+	}
+
+	.newsletter input,
 	.newsletter button {
 		width: 100%;
+		min-height: 3rem;
+		height: 3rem;
+	}
+
+	.newsletter input {
+		font-size: 1rem;
+	}
+
+	.newsletter button {
+		font-size: 0.82rem;
+	}
+
+	.linkColumn,
+	.contactColumn {
+		min-width: 0;
+		padding-top: 1.15rem;
+		border-top: 1px solid rgba(255, 255, 255, 0.12);
+	}
+
+	.linkColumn {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		column-gap: 0.75rem;
+		row-gap: 0.1rem;
+	}
+
+	.linkColumn h2 {
+		grid-column: 1 / -1;
+	}
+
+	.linkColumn h2,
+	.contactColumn h2 {
+		margin-bottom: 0.35rem;
+	}
+
+	.linkColumn a,
+	.contactColumn a {
+		width: 100%;
+		min-width: 0;
+		min-height: 2.75rem;
+		font-size: 0.8rem;
+	}
+
+	.contactColumn {
+		gap: 1rem;
+	}
+
+	.contactColumn > div {
+		min-width: 0;
+	}
+
+	.contactColumn > div:last-child {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		column-gap: 0.75rem;
+	}
+
+	.contactColumn > div:last-child h2 {
+		grid-column: 1 / -1;
+	}
+
+	.contactColumn a[href^="mailto:"] {
+		overflow-wrap: anywhere;
+	}
+
+	.bottomBar {
+		gap: 0.75rem;
+		padding-top: 1rem;
+	}
+
+	.bottomBar p {
+		font-size: 0.76rem;
+		line-height: 1.5;
 	}
 
 	.bottomBar nav {
+		width: 100%;
 		display: grid;
-		gap: 0.65rem;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.5rem;
+	}
+
+	.bottomBar a {
+		min-height: 2.75rem;
+		display: inline-flex;
+		align-items: center;
+		font-size: 0.8rem;
+	}
+}
+
+@media (max-width: 360px) {
+	.linkColumn,
+	.contactColumn > div:last-child,
+	.bottomBar nav {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.linkColumn h2,
+	.contactColumn > div:last-child h2 {
+		grid-column: auto;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.newsletter button,
+	.linkColumn a,
+	.contactColumn a {
+		transition: none;
 	}
 }
