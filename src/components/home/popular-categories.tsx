@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
+	ArrowLeftRight,
 	ArrowUpRight,
 	Building2,
 	CarFront,
@@ -90,8 +91,15 @@ export function PopularCategories() {
 					<ArrowUpRight aria-hidden="true" />
 				</Link>
 			</div>
+			<p className={styles.swipeHint}>
+				<ArrowLeftRight aria-hidden="true" />
+				Swipe to explore
+			</p>
 
-			<div className={styles.grid}>
+			<div
+				className={styles.grid}
+				aria-label="Popular travel categories"
+			>
 				{categories.map((category) => (
 					<PopularCategoryCard key={category.id} category={category} />
 				))}
@@ -109,7 +117,7 @@ function PopularCategoryCard({ category }: { category: PopularCategory }) {
 					src={category.image}
 					alt=""
 					fill
-					sizes="(max-width: 540px) 88px, (max-width: 760px) 45vw, (max-width: 1100px) 30vw, 18vw"
+					sizes="(max-width: 760px) 78vw, (max-width: 1100px) 30vw, 18vw"
 					style={{ objectPosition: category.imagePosition }}
 				/>
 			</div>
