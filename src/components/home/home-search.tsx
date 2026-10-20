@@ -15,7 +15,7 @@ import {
 	Search,
 	Users,
 } from "lucide-react";
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
@@ -696,6 +696,18 @@ function DateRangeDialog({
 	onOpenChange: (open: boolean) => void;
 	onDateRangeChange: (range: DateRange | undefined) => void;
 }) {
+	const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+	useEffect(() => {
+		const mediaQuery = window.matchMedia("(max-width: 680px)");
+		const updateScreenSize = () => setIsSmallScreen(mediaQuery.matches);
+
+		updateScreenSize();
+		mediaQuery.addEventListener("change", updateScreenSize);
+
+		return () => mediaQuery.removeEventListener("change", updateScreenSize);
+	}, []);
+
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent className={styles.dateDialog}>
@@ -727,7 +739,7 @@ function DateRangeDialog({
 				<div className={styles.calendarShell}>
 					<Calendar
 						mode="range"
-						numberOfMonths={2}
+						numberOfMonths={isSmallScreen ? 1 : 2}
 						selected={dateRange}
 						onSelect={onDateRangeChange}
 						disabled={{ before: today }}
