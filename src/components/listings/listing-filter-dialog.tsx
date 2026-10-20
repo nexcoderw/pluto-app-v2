@@ -6,6 +6,7 @@ import {
 	DialogContent,
 	DialogDescription,
 	DialogHeader,
+	DialogTitle,
 } from "@/components/ui/dialog";
 import styles from "./category-listings-page.module.css";
 
@@ -17,6 +18,7 @@ type ListingFilterDialogProps = {
 };
 
 export function ListingFilterDialog({
+	categoryLabel,
 	children,
 	open,
 	onOpenChange,
@@ -24,11 +26,13 @@ export function ListingFilterDialog({
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent className={styles.filterDialogContent}>
-				<DialogHeader>
+				<DialogHeader className={styles.filterDialogHeader}>
+					<DialogTitle>{categoryLabel} filters</DialogTitle>
 					<DialogDescription>
+						Refine the results, then apply your filters.
 					</DialogDescription>
 				</DialogHeader>
-				{children}
+				<div className={styles.filterDialogBody}>{children}</div>
 			</DialogContent>
 		</Dialog>
 	);
