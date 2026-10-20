@@ -532,7 +532,22 @@ export function CategoryListingsPage({
 				<ListingFilterDialog
 					categoryLabel={categoryLabel}
 					open={isFilterDialogOpen}
+					search={search}
+					sortBy={sortBy}
+					sortOrder={sortOrder}
 					onOpenChange={setIsFilterDialogOpen}
+					onSearchChange={(value) => {
+						setSearch(value);
+						setPage(1);
+					}}
+					onSortByChange={(value) => {
+						setSortBy(value);
+						setPage(1);
+					}}
+					onSortOrderToggle={() => {
+						setSortOrder((current) => (current === "asc" ? "desc" : "asc"));
+						setPage(1);
+					}}
 				>
 					{renderSidebar({
 						categoryLabel,
