@@ -498,6 +498,10 @@
 	display: none;
 }
 
+.filterDialogMobileControls {
+	display: none;
+}
+
 @media (max-width: 1280px) {
 	.page[data-category="cars"] .grid,
 	.page[data-category="apartments"] .grid,
@@ -573,6 +577,19 @@
 		grid-template-columns: 1fr;
 	}
 
+	.page[data-category="cars"] .grid,
+	.page[data-category="apartments"] .grid,
+	.page[data-category="hotel-rooms"] .grid,
+	.page[data-category="airbnb"] .grid {
+		width: 100%;
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.grid > * {
+		width: 100%;
+		max-width: none;
+	}
+
 	.workspace[data-filter-presentation="responsive"] > .sidebar,
 	.workspace[data-filter-presentation="responsive"] > .customSidebarSlot {
 		display: none;
@@ -580,6 +597,15 @@
 
 	.toolbar[data-filter-presentation="responsive"] .filterButton {
 		display: inline-flex;
+	}
+
+	.toolbar[data-filter-presentation="dialog"] .searchInput,
+	.toolbar[data-filter-presentation="dialog"] .selectTrigger,
+	.toolbar[data-filter-presentation="dialog"] .sortButton,
+	.toolbar[data-filter-presentation="responsive"] .searchInput,
+	.toolbar[data-filter-presentation="responsive"] .selectTrigger,
+	.toolbar[data-filter-presentation="responsive"] .sortButton {
+		display: none;
 	}
 
 	.toolbar[data-filter-presentation="dialog"],
@@ -649,6 +675,40 @@
 
 	.filterDialogBody {
 		padding-right: 0.15rem;
+	}
+
+	.filterDialogMobileControls {
+		display: grid;
+		gap: 0.65rem;
+		margin-bottom: 0.75rem;
+		padding: 0.75rem;
+		border: 1px solid rgba(2, 0, 108, 0.1);
+		border-radius: 1rem;
+		background: rgba(248, 249, 253, 0.92);
+	}
+
+	.filterDialogSortControls {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.5rem;
+	}
+
+	.filterDialogSelectTrigger,
+	.filterDialogSortButton {
+		width: 100%;
+		min-width: 0;
+		min-height: 2.75rem;
+		border-radius: 999px;
+	}
+
+	.filterDialogSortButton {
+		padding-inline: 0.75rem;
+	}
+
+	.filterDialogSelectTrigger svg,
+	.filterDialogSortButton svg {
+		flex-shrink: 0;
+		color: #02006c;
 	}
 
 	.filterDialogBody > [data-variant="dialog"] {
